@@ -93,30 +93,42 @@ public class TestRunner {
 	}
 
 	private boolean runSingleTest(Constructor constructor, Class[] tested,Method testCase, Method before, Method after) {
+		boolean result = true;
+		Object test = null;
 		try {
 			Object[] params = new Object[tested.length];
 			for (int i=0;i<params.length;i++) {
 				params[i] = tested[i].newInstance();
 			}
-			Object test = constructor.newInstance(params);
+			test = constructor.newInstance(params);
 			
 			// before
 			if (before!=null) before.invoke(test,new Object[]{});
 			// test
 			testCase.invoke(test,new Object[]{});
-			// after
-			if (after!=null) after.invoke(test,new Object[]{});
 			
 			return true;
 		}
 		catch (Exception x) {
 			LOGGER.warn("Test case error: " + testCase,x);
 			x.printStackTrace();
-			return false;
+			result = false;
 		}
 		catch (AssertionError x) {
 			LOGGER.warn("Test case failed: " + testCase,x);
-			return false;
+			result = false;
+		}
+		finally {
+			try {
+				// after
+				if (after!=null && test!=null) after.invoke(test,new Object[]{});				
+			}
+			catch (Exception x) {
+				LOGGER.warn("Test cleanup failed: " + testCase,x);
+			}
+			finally {
+				return result;
+			}
 		}
 	}
 
