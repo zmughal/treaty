@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.java/classes" path="plugins/nz.ac.massey.treaty.java/sources"/>
+	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.example.shortdate/classes" path="plugins/nz.ac.massey.treaty.example.shortdate/source"/>
+	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.example.longdate/classes" path="plugins/nz.ac.massey.treaty.example.longdate/source"/>
+	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.example/classes" path="plugins/nz.ac.massey.treaty.example/source"/>
+	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.xml/classes" path="plugins/nz.ac.massey.treaty.xml/sources"/>
+	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty/classes" path="plugins/nz.ac.massey.treaty/source"/>
+	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.junit/classes" path="plugins/nz.ac.massey.treaty.junit/sources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/jxp.jar"/>
+	<classpathentry kind="lib" path="lib/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/jpf.jar"/>
+	<classpathentry kind="lib" path="lib/jpf-boot.jar"/>
+	<classpathentry kind="lib" path="lib/jpf-tools.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="lib/jaxen-core.jar"/>
+	<classpathentry kind="lib" path="lib/jaxen-jdom.jar"/>
+	<classpathentry kind="lib" path="lib/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/saxpath.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
