@@ -16,7 +16,7 @@ import nz.ac.massey.treaty.example.DateFormatter;
 
 /**
  * Simple implementation of the date formatter interface. Uses a short date format.
- * Slow implementation, takes > 1000 ms to render a date.
+ * Slow implementation, takes > 100 ms to render a date.
  * @author <A href="http://www-ist.massey.ac.nz/JBDietrich" target="_top">Jens Dietrich</A>
  * @version 0.1 <27/04/2008>
  * @since 0.1
@@ -27,7 +27,7 @@ public class LazyShortDateFormatter implements DateFormatter {
 	public String format(Date date) {
 
 		try {
-			Thread.currentThread().sleep(1000);
+			Thread.currentThread().sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
