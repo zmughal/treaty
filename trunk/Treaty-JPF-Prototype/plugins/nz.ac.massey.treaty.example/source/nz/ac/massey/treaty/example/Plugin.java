@@ -27,6 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
@@ -172,7 +173,7 @@ public final class Plugin extends ApplicationPlugin implements Application {
         	}	
         );
 
-        pane.add(list,BorderLayout.CENTER);
+        pane.add(new JScrollPane(list),BorderLayout.CENTER);
         pane.add(label,BorderLayout.SOUTH);
         
         // toolbar
