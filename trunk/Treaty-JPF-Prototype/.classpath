@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.java/classes" path="plugins/nz.ac.massey.treaty.java/sources"/>
+	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.example.tooshortdate/classes" path="plugins/nz.ac.massey.treaty.example.tooshortdate/source"/>
 	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.example.lazyshortdate/classes" path="plugins/nz.ac.massey.treaty.example.lazyshortdate/source"/>
 	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.example.shortdate/classes" path="plugins/nz.ac.massey.treaty.example.shortdate/source"/>
 	<classpathentry kind="src" output="plugins/nz.ac.massey.treaty.example.longdate/classes" path="plugins/nz.ac.massey.treaty.example.longdate/source"/>
