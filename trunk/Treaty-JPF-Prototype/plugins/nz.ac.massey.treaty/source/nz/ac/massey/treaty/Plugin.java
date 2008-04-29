@@ -45,7 +45,7 @@ public final class Plugin extends org.java.plugin.Plugin implements Application 
     	//BasicConfigurator.configure();
     	
     	// load vocabulary to validate
-        ExtensionPoint xp =  getManager().getRegistry().getExtensionPoint(getDescriptor().getId(), "verification");
+        ExtensionPoint xp =  getManager().getRegistry().getExtensionPoint(getDescriptor().getId(), "vocabulary");
         for (Iterator it = xp.getConnectedExtensions().iterator();it.hasNext();) {
             Extension ext = (Extension) it.next();            
             Parameter nameParam = ext.getParameter("name");
