@@ -6,7 +6,7 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
-	<extension-point id="verification">
+	<extension-point id="vocabulary">
 		<parameter-def id="class" />
 		<parameter-def id="name" />
 	</extension-point>

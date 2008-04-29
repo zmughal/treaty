@@ -8,7 +8,7 @@
 		<library id="valid" path="classes/" type="code">
 		</library>
 	</runtime>
-	<extension plugin-id="nz.ac.massey.treaty" point-id="verification"
+	<extension plugin-id="nz.ac.massey.treaty" point-id="vocabulary"
 		id="verification">
 		<parameter id="class" value="nz.ac.massey.treaty.java.JavaVocabulary" />
 		<parameter id="name" value="java vocabulary" />
