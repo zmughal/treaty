@@ -189,7 +189,7 @@ public final class Plugin extends ApplicationPlugin implements Application {
         JButton but = toolbar.add(
             new AbstractAction("verify system integrity") {
 				public void actionPerformed(ActionEvent e) {
-					ContractVerifier.getInstance().validate(getManager());
+					ContractVerifier.getInstance().verify(getManager());
 				}        		
         	}	
         );       
