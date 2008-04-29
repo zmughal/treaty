@@ -48,7 +48,7 @@ public class ContractVerifier implements ConditionVerifier, ResourceLoader {
 	 * The results are written to a file validationresults.xml . 
 	 * @param manager
 	 */
-	public void validate(PluginManager manager) {
+	public void verify(PluginManager manager) {
 		PluginRegistry registry = manager.getRegistry();
 		Collection<PluginDescriptor> descriptors = registry.getPluginDescriptors();
 		// build contracts
