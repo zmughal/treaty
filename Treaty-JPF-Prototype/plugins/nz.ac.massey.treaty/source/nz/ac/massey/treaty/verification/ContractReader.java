@@ -54,6 +54,7 @@ public class ContractReader  {
 	 */
 	public Contract read (ExtensionPoint xp,InputStream in) throws ContractReaderException {
 		SAXBuilder builder = new SAXBuilder();
+		builder.setValidation(false);
 		try {
 			Document doc = builder.build(in);
 			return read(xp,doc);
