@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         id="net.java.treaty.eclipse.example.clock.shortdateformatter"
+         name="net.java.treaty.eclipse.example.clock.shortdateformatter"
+         point="net.java.treaty.eclipse.example.clock.dateformatter">
+         <serviceprovider class="net.java.treaty.eclipse.example.clock.shortdateformatter.ShortDateFormatter"/> 
+   </extension>
+</plugin>
