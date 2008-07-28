@@ -28,6 +28,7 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	
 	public void addExtension(EclipseExtension x) {
 		this.extensions.add(x);
+		x.setExtensionPoint(this);
 	}
 	
 	public EclipseExtensionPoint(EclipsePlugin owner, IExtensionPoint xp) {

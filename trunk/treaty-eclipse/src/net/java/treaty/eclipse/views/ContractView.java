@@ -198,9 +198,15 @@ public class ContractView extends ViewPart {
 		private void addNodes(TreeParent parent,EclipseExtension x,SimpleContract c) {			
 			TreeParent node = new TreeParent(x);
 			parent.addChild(node);
-			
-			// extensions
-			
+			try {
+				SimpleContract instantiatedContract = (SimpleContract)c.bindSupplier(x, new EclipseResourceLoader());
+				addNodes(node,instantiatedContract);
+			}
+			catch (Exception t) {
+				TreeObject errorObject = new TreeObject("exception instantiating contract for this plugin");
+				parent.addChild(errorObject);
+				t.printStackTrace();
+			}
 		}
 		
 		private void addNodes(TreeParent parent,SimpleContract contract) {
