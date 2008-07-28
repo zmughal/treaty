@@ -36,7 +36,7 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 	public SimpleContract(Connector consumer,Connector connector2,String contractLocation) {
 		super();
 		this.contractLocation = contractLocation;
-		assert(consumer.getType()==ConnectorType.COSUMER);
+		assert(consumer.getType()==ConnectorType.CONSUMER);
 		this.consumer = consumer;
 		assert(consumer.getType()==ConnectorType.SUPPLIER);
 		this.supplier = supplier;
@@ -52,15 +52,13 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 	}
 	public void addSupplierResource(Resource r) throws InvalidContractException {
 		this.checkId(r);
-		if (!r.isResolved())
-			throw new InvalidContractException();
+		// if (!r.isResolved()) throw new InvalidContractException();
 		r.setOwner(this.supplier);
 		this.supplierResources.put(r.getId(),r);
 	}
 	public void addConsumerResource(Resource r) throws InvalidContractException {
 		this.checkId(r);
-		if (!r.isResolved())
-			throw new InvalidContractException();
+		// if (!r.isResolved()) throw new InvalidContractException();
 		r.setOwner(this.supplier);
 		this.consumerResources.put(r.getId(),r);
 	}
@@ -78,13 +76,13 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 		if (this.supplierResources.containsKey(r.getId()))
 			throw new InvalidContractException("A resource with this id is already registered as extension point resource: " + r.getId());
 	}
-	java.util.List<AbstractCondition> getConstraints() {
+	public java.util.List<AbstractCondition> getConstraints() {
 		return constraints;
 	}
-	java.util.Collection<Resource> getConsumerResources() {
+	public java.util.Collection<Resource> getConsumerResources() {
 		return consumerResources.values();
 	}
-	java.util.Collection<Resource> getSupplierResources() {
+	public java.util.Collection<Resource> getSupplierResources() {
 		return supplierResources.values();
 	}
 	/* (non-Javadoc)
@@ -115,12 +113,7 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 		visitor.endVisit(this);
 		
 	}
-	public void loadResources(Component component,ResourceLoader loader) throws ResourceLoaderException {
-		for (Resource r:this.consumerResources.values())
-			r.setValue(loader.load(r.getType(),r.getName(),component));
-		for (Resource r:this.supplierResources.values())
-			r.setValue(loader.load(r.getType(),r.getName(),component));
-	}
+
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.IContract#bindSupplier(nz.ac.massey.treaty.Connector, nz.ac.massey.treaty.verification.ResourceLoader)
 	 */
@@ -129,7 +122,7 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 		contract.setLocation(this.getLocation());
 		contract.consumerResources.putAll(this.consumerResources);
 		for (Resource r:this.supplierResources.values()) {
-			contract.addSupplierResource(r.bind(connector,loader));
+			contract.addSupplierResource(r.instantiate(connector,loader));
 		} 
 		for (AbstractCondition c:this.constraints) {
 			contract.addCondition(c.replaceResources(contract.supplierResources));
@@ -145,7 +138,7 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 		contract.setLocation(this.getLocation());
 		contract.supplierResources.putAll(this.supplierResources);
 		for (Resource r:this.consumerResources.values()) {
-			contract.addConsumerResource(r.bind(connector,loader));
+			contract.addConsumerResource(r.instantiate(connector,loader));
 		} 
 		for (AbstractCondition c:this.constraints) {
 			contract.addCondition(c.replaceResources(contract.consumerResources));

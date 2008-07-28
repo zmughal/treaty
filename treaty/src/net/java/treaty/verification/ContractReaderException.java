@@ -10,12 +10,14 @@
 
 package net.java.treaty.verification;
 
+import net.java.treaty.TreatyException;
+
 /**
  * Thrown if importing a contract from XML fails.
  * @author Jens Dietrich
  */
 
-public class ContractReaderException extends Exception {
+public class ContractReaderException extends TreatyException {
 
 	public ContractReaderException() {
 		super();

@@ -10,6 +10,8 @@
 
 package net.java.treaty;
 
+import java.util.List;
+
 
 /**
  * Abstract component interface.
@@ -19,5 +21,6 @@ package net.java.treaty;
 
 public interface Component {
 	String getId();
+	List<Connector> getConnectors();
 	
 }

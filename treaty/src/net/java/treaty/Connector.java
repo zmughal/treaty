@@ -32,11 +32,5 @@ public interface Connector<C extends Component> {
 	 * @return
 	 */
 	C getOwner();
-	/**
-	 * Get the parameter value. For instance, a component meta data property file might have 
-	 * an entry class=com.example.MyClass. Then getParameter("class") should then return "com.example.MyClass". 
-	 * @param paramName
-	 * @return
-	 */
-	String getParameter(String paramName);
+
 }

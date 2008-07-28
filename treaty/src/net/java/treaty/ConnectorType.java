@@ -16,5 +16,5 @@ package net.java.treaty;
  */
 
 public enum ConnectorType {
-	COSUMER,SUPPLIER
+	CONSUMER,SUPPLIER
 }
