@@ -18,8 +18,6 @@ import java.util.List;
 import net.java.treaty.Condition;
 import net.java.treaty.ConditionContext;
 import net.java.treaty.Conjunction;
-import net.java.treaty.Connector;
-import net.java.treaty.Contract;
 import net.java.treaty.Disjunction;
 import net.java.treaty.InvalidContractException;
 import net.java.treaty.PropertyCondition;

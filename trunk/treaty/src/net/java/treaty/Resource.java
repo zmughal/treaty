@@ -132,7 +132,7 @@ public class Resource implements Visitable {
 		r.setType(this.getType());
 		r.setRef(this.getRef());
 		r.setOwner(connector);
-		setValue(loader.load(getType(),getName(),this.getOwner()));
+		setValue(loader.load(getType(),getName(),connector));
 		
 		return r;
 	}
