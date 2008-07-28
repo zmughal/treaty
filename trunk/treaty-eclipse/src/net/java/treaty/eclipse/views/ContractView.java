@@ -47,7 +47,8 @@ public class ContractView extends ViewPart {
 	private Image ICON_EXTENSIONPOINT = this.getImageDescriptor("icons/extensionpoint.gif").createImage();
 	private Image ICON_CONTRACT = this.getImageDescriptor("icons/contract.gif").createImage();
 	private Image ICON_CONSTRAINT = this.getImageDescriptor("icons/constraint.gif").createImage();
-	private Image ICON_RESOURCE = this.getImageDescriptor("icons/resource.gif").createImage();
+	private Image ICON_CONSTANT = this.getImageDescriptor("icons/constant.png").createImage();
+	private Image ICON_VARIABLE = this.getImageDescriptor("icons/variable.png").createImage();
 
 	class KeyValueNode {
 		String key,value = null;
@@ -182,50 +183,84 @@ public class ContractView extends ViewPart {
 				TreeParent node = new TreeParent(c);
 				parent.addChild(node);
 				addNodes(node,(SimpleContract)c);
-			}				
+				
+				// extensions
+				node = new TreeParent("verification");
+				parent.addChild(node);
+				for (EclipseExtension x:xp.getExtensions()) {
+					addNodes(node,x,(SimpleContract)c);	
+				}
+			}		
+			
+
+			
+		}
+		private void addNodes(TreeParent parent,EclipseExtension x,SimpleContract c) {			
+			TreeParent node = new TreeParent(x);
+			parent.addChild(node);
+			
+			// extensions
+			
 		}
 		
 		private void addNodes(TreeParent parent,SimpleContract contract) {
+			/**
 			TreeParent rNode = new TreeParent("extension point resources");
 			parent.addChild(rNode);
 			for (Resource r:contract.getConsumerResources()) {
-				TreeParent node = new TreeParent(r);
-				rNode.addChild(node);
-				addNodes(node,r);				
+				addResourceNode(rNode,r);				
 			}
 			rNode = new TreeParent("extension resources");
 			parent.addChild(rNode);
 			for (Resource r:contract.getSupplierResources()) {
-				TreeParent node = new TreeParent(r);
-				rNode.addChild(node);
-				addNodes(node,r);	
+				addResourceNode(rNode,r);	
 			}
-			rNode = new TreeParent("constraints");
-			parent.addChild(rNode);
+			*/
+
 			for (AbstractCondition c:contract.getConstraints()) {
 				// top level conjunction displayed as set
 				if (c instanceof Conjunction) {
 					for (AbstractCondition c2:((Conjunction)c).getParts()) {
-						addNodes(rNode,c2);
+						addNodes(parent,c2);
 					}
 				}
-				else addNodes(rNode,c);
+				else addNodes(parent,c);
 			}
+		}
+		private void addResourceNode(TreeParent parent,Resource r) {
+			TreeParent node = new TreeParent(r);
+			parent.addChild(node);
+			addNodes(node,r);	
 		}
 		private void addNodes(TreeParent parent,AbstractCondition c) {
 			if (c instanceof Condition) {
 				Condition cc = (Condition)c;
-				parent.addChild(new TreeObject(new KeyValueNode("resource 1",cc.getResource1().getId())));
-				parent.addChild(new TreeObject(new KeyValueNode("predicate",cc.getRelationship().toString())));
-				parent.addChild(new TreeObject(new KeyValueNode("resource 2",cc.getResource1().getId())));
+				TreeParent node = new TreeParent(cc);
+				parent.addChild(node);
+				addResourceNode(node,cc.getResource1());
+				node.addChild(new TreeObject(new KeyValueNode("relationship",cc.getRelationship().toString())));
+				addResourceNode(node,cc.getResource2());
+			}
+			else if (c instanceof PropertyCondition) {
+				PropertyCondition cc = (PropertyCondition)c;
+				TreeParent node = new TreeParent(cc);
+				parent.addChild(node);
+				addResourceNode(node,cc.getResource());
+				node.addChild(new TreeObject(new KeyValueNode("property",cc.getProperty().toString())));
+				node.addChild(new TreeObject(new KeyValueNode("value",""+cc.getValue())));
 			}
 			else if (c instanceof ComplexCondition) {
-				
+				ComplexCondition cc = (ComplexCondition)c;
+				TreeParent node = new TreeParent(cc);
+				parent.addChild(node);
+				for (AbstractCondition part:cc.getParts()) {
+					addNodes(node,part);
+				}
 			}
 		}
 		private void addNodes(TreeParent parent,Resource r) {
-			parent.addChild(new TreeObject(new KeyValueNode("type",r.getType().toString())));
-			parent.addChild(new TreeObject(new KeyValueNode("id",r.getType().toString())));
+			parent.addChild(new TreeObject(new KeyValueNode("id",r.getId())));
+			parent.addChild(new TreeObject(new KeyValueNode("type",r.getType().toString())));			
 			if (r.getName()!=null) {
 				parent.addChild(new TreeObject(new KeyValueNode("name",r.getName())));
 			}
@@ -237,6 +272,37 @@ public class ContractView extends ViewPart {
 		}
 	}
 	class ViewLabelProvider extends LabelProvider {
+		
+		private String toString(Condition c) {
+			StringBuffer buf = new StringBuffer();
+			buf.append(toString(c.getResource1()));
+			buf.append(' ');
+			String p = c.getRelationship().toString();
+			p = p.substring(p.lastIndexOf('/')+1); // last token
+			buf.append(p);
+			buf.append(' ');
+			buf.append(toString(c.getResource2()));
+			return buf.toString();
+		}
+		private String toString(PropertyCondition c) {
+			StringBuffer buf = new StringBuffer();
+			buf.append(toString(c.getResource()));
+			buf.append(' ');
+			String p = c.getProperty().toString();
+			p = p.substring(p.lastIndexOf('/')+1); // last token
+			buf.append(p);
+			buf.append(' ');
+			buf.append(c.getValue());
+			return buf.toString();
+		}
+		private String toString(Resource r) {
+			if (r.getName()!=null) {
+				return r.getName();
+			}
+			else {
+				return r.getId();
+			}
+		}
 
 		public String getText(Object n) {
 			Object obj = ((TreeObject)n).getObject();
@@ -262,6 +328,15 @@ public class ContractView extends ViewPart {
 				KeyValueNode kvn = (KeyValueNode)obj;
 				return kvn.key + ": " + kvn.value;
 			}
+			else if (obj instanceof Condition) {
+				return toString((Condition)obj);
+			}
+			else if (obj instanceof PropertyCondition) {
+				return toString((PropertyCondition)obj);
+			}
+			else if (obj instanceof ComplexCondition) {
+				return ((ComplexCondition)obj).getConnective();
+			}
 			return obj.toString();
 		}
 		public Image getImage(Object n) {
@@ -286,7 +361,7 @@ public class ContractView extends ViewPart {
 				return ICON_CONSTRAINT;
 			}
 			else if (obj instanceof Resource) {
-				return ICON_RESOURCE;
+				return ((Resource)obj).getName()==null?ICON_VARIABLE:ICON_CONSTANT;
 			}
 
 			else if (n instanceof TreeParent) {
@@ -407,7 +482,8 @@ public class ContractView extends ViewPart {
 		ICON_CONSTRAINT.dispose();
 		ICON_EXTENSION.dispose();
 		ICON_EXTENSIONPOINT.dispose();
-		ICON_RESOURCE.dispose();
+		ICON_CONSTANT.dispose();
+		ICON_VARIABLE.dispose();
 		super.dispose();
 	}
 }
