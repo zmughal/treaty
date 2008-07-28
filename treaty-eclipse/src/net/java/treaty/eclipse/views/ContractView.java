@@ -11,8 +11,11 @@
 
 package net.java.treaty.eclipse.views;
 
-import java.util.ArrayList;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import net.java.treaty.*;
+import net.java.treaty.eclipse.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.jface.viewers.*;
@@ -23,6 +26,7 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.core.runtime.IAdaptable;
+import org.osgi.framework.Bundle;
 
 
 /**
@@ -36,6 +40,20 @@ public class ContractView extends ViewPart {
 	private Action action1;
 	private Action action2;
 
+	class ExtensionPointResource {
+		Resource r = null;
+		public ExtensionPointResource(Resource r) {
+			super();
+			this.r = r;
+		}		
+	}  
+	class ExtensionResource {
+		Resource r = null;
+		public ExtensionResource(Resource r) {
+			super();
+			this.r = r;
+		}		
+	}  
 	/*
 	 * The content provider class is responsible for
 	 * providing objects to the view. It can wrap
@@ -47,14 +65,14 @@ public class ContractView extends ViewPart {
 	 */
 	 
 	class TreeObject implements IAdaptable {
-		private String name;
+		private Object object;
 		private TreeParent parent;
 		
-		public TreeObject(String name) {
-			this.name = name;
+		public TreeObject(Object object) {
+			this.object = object;
 		}
-		public String getName() {
-			return name;
+		public Object getObject() {
+			return object;
 		}
 		public void setParent(TreeParent parent) {
 			this.parent = parent;
@@ -63,7 +81,7 @@ public class ContractView extends ViewPart {
 			return parent;
 		}
 		public String toString() {
-			return getName();
+			return getObject().toString();
 		}
 		public Object getAdapter(Class key) {
 			return null;
@@ -72,8 +90,8 @@ public class ContractView extends ViewPart {
 	
 	class TreeParent extends TreeObject {
 		private ArrayList children;
-		public TreeParent(String name) {
-			super(name);
+		public TreeParent(Object object) {
+			super(object);
 			children = new ArrayList();
 		}
 		public void addChild(TreeObject child) {
@@ -124,36 +142,56 @@ public class ContractView extends ViewPart {
 				return ((TreeParent)parent).hasChildren();
 			return false;
 		}
-/*
- * We will set up a dummy model to initialize tree heararchy.
- * In a real code, you will connect to a real model and
- * expose its hierarchy.
- */
-		private void initialize() {
-			TreeObject to1 = new TreeObject("Leaf 1");
-			TreeObject to2 = new TreeObject("Leaf 2");
-			TreeObject to3 = new TreeObject("Leaf 3");
-			TreeParent p1 = new TreeParent("Parent 1");
-			p1.addChild(to1);
-			p1.addChild(to2);
-			p1.addChild(to3);
-			
-			TreeObject to4 = new TreeObject("Leaf 4");
-			TreeParent p2 = new TreeParent("Parent 2");
-			p2.addChild(to4);
-			
-			TreeParent root = new TreeParent("Root");
-			root.addChild(p1);
-			root.addChild(p2);
-			
+	/*
+	 * We will set up a dummy model to initialize tree hierarchy.
+	 * In a real code, you will connect to a real model and
+	 * expose its hierarchy.
+	 */
+		private void initialize() {		
 			invisibleRoot = new TreeParent("");
-			invisibleRoot.addChild(root);
+			addNodes(invisibleRoot);
+		}
+		
+		private void addNodes(TreeParent parent) {
+			Collection<EclipsePlugin> plugins = new Builder().extractContracts();
+			for (EclipsePlugin plugin:plugins) {
+				for (EclipseExtensionPoint xp:plugin.getExtensionPoints()) {
+					TreeParent bp = new TreeParent(xp);
+					parent.addChild(bp);	
+					Contract c = xp.getContract();
+					if (c instanceof SimpleContract) {
+						addNodes(bp,(SimpleContract)c);
+					}
+				}
+
+			}			
+		}
+		
+		private void addNodes(TreeParent parent,SimpleContract contract) {
+			for (Resource r:contract.getConsumerResources()) {
+				parent.addChild(new TreeObject(new ExtensionPointResource(r)));
+			}
+			for (Resource r:contract.getSupplierResources()) {
+				parent.addChild(new TreeObject(new ExtensionResource(r)));
+			}
+
+			
 		}
 	}
 	class ViewLabelProvider extends LabelProvider {
 
-		public String getText(Object obj) {
-			return obj.toString();
+		public String getText(Object n) {
+			Object obj = ((TreeObject)n).getObject();
+			if (obj instanceof Connector) {
+				return ((Connector)obj).getId();
+			}
+			else if (obj instanceof Bundle) {
+				return ((Bundle)obj).getSymbolicName() + " plugin";
+			}
+			else if (obj instanceof Contract) {
+				return "Contract";
+			}
+			return obj.toString()+" - "+obj.getClass().toString();
 		}
 		public Image getImage(Object obj) {
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
