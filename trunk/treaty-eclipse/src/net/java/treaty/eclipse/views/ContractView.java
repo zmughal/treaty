@@ -49,20 +49,6 @@ public class ContractView extends ViewPart {
 	private Image ICON_CONSTRAINT = this.getImageDescriptor("icons/constraint.gif").createImage();
 	private Image ICON_RESOURCE = this.getImageDescriptor("icons/resource.gif").createImage();
 
-	class ExtensionPointResource {
-		Resource r = null;
-		public ExtensionPointResource(Resource r) {
-			super();
-			this.r = r;
-		}		
-	}  
-	class ExtensionResource {
-		Resource r = null;
-		public ExtensionResource(Resource r) {
-			super();
-			this.r = r;
-		}		
-	}  
 	class KeyValueNode {
 		String key,value = null;
 
@@ -203,14 +189,14 @@ public class ContractView extends ViewPart {
 			TreeParent rNode = new TreeParent("extension point resources");
 			parent.addChild(rNode);
 			for (Resource r:contract.getConsumerResources()) {
-				TreeParent node = new TreeParent(new ExtensionPointResource(r));
+				TreeParent node = new TreeParent(r);
 				rNode.addChild(node);
 				addNodes(node,r);				
 			}
 			rNode = new TreeParent("extension resources");
 			parent.addChild(rNode);
 			for (Resource r:contract.getSupplierResources()) {
-				TreeParent node = new TreeParent(new ExtensionResource(r));
+				TreeParent node = new TreeParent(r);
 				rNode.addChild(node);
 				addNodes(node,r);	
 			}
@@ -269,11 +255,8 @@ public class ContractView extends ViewPart {
 					return url.toString();
 				}
 			}
-			else if (obj instanceof ExtensionResource) {
-				return ((ExtensionResource)obj).r.getId();
-			}
-			else if (obj instanceof ExtensionPointResource) {
-				return ((ExtensionPointResource)obj).r.getId();
+			else if (obj instanceof Resource) {
+				return ((Resource)obj).getId();
 			}
 			else if (obj instanceof KeyValueNode) {
 				KeyValueNode kvn = (KeyValueNode)obj;
@@ -302,10 +285,7 @@ public class ContractView extends ViewPart {
 			else if (obj instanceof Condition) {
 				return ICON_CONSTRAINT;
 			}
-			else if (obj instanceof ExtensionResource) {
-				return ICON_RESOURCE;
-			}
-			else if (obj instanceof ExtensionPointResource) {
+			else if (obj instanceof Resource) {
 				return ICON_RESOURCE;
 			}
 
