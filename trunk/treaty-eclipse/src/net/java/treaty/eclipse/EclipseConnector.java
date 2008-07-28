@@ -13,7 +13,9 @@ package net.java.treaty.eclipse;
 import java.io.IOException;
 import java.net.URL;
 import net.java.treaty.Component;
+import net.java.treaty.Connector;
 import net.java.treaty.Contract;
+import net.java.treaty.SimpleContract;
 import net.java.treaty.TreatyException;
 import net.java.treaty.verification.ContractReader;
 
@@ -22,7 +24,11 @@ import net.java.treaty.verification.ContractReader;
  * @author Jens Dietrich
  */
 
-public abstract class EclipseConnector implements net.java.treaty.Connector {
+public abstract class EclipseConnector implements Connector {
+	
+	public static String getContractLocation(Connector c) {
+		return "/META-INF/"+c.getId()+".contract";
+	}
 
 	private EclipsePlugin owner = null;
 	protected Contract contract = null;
@@ -47,12 +53,14 @@ public abstract class EclipseConnector implements net.java.treaty.Connector {
 	protected Contract loadContract () {
 		EclipsePlugin owner = (EclipsePlugin)this.getOwner();
 		if (owner!=null) {
-			URL url = owner.getResource("/META-INF/"+getId()+".contract");
+			URL url = owner.getResource(this.getContractLocation(this));
 			if (url!=null) {
 				System.out.println("contract url found " + url);
 				ContractReader reader = new ContractReader(new EclipseResourceLoader());
 				try {
-					return reader.read(url.openStream());
+					SimpleContract contract = reader.read(url.openStream());
+					contract.setLocation(url);
+					return contract;
 				} catch (TreatyException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
