@@ -12,12 +12,15 @@
 package net.java.treaty.eclipse.views;
 
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import net.java.treaty.*;
 import net.java.treaty.eclipse.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.jface.action.*;
@@ -26,7 +29,6 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.core.runtime.IAdaptable;
-import org.osgi.framework.Bundle;
 
 
 /**
@@ -39,6 +41,13 @@ public class ContractView extends ViewPart {
 	private DrillDownAdapter drillDownAdapter;
 	private Action action1;
 	private Action action2;
+	
+	private Image ICON_PLUGIN = this.getImageDescriptor("icons/plugin.gif").createImage();
+	private Image ICON_EXTENSION = this.getImageDescriptor("icons/extension.gif").createImage();
+	private Image ICON_EXTENSIONPOINT = this.getImageDescriptor("icons/extensionpoint.gif").createImage();
+	private Image ICON_CONTRACT = this.getImageDescriptor("icons/contract.gif").createImage();
+	private Image ICON_CONSTRAINT = this.getImageDescriptor("icons/constraint.gif").createImage();
+	private Image ICON_RESOURCE = this.getImageDescriptor("icons/resource.gif").createImage();
 
 	class ExtensionPointResource {
 		Resource r = null;
@@ -53,6 +62,15 @@ public class ContractView extends ViewPart {
 			super();
 			this.r = r;
 		}		
+	}  
+	class KeyValueNode {
+		String key,value = null;
+
+		public KeyValueNode(String key, String value) {
+			super();
+			this.key = key;
+			this.value = value;
+		} 	
 	}  
 	/*
 	 * The content provider class is responsible for
@@ -152,30 +170,84 @@ public class ContractView extends ViewPart {
 			addNodes(invisibleRoot);
 		}
 		
+
+		
 		private void addNodes(TreeParent parent) {
 			Collection<EclipsePlugin> plugins = new Builder().extractContracts();
 			for (EclipsePlugin plugin:plugins) {
-				for (EclipseExtensionPoint xp:plugin.getExtensionPoints()) {
-					TreeParent bp = new TreeParent(xp);
-					parent.addChild(bp);	
-					Contract c = xp.getContract();
-					if (c instanceof SimpleContract) {
-						addNodes(bp,(SimpleContract)c);
-					}
-				}
-
+				TreeParent node = new TreeParent(plugin);
+				parent.addChild(node);					
+				addNodes(node,plugin);
 			}			
 		}
 		
+		private void addNodes(TreeParent parent,EclipsePlugin plugin) {
+			Collection<EclipsePlugin> plugins = new Builder().extractContracts();
+			for (EclipseExtensionPoint xp:plugin.getExtensionPoints()) {
+				TreeParent node = new TreeParent(xp);
+				parent.addChild(node);	
+				addNodes(node,xp);
+			}					
+		}
+		
+		private void addNodes(TreeParent parent,EclipseExtensionPoint xp) {
+			Contract c = xp.getContract();				
+			if (c instanceof SimpleContract) {
+				TreeParent node = new TreeParent(c);
+				parent.addChild(node);
+				addNodes(node,(SimpleContract)c);
+			}				
+		}
+		
 		private void addNodes(TreeParent parent,SimpleContract contract) {
+			TreeParent rNode = new TreeParent("extension point resources");
+			parent.addChild(rNode);
 			for (Resource r:contract.getConsumerResources()) {
-				parent.addChild(new TreeObject(new ExtensionPointResource(r)));
+				TreeParent node = new TreeParent(new ExtensionPointResource(r));
+				rNode.addChild(node);
+				addNodes(node,r);				
 			}
+			rNode = new TreeParent("extension resources");
+			parent.addChild(rNode);
 			for (Resource r:contract.getSupplierResources()) {
-				parent.addChild(new TreeObject(new ExtensionResource(r)));
+				TreeParent node = new TreeParent(new ExtensionResource(r));
+				rNode.addChild(node);
+				addNodes(node,r);	
 			}
-
+			rNode = new TreeParent("constraints");
+			parent.addChild(rNode);
+			for (AbstractCondition c:contract.getConstraints()) {
+				// top level conjunction displayed as set
+				if (c instanceof Conjunction) {
+					for (AbstractCondition c2:((Conjunction)c).getParts()) {
+						addNodes(rNode,c2);
+					}
+				}
+				else addNodes(rNode,c);
+			}
+		}
+		private void addNodes(TreeParent parent,AbstractCondition c) {
+			if (c instanceof Condition) {
+				Condition cc = (Condition)c;
+				parent.addChild(new TreeObject(new KeyValueNode("resource 1",cc.getResource1().getId())));
+				parent.addChild(new TreeObject(new KeyValueNode("predicate",cc.getRelationship().toString())));
+				parent.addChild(new TreeObject(new KeyValueNode("resource 2",cc.getResource1().getId())));
+			}
+			else if (c instanceof ComplexCondition) {
+				
+			}
+		}
+		private void addNodes(TreeParent parent,Resource r) {
+			parent.addChild(new TreeObject(new KeyValueNode("type",r.getType().toString())));
+			parent.addChild(new TreeObject(new KeyValueNode("id",r.getType().toString())));
+			if (r.getName()!=null) {
+				parent.addChild(new TreeObject(new KeyValueNode("name",r.getName())));
+			}
+			else if (r.getRef()!=null) {
+				parent.addChild(new TreeObject(new KeyValueNode("ref",r.getRef())));
+			}
 			
+			// parent.addChild(new TreeObject(new KeyValueNode("value",""+r.getValue())));
 		}
 	}
 	class ViewLabelProvider extends LabelProvider {
@@ -185,20 +257,65 @@ public class ContractView extends ViewPart {
 			if (obj instanceof Connector) {
 				return ((Connector)obj).getId();
 			}
-			else if (obj instanceof Bundle) {
-				return ((Bundle)obj).getSymbolicName() + " plugin";
+			else if (obj instanceof Component) {
+				return ((Component)obj).getId();
 			}
+			else if (obj instanceof SimpleContract) {
+				URL url = ((SimpleContract)obj).getLocation();
+				if (url==null) {
+					return "a contract";
+				}
+				else {
+					return url.toString();
+				}
+			}
+			else if (obj instanceof ExtensionResource) {
+				return ((ExtensionResource)obj).r.getId();
+			}
+			else if (obj instanceof ExtensionPointResource) {
+				return ((ExtensionPointResource)obj).r.getId();
+			}
+			else if (obj instanceof KeyValueNode) {
+				KeyValueNode kvn = (KeyValueNode)obj;
+				return kvn.key + ": " + kvn.value;
+			}
+			return obj.toString();
+		}
+		public Image getImage(Object n) {
+			Object obj = ((TreeObject)n).getObject();
+			
+			if (obj instanceof Connector) {
+				Connector c = (Connector)obj;
+				if (c.getType()==ConnectorType.SUPPLIER) {
+					return ICON_EXTENSION;
+				}
+				else if (c.getType()==ConnectorType.CONSUMER) {
+					return ICON_EXTENSIONPOINT;
+				}
+			}
+			else if (obj instanceof Component) {
+				return ICON_PLUGIN;
+			}			
 			else if (obj instanceof Contract) {
-				return "Contract";
+				return ICON_CONTRACT;
 			}
-			return obj.toString()+" - "+obj.getClass().toString();
+			else if (obj instanceof Condition) {
+				return ICON_CONSTRAINT;
+			}
+			else if (obj instanceof ExtensionResource) {
+				return ICON_RESOURCE;
+			}
+			else if (obj instanceof ExtensionPointResource) {
+				return ICON_RESOURCE;
+			}
+
+			else if (n instanceof TreeParent) {
+				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+			}
+			return null;
 		}
-		public Image getImage(Object obj) {
-			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			if (obj instanceof TreeParent)
-			   imageKey = ISharedImages.IMG_OBJ_FOLDER;
-			return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
-		}
+		
+
 	}
 
 	/**
@@ -207,6 +324,10 @@ public class ContractView extends ViewPart {
 	public ContractView() {
 	}
 
+	public ImageDescriptor getImageDescriptor(String path) {
+		return AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path); 
+	}
+	
 	/**
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
@@ -297,5 +418,16 @@ public class ContractView extends ViewPart {
 	 */
 	public void setFocus() {
 		viewer.getControl().setFocus();
+	}
+
+	@Override
+	public void dispose() {
+		ICON_PLUGIN.dispose();
+		ICON_CONTRACT.dispose();
+		ICON_CONSTRAINT.dispose();
+		ICON_EXTENSION.dispose();
+		ICON_EXTENSIONPOINT.dispose();
+		ICON_RESOURCE.dispose();
+		super.dispose();
 	}
 }
