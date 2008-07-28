@@ -8,3 +8,9 @@ Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Eclipse-LazyStart: true
+Bundle-ClassPath: .,
+ lib/treaty.jar,
+ lib/jaxen-core.jar,
+ lib/jaxen-jdom.jar,
+ lib/saxpath.jar,
+ lib/jdom.jar
