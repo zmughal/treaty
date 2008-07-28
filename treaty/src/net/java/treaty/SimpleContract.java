@@ -10,6 +10,8 @@
 
 package net.java.treaty;
 
+import java.net.URL;
+
 import net.java.treaty.verification.ConditionVerifier;
 import net.java.treaty.verification.VerificationReport;
 import net.java.treaty.verification.VerificationResult;
@@ -30,6 +32,8 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 	private java.util.List<AbstractCondition> constraints = new java.util.ArrayList<AbstractCondition>();
 	private Connector consumer = null;
 	private Connector supplier = null;
+	private URL location = null; // the physical location of the contract
+	
 	public SimpleContract() {
 		super();
 	}	
