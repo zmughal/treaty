@@ -88,14 +88,6 @@ public class AggregatedContract implements Contract{
 		return result;
 	}
 
-	public String getLocation() {
-		StringBuffer b = new StringBuffer(); 
-		for (int i=0;i<parts.length;i++) {
-			if (i>0) b.append(",");
-			b.append(parts[i].getLocation());
-		}
-		return b.toString();
-	}
 
 	public Connector getConsumer() {
 		Connector c = null;

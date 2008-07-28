@@ -72,7 +72,7 @@ public class VerificationResultVisitor implements ContractVisitor {
 	
 	public boolean visit(Contract contract) {
 		out.println("<contract ");
-		printAttribute("url",convertToRelativePath(contract.getLocation()));
+		if (contract instanceof SimpleContract) printAttribute("url",((SimpleContract)contract).getLocation());
 		printAttribute("consumer connector",contract.getConsumer().getId());
 		printAttribute("consumer component",contract.getConsumer().getOwner().getId());
 		printAttribute("supplier connector",contract.getSupplier().getId());
