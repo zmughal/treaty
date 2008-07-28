@@ -22,6 +22,7 @@ import net.java.treaty.ConnectorType;
 public class EclipseExtension extends EclipseConnector {
 	
 	private IExtension extension = null;
+	private EclipseExtensionPoint extensionPoint = null; 
 	
 	public EclipseExtension(EclipsePlugin owner, IExtension extension) {
 		super(owner);
@@ -40,6 +41,14 @@ public class EclipseExtension extends EclipseConnector {
 	@Override
 	public String getId() {
 		return this.extension.getUniqueIdentifier();
+	}
+
+	public EclipseExtensionPoint getExtensionPoint() {
+		return extensionPoint;
+	}
+
+	public void setExtensionPoint(EclipseExtensionPoint extensionPoint) {
+		this.extensionPoint = extensionPoint;
 	}
 
 
