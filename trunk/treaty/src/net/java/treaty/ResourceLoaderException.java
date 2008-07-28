@@ -17,6 +17,18 @@ package net.java.treaty;
 
 public class ResourceLoaderException extends TreatyException {
 
+	public ResourceLoaderException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public ResourceLoaderException(String message) {
+		super(message);
+	}
+
+	public ResourceLoaderException(Throwable cause) {
+		super(cause);
+	}
+
 	public ResourceLoaderException() {
 	}
 
