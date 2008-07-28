@@ -10,24 +10,24 @@
 
 package net.java.treaty.verification;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-
 import net.java.treaty.Condition;
 import net.java.treaty.ConditionContext;
 import net.java.treaty.Conjunction;
+import net.java.treaty.Connector;
 import net.java.treaty.Contract;
 import net.java.treaty.Disjunction;
 import net.java.treaty.InvalidContractException;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.Resource;
+import net.java.treaty.ResourceLoader;
 import net.java.treaty.SimpleContract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.XDisjunction;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -40,17 +40,20 @@ import org.jdom.xpath.XPath;
  */
 
 public class ContractReader  {
-	public ContractReader() {
+	
+	private ResourceLoader loader = null;
+	
+	public ContractReader(ResourceLoader loader) {
 		super();
+		this.loader = loader;
 	} 
 	/**
 	 * Read a contract from an input stream.
 	 * @param in
-	 * @param xp
-	 * @return a contract
-	 * @throws IOException
+	 * @return
+	 * @throws TreatyException
 	 */
-	public Contract read (InputStream in) throws ContractReaderException {
+	public Contract read (InputStream in) throws TreatyException {
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		try {
@@ -68,21 +71,23 @@ public class ContractReader  {
 		// xpath.addNamespace(SWRLX);
 		return xpath;
 	} 
-	private Contract read(Document doc) throws ContractReaderException,InvalidContractException,JDOMException {
+	private Contract read(Document doc) throws TreatyException,JDOMException {
 		SimpleContract contract = new SimpleContract();
 		
 		// read extension resources
 		XPath xpath =  createXPath("/contract/extension/resource");
 		List<Element> nodes = xpath.selectNodes(doc);
 		List<Resource> resources = readResources(nodes);
-		for (Resource r:resources)
+		for (Resource r:resources) {
 			contract.addSupplierResource(r);
+		}
 		// read extension point resources
 		xpath =  createXPath("/contract/extensionpoint/resource");
 		nodes = xpath.selectNodes(doc);
 		resources = readResources(nodes);
-		for (Resource r:resources)
+		for (Resource r:resources) {
 			contract.addConsumerResource(r);
+		}
 		
 		// read conditions
 		Element eConstraints = doc.getRootElement().getChild("constraints");
@@ -169,9 +174,13 @@ public class ContractReader  {
 				String ref = node.getChildText("ref");
 				r.setRef(ref);
 			}
+			
 			resources.add(r);
 		}
 		return resources;
+	}
+	public ResourceLoader getLoader() {
+		return loader;
 	} 
 	
 

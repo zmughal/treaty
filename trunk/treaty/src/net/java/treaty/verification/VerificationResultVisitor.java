@@ -93,7 +93,7 @@ public class VerificationResultVisitor implements ContractVisitor {
 		if (resource.getValue()!=null)
 			printAttribute("value",convertToRelativePath(resource.getValue()));
 		printAttribute("type",resource.getType());
-		printAttribute("owner",resource.getOwner().getType()==ConnectorType.COSUMER?"consumer":"supplier");
+		printAttribute("owner",resource.getOwner().getType()==ConnectorType.CONSUMER?"consumer":"supplier");
 		out.println("/>");
 		return true;
 	}

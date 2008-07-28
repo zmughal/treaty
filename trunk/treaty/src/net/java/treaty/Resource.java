@@ -117,29 +117,26 @@ public class Resource implements Visitable {
 	public void setOwner(Connector owner) {
 		this.owner = owner;
 	}
+	/**
+	 * Instantiate a resource. This will replace the variable by a value.
+	 * @param connector the connector (e.g. extension) 
+	 * @param loader the resource loader
+	 * @return
+	 * @throws TreatyException
+	 */
+	public Resource instantiate (Connector connector,ResourceLoader loader) throws ResourceLoaderException {
 
-	public Resource bind (Connector connector,ResourceLoader loader) throws TreatyException {
-		assert name == null;
 		assert value== null;
 		Resource r = new Resource();
 		r.setId(this.getId());
 		r.setType(this.getType());
-		String param = connector.getParameter(this.getRef());
 		r.setRef(this.getRef());
 		r.setOwner(connector);
-		if (param==null)
-			r.setProvided(false);
-		else {
-			r.setName(param);
-			r.resolve(loader);
-		}
+		setValue(loader.load(getType(),getName(),this.getOwner()));
+		
 		return r;
 	}
-	public void resolve (ResourceLoader loader) throws ResourceLoaderException {
-		if (this.value==null) {
-			assert name != null;
-			setValue(loader.load(getType(),getName(),this.getOwner().getOwner()));
-		}
-	}
+
+
 
 }

@@ -22,14 +22,17 @@ import net.java.treaty.verification.VerificationException;
 
 public interface ResourceLoader {
 	/**
-	 * Create an object. 
+	 * Load a resource. For instance, if the resource is a Java class and the name is com.example.MyClass,
+	 * this method will load the class with the components class loader and return the java.lang.Class instance.
+	 * After this method has been called successfully, the resource value will be !=null.
 	 * @param type a type
 	 * @param name the value of the object as string, e.g. a class name
-	 * @param plugin the plugin, e.g. it may provide the classloader
+	 * @param connector the connector, e.g. it may provide the classloader
 	 * @return the object created for the name, e.g. an instance of java.lang.Class
 	 * @throws VerificationException
 	 */
-	public Object load(URI type,String name,Component plugin) throws ResourceLoaderException;
+	public Object load(URI type,String name,Connector connector) throws ResourceLoaderException;
+
 
 	
 }
