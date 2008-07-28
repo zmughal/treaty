@@ -53,7 +53,7 @@ public class ContractReader  {
 	 * @return
 	 * @throws TreatyException
 	 */
-	public Contract read (InputStream in) throws TreatyException {
+	public SimpleContract read (InputStream in) throws TreatyException {
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		try {
@@ -71,7 +71,7 @@ public class ContractReader  {
 		// xpath.addNamespace(SWRLX);
 		return xpath;
 	} 
-	private Contract read(Document doc) throws TreatyException,JDOMException {
+	private SimpleContract read(Document doc) throws TreatyException,JDOMException {
 		SimpleContract contract = new SimpleContract();
 		
 		// read extension resources
