@@ -50,5 +50,11 @@ public class Disjunction extends ComplexCondition {
 			report.log(this,VerificationResult.FAILURE,"no part of this condition is satisfied");
 		return result;
 	}
-	
+	/**
+	 * Get the name of the logical connective used.
+	 * @return
+	 */
+	public String getConnective() {
+		return "or";
+	}
 }

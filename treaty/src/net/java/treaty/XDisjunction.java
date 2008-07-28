@@ -53,5 +53,11 @@ public class XDisjunction extends ComplexCondition {
 			report.log(this,VerificationResult.FAILURE,"too many parts of this condition are satisfied");
 		return okcount==1;
 	}
-	
+	/**
+	 * Get the name of the logical connective used.
+	 * @return
+	 */
+	public String getConnective() {
+		return "xor";
+	}
 }

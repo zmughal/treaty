@@ -51,4 +51,12 @@ public class Conjunction extends ComplexCondition {
 			report.log(this,VerificationResult.FAILURE,"some parts of this condition are not satisfied");
 		return result;
 	}
+	/**
+	 * Get the name of the logical connective used.
+	 * @return
+	 */
+	public String getConnective() {
+		return "and";
+	}
+	
 }

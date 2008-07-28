@@ -33,5 +33,10 @@ public abstract class ComplexCondition extends AbstractCondition implements Cond
 	public List<AbstractCondition> getParts() {
 		return parts;
 	}
+	/**
+	 * Get the name of the logical connective used.
+	 * @return
+	 */
+	public abstract String getConnective() ;
 
 }
