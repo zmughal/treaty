@@ -23,9 +23,6 @@ import net.java.treaty.verification.VerificationResult;
  */
 
 public class SimpleContract implements ConditionContext, Visitable, Contract {
-
-	
-	private String contractLocation = null;
 	
 	private java.util.Map<String,Resource> supplierResources =  new java.util.LinkedHashMap<String,Resource>();
 	private java.util.Map<String,Resource> consumerResources =  new java.util.LinkedHashMap<String,Resource>();
@@ -37,9 +34,9 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 	public SimpleContract() {
 		super();
 	}	
-	public SimpleContract(Connector consumer,Connector connector2,String contractLocation) {
+	public SimpleContract(Connector consumer,Connector connector2,URL location) {
 		super();
-		this.contractLocation = contractLocation;
+		this.location = location;
 		assert(consumer.getType()==ConnectorType.CONSUMER);
 		this.consumer = consumer;
 		assert(consumer.getType()==ConnectorType.SUPPLIER);
@@ -165,16 +162,6 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see nz.ac.massey.treaty.IContract#getLocation()
-	 */
-	public String getLocation() {
-		return contractLocation;
-	}
-	public void setLocation(String location) {
-		this.contractLocation = location;
-	}
-	
 	public String toString() {
 		return new StringBuffer()
 			.append("aContract(consumer=")
@@ -223,5 +210,11 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 			}
 		}
 		return true;
+	}
+	public URL getLocation() {
+		return location;
+	}
+	public void setLocation(URL location) {
+		this.location = location;
 	}
 }

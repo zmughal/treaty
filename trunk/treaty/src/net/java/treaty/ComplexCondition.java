@@ -30,7 +30,7 @@ public abstract class ComplexCondition extends AbstractCondition implements Cond
 		this.parts.add(c);
 	}
 
-	List<AbstractCondition> getParts() {
+	public List<AbstractCondition> getParts() {
 		return parts;
 	}
 

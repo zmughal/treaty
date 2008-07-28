@@ -50,8 +50,6 @@ public interface Contract {
 	 */
 	public abstract boolean check(VerificationReport report,ConditionVerifier validator);
 
-	public abstract String getLocation();
-
 	public abstract Connector getConsumer();
 
 	public abstract Connector getSupplier();
