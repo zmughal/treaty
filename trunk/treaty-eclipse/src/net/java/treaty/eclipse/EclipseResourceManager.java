@@ -14,27 +14,24 @@ package net.java.treaty.eclipse;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
-
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.osgi.framework.Bundle;
-
-import net.java.treaty.Component;
-import net.java.treaty.ResourceLoader;
+import net.java.treaty.ResourceManager;
 import net.java.treaty.ResourceLoaderException;
-import net.java.treaty.verification.ContractReaderException;
 /**
  * Utility to extract resources.
  * @author Jens Dietrich
  */
 
-public class EclipseResourceLoader implements ResourceLoader {
+public class EclipseResourceManager implements ResourceManager {
 
 	@Override
-	public Object load(URI type, String name, net.java.treaty.Connector connector)	throws ResourceLoaderException {
+	public String resolve(URI type, String ref,net.java.treaty.Connector connector)	throws ResourceLoaderException {
 		if (! (connector instanceof EclipseExtension)) {
 			throw new ResourceLoaderException("This resource loader can only bind resources from EclipseExtensions");
 		}
@@ -59,15 +56,22 @@ public class EclipseResourceLoader implements ResourceLoader {
 		query.append("/plugin/extension[@point=\"");
 		query.append(extension.getExtensionPoint().getId());
 		query.append("\"]/");
-		query.append(name);
+		query.append(ref);
 		XPath xpath;
 		try {
-			xpath = XPath.newInstance(name);
+			xpath = XPath.newInstance(query.toString());
 			List<Element> nodes = xpath.selectNodes(doc);
 			if (nodes.size()==0) {
-				throw new ResourceLoaderException("No resource references found in plugin.xml for " + name + " - check xpath");
+				throw new ResourceLoaderException("No resource references found in plugin.xml for " + ref + " - check xpath");
 			}
-			return nodes.get(0).getText().trim();
+			Object node = nodes.get(0);
+			if (node instanceof Element) {
+				return ((Element)node).getValue();
+			}
+			else if (node instanceof Attribute) {
+				return ((Attribute)node).getValue();
+			}
+			else throw new ResourceLoaderException("Exception reading resource name from plugin.xml - check xpath reference");
 		} catch (JDOMException e) {
 			throw new ResourceLoaderException("Exception reading resource name from plugin.xml - check xpath reference",e);
 		}
