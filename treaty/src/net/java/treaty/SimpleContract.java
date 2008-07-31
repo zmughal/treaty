@@ -22,7 +22,7 @@ import net.java.treaty.verification.VerificationResult;
  * @author Jens Dietrich
  */
 
-public class SimpleContract implements ConditionContext, Visitable, Contract {
+public class SimpleContract extends PropertySupport implements ConditionContext, Visitable, Contract {
 	
 	private java.util.Map<String,Resource> supplierResources =  new java.util.LinkedHashMap<String,Resource>();
 	private java.util.Map<String,Resource> consumerResources =  new java.util.LinkedHashMap<String,Resource>();
@@ -118,7 +118,7 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.IContract#bindSupplier(nz.ac.massey.treaty.Connector, nz.ac.massey.treaty.verification.ResourceLoader)
 	 */
-	public Contract bindSupplier(Connector connector,ResourceLoader loader) throws TreatyException {
+	public Contract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException {
 		SimpleContract contract = new SimpleContract();
 		contract.setLocation(this.getLocation());
 		contract.consumerResources.putAll(this.consumerResources);
@@ -134,7 +134,7 @@ public class SimpleContract implements ConditionContext, Visitable, Contract {
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.IContract#bindConsumer(nz.ac.massey.treaty.Connector, nz.ac.massey.treaty.verification.ResourceLoader)
 	 */
-	public Contract bindConsumer(Connector connector,ResourceLoader loader) throws TreatyException {
+	public Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException {
 		SimpleContract contract = new SimpleContract();
 		contract.setLocation(this.getLocation());
 		contract.supplierResources.putAll(this.supplierResources);

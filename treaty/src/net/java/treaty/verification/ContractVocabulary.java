@@ -12,7 +12,6 @@ package net.java.treaty.verification;
 
 import java.net.URI;
 import java.util.Collection;
-
 import net.java.treaty.ResourceLoader;
 
 /**

@@ -15,7 +15,7 @@ package net.java.treaty;
  * @author Jens Dietrich
  */
 
-public interface Connector<C extends Component> {
+public interface Connector {
 	/**
 	 * Indicates the connector type.
 	 * @return
@@ -31,6 +31,6 @@ public interface Connector<C extends Component> {
 	 * Get the component that owns this connector.
 	 * @return
 	 */
-	C getOwner();
+	Component getOwner();
 
 }

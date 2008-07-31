@@ -22,7 +22,7 @@ import net.java.treaty.Disjunction;
 import net.java.treaty.InvalidContractException;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.Resource;
-import net.java.treaty.ResourceLoader;
+import net.java.treaty.ResourceManager;
 import net.java.treaty.SimpleContract;
 import net.java.treaty.TreatyException;
 import net.java.treaty.XDisjunction;
@@ -39,9 +39,9 @@ import org.jdom.xpath.XPath;
 
 public class ContractReader  {
 	
-	private ResourceLoader loader = null;
+	private ResourceManager loader = null;
 	
-	public ContractReader(ResourceLoader loader) {
+	public ContractReader(ResourceManager loader) {
 		super();
 		this.loader = loader;
 	} 
@@ -177,7 +177,7 @@ public class ContractReader  {
 		}
 		return resources;
 	}
-	public ResourceLoader getLoader() {
+	public ResourceManager getLoader() {
 		return loader;
 	} 
 	

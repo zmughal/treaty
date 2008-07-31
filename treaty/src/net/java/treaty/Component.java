@@ -10,6 +10,7 @@
 
 package net.java.treaty;
 
+import java.net.URL;
 import java.util.List;
 
 
@@ -22,5 +23,6 @@ import java.util.List;
 public interface Component {
 	String getId();
 	List<Connector> getConnectors();
+	URL getResource(String adr);
 	
 }
