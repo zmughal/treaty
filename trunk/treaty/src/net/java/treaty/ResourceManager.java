@@ -16,22 +16,22 @@ import net.java.treaty.verification.VerificationException;
 
 
 /**
- * Turns raw values into objects that represent the respective types.
+ * Utility to resolve resource references suing component meta-data meta data.
  * @author Jens Dietrich
  */
 
-public interface ResourceLoader {
+public interface ResourceManager {
 	/**
-	 * Load a resource. For instance, if the resource is a Java class and the name is com.example.MyClass,
-	 * this method will load the class with the components class loader and return the java.lang.Class instance.
-	 * After this method has been called successfully, the resource value will be !=null.
+	 * Resolve a resource reference and return the resource name.
+	 * This is usually done by looking up meta-data / component configuration files.
+	 * After this method has been called successfully, the resource name will be !=null.
 	 * @param type a type
-	 * @param name the value of the object as string, e.g. a class name
-	 * @param connector the connector, e.g. it may provide the classloader
-	 * @return the object created for the name, e.g. an instance of java.lang.Class
+	 * @param ref a reference to the object, e.g. an xpath expression or a property name in a meta data file
+	 * @param connector the connector
+	 * @return the resource name, e.g. a class name
 	 * @throws VerificationException
 	 */
-	public Object load(URI type,String name,Connector connector) throws ResourceLoaderException;
+	public String resolve(URI type,String ref,Connector connector) throws ResourceLoaderException;
 
 
 	

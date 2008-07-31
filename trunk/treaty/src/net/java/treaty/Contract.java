@@ -10,6 +10,8 @@
 
 package net.java.treaty;
 
+import java.util.Iterator;
+
 import net.java.treaty.verification.ConditionVerifier;
 import net.java.treaty.verification.VerificationReport;
 
@@ -19,6 +21,11 @@ import net.java.treaty.verification.VerificationReport;
  */
 
 public interface Contract {
+	
+	public abstract Connector getConsumer();
+
+	public abstract Connector getSupplier();
+	
 
 	public abstract void accept(ContractVisitor visitor);
 
@@ -30,7 +37,7 @@ public interface Contract {
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	public abstract Contract bindSupplier(Connector connector,ResourceLoader loader) throws TreatyException;
+	public abstract Contract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException;
 
 	/**
 	 * Instantiate this contract with a consumer.
@@ -40,18 +47,40 @@ public interface Contract {
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	public abstract Contract bindConsumer(Connector connector,ResourceLoader loader) throws TreatyException;
+	public abstract Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException;
 
 	/**
-	 * Check this contract using a validator. Add the results to the report.
+	 * Check this contract using a verifier. Add the results to the report.
 	 * @param report
-	 * @param validator
+	 * @param verifier
 	 * @return
 	 */
-	public abstract boolean check(VerificationReport report,ConditionVerifier validator);
+	public abstract boolean check(VerificationReport report,ConditionVerifier verifier);
 
-	public abstract Connector getConsumer();
+	/**
+	 * Add a new property.
+	 * @param key
+	 * @param value
+	 */
+	public void addProperty(String key, Object value) ;
 
-	public abstract Connector getSupplier();
+	/**
+	 * Removes a property.
+	 * @param key
+	 * @return the value of the removed annotation or null if there is no such property
+	 */
+	public Object removeProperty(String key) ;
+	
+	/**
+	 * Get the annotation for a given key.
+	 * @param key
+	 * @return
+	 */
+	public Object getAnnotation(String key) ;
+	/**
+	 * Get the property keys.
+	 * @return an iterator
+	 */
+	public Iterator<String> getPropertyNames();	
 
 }

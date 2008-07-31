@@ -19,7 +19,7 @@ import net.java.treaty.verification.VerificationReport;
  * Abstract superclass for simple and complex conditions.
  * @author Jens Dietrich
  */
-public abstract class AbstractCondition implements Visitable {
+public abstract class AbstractCondition extends PropertySupport implements Visitable {
 
 	public AbstractCondition() {
 		super();

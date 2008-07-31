@@ -18,7 +18,7 @@ import net.java.treaty.verification.VerificationReport;
  * @author Jens Dietrich
  */
 
-public class AggregatedContract implements Contract{
+public class AggregatedContract extends PropertySupport implements Contract{
 	
 	private Contract[] parts = null;
 	
@@ -50,7 +50,7 @@ public class AggregatedContract implements Contract{
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	public AggregatedContract bindSupplier(Connector connector,ResourceLoader loader) throws TreatyException {
+	public AggregatedContract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException {
 		Contract[] boundParts = new Contract[parts.length];
 		for (int i=0;i<parts.length;i++) {
 			boundParts[i] = parts[i].bindSupplier(connector,loader);
@@ -66,7 +66,7 @@ public class AggregatedContract implements Contract{
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	public AggregatedContract bindConsumer(Connector connector,ResourceLoader loader) throws TreatyException{
+	public AggregatedContract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException{
 		Contract[] boundParts = new Contract[parts.length];
 		for (int i=0;i<parts.length;i++) {
 			boundParts[i] = parts[i].bindConsumer(connector,loader);
