@@ -162,17 +162,6 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 		return result;
 	}
 
-	public String toString() {
-		return new StringBuffer()
-			.append("aContract(consumer=")
-			.append(this.getConsumer().getId())
-			.append(",supplier=")
-			.append(this.getSupplier())
-			.append(",instantiated=")
-			.append(this.isInstantiated()) 
-			.append(')')
-			.toString();
-	}
 
 
 	/* (non-Javadoc)
