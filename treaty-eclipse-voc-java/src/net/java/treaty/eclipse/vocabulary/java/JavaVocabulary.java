@@ -18,7 +18,6 @@ import java.util.Collection;
 import org.osgi.framework.Bundle;
 import net.java.treaty.*;
 import net.java.treaty.eclipse.EclipsePlugin;
-import net.java.treaty.verification.*;
 
 
 /**
