@@ -22,7 +22,7 @@ import net.java.treaty.eclipse.example.clock.DateFormatter;
  */
 public class ShortDateFormatter implements DateFormatter {
 
-	static DateFormat DF = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT);
+	static DateFormat DF = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.MEDIUM);
 	@Override
 	public String format(Date date) {
 		return DF.format(date);
