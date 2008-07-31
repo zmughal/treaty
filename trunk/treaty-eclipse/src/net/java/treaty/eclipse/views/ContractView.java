@@ -29,7 +29,6 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.core.runtime.IAdaptable;
-import org.osgi.framework.Bundle;
 
 
 /**
@@ -56,6 +55,7 @@ public class ContractView extends ViewPart {
 	private Image ICON_CLASS_VAR = this.getImageDescriptor("icons/class_var.gif").createImage();
 	private Image ICON_INTERFACE = this.getImageDescriptor("icons/interface.gif").createImage();
 	private Image ICON_INTERFACE_VAR = this.getImageDescriptor("icons/interface_var.gif").createImage();
+	private Image ICON_JUNIT = this.getImageDescriptor("icons/junit.gif").createImage();
 
 	class KeyValueNode {
 		String key,value = null;
@@ -288,8 +288,10 @@ public class ContractView extends ViewPart {
 		}
 	}
 	class ViewLabelProvider extends LabelProvider {
-		
+		// FIXME here we have hard coded dependencies to vocabulary extensions
+		// the icons should be supplied by the respective plugins
 		private static final String TYPE_JAVA_CLASS = "http://www.massey.ac.nz/se/plugincontracts/java/InstantiableClass";
+		private static final String TYPE_JUNIT= "http://www.massey.ac.nz/se/plugincontracts/junit/TestCase";
 		private static final String TYPE_JAVA_INTERFACE = "http://www.massey.ac.nz/se/plugincontracts/java/AbstractType";
 		
 		private String toString(Condition c) {
@@ -388,6 +390,9 @@ public class ContractView extends ViewPart {
 				}
 				else if (TYPE_JAVA_INTERFACE.equals(type)) {
 					return var?ICON_INTERFACE_VAR:ICON_INTERFACE;
+				}
+				else if (TYPE_JUNIT.equals(type) && !var) {
+					return ICON_JUNIT;
 				}
 				else {
 					return var?ICON_VARIABLE:ICON_CONSTANT;
@@ -539,6 +544,7 @@ public class ContractView extends ViewPart {
 		ICON_CLASS_VAR.dispose();
 		ICON_INTERFACE.dispose();
 		ICON_INTERFACE_VAR.dispose();
+		ICON_JUNIT.dispose();
 		super.dispose();
 	}
 }
