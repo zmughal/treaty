@@ -78,9 +78,9 @@ public class JUnitVocabulary implements ContractVocabulary {
 		String rel = condition.getRelationship().toString();
 		Resource res1 = condition.getResource1();
 		Resource res2 = condition.getResource2();
-		assert res1.isResolved();
+		assert res1.isInstantiated();
 		assert res1.isLoaded();
-		assert res2.isResolved();
+		assert res2.isInstantiated();
 		assert res2.isLoaded();
 		if (VERIFIES.equals(rel)) {		
 			Class test = (Class)res2.getValue();
