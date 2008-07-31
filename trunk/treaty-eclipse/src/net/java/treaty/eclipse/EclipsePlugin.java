@@ -8,6 +8,7 @@ import org.osgi.framework.Bundle;
 
 import net.java.treaty.Component;
 import net.java.treaty.Connector;
+import net.java.treaty.Contract;
 
 /*
  * Copyright (C) 2008 Jens Dietrich
@@ -82,6 +83,21 @@ public class EclipsePlugin implements Component {
 		connectors.addAll(this.getExtensions());
 		return connectors;
 	}
-	
+	/**
+	 * Get a list of instantiated contracts (instantiated by plugins providing extensions).
+	 * @return a list
+	 */
+	public List<Contract> getInstantiatedContracts() {
+		List<Contract> contracts = new ArrayList<Contract>();
+		for (EclipseExtensionPoint xp:this.getExtensionPoints()) {
+			for (EclipseExtension x:xp.getExtensions()) {
+				Contract c = x.getContract();
+				if (c!=null && c.isInstantiated()) {
+					contracts.add(c);
+				}
+			}
+		}
+		return contracts;
+	}
 
 }

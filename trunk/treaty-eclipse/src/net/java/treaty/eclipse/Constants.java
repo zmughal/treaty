@@ -8,26 +8,14 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-
-package nz.ac.massey.treaty;
-
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
+package net.java.treaty.eclipse;
 /**
- * Defines a static log4j logger used to log contract management and validation.
+ * Constant definitions.
  * @author Jens Dietrich
- * @version 0.1 <27/04/2008>
- * @since 0.1
  */
 
-
-public class ContractLogger {
-	public static final Logger LOGGER = Logger.getLogger(Plugin.class);
-	static {
-		LOGGER.addAppender(new ConsoleAppender(new PatternLayout("%r [%t] %-5p %c %x - %m%n"),"System.out"));
-		LOGGER.setLevel(Level.DEBUG);
-	}
+public interface Constants {
+	// keys used to annotate contracts and conditions
+	public static final String VERIFICATION_RESULT = "net.java.treaty.eclipse.verification.result";
+	public static final String VERIFICATION_EXCEPTION = "net.java.treaty.eclipse.verification.result";
 }

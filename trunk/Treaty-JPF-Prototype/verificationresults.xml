@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="verificationresults.xsl"?>
 <verificationresults>
 <contract 
- url="plugins/nz.ac.massey.treaty/verification.contract" extensionPoint="verification" pluginOfExtension="nz.ac.massey.treaty.xml" plugin="nz.ac.massey.treaty">
+ url="plugins/nz.ac.massey.treaty/vocabulary.contract" extensionPoint="vocabulary" pluginOfExtension="nz.ac.massey.treaty.xml" plugin="nz.ac.massey.treaty">
 <verificationresult result="success" remarks=""/><condition
  relationship="http://www.massey.ac.nz/se/plugincontracts/java/implements">
 <verificationresult result="success" remarks=""/><resource 
@@ -49,7 +49,7 @@
 </group>
 </contract>
 <contract 
- url="plugins/nz.ac.massey.treaty/verification.contract" extensionPoint="verification" pluginOfExtension="nz.ac.massey.treaty.junit" plugin="nz.ac.massey.treaty">
+ url="plugins/nz.ac.massey.treaty/vocabulary.contract" extensionPoint="vocabulary" pluginOfExtension="nz.ac.massey.treaty.junit" plugin="nz.ac.massey.treaty">
 <verificationresult result="success" remarks=""/><condition
  relationship="http://www.massey.ac.nz/se/plugincontracts/java/implements">
 <verificationresult result="success" remarks=""/><resource 
@@ -96,7 +96,7 @@
 </group>
 </contract>
 <contract 
- url="plugins/nz.ac.massey.treaty/verification.contract" extensionPoint="verification" pluginOfExtension="nz.ac.massey.treaty.java" plugin="nz.ac.massey.treaty">
+ url="plugins/nz.ac.massey.treaty/vocabulary.contract" extensionPoint="vocabulary" pluginOfExtension="nz.ac.massey.treaty.java" plugin="nz.ac.massey.treaty">
 <verificationresult result="success" remarks=""/><condition
  relationship="http://www.massey.ac.nz/se/plugincontracts/java/implements">
 <verificationresult result="success" remarks=""/><resource 
@@ -107,11 +107,11 @@
 </contract>
 <contract 
  url="plugins/nz.ac.massey.treaty.example/dateformatter.contract" extensionPoint="dateformatter" pluginOfExtension="nz.ac.massey.treaty.example.fancy" plugin="nz.ac.massey.treaty.example">
-<verificationresult result="success" remarks=""/><group
+<verificationresult result="failure" remarks="some parts of this condition are not satisfied"/><group
  connective="xor">
-<verificationresult result="success" remarks=""/><condition
+<verificationresult result="failure" remarks="no part of this condition is satisfied"/><condition
  relationship="http://www.massey.ac.nz/se/plugincontracts/xml/instantiates">
-<verificationresult result="success" remarks=""/><resource 
+<verificationresult result="failure" remarks="Validation of the XML document failed"/><resource 
  id="R4" isResolved="true" ref="formatdef" name="dateformat.xml" value="plugins/nz.ac.massey.treaty.example.fancy/dateformat.xml" type="http://www.massey.ac.nz/se/plugincontracts/xml/XMLInstance" owner="extension"/>
 <resource 
  id="R3" isResolved="true" name="dateformat.xsd" value="plugins/nz.ac.massey.treaty.example/dateformat.xsd" type="http://www.massey.ac.nz/se/plugincontracts/xml/XMLSchema" owner="extension point"/>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 <A href="http://www-ist.massey.ac.nz/JBDietrich" target="_top">Jens Dietrich</a>
+ * Copyright (C) 2008 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -17,7 +17,7 @@ import java.util.Collection;
  * Defines a vocabulary that can be used in contracts.
  * Describes the syntax (the types and their relationships) and the semantics (i.e., given two resources,
  * are they linked or not) of the vocabulary contributed. 
- * @author <A href="http://www-ist.massey.ac.nz/JBDietrich" target="_top">Jens Dietrich</A>
+ * @author Jens Dietrich
  * @version 0.1 <27/04/2008>
  * @since 0.1
  */
