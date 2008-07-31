@@ -38,5 +38,15 @@ public abstract class ComplexCondition extends AbstractCondition implements Cond
 	 * @return
 	 */
 	public abstract String getConnective() ;
+	
+	public boolean isInstantiated() {
+		for (AbstractCondition part:parts) {
+			if (!part.isInstantiated()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 
 }

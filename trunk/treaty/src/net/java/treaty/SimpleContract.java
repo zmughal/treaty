@@ -151,10 +151,10 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.IContract#check(nz.ac.massey.treaty.verification.VerificationReport, nz.ac.massey.treaty.verification.ConditionVerifier)
 	 */
-	public boolean check(VerificationReport report,ConditionVerifier validator) {
+	public boolean check(VerificationReport report,ConditionVerifier verifier) {
 		boolean result = true;
 		for (AbstractCondition p:this.constraints) 
-			result = result && p.check(report,validator); 
+			result = result && p.check(report,verifier); 
 		if (result)
 			report.log(this,VerificationResult.SUCCESS);
 		else 
@@ -200,12 +200,12 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	 */
 	public boolean isInstantiated() {
 		for (Resource r:this.getSupplierResources()) {
-			if (!r.isResolved()) {
+			if (!r.isInstantiated()) {
 				return false;
 			}
 		}
 		for (Resource r:this.getConsumerResources()) {
-			if (!r.isResolved()) {
+			if (!r.isInstantiated()) {
 				return false;
 			}
 		}

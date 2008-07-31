@@ -66,7 +66,7 @@ public class PropertyCondition extends AbstractCondition {
 		c.setProperty(this.getProperty());
 		c.setValue(this.getValue());
 		
-		if (!this.getResource().isResolved())
+		if (!this.getResource().isInstantiated())
 			c.setResource(resources.get(this.getResource().getId()));
 		else
 			c.setResource(this.getResource());
@@ -77,5 +77,7 @@ public class PropertyCondition extends AbstractCondition {
 		report.log(this,VerificationResult.UNKNOWN,"the validation of property conditions is not yet supported");
 		return true;
 	}
-
+	public boolean isInstantiated() {
+		return this.getResource().isInstantiated();
+	}
 }
