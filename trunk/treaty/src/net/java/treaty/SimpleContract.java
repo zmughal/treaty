@@ -12,7 +12,7 @@ package net.java.treaty;
 
 import java.net.URL;
 
-import net.java.treaty.verification.ConditionVerifier;
+import net.java.treaty.verification.Verifier;
 import net.java.treaty.verification.VerificationReport;
 import net.java.treaty.verification.VerificationResult;
 
@@ -151,7 +151,7 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.IContract#check(nz.ac.massey.treaty.verification.VerificationReport, nz.ac.massey.treaty.verification.ConditionVerifier)
 	 */
-	public boolean check(VerificationReport report,ConditionVerifier verifier) {
+	public boolean check(VerificationReport report,Verifier verifier) {
 		boolean result = true;
 		for (AbstractCondition p:this.constraints) 
 			result = result && p.check(report,verifier); 

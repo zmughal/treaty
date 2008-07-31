@@ -12,7 +12,7 @@ package net.java.treaty;
 
 import java.util.Map;
 
-import net.java.treaty.verification.ConditionVerifier;
+import net.java.treaty.verification.Verifier;
 import net.java.treaty.verification.VerificationReport;
 import net.java.treaty.verification.VerificationResult;
 
@@ -40,7 +40,7 @@ public class Disjunction extends ComplexCondition {
 		}
 		visitor.endVisit(this);		
 	}
-	public boolean check(VerificationReport report,ConditionVerifier validator) {
+	public boolean check(VerificationReport report,Verifier validator) {
 		boolean result = false;
 		for (AbstractCondition p:parts) 
 			result = result || p.check(report,validator);

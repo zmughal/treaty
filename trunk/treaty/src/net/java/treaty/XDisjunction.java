@@ -12,7 +12,7 @@ package net.java.treaty;
 
 import java.util.Map;
 
-import net.java.treaty.verification.ConditionVerifier;
+import net.java.treaty.verification.Verifier;
 import net.java.treaty.verification.VerificationReport;
 import net.java.treaty.verification.VerificationResult;
 
@@ -40,7 +40,7 @@ public class XDisjunction extends ComplexCondition {
 		}
 		visitor.endVisit(this);		
 	}
-	public boolean check(VerificationReport report,ConditionVerifier validator) {
+	public boolean check(VerificationReport report,Verifier validator) {
 		int okcount = 0;
 		for (AbstractCondition p:parts) {
 			okcount = okcount +(p.check(report,validator)?1:0);

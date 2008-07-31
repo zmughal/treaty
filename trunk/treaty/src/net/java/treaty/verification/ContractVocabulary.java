@@ -21,9 +21,10 @@ import net.java.treaty.ResourceLoader;
  * @author Jens Dietrich
  */
 
-public interface ContractVocabulary extends ConditionVerifier, ResourceLoader{
+public interface ContractVocabulary extends Verifier, ResourceLoader{
 	/**
 	 * Get a collection of all contributed predicates. 
+	 * The check method must be able to check all conditions with predicates from the collection returned. 
 	 * @return a collection
 	 */
 	public Collection<URI> getContributedPredicates();

@@ -13,7 +13,7 @@ package net.java.treaty;
 import java.net.URI;
 import java.util.Map;
 
-import net.java.treaty.verification.ConditionVerifier;
+import net.java.treaty.verification.Verifier;
 import net.java.treaty.verification.VerificationReport;
 import net.java.treaty.verification.VerificationResult;
 
@@ -73,7 +73,7 @@ public class PropertyCondition extends AbstractCondition {
 		
 		return c;
 	}
-	public boolean check(VerificationReport report,ConditionVerifier validator) {
+	public boolean check(VerificationReport report,Verifier validator) {
 		report.log(this,VerificationResult.UNKNOWN,"the validation of property conditions is not yet supported");
 		return true;
 	}

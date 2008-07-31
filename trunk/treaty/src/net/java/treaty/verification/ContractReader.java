@@ -15,7 +15,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import net.java.treaty.Condition;
+import net.java.treaty.RelationshipCondition;
 import net.java.treaty.ConditionContext;
 import net.java.treaty.Conjunction;
 import net.java.treaty.Disjunction;
@@ -118,23 +118,23 @@ public class ContractReader  {
 				context.addCondition(condition);
 			}
 			else if (e.getName().equals("condition")){
-				Condition condition = new Condition();
+				RelationshipCondition relationshipCondition = new RelationshipCondition();
 				
 				String resourceRef1 = e.getAttributeValue("resource1");
 				Resource resource1 = contract.getResource(resourceRef1);
 				if (resource1==null)
-					throw new InvalidContractException("Invalid resource reference at position 1 in condition: " + condition);
-				condition.setResource1(resource1);
+					throw new InvalidContractException("Invalid resource reference at position 1 in condition: " + relationshipCondition);
+				relationshipCondition.setResource1(resource1);
 				
 				String resourceRef2 = e.getAttributeValue("resource2");				
 				Resource resource2 = contract.getResource(resourceRef2);
 				if (resource2==null)
-					throw new InvalidContractException("Invalid resource reference at position 2 in condition: " + condition);
-				condition.setResource2(resource2);
+					throw new InvalidContractException("Invalid resource reference at position 2 in condition: " + relationshipCondition);
+				relationshipCondition.setResource2(resource2);
 				String relationship = e.getAttributeValue("relationship");
-				condition.setRelationship(new URI(relationship));
+				relationshipCondition.setRelationship(new URI(relationship));
 				
-				context.addCondition(condition);
+				context.addCondition(relationshipCondition);
 			}
 			else if (e.getName().equals("and")) {
 				Conjunction conjunction = new Conjunction();

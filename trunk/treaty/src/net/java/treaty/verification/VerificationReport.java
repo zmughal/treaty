@@ -10,8 +10,6 @@
 
 package net.java.treaty.verification;
 
-import java.util.*;
-
 import net.java.treaty.Contract;
 
 /**
@@ -20,104 +18,20 @@ import net.java.treaty.Contract;
  * @author Jens Dietrich
  */
 
-public class VerificationReport {
+public interface VerificationReport {
 
-	private String extensionId = null;
-	private String extensionPointId = null;
-	private Contract contract = null;
-	public class LogEntry {
-		private String extensionId = null;
-		private String extensionPointId = null;
-		private Contract contract = null;
-		private Object context = null;
-		private VerificationResult result = null;
-		private String remarks = null;
-
-		public Contract getContract() {
-			return contract;
-		}
-		public String getRemarks() {
-			return remarks;
-		}
-		public VerificationResult getResult() {
-			return result;
-		}
-		public String getExtensionId() {
-			return extensionId;
-		}
-		public String getExtensionPointId() {
-			return extensionPointId;
-		}
-		public Object getContext() {
-			return context;
-		}
-
-	}
-	private List<LogEntry> entries = new ArrayList<LogEntry>();
 	
-	public VerificationReport() {
-		super();
-	}
-	
-	public void log(Object context,VerificationResult result,String... remarks){
-		LogEntry entry = new LogEntry();
-		entry.contract = contract;
-		entry.extensionId = extensionId;
-		entry.extensionPointId = extensionPointId;
-		entry.context = context;
-		entry.result = result;
-		if (remarks.length==0)
-			entry.remarks = "";
-		else if (remarks.length==1)
-			entry.remarks=remarks[0];
-		else {
-			StringBuffer s = new StringBuffer();
-			for (String r:remarks)
-				s.append(r);
-			entry.remarks = s.toString();
-		}
-		
-		this.entries.add(entry);
-		
-		// debug
-		/**
-		System.out.print(result);
-		System.out.print(" ");
-		System.out.print(context);
-		for (String r:remarks)
-			System.out.print(r);
-		System.out.println();
-		*/
-	}
+	public void log(Object context,VerificationResult result,String... remarks);
 
-	public Contract getContract() {
-		return contract;
-	}
+	public Contract getContract();
 
-	public void setContract(Contract contract) {
-		this.contract = contract;
-	}
-
-	public List<LogEntry> getEntries() {
-		return entries;
-	}
+	public void setContract(Contract contract);
 
 
-	public String getExtensionId() {
-		return extensionId;
-	}
 
-	public void setExtensionId(String extensionId) {
-		this.extensionId = extensionId;
-	}
 
-	public String getExtensionPointId() {
-		return extensionPointId;
-	}
 
-	public void setExtensionPointId(String extensionPointId) {
-		this.extensionPointId = extensionPointId;
-	}
+
 
 
 }
