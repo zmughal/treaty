@@ -12,7 +12,6 @@ package net.java.treaty;
 
 import java.net.URI;
 
-import net.java.treaty.verification.VerificationException;
 
 
 /**

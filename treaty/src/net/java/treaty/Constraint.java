@@ -12,8 +12,6 @@ package net.java.treaty;
 
 import java.util.Iterator;
 
-import net.java.treaty.verification.Verifier;
-import net.java.treaty.verification.VerificationReport;
 
 /**
  * Interface for contracts and conditions.  

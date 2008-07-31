@@ -8,14 +8,30 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.verification;
+package net.java.treaty;
+
 
 /**
- * Possible verification outcomes.
+ * Thrown if importing a contract from XML fails.
  * @author Jens Dietrich
  */
 
-public enum VerificationResult {
-	FAILURE,SUCCESS,UNKNOWN
+public class ContractReaderException extends TreatyException {
+
+	public ContractReaderException() {
+		super();
+	}
+
+	public ContractReaderException(String arg0) {
+		super(arg0);
+	}
+
+	public ContractReaderException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
+	}
+
+	public ContractReaderException(Throwable arg0) {
+		super(arg0);
+	}
 
 }

@@ -8,24 +8,14 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.verification;
+package net.java.treaty;
 
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import net.java.treaty.RelationshipCondition;
-import net.java.treaty.ConditionContext;
-import net.java.treaty.Conjunction;
-import net.java.treaty.Disjunction;
-import net.java.treaty.InvalidContractException;
-import net.java.treaty.PropertyCondition;
-import net.java.treaty.Resource;
-import net.java.treaty.ResourceManager;
-import net.java.treaty.SimpleContract;
-import net.java.treaty.TreatyException;
-import net.java.treaty.XDisjunction;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
