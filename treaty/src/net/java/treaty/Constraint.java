@@ -12,7 +12,7 @@ package net.java.treaty;
 
 import java.util.Iterator;
 
-import net.java.treaty.verification.ConditionVerifier;
+import net.java.treaty.verification.Verifier;
 import net.java.treaty.verification.VerificationReport;
 
 /**
@@ -55,7 +55,7 @@ public interface Constraint extends Visitable{
 	 * @param verifier the verifier that can be used to check atomic conditions
 	 * @return whether the check succeeded
 	 */
-	public abstract boolean check(VerificationReport report,ConditionVerifier verifier);
+	public abstract boolean check(VerificationReport report,Verifier verifier);
 	/**
 	 * Indicates whether all resources have been instantiated.
 	 * @return a boolean

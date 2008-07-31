@@ -28,7 +28,7 @@ public interface ContractVisitor {
 	public boolean visit(Conjunction condition);
 	public boolean visit(Disjunction condition);
 	public boolean visit(XDisjunction condition);
-	public boolean visit(Condition condition);
+	public boolean visit(RelationshipCondition relationshipCondition);
 	public boolean visit(PropertyCondition condition);
 	
 	public void endVisit(Contract contract);
@@ -38,7 +38,7 @@ public interface ContractVisitor {
 	public void endVisit(Conjunction condition);
 	public void endVisit(Disjunction condition);
 	public void endVisit(XDisjunction condition);
-	public void endVisit(Condition condition);
+	public void endVisit(RelationshipCondition relationshipCondition);
 	public void endVisit(PropertyCondition condition);
 	public void endVisitConditions(Collection<AbstractCondition> conditions);
 }

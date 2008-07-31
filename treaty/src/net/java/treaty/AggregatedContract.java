@@ -10,7 +10,7 @@
 
 package net.java.treaty;
 
-import net.java.treaty.verification.ConditionVerifier;
+import net.java.treaty.verification.Verifier;
 import net.java.treaty.verification.VerificationReport;
 
 /**
@@ -80,7 +80,7 @@ public class AggregatedContract extends PropertySupport implements Contract{
 	 * @param verifier
 	 * @return
 	 */
-	public boolean check(VerificationReport report,ConditionVerifier verifier) {
+	public boolean check(VerificationReport report,Verifier verifier) {
 		boolean result = true;
 		for (Contract part:parts) {
 			result = result&&part.check(report, verifier);

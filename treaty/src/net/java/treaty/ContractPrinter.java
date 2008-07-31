@@ -107,19 +107,19 @@ public class ContractPrinter implements ContractVisitor {
 		return true;
 	}
 	
-	public boolean visit(Condition condition) {
+	public boolean visit(RelationshipCondition relationshipCondition) {
 		pos();
 		out.println("condition");
 		ios();
 		pos();
 		out.print("condition: ");
-		out.println(condition.getRelationship());
+		out.println(relationshipCondition.getRelationship());
 		pos();
 		out.print("resource1: ");
-		visit(condition.getResource1());
+		visit(relationshipCondition.getResource1());
 		pos();
 		out.print("resource2: ");
-		visit(condition.getResource2());
+		visit(relationshipCondition.getResource2());
 		dos();
 		return true;
 	}
@@ -158,7 +158,7 @@ public class ContractPrinter implements ContractVisitor {
 		dos();
 	}
 	
-	public void endVisit(Condition condition) {
+	public void endVisit(RelationshipCondition relationshipCondition) {
 		
 	}
 

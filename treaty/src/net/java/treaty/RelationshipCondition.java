@@ -13,7 +13,7 @@ package net.java.treaty;
 import java.net.URI;
 import java.util.Map;
 
-import net.java.treaty.verification.ConditionVerifier;
+import net.java.treaty.verification.Verifier;
 import net.java.treaty.verification.VerificationException;
 import net.java.treaty.verification.VerificationReport;
 import net.java.treaty.verification.VerificationResult;
@@ -24,12 +24,12 @@ import net.java.treaty.verification.VerificationResult;
  * @author Jens Dietrich
  */
 
-public class Condition extends AbstractCondition {
+public class RelationshipCondition extends AbstractCondition {
 
 	private Resource resource1 = null;
 	private Resource resource2 = null;
 	private URI relationship = null;	
-	public Condition() {
+	public RelationshipCondition() {
 		super();
 	}
 
@@ -83,7 +83,7 @@ public class Condition extends AbstractCondition {
 	 * @return a condition
 	 */
 	public  AbstractCondition replaceResources(Map<String,Resource> resources) {
-		Condition c = new Condition();
+		RelationshipCondition c = new RelationshipCondition();
 		c.setRelationship(this.getRelationship());
 		
 		if (!this.getResource1().isInstantiated())
@@ -99,7 +99,7 @@ public class Condition extends AbstractCondition {
 		return c;
 	}
 	
-	public boolean check(VerificationReport report,ConditionVerifier verifier) {
+	public boolean check(VerificationReport report,Verifier verifier) {
 		boolean result = true;
 		if (!this.getResource1().isProvided()) {
 			report.log(this,VerificationResult.FAILURE,"Parameter " + this.getResource1().getRef() + " is not provided for the first resource");

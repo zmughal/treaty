@@ -10,7 +10,8 @@
 
 package net.java.treaty.verification;
 
-import net.java.treaty.Condition;
+import net.java.treaty.PropertyCondition;
+import net.java.treaty.RelationshipCondition;
 
 /**
  * Algorithm used to check conditions.
@@ -19,12 +20,17 @@ import net.java.treaty.Condition;
  * @author Jens Dietrich
  */
 
-public interface ConditionVerifier {
+public interface Verifier {
 	/**
-	 * Check a condition. 
-	 * The relationship used in the condition must be in the list contributed predicates. 
-	 * @param condition
-	 * @throws VerificationException
+	 * Check a relationship condition. 
+	 * @param a condition
+	 * @throws VerificationException thrown only if verification fails
 	 */
-	public void check(Condition condition) throws VerificationException; 
+	public void check(RelationshipCondition relationshipCondition) throws VerificationException; 
+	/**
+	 * Check a property condition. 
+	 * @param a condition
+	 * @throws VerificationException thrown only if verification fails
+	 */
+	public void check(PropertyCondition relationshipCondition) throws VerificationException; 
 }
