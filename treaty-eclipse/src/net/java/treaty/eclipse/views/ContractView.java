@@ -11,13 +11,13 @@
 
 package net.java.treaty.eclipse.views;
 
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import net.java.treaty.*;
 import net.java.treaty.eclipse.*;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.part.*;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -29,6 +29,7 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.core.runtime.IAdaptable;
+import org.osgi.framework.Bundle;
 
 
 /**
@@ -37,10 +38,11 @@ import org.eclipse.core.runtime.IAdaptable;
  */
 
 public class ContractView extends ViewPart {
+	
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
-	private Action action1;
-	private Action action2;
+	private Action actRefresh;
+	private Action actVerify;
 	
 	private Image ICON_PLUGIN = this.getImageDescriptor("icons/plugin.gif").createImage();
 	private Image ICON_EXTENSION = this.getImageDescriptor("icons/extension.gif").createImage();
@@ -49,6 +51,11 @@ public class ContractView extends ViewPart {
 	private Image ICON_CONSTRAINT = this.getImageDescriptor("icons/constraint.gif").createImage();
 	private Image ICON_CONSTANT = this.getImageDescriptor("icons/constant.png").createImage();
 	private Image ICON_VARIABLE = this.getImageDescriptor("icons/variable.png").createImage();
+	private Image ICON_LINK = this.getImageDescriptor("icons/link.gif").createImage();
+	private Image ICON_CLASS = this.getImageDescriptor("icons/class.gif").createImage();
+	private Image ICON_CLASS_VAR = this.getImageDescriptor("icons/class_var.gif").createImage();
+	private Image ICON_INTERFACE = this.getImageDescriptor("icons/interface.gif").createImage();
+	private Image ICON_INTERFACE_VAR = this.getImageDescriptor("icons/interface_var.gif").createImage();
 
 	class KeyValueNode {
 		String key,value = null;
@@ -185,10 +192,12 @@ public class ContractView extends ViewPart {
 				addNodes(node,(SimpleContract)c);
 				
 				// extensions
-				node = new TreeParent("verification");
+				node = new TreeParent("contract instances");
 				parent.addChild(node);
 				for (EclipseExtension x:xp.getExtensions()) {
-					addNodes(node,x,(SimpleContract)c);	
+					TreeParent node2 = new TreeParent(x.getOwner());
+					node.addChild(node2);
+					addNodes(node2,x,(SimpleContract)c);	
 				}
 			}		
 			
@@ -199,7 +208,7 @@ public class ContractView extends ViewPart {
 			TreeParent node = new TreeParent(x);
 			parent.addChild(node);
 			try {
-				SimpleContract instantiatedContract = (SimpleContract)c.bindSupplier(x, new EclipseResourceLoader());
+				SimpleContract instantiatedContract = (SimpleContract)c.bindSupplier(x, new EclipseResourceManager());
 				addNodes(node,instantiatedContract);
 			}
 			catch (Exception t) {
@@ -210,7 +219,7 @@ public class ContractView extends ViewPart {
 		}
 		
 		private void addNodes(TreeParent parent,SimpleContract contract) {
-			/**
+			
 			TreeParent rNode = new TreeParent("extension point resources");
 			parent.addChild(rNode);
 			for (Resource r:contract.getConsumerResources()) {
@@ -221,16 +230,17 @@ public class ContractView extends ViewPart {
 			for (Resource r:contract.getSupplierResources()) {
 				addResourceNode(rNode,r);	
 			}
-			*/
-
+			
+			rNode = new TreeParent("constraints");
+			parent.addChild(rNode);
 			for (AbstractCondition c:contract.getConstraints()) {
 				// top level conjunction displayed as set
 				if (c instanceof Conjunction) {
 					for (AbstractCondition c2:((Conjunction)c).getParts()) {
-						addNodes(parent,c2);
+						addNodes(rNode,c2);
 					}
 				}
-				else addNodes(parent,c);
+				else addNodes(rNode,c);
 			}
 		}
 		private void addResourceNode(TreeParent parent,Resource r) {
@@ -271,13 +281,16 @@ public class ContractView extends ViewPart {
 				parent.addChild(new TreeObject(new KeyValueNode("name",r.getName())));
 			}
 			else if (r.getRef()!=null) {
-				parent.addChild(new TreeObject(new KeyValueNode("ref",r.getRef())));
+				parent.addChild(new TreeObject(new KeyValueNode("reference",r.getRef())));
 			}
 			
 			// parent.addChild(new TreeObject(new KeyValueNode("value",""+r.getValue())));
 		}
 	}
 	class ViewLabelProvider extends LabelProvider {
+		
+		private static final String TYPE_JAVA_CLASS = "http://www.massey.ac.nz/se/plugincontracts/java/InstantiableClass";
+		private static final String TYPE_JAVA_INTERFACE = "http://www.massey.ac.nz/se/plugincontracts/java/AbstractType";
 		
 		private String toString(Condition c) {
 			StringBuffer buf = new StringBuffer();
@@ -324,11 +337,12 @@ public class ContractView extends ViewPart {
 					return "a contract";
 				}
 				else {
-					return url.toString();
+					return url.getPath(); // context is defined by parent node
 				}
 			}
 			else if (obj instanceof Resource) {
-				return ((Resource)obj).getId();
+				Resource r = (Resource)obj;
+				return toString(r);
 			}
 			else if (obj instanceof KeyValueNode) {
 				KeyValueNode kvn = (KeyValueNode)obj;
@@ -367,12 +381,27 @@ public class ContractView extends ViewPart {
 				return ICON_CONSTRAINT;
 			}
 			else if (obj instanceof Resource) {
-				return ((Resource)obj).getName()==null?ICON_VARIABLE:ICON_CONSTANT;
+				boolean var = ((Resource)obj).getName()==null;
+				String type = ((Resource)obj).getType().toString();
+				if (TYPE_JAVA_CLASS.equals(type)) {
+					return var?ICON_CLASS_VAR:ICON_CLASS;
+				}
+				else if (TYPE_JAVA_INTERFACE.equals(type)) {
+					return var?ICON_INTERFACE_VAR:ICON_INTERFACE;
+				}
+				else {
+					return var?ICON_VARIABLE:ICON_CONSTANT;
+				}
+			}
+			else if (obj instanceof KeyValueNode && (((KeyValueNode)obj).key.equals("relationship"))) { // relationships
+				return ICON_LINK;
 			}
 
 			else if (n instanceof TreeParent) {
 				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
 			}
+			
+			
 			return null;
 		}
 		
@@ -396,9 +425,24 @@ public class ContractView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
+
+		
+		viewer.getTree().setHeaderVisible(true);
+		
+		TreeColumn col = new TreeColumn(viewer.getTree(), SWT.LEFT);
+	    col.setText("Column 1");
+	    col.setWidth(200);
+	    
+	    TreeColumn col2 = new TreeColumn(viewer.getTree(), SWT.LEFT);
+	    col2.setText("Column 2");
+	    col2.setWidth(200);
+	    
+	    
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setInput(getViewSite());
+		
+	    
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
@@ -424,14 +468,14 @@ public class ContractView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
+		manager.add(actRefresh);
 		manager.add(new Separator());
-		manager.add(action2);
+		manager.add(actVerify);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(actRefresh);
+		manager.add(actVerify);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -439,31 +483,31 @@ public class ContractView extends ViewPart {
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(actRefresh);
+		manager.add(actVerify);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions() {
-		action1 = new Action() {
+		actRefresh = new Action() {
 			public void run() {
 				showMessage("Action 1 executed");
 			}
 		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+		actRefresh.setText("Action 1");
+		actRefresh.setToolTipText("Action 1 tooltip");
+		actRefresh.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		
-		action2 = new Action() {
+		actVerify = new Action() {
 			public void run() {
 				showMessage("Action 2 executed");
 			}
 		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+		actVerify.setText("Action 2");
+		actVerify.setToolTipText("Action 2 tooltip");
+		actVerify.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 	}
 
@@ -490,6 +534,11 @@ public class ContractView extends ViewPart {
 		ICON_EXTENSIONPOINT.dispose();
 		ICON_CONSTANT.dispose();
 		ICON_VARIABLE.dispose();
+		ICON_LINK.dispose();
+		ICON_CLASS.dispose();
+		ICON_CLASS_VAR.dispose();
+		ICON_INTERFACE.dispose();
+		ICON_INTERFACE_VAR.dispose();
 		super.dispose();
 	}
 }

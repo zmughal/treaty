@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension-point id="net.java.treaty.eclipse.vocabulary" name="treaty contract vocabularies" schema="schema/net.java.treaty.eclipse.vocabulary.exsd"/>
 
    <extension
          point="org.eclipse.ui.actionSets">
@@ -9,20 +10,29 @@
             visible="true"
             id="net.java.treaty.eclipse.actionSet">
          <menu
-               label="treaty"
+               label="&amp;Treaty"
                id="treaty">
             <separator
                   name="treaty">
             </separator>
          </menu>
          <action
-               label="Show Contracts"
+               label="Contract Browser"
                icon="icons/sample.gif"
                class="net.java.treaty.eclipse.actions.DisplayContractView"
                tooltip="List plugin contracts found"
                menubarPath="treaty/treaty"
                toolbarPath="treaty"
                id="net.java.treaty.eclipse.actions.DisplayContractView">
+         </action>
+         <action
+               label="Vocabulary Browser"
+               icon="icons/sample.gif"
+               class="net.java.treaty.eclipse.actions.DisplayVocabularyView"
+               tooltip="List installed contract vocabulary"
+               menubarPath="treaty/treaty"
+               toolbarPath="treaty"
+               id="net.java.treaty.eclipse.actions.DisplayVocabularyView">
          </action>
       </actionSet>
    </extension>
@@ -38,6 +48,20 @@
             icon="icons/sample.gif"
             id="net.java.treaty.eclipse.views.ContractView"
             name="Plugin Contracts">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="net.java.treaty.eclipse"
+            name="Treaty">
+      </category>
+      <view
+            category="net.java.treaty.eclipse"
+            class="net.java.treaty.eclipse.views.VocabularyView"
+            icon="icons/sample.gif"
+            id="net.java.treaty.eclipse.views.VocabularyView"
+            name="Contract Vocabulary">
       </view>
    </extension>
    <extension

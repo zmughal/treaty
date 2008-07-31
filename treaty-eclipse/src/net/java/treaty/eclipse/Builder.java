@@ -36,6 +36,12 @@ public class Builder {
 			IContributor c = xpoint.getContributor();
 			Bundle b = org.eclipse.core.runtime.Platform.getBundle(c.getName());
 			plugins.put(b.getSymbolicName(),new EclipsePlugin(b));
+			// also register the plugins with extension points
+			for (IExtension x:xpoint.getExtensions()) {
+				c = x.getContributor();
+				b = org.eclipse.core.runtime.Platform.getBundle(c.getName());
+				plugins.put(b.getSymbolicName(),new EclipsePlugin(b));				
+			}
 		}
 		for (IExtensionPoint xpoint:xpoints) {
 			IContributor c = xpoint.getContributor();

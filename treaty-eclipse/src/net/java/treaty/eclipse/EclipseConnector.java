@@ -56,7 +56,7 @@ public abstract class EclipseConnector implements Connector {
 			URL url = owner.getResource(this.getContractLocation(this));
 			if (url!=null) {
 				System.out.println("contract url found " + url);
-				ContractReader reader = new ContractReader(new EclipseResourceLoader());
+				ContractReader reader = new ContractReader(new EclipseResourceManager());
 				try {
 					SimpleContract contract = reader.read(url.openStream());
 					contract.setLocation(url);

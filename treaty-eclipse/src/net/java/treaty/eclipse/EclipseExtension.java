@@ -31,6 +31,7 @@ public class EclipseExtension extends EclipseConnector {
 		if (owner!=null) {
 			owner.addExtension(this);
 		}
+		this.setOwner(owner);
 	}
 
 	@Override
