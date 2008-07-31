@@ -13,6 +13,7 @@ package net.java.treaty.eclipse;
 
 import org.eclipse.core.runtime.IExtension;
 import net.java.treaty.ConnectorType;
+import net.java.treaty.Contract;
 
 /**
  * Represents eclipse extensions. This is a wrapper class.
@@ -52,7 +53,9 @@ public class EclipseExtension extends EclipseConnector {
 		this.extensionPoint = extensionPoint;
 	}
 
-
+	public void setContract(Contract c) {
+		this.contract = c;
+	}
 	
 
 }

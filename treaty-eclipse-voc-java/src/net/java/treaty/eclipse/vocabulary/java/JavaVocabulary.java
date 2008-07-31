@@ -15,13 +15,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import org.osgi.framework.Bundle;
-
-import net.java.treaty.Condition;
-import net.java.treaty.Connector;
-import net.java.treaty.Resource;
-import net.java.treaty.ResourceLoaderException;
+import net.java.treaty.*;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.verification.*;
 
@@ -101,7 +96,7 @@ public class JavaVocabulary implements  ContractVocabulary {
 		throw new ResourceLoaderException("Cannot load resource " + name + " of type " + type);
 	}
 
-	public void check(Condition condition) throws VerificationException {
+	public void check(RelationshipCondition condition) throws VerificationException {
 		String rel = condition.getRelationship().toString();
 		Resource res1 = condition.getResource1();
 		Resource res2 = condition.getResource2();
@@ -117,6 +112,11 @@ public class JavaVocabulary implements  ContractVocabulary {
 		}
 		else 
 			throw new VerificationException("predicate not supported + " + rel);
+	}
+
+	@Override
+	public void check(PropertyCondition relationshipCondition) throws VerificationException {
+		throw new VerificationException("This vocabulary does not define property conditions");
 	}
 	
 	

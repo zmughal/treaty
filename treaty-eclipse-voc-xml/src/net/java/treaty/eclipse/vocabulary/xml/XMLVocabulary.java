@@ -20,10 +20,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import net.java.treaty.Condition;
-import net.java.treaty.Connector;
-import net.java.treaty.Resource;
-import net.java.treaty.ResourceLoaderException;
+import net.java.treaty.*;
 import net.java.treaty.verification.ContractVocabulary;
 import net.java.treaty.verification.VerificationException;
 
@@ -76,7 +73,7 @@ public class XMLVocabulary implements  ContractVocabulary {
 	}
 
 
-	public void check(Condition condition) throws VerificationException {
+	public void check(RelationshipCondition condition) throws VerificationException {
 		String rel = condition.getRelationship().toString();
 		Resource res1 = condition.getResource1();
 		Resource res2 = condition.getResource2();
@@ -120,6 +117,9 @@ public class XMLVocabulary implements  ContractVocabulary {
 		}
 	}
 	
-	
+	@Override
+	public void check(PropertyCondition relationshipCondition) throws VerificationException {
+		throw new VerificationException("This vocabulary does not define property conditions");
+	}
 
 }

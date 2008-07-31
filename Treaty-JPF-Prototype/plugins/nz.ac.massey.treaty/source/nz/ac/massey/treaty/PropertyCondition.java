@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 <A href="http://www-ist.massey.ac.nz/JBDietrich" target="_top">Jens Dietrich</a>
+ * Copyright (C) 2008 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -19,7 +19,7 @@ import nz.ac.massey.treaty.verification.VerificationResult;
 
 /**
  * A simple value condition. Like a data property in RDF. 
- * @author <A href="http://www-ist.massey.ac.nz/JBDietrich" target="_top">Jens Dietrich</A>
+ * @author Jens Dietrich
  * @version 0.1 <27/04/2008>
  * @since 0.1
  */
