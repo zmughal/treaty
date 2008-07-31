@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: java vocabulary for treaty
+Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.java;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: net.java.treaty.eclipse.vocabulary.java.Activator
+Bundle-Vendor: Jens Dietrich
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.java.treaty.eclipse
+Eclipse-LazyStart: true
