@@ -85,7 +85,7 @@ public class VerificationResultVisitor implements ContractVisitor {
 	public boolean visit(Resource resource) {
 		out.println("<resource ");
 		printAttribute("id",resource.getId());
-		printAttribute("isResolved",resource.isResolved());
+		printAttribute("isResolved",resource.isInstantiated());
 		if (resource.getRef()!=null)
 			printAttribute("ref",resource.getRef());
 		if (resource.getName()!=null)

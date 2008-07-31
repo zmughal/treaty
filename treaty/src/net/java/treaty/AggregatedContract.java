@@ -118,5 +118,14 @@ public class AggregatedContract extends PropertySupport implements Contract{
 	public Contract[] getParts() {
 		return parts;
 	}
+	
+	public boolean isInstantiated() {
+		for (Contract part:parts) {
+			if (!part.isInstantiated()) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 }

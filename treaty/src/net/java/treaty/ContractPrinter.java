@@ -64,8 +64,8 @@ public class ContractPrinter implements ContractVisitor {
 
 	public boolean visit(Resource resource) {
 		pos();
-		out.print(resource.isResolved()?"":"?");
-		out.print(resource.isResolved()?resource.getName():resource.getRef());
+		out.print(resource.isInstantiated()?"":"?");
+		out.print(resource.isInstantiated()?resource.getName():resource.getRef());
 		out.print(":");
 		out.println(resource.getType());
 		return true;

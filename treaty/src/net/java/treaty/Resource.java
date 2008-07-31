@@ -73,7 +73,7 @@ public class Resource implements Visitable {
 		this.type = type;
 	}
 	
-	public boolean isResolved() {
+	public boolean isInstantiated() {
 		return name!=null;
 	}
 	public boolean isLoaded() {
@@ -95,8 +95,8 @@ public class Resource implements Visitable {
 
 	public String toString() {
 		StringBuffer b =  new StringBuffer()
-			.append(this.isResolved()?"":"?")
-			.append(this.isResolved()?this.getName():this.getRef())
+			.append(this.isInstantiated()?"":"?")
+			.append(this.isInstantiated()?this.getName():this.getRef())
 			.append(':')
 			.append(this.getType());
 		return b.toString();

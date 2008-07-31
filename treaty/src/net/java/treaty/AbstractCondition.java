@@ -12,14 +12,11 @@
 package net.java.treaty;
 import java.util.Map;
 
-import net.java.treaty.verification.ConditionVerifier;
-import net.java.treaty.verification.VerificationReport;
-
 /**
  * Abstract superclass for simple and complex conditions.
  * @author Jens Dietrich
  */
-public abstract class AbstractCondition extends PropertySupport implements Visitable {
+public abstract class AbstractCondition extends PropertySupport implements Visitable,Constraint {
 
 	public AbstractCondition() {
 		super();
@@ -33,13 +30,7 @@ public abstract class AbstractCondition extends PropertySupport implements Visit
 	 */
 	
 	public abstract AbstractCondition replaceResources(Map<String,Resource> resources) ; 
-	/**
-	 * Check the condition.
-	 * @param report a report that can be used to log details
-	 * @param validator the validator that can be used to check atomic conditions
-	 * @return whether the check suceeded
-	 */
-	public abstract boolean check(VerificationReport report,ConditionVerifier validator);
+
 
 
 }

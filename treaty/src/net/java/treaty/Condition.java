@@ -86,12 +86,12 @@ public class Condition extends AbstractCondition {
 		Condition c = new Condition();
 		c.setRelationship(this.getRelationship());
 		
-		if (!this.getResource1().isResolved())
+		if (!this.getResource1().isInstantiated())
 			c.setResource1(resources.get(this.getResource1().getId()));
 		else 
 			c.setResource1(this.getResource1());
 		
-		if (!this.getResource2().isResolved())
+		if (!this.getResource2().isInstantiated())
 			c.setResource2(resources.get(this.getResource2().getId()));
 		else 
 			c.setResource2(this.getResource2());
@@ -99,7 +99,7 @@ public class Condition extends AbstractCondition {
 		return c;
 	}
 	
-	public boolean check(VerificationReport report,ConditionVerifier validator) {
+	public boolean check(VerificationReport report,ConditionVerifier verifier) {
 		boolean result = true;
 		if (!this.getResource1().isProvided()) {
 			report.log(this,VerificationResult.FAILURE,"Parameter " + this.getResource1().getRef() + " is not provided for the first resource");
@@ -112,7 +112,7 @@ public class Condition extends AbstractCondition {
 		if (!result)
 			return false;
 		try {
-			validator.check(this);
+			verifier.check(this);
 			report.log(this,VerificationResult.SUCCESS);
 			return true;
 		}
@@ -121,6 +121,10 @@ public class Condition extends AbstractCondition {
 			return false;
 		}
 		
+	}
+	
+	public boolean isInstantiated() {
+		return this.getResource1().isInstantiated() && this.getResource2().isInstantiated();
 	}
 	
 

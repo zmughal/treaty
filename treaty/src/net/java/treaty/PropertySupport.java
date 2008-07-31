@@ -17,39 +17,32 @@ import java.util.*;
  * @author <a href="http://www-ist.massey.ac.nz/JBDietrich/">Jens Dietrich</a>
  */
 
-public class PropertySupport {
+public abstract class PropertySupport implements Constraint {
 	
 	private Map<String,Object> properties = new HashMap<String,Object>();
 	
-	/**
-	 * Add a new property.
-	 * @param key
-	 * @param value
+	/* (non-Javadoc)
+	 * @see net.java.treaty.Constraint#addProperty(java.lang.String, java.lang.Object)
 	 */
 	public void addProperty(String key, Object value) {
 		this.properties.put(key,value);
 	}
 
-	/**
-	 * Removes a property.
-	 * @param key
-	 * @return the value of the removed annotation or null if there is no such property
+	/* (non-Javadoc)
+	 * @see net.java.treaty.Constraint#removeProperty(java.lang.String)
 	 */
 	public Object removeProperty(String key) {
 		return this.properties.get(key);
 	}
 	
-	/**
-	 * Get the annotation for a given key.
-	 * @param key
-	 * @return
+	/* (non-Javadoc)
+	 * @see net.java.treaty.Constraint#getAnnotation(java.lang.String)
 	 */
 	public Object getAnnotation(String key) {
 		return this.properties.get(key);
 	}
-	/**
-	 * Get the property keys.
-	 * @return an iterator
+	/* (non-Javadoc)
+	 * @see net.java.treaty.Constraint#getPropertyNames()
 	 */
 	public Iterator<String> getPropertyNames() {
 		return this.properties.keySet().iterator();
