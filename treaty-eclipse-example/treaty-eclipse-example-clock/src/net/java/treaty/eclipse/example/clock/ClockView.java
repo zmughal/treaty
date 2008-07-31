@@ -39,8 +39,8 @@ import org.eclipse.swt.SWT;
 
 public class ClockView extends ViewPart {
 	private TableViewer viewer;
-	private Action action1;
-	private Action action2;
+	private Action actStartClock;
+	private Action actStopClock;
 	private Label label;
 	private boolean onOff;
 	private Thread clockThread;
@@ -165,41 +165,41 @@ public class ClockView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
+		manager.add(actStartClock);
 		manager.add(new Separator());
-		manager.add(action2);
+		manager.add(actStopClock);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(actStartClock);
+		manager.add(actStopClock);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(actStartClock);
+		manager.add(actStopClock);
 	}
 
 	private void makeActions() {
-		action1 = new Action() {
+		actStartClock = new Action() {
 			public void run() {
 				startClock();
 			}
 		};
-		action1.setText("Start Clock");
-		action1.setToolTipText("Starts the clock in a view");
-		//action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		actStartClock.setText("Start Clock");
+		actStartClock.setToolTipText("Starts the clock in a view");
+		//actStartClock.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		
-		action2 = new Action() {
+		actStopClock = new Action() {
 			public void run() {
 				stopClock();
 			}
 		};
-		action2.setText("Stop Clock");
-		action2.setToolTipText("Stops the clock");
-		//action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		actStopClock.setText("Stop Clock");
+		actStopClock.setToolTipText("Stops the clock");
+		//actStopClock.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
 	}
 
@@ -268,6 +268,7 @@ public class ClockView extends ViewPart {
 	}
 	
 	private void displayTime(final String d) {
+	   if (label.isDisposed()) return;
 	   label.getDisplay().syncExec (new Runnable () {
 		      public void run () {
 		         if (!label.isDisposed() && onOff) {
