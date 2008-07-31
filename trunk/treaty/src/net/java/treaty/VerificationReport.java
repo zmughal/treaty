@@ -8,31 +8,29 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.verification;
+package net.java.treaty;
 
-import net.java.treaty.TreatyException;
 
 /**
- * Thrown if importing a contract from XML fails.
+ * The verification report is used to collect information during verification.
+ * It can then be used to visualise and store verification results.
  * @author Jens Dietrich
  */
 
-public class ContractReaderException extends TreatyException {
+public interface VerificationReport {
 
-	public ContractReaderException() {
-		super();
-	}
+	
+	public void log(Object context,VerificationResult result,String... remarks);
 
-	public ContractReaderException(String arg0) {
-		super(arg0);
-	}
+	public Contract getContract();
 
-	public ContractReaderException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
-	}
+	public void setContract(Contract contract);
 
-	public ContractReaderException(Throwable arg0) {
-		super(arg0);
-	}
+
+
+
+
+
+
 
 }

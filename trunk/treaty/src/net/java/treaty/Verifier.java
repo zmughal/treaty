@@ -8,10 +8,8 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.verification;
+package net.java.treaty;
 
-import net.java.treaty.PropertyCondition;
-import net.java.treaty.RelationshipCondition;
 
 /**
  * Algorithm used to check conditions.

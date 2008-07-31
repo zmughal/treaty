@@ -12,9 +12,6 @@ package net.java.treaty;
 
 import java.util.Map;
 
-import net.java.treaty.verification.Verifier;
-import net.java.treaty.verification.VerificationReport;
-import net.java.treaty.verification.VerificationResult;
 
 /**
  * Disjunction (or).

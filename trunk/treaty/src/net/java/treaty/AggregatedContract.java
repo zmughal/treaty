@@ -10,8 +10,6 @@
 
 package net.java.treaty;
 
-import net.java.treaty.verification.Verifier;
-import net.java.treaty.verification.VerificationReport;
 
 /**
  * Contracts that are composed from sub contracts.

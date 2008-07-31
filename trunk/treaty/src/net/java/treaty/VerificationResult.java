@@ -8,30 +8,14 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.verification;
-
-import net.java.treaty.Contract;
+package net.java.treaty;
 
 /**
- * The verification report is used to collect information during verification.
- * It can then be used to visualise and store verification results.
+ * Possible verification outcomes.
  * @author Jens Dietrich
  */
 
-public interface VerificationReport {
-
-	
-	public void log(Object context,VerificationResult result,String... remarks);
-
-	public Contract getContract();
-
-	public void setContract(Contract contract);
-
-
-
-
-
-
-
+public enum VerificationResult {
+	FAILURE,SUCCESS,UNKNOWN
 
 }

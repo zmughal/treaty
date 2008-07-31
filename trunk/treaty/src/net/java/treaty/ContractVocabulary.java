@@ -8,11 +8,10 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.verification;
+package net.java.treaty;
 
 import java.net.URI;
 import java.util.Collection;
-import net.java.treaty.ResourceLoader;
 
 /**
  * Defines a vocabulary that can be used in contracts.
