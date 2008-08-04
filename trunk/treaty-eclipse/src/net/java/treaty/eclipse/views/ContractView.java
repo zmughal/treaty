@@ -54,7 +54,7 @@ public class ContractView extends ViewPart {
 	private Action actVerify;
 	// this is the model displayed - a list of plugins with contracts
 	private Collection<EclipsePlugin> plugins = null;
-	
+
 	private void initModel() {
 		plugins = new Builder().extractContracts();
 	}
@@ -601,10 +601,11 @@ public class ContractView extends ViewPart {
 	private void makeActions() {
 		actRefresh = new Action() {
 			public void run() {
-				showMessage("not yet implemented");
+				actReset();
 			}
 		};
 		actRefresh.setText("reset");
+		actRefresh.setImageDescriptor(getImageDescriptor("icons/refresh.gif"));
 		actRefresh.setToolTipText("Reloads all contracts and resets verification status of all contracts");
 		
 		actVerify = new Action() {
@@ -613,6 +614,7 @@ public class ContractView extends ViewPart {
 			}
 		};
 		actVerify.setText("verify");
+		actVerify.setImageDescriptor(getImageDescriptor("icons/verify.gif"));
 		actVerify.setToolTipText("runs verification");
 	}
 
@@ -629,8 +631,14 @@ public class ContractView extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-
-	
+	/**
+	 * Reset model, reload all contracts.
+	 */
+	private void actReset() {
+		this.initModel();
+		this.viewer.setContentProvider(new ViewContentProvider());
+		viewer.setInput(getViewSite());
+	}
 	/**
 	 * Run verification.
 	 */
@@ -659,13 +667,20 @@ public class ContractView extends ViewPart {
 	         protected IStatus run(IProgressMonitor monitor) {
 	        	monitor.beginTask("run verification", (2*contracts.size())+3);
 	        	
+	        	monitor.subTask("Reset verification status");
+	        	for (Contract c:contracts) {
+	        		resetVerificationStatus(c);
+	        	}
+	        	updateTree(false);
+	        	if (monitor.isCanceled()) return Status.CANCEL_STATUS;
+	        	
 	        	monitor.subTask("loading installed vocabularies");
 	        	EclipseVerifier verifier = new EclipseVerifier();
 	        	monitor.worked(3);
 	        	
 	        	// loading resources
 	        	for (Contract c:contracts) {
-	        		System.out.println("loading resources in " + c);
+	        		//System.out.println("loading resources in " + c);
 	        		try {
 						loadResources(c,verifier);
 					} catch (ResourceLoaderException e) {
@@ -673,7 +688,7 @@ public class ContractView extends ViewPart {
 						c.addProperty(VERIFICATION_EXCEPTION,e);
 					}
 	        		monitor.worked(1);
-	        		
+	        		if (monitor.isCanceled()) return Status.CANCEL_STATUS;
 	        	}
 	        	
 	        	monitor.subTask("checking contracts");
@@ -681,7 +696,8 @@ public class ContractView extends ViewPart {
 	        		System.out.println("checking contract " + c);
 	        		c.check(dummyReport, verifier);
 	        		monitor.worked(1);
-	        		updateTree();
+	        		updateTree(false);
+	        		if (monitor.isCanceled()) return Status.CANCEL_STATUS;
 	        	}
 	        	return Status.OK_STATUS;	        	 
 	         }
@@ -698,7 +714,7 @@ public class ContractView extends ViewPart {
 
 			@Override
 			public void done(IJobChangeEvent e) {
-				updateTree();
+				updateTree(false);
 			}
 
 			@Override
@@ -715,14 +731,43 @@ public class ContractView extends ViewPart {
 	    job.schedule();
 
 	}
+	private void resetVerificationStatus(Contract c) {
+		c.removeProperty(VERIFICATION_RESULT);
+		c.removeProperty(VERIFICATION_EXCEPTION);
+		if (c instanceof AggregatedContract) {
+			AggregatedContract ac = (AggregatedContract)c;
+			for (Contract part:ac.getParts()) {
+				resetVerificationStatus(part);
+			}
+		}
+		else if (c instanceof SimpleContract) {
+			SimpleContract sc = (SimpleContract)c;
+			for (AbstractCondition cond:sc.getConstraints()) {
+				resetVerificationStatus(cond);
+			}
+		}
+	}
+
+	private void resetVerificationStatus(AbstractCondition c) {
+		c.removeProperty(VERIFICATION_RESULT);
+		c.removeProperty(VERIFICATION_EXCEPTION);
+		if (c instanceof ComplexCondition) {
+			ComplexCondition cc = (ComplexCondition)c;
+			for (AbstractCondition part:cc.getParts()) {
+				resetVerificationStatus(part);
+			}
+		}
+	}
+
 	// refreshes the tree labels
-	private void updateTree() {
+	private void updateTree(boolean sync) {
 		Runnable r = new Runnable() {
 			public void run() {
 				viewer.refresh(true);
 			}
 		};
-		viewer.getTree().getDisplay().asyncExec(r);
+		if (sync) viewer.getTree().getDisplay().syncExec(r);
+		else viewer.getTree().getDisplay().asyncExec(r);
 	}
 	private void loadResources(Contract c,ResourceLoader l) throws ResourceLoaderException {
 		if (c instanceof AggregatedContract) {
