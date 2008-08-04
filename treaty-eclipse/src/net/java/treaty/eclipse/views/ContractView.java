@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import net.java.treaty.*;
 import net.java.treaty.eclipse.*;
-import net.java.treaty.verification.VerificationResult;
+import net.java.treaty.VerificationResult;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.part.*;
@@ -34,6 +34,8 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
 import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;
@@ -638,21 +640,110 @@ public class ContractView extends ViewPart {
 		for (EclipsePlugin p:plugins) {
 			contracts.addAll(p.getInstantiatedContracts());
 		}
+		final VerificationReport dummyReport = new VerificationReport() {
+			@Override
+			public Contract getContract() {
+				return null;
+			}
+			@Override
+			public void log(Object context, VerificationResult result,String... remarks) {
+				if (context instanceof PropertySupport) {
+					((PropertySupport)context).addProperty(VERIFICATION_RESULT,result);
+				}
+			}
+			@Override
+			public void setContract(Contract contract) {				
+			}			
+		};
 	    final Job job = new Job("Treaty component verification") {
 	         protected IStatus run(IProgressMonitor monitor) {
-	        	monitor.beginTask("run verification", contracts.size()+3);
+	        	monitor.beginTask("run verification", (2*contracts.size())+3);
+	        	
 	        	monitor.subTask("loading installed vocabularies");
 	        	EclipseVerifier verifier = new EclipseVerifier();
 	        	monitor.worked(3);
+	        	
+	        	// loading resources
+	        	for (Contract c:contracts) {
+	        		System.out.println("loading resources in " + c);
+	        		try {
+						loadResources(c,verifier);
+					} catch (ResourceLoaderException e) {
+						c.addProperty(VERIFICATION_RESULT,VerificationResult.FAILURE);
+						c.addProperty(VERIFICATION_EXCEPTION,e);
+					}
+	        		monitor.worked(1);
+	        		
+	        	}
+	        	
 	        	monitor.subTask("checking contracts");
 	        	for (Contract c:contracts) {
-	        		c.check(null, verifier);
+	        		System.out.println("checking contract " + c);
+	        		c.check(dummyReport, verifier);
 	        		monitor.worked(1);
+	        		updateTree();
 	        	}
 	        	return Status.OK_STATUS;	        	 
 	         }
+
+
 	    };
+	    job.addJobChangeListener(new IJobChangeListener() {
+
+			@Override
+			public void aboutToRun(IJobChangeEvent e) {}
+
+			@Override
+			public void awake(IJobChangeEvent e) {}
+
+			@Override
+			public void done(IJobChangeEvent e) {
+				updateTree();
+			}
+
+			@Override
+			public void running(IJobChangeEvent e) {
+			}
+
+			@Override
+			public void scheduled(IJobChangeEvent e) {}
+
+			@Override
+			public void sleeping(IJobChangeEvent e) {}
+		});
+	    
 	    job.schedule();
 
+	}
+	// refreshes the tree labels
+	private void updateTree() {
+		Runnable r = new Runnable() {
+			public void run() {
+				viewer.refresh(true);
+			}
+		};
+		viewer.getTree().getDisplay().asyncExec(r);
+	}
+	private void loadResources(Contract c,ResourceLoader l) throws ResourceLoaderException {
+		if (c instanceof AggregatedContract) {
+			for (Contract part:((AggregatedContract)c).getParts()) {
+				loadResources(part,l);
+			}
+		}
+		else if (c instanceof SimpleContract) {
+			SimpleContract sc = (SimpleContract)c;
+			for (Resource r:sc.getConsumerResources()) {
+				loadResource(sc,l,c.getConsumer(),r);
+			}
+			for (Resource r:sc.getSupplierResources()) {
+				loadResource(sc,l,c.getSupplier(),r);
+			}
+		}
+	}
+	private void loadResource(SimpleContract sc,ResourceLoader l,Connector con,Resource r) throws ResourceLoaderException {
+			if (!r.isLoaded()) {
+					Object value = l.load(r.getType(), r.getName(), con);
+					r.setValue(value);
+			}
 	}
 }
