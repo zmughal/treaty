@@ -11,11 +11,14 @@
 package net.java.treaty.eclipse.example.clock;
 
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -30,6 +33,11 @@ import org.eclipse.jface.action.*;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.osgi.framework.Bundle;
 
 
 /**
@@ -43,14 +51,23 @@ public class ClockView extends ViewPart {
 	private Action actStopClock;
 	private Label label;
 	private boolean onOff;
-	private Thread clockThread;
-	
+	private Thread clockThread;	
 	private DateFormatter dateFormatter = null;
-	private DateFormatter[] availableDateFormatter = null;
+	private List<DateFormatProvider> providers = new ArrayList<DateFormatProvider>();	
 	private static final String STOP_MSG = "press \"Start Clock\" to display date and time";
 
+	
+	class DateFormatProvider {
+		IExtension provider = null;
+		DateFormatter formatter = null;
+		String name = null;
+		URL format = null;
+		String type = null;
+		String resource = null;
+	} 
+	
 	/*
-	 * The content provider class is responsible for
+	 * The content provider class is rlist.add(inst);esponsible for
 	 * providing objects to the view. It can wrap
 	 * existing objects in adapters or simply return
 	 * objects as-is. These objects may be sensitive
@@ -65,21 +82,34 @@ public class ClockView extends ViewPart {
 		public void dispose() {
 		}
 		public Object[] getElements(Object parent) {
-			List<DateFormatter> dateFormatter = findDateFormatter();
-			availableDateFormatter = dateFormatter.toArray(new DateFormatter[dateFormatter.size()]);
-			return availableDateFormatter;
+			providers.clear();
+			findDateFormatter();
+			findFormatDefs();
+			return providers.toArray(new DateFormatProvider[providers.size()]);
 		}
 	}
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
-			return getText(((DateFormatter)obj).getName());
+			if (obj !=null & obj instanceof DateFormatProvider){
+				DateFormatProvider p = (DateFormatProvider)obj;
+				if (index==0) {
+					return p.name;
+				}
+				if (index==1){
+					return p.type;
+				}
+				if (index==3) {
+					return p.provider.getContributor().getName();
+				}
+				if (index==2) {
+					return p.resource;
+				}
+				return "?";
+			}
+			return "";	
 		}
 		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().
-					getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
+			return null;
 		}
 	}
 
@@ -117,7 +147,26 @@ public class ClockView extends ViewPart {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CENTER);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.getTable().setHeaderVisible(true);
+		
+		TableColumn col1 = new TableColumn(viewer.getTable(), SWT.LEFT);
+		col1.setText("date renderer");
+		col1.setWidth(180);
+		
+		TableColumn col2 = new TableColumn(viewer.getTable(), SWT.LEFT);
+		col2.setText("type");
+		col2.setWidth(250);
+		
+		TableColumn col3 = new TableColumn(viewer.getTable(), SWT.LEFT);
+		col3.setText("resource");
+		col3.setWidth(200);
+		
+		TableColumn col4 = new TableColumn(viewer.getTable(), SWT.LEFT);
+		col4.setText("provider");
+		col4.setWidth(200);
+		
 		viewer.setInput(getViewSite());
+		
 		GridData gd2 = new GridData();
 		gd2.horizontalAlignment = GridData.FILL;
 		gd2.verticalAlignment = GridData.FILL;
@@ -131,7 +180,9 @@ public class ClockView extends ViewPart {
 			public void selectionChanged(SelectionChangedEvent e) {
 				int idx = viewer.getTable().getSelectionIndex();
 				if (idx>-1) {
-					dateFormatter = availableDateFormatter[idx];
+					DateFormatProvider p = providers.get(idx);
+					dateFormatter=p.formatter;
+
 				}
 				else {
 					dateFormatter = null;
@@ -229,10 +280,9 @@ public class ClockView extends ViewPart {
 		clockThread.start();
 	}
 	
-	 private List<DateFormatter> findDateFormatter(){
+	 private void findDateFormatter(){
 		 String extensionPointId = "net.java.treaty.eclipse.example.clock.dateformatter";	
 		 String implementationClassAttributeName = "class";
-		 List<DateFormatter> list = new ArrayList<DateFormatter>();
 			IExtensionRegistry registry = Platform.getExtensionRegistry();
 			IExtensionPoint point = registry.getExtensionPoint(extensionPointId);
 			if (point == null) 
@@ -246,20 +296,79 @@ public class ClockView extends ViewPart {
 				for (int j=0;j<attributes.length;j++) {
 					IConfigurationElement p = attributes[j];
 					String clazz = p.getAttribute(implementationClassAttributeName);
-					try {
-						Class c = Platform.getBundle(pluginId).loadClass(clazz);
-						DateFormatter inst = (DateFormatter)c.newInstance();
-						list.add(inst);
-					}
-					catch (Exception ex) {
-						System.err.println("Error loading extension for extension point\n"+extensionPointId);
-						ex.printStackTrace();
+					if (clazz!=null) {
+						try {
+							Class c = Platform.getBundle(pluginId).loadClass(clazz);
+							DateFormatter inst = (DateFormatter)c.newInstance();
+							DateFormatProvider provider = new DateFormatProvider();
+							provider.formatter = inst;
+							provider.name = inst.getName();
+							provider.type = "date formatter implementation";
+							provider.provider = x;
+							provider.resource = c.getName();
+							providers.add(provider);
+						}
+						catch (Exception ex) {
+							System.err.println("Error loading extension for extension point\n"+extensionPointId);
+							ex.printStackTrace();
+						}
 					}
 				}
 			}
 			
-			return list;
 	 }
+	 private void findFormatDefs(){
+		 String extensionPointId = "net.java.treaty.eclipse.example.clock.dateformatter";	
+		 String formatDef = "formatdef";
+		 List<URL> list = new ArrayList<URL>();
+			IExtensionRegistry registry = Platform.getExtensionRegistry();
+			IExtensionPoint point = registry.getExtensionPoint(extensionPointId);
+			if (point == null) 
+				System.out.println("Cannot find extension point " + extensionPointId);
+			IExtension[] extensions = point.getExtensions();
+			if (extensions == null) 
+				System.out.println("No extensions found for " + extensionPointId);
+			for (IExtension x:extensions) {
+				IConfigurationElement[] attributes = x.getConfigurationElements();
+				for (int j=0;j<attributes.length;j++) {
+					IConfigurationElement p = attributes[j];
+					String format = p.getAttribute(formatDef);
+					if (format!=null){
+						String owner = x.getContributor().getName();
+						Bundle bundle = Platform.getBundle(owner);
+						URL url = bundle.getResource(format);
+						DateFormatProvider provider = new DateFormatProvider();
+						provider.format = url;
+						provider.name = url.getPath();
+						provider.type = "XML-defined date format";
+						provider.provider = x;
+						provider.resource = url.getPath();
+						DateFormatter formatter = loadFormatter(url);
+						if (formatter!=null) {
+							provider.formatter=formatter;
+							providers.add(provider);
+						}
+						
+					}
+				}
+			}
+	 }
+
+	private DateFormatter loadFormatter(URL url) {
+		try {
+			InputStream in = url.openStream();
+			Document doc = new SAXBuilder().build(in);		
+			Element root = doc.getRootElement();
+			String format = root.getAttributeValue("formatstring");
+			in.close();
+	    	return new ConfigurableDateFormatter(format);
+		}
+		catch (Exception x) {
+			// TODO
+			x.printStackTrace();
+			return null;
+		}
+	}
 
 	@Override
 	public void dispose() {
