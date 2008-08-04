@@ -54,4 +54,21 @@ public class Disjunction extends ComplexCondition {
 	public String getConnective() {
 		return "or";
 	}
+	/**
+	 * It is sufficient that one part is instantiated.
+	 * This is useful if components do not supply resources necessary to 
+	 * instantiate all parts.
+	 */
+	public boolean isInstantiated() {
+		if (parts.size()==0) {
+			return true;
+		}
+		for (AbstractCondition part:parts) {
+			if (part.isInstantiated()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }

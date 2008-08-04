@@ -121,8 +121,9 @@ public class Resource implements Visitable {
 	 * Instantiate a resource. This will replace the variable by a name.
 	 * @param connector the connector (e.g. extension) 
 	 * @param mgr the resource manager
-	 * @return
-	 * @throws TreatyException
+	 * @return the instantiated resource or null in case the resource is optional and
+	 * is not supplied by the connector
+	 * @throws TreatyException if the resource cannot be instantiated
 	 */
 	public Resource instantiate (Connector connector,ResourceManager mgr) throws ResourceLoaderException {
 
@@ -132,7 +133,13 @@ public class Resource implements Visitable {
 		r.setType(this.getType());
 		r.setRef(this.getRef());
 		r.setOwner(connector);
-		r.setName(mgr.resolve(getType(),getRef(),connector));		
+		String name = mgr.resolve(getType(),getRef(),connector);
+		if (name==null) {
+			r.setProvided(false);
+		}
+		else {
+			r.setName(name);
+		}
 		return r;
 	}
 

@@ -189,13 +189,8 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	 * @return a boolean
 	 */
 	public boolean isInstantiated() {
-		for (Resource r:this.getSupplierResources()) {
-			if (!r.isInstantiated()) {
-				return false;
-			}
-		}
-		for (Resource r:this.getConsumerResources()) {
-			if (!r.isInstantiated()) {
+		for (AbstractCondition c:this.getConstraints()) {
+			if (!c.isInstantiated()) {
 				return false;
 			}
 		}
