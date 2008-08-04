@@ -32,7 +32,7 @@ public abstract class PropertySupport implements Constraint {
 	 * @see net.java.treaty.Constraint#removeProperty(java.lang.String)
 	 */
 	public Object removeProperty(String key) {
-		return this.properties.get(key);
+		return this.properties.remove(key);
 	}
 	
 	/* (non-Javadoc)
