@@ -30,7 +30,6 @@ import java.util.List;
 
 public class TestRunner {
 	
-	
 	public boolean run(Class test,Class... tested) throws Exception {
 		Method before = null;
 		Method after = null;

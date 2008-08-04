@@ -7,5 +7,6 @@ Bundle-Activator: net.java.treaty.eclipse.vocabulary.junit.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.java.treaty.eclipse
+ net.java.treaty.eclipse,
+ org.junit4;visibility:=reexport
 Eclipse-LazyStart: true
