@@ -15,5 +15,4 @@ Bundle-ClassPath: .,
  lib/saxpath.jar,
  lib/jdom.jar
 Export-Package: net.java.treaty,
- net.java.treaty.eclipse,
- net.java.treaty.verification
+ net.java.treaty.eclipse

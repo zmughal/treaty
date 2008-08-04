@@ -14,7 +14,7 @@ package net.java.treaty.eclipse.views;
 import java.net.URI;
 import java.util.ArrayList;
 import net.java.treaty.eclipse.*;
-import net.java.treaty.verification.ContractVocabulary;
+import net.java.treaty.ContractVocabulary;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

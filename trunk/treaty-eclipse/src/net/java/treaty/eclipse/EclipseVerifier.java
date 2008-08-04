@@ -22,15 +22,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
+import net.java.treaty.*;
 
-import net.java.treaty.PropertyCondition;
-import net.java.treaty.RelationshipCondition;
-import net.java.treaty.verification.Verifier;
-import net.java.treaty.verification.ContractVocabulary;
-import net.java.treaty.verification.VerificationException;
-import net.java.treaty.verification.VerificationResult;
-
-public class EclipseVerifier implements Verifier {
+public class EclipseVerifier implements Verifier,ResourceLoader {
 	private List<ContractVocabulary> vocContributions = null;
 	public EclipseVerifier () {
 		super();
@@ -65,6 +59,8 @@ public class EclipseVerifier implements Verifier {
 			ContractVocabulary voc = this.findVocabulary(uri);
 			voc.check(condition); 
 			System.out.println("checked ok: " + condition);
+			condition.addProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
+			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
 		}
 		catch (VerificationException x) {
 			condition.addProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
@@ -99,6 +95,20 @@ public class EclipseVerifier implements Verifier {
 		throw new VerificationException("No vocabulary found to check condition with predicate " + uri);
 	}
 	
+
+	@Override
+	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException {
+		for (ContractVocabulary voc:vocContributions) {
+			if (voc.getContributedTypes().contains(type)) {
+				try {
+					return voc.load(type,name,connector);
+				} catch (ResourceLoaderException e) {
+					new VerificationException("Exception loading resource " + name,e);
+				}
+			}
+		}
+		throw new ResourceLoaderException("No vocabulary found to load resource " + type);
+	}
 
 
 }

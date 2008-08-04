@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.IExtensionPoint;
 import net.java.treaty.ConnectorType;
+import net.java.treaty.Contract;
+import net.java.treaty.SimpleContract;
 
 /**
  * Represents eclipse extension points. This is a wrapper class.
@@ -62,6 +64,14 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	@Override
 	public String getId() {
 		return this.extensionPoint.getUniqueIdentifier();
+	}
+	
+	protected Contract loadContract () {
+		Contract contract = super.loadContract();
+		if (contract instanceof SimpleContract) {
+			((SimpleContract)contract).setConsumer(this);
+		}
+		return contract;
 	}
 	
 

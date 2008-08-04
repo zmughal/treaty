@@ -17,7 +17,7 @@ import net.java.treaty.Connector;
 import net.java.treaty.Contract;
 import net.java.treaty.SimpleContract;
 import net.java.treaty.TreatyException;
-import net.java.treaty.verification.ContractReader;
+import net.java.treaty.ContractReader;
 
 /**
  * Abstract superclass for extensions and extension points.
