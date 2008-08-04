@@ -62,7 +62,8 @@ public class EclipseResourceManager implements ResourceManager {
 			xpath = XPath.newInstance(query.toString());
 			List<Element> nodes = xpath.selectNodes(doc);
 			if (nodes.size()==0) {
-				throw new ResourceLoaderException("No resource references found in plugin.xml for " + ref + " - check xpath");
+				Logger.info("No resource references found in plugin.xml for " + ref + " - check xpath");
+				return null;
 			}
 			Object node = nodes.get(0);
 			if (node instanceof Element) {

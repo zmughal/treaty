@@ -399,7 +399,7 @@ public class ContractView extends ViewPart {
 				Constraint c = (Constraint)n;
 				Object status = c.getAnnotation(VERIFICATION_RESULT);
 				if (!c.isInstantiated()) {
-					return "n/a";
+					return "not instantiated";
 				}
 				if (status==VerificationResult.FAILURE) {
 					return "failure";
