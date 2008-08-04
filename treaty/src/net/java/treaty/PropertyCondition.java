@@ -70,9 +70,24 @@ public class PropertyCondition extends AbstractCondition {
 		
 		return c;
 	}
-	public boolean check(VerificationReport report,Verifier validator) {
-		report.log(this,VerificationResult.UNKNOWN,"the validation of property conditions is not yet supported");
-		return true;
+	public boolean check(VerificationReport report,Verifier verifier) {
+		boolean result = true;
+		if (!this.getResource().isProvided()) {
+			report.log(this,VerificationResult.FAILURE,"Parameter " + this.getResource().getRef() + " is not provided for the first resource");
+			result = false;
+		}
+		if (!result)
+			return false;
+		try {
+			verifier.check(this);
+			report.log(this,VerificationResult.SUCCESS);
+			return true;
+		}
+		catch (VerificationException x) {
+			report.log(this,VerificationResult.FAILURE,x.getMessage());
+			return false;
+		}
+		
 	}
 	public boolean isInstantiated() {
 		return this.getResource().isInstantiated();
