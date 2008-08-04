@@ -117,6 +117,8 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	 */
 	public Contract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException {
 		SimpleContract contract = new SimpleContract();
+		contract.setConsumer(this.getConsumer());
+		contract.setSupplier(connector);
 		contract.setLocation(this.getLocation());
 		contract.consumerResources.putAll(this.consumerResources);
 		for (Resource r:this.supplierResources.values()) {
@@ -133,6 +135,8 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	 */
 	public Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException {
 		SimpleContract contract = new SimpleContract();
+		contract.setConsumer(connector);
+		contract.setSupplier(this.getSupplier());
 		contract.setLocation(this.getLocation());
 		contract.supplierResources.putAll(this.supplierResources);
 		for (Resource r:this.consumerResources.values()) {
