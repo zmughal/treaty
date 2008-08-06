@@ -24,7 +24,7 @@ public abstract class PropertySupport implements Constraint {
 	/* (non-Javadoc)
 	 * @see net.java.treaty.Constraint#addProperty(java.lang.String, java.lang.Object)
 	 */
-	public void addProperty(String key, Object value) {
+	public void setProperty(String key, Object value) {
 		this.properties.put(key,value);
 	}
 
@@ -38,7 +38,7 @@ public abstract class PropertySupport implements Constraint {
 	/* (non-Javadoc)
 	 * @see net.java.treaty.Constraint#getAnnotation(java.lang.String)
 	 */
-	public Object getAnnotation(String key) {
+	public Object getProperty(String key) {
 		return this.properties.get(key);
 	}
 	/* (non-Javadoc)

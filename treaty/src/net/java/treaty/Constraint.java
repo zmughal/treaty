@@ -26,7 +26,7 @@ public interface Constraint extends Visitable{
 	 * @param key
 	 * @param value
 	 */
-	public abstract void addProperty(String key, Object value);
+	public abstract void setProperty(String key, Object value);
 
 	/**
 	 * Removes a property.
@@ -40,7 +40,7 @@ public interface Constraint extends Visitable{
 	 * @param key
 	 * @return
 	 */
-	public abstract Object getAnnotation(String key);
+	public abstract Object getProperty(String key);
 
 	/**
 	 * Get the property keys.
