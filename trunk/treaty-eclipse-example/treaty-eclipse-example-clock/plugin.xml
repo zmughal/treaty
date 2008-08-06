@@ -29,5 +29,30 @@
          </view>
       </perspectiveExtension>
    </extension>
+<extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Treaty"
+            visible="true"
+            id="net.java.treaty.eclipse.example.clock.actionSet">
+         <menu
+               label="&amp;Treaty"
+               id="treaty">
+            <separator
+                  name="treaty">
+            </separator>
+         </menu>
+         <action
+               label="Clock Example"
+               icon="icons/sample.gif"
+               class="net.java.treaty.eclipse.example.clock.DisplayClockView"
+               tooltip="Opens the clock sample application"
+               menubarPath="treaty/treaty"
+               toolbarPath="treaty"
+               id="net.java.treaty.eclipse.example.clock.DisplayClockView">
+         </action>
+      </actionSet>
+   </extension>
+   
 
 </plugin>
