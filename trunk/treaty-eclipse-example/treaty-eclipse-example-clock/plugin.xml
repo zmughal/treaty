@@ -48,7 +48,6 @@
                class="net.java.treaty.eclipse.example.clock.DisplayClockView"
                tooltip="Opens the clock sample application"
                menubarPath="treaty/treaty"
-               toolbarPath="treaty"
                id="net.java.treaty.eclipse.example.clock.DisplayClockView">
          </action>
       </actionSet>
