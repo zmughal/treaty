@@ -22,7 +22,6 @@
                class="net.java.treaty.eclipse.actions.DisplayContractView"
                tooltip="List plugin contracts found"
                menubarPath="treaty/treaty"
-               toolbarPath="treaty"
                id="net.java.treaty.eclipse.actions.DisplayContractView">
          </action>
          <action
@@ -31,7 +30,6 @@
                class="net.java.treaty.eclipse.actions.DisplayVocabularyView"
                tooltip="List installed contract vocabulary"
                menubarPath="treaty/treaty"
-               toolbarPath="treaty"
                id="net.java.treaty.eclipse.actions.DisplayVocabularyView">
          </action>
       </actionSet>

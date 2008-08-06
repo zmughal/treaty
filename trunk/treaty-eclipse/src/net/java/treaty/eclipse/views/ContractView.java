@@ -23,6 +23,7 @@ import net.java.treaty.eclipse.*;
 import net.java.treaty.VerificationResult;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.*;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -30,6 +31,7 @@ import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.jface.action.*;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
@@ -56,6 +58,7 @@ public class ContractView extends ViewPart {
 	private DrillDownAdapter drillDownAdapter;
 	private Action actRefresh;
 	private Action actVerify;
+	private Action actPrintStackTrace;
 	// this is the model displayed - a list of plugins with contracts
 	private Collection<EclipsePlugin> plugins = null;
 	private Map<String,Image> icons = new HashMap<String,Image>();
@@ -224,8 +227,8 @@ public class ContractView extends ViewPart {
 			catch (Exception t) {
 				SimpleContract d = new SimpleContract() ; // dummy contract
 				x.setContract(d);
-				d.addProperty(VERIFICATION_RESULT, VerificationResult.FAILURE);
-				d.addProperty(VERIFICATION_EXCEPTION, t);
+				d.setProperty(VERIFICATION_RESULT, VerificationResult.FAILURE);
+				d.setProperty(VERIFICATION_EXCEPTION, t);
 				Logger.error("Error loading contract", t);
 			}
 		}
@@ -381,7 +384,7 @@ public class ContractView extends ViewPart {
 		private String getStatus(Object n) {
 			if (n instanceof Constraint) {
 				Constraint c = (Constraint)n;
-				Object status = c.getAnnotation(VERIFICATION_RESULT);
+				Object status = c.getProperty(VERIFICATION_RESULT);
 				if (!c.isInstantiated()) {
 					return "not instantiated";
 				}
@@ -401,7 +404,7 @@ public class ContractView extends ViewPart {
 		private Image getStatusIcon(Object n) {
 			if (n instanceof Constraint) {
 				Constraint c = (Constraint)n;
-				Object status = c.getAnnotation(VERIFICATION_RESULT);
+				Object status = c.getProperty(VERIFICATION_RESULT);
 				if (!c.isInstantiated()) {
 					return null;
 				}
@@ -511,7 +514,6 @@ public class ContractView extends ViewPart {
 	    col2.setText("plugin contracts");
 	    
 	    Rectangle bounds = viewer.getTree().getDisplay().getBounds();
-	    System.out.println(bounds.width);
 	    col2.setWidth(Math.max(600,bounds.width-400));
 	    
 	    TreeColumn col1 = new TreeColumn(viewer.getTree(), SWT.LEFT);
@@ -522,12 +524,25 @@ public class ContractView extends ViewPart {
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setInput(getViewSite());
 		
-	    
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent e) {
+				Object obj = getSelectedObject();
+				boolean f = obj!=null && obj instanceof PropertySupport && ((PropertySupport)obj).getProperty(Constants.VERIFICATION_EXCEPTION)!=null;
+				actPrintStackTrace.setEnabled(f);
+			}});
+		
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
 	}
 
+	private Object getSelectedObject() {
+		TreeItem[] sel = viewer.getTree().getSelection();
+		if (sel==null || sel.length==0) {
+			return null;
+		}
+		return ((TreeObject)sel[0].getData()).getObject();
+	}
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
@@ -556,6 +571,7 @@ public class ContractView extends ViewPart {
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(actRefresh);
 		manager.add(actVerify);
+		manager.add(actPrintStackTrace);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -570,6 +586,15 @@ public class ContractView extends ViewPart {
 	}
 
 	private void makeActions() {
+		actPrintStackTrace = new Action() {
+			public void run() {
+				actPrintStackTrace();
+			}
+		};
+		actPrintStackTrace.setText("print verification exception stack trace");
+		actPrintStackTrace.setToolTipText("Outputs the verification exception stack trace to the console");
+		actPrintStackTrace.setEnabled(false);
+		
 		actRefresh = new Action() {
 			public void run() {
 				actReset();
@@ -611,6 +636,20 @@ public class ContractView extends ViewPart {
 		viewer.setInput(getViewSite());
 	}
 	/**
+	 * Print the verification exception stack trace.
+	 */
+	private void actPrintStackTrace() {
+		Object obj = this.getSelectedObject();
+		if (obj!=null && obj instanceof PropertySupport && ((PropertySupport)obj).getProperty(Constants.VERIFICATION_EXCEPTION)!=null){
+			Exception x = (Exception)((PropertySupport)obj).getProperty(Constants.VERIFICATION_EXCEPTION);
+			
+			//open dialog - problem: exception is not null but not shown - related to threading??
+			//IStatus status = new Status(Status.ERROR,Activator.PLUGIN_ID,0, x.getMessage(),x) ;
+			//ErrorDialog.openError(this.viewer.getTree().getShell(), "Verification exception","Verification has failed", status);
+			x.printStackTrace(System.err);
+		}
+	}
+	/**
 	 * Run verification.
 	 */
 	private void actVerify () {
@@ -627,7 +666,7 @@ public class ContractView extends ViewPart {
 			@Override
 			public void log(Object context, VerificationResult result,String... remarks) {
 				if (context instanceof PropertySupport) {
-					((PropertySupport)context).addProperty(VERIFICATION_RESULT,result);
+					((PropertySupport)context).setProperty(VERIFICATION_RESULT,result);
 				}
 			}
 			@Override
@@ -655,8 +694,8 @@ public class ContractView extends ViewPart {
 	        		try {
 						loadResources(c,verifier);
 					} catch (ResourceLoaderException e) {
-						c.addProperty(VERIFICATION_RESULT,VerificationResult.FAILURE);
-						c.addProperty(VERIFICATION_EXCEPTION,e);
+						c.setProperty(VERIFICATION_RESULT,VerificationResult.FAILURE);
+						c.setProperty(VERIFICATION_EXCEPTION,e);
 					}
 	        		monitor.worked(1);
 	        		if (monitor.isCanceled()) return Status.CANCEL_STATUS;
@@ -664,7 +703,7 @@ public class ContractView extends ViewPart {
 	        	
 	        	monitor.subTask("checking contracts");
 	        	for (Contract c:contracts) {
-	        		System.out.println("checking contract " + c);
+	        		//System.out.println("checking contract " + c);
 	        		c.check(dummyReport, verifier);
 	        		monitor.worked(1);
 	        		updateTree(false);

@@ -63,13 +63,13 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		try {
 			ContractVocabulary voc = this.findVocabulary(uri);
 			voc.check(condition); 
-			System.out.println("checked ok: " + condition);
-			condition.addProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
+			//System.out.println("checked ok: " + condition);
+			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
 			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
 		}
 		catch (VerificationException x) {
-			condition.addProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
-			condition.addProperty(Constants.VERIFICATION_EXCEPTION, x);
+			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
+			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
 			throw x;
 		}
 		return;
@@ -81,11 +81,11 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		try {
 			ContractVocabulary voc = this.findVocabulary(uri);
 			voc.check(condition); 
-			System.out.println("checked ok: " + condition);
+			//System.out.println("checked ok: " + condition);
 		}
 		catch (VerificationException x) {
-			condition.addProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
-			condition.addProperty(Constants.VERIFICATION_EXCEPTION, x);
+			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
+			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
 			throw x;
 		}
 		return;
