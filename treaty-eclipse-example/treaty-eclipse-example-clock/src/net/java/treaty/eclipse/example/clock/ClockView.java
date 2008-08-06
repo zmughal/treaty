@@ -364,7 +364,6 @@ public class ClockView extends ViewPart {
 	    	return new ConfigurableDateFormatter(format);
 		}
 		catch (Exception x) {
-			// TODO
 			x.printStackTrace();
 			return null;
 		}
