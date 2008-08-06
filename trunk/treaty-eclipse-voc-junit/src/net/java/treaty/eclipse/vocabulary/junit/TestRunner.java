@@ -104,14 +104,12 @@ public class TestRunner {
 			
 			return true;
 		}
-		catch (Exception x) {
-			// FIXME
-			x.printStackTrace();
+		catch (Exception x) {			
+			Logger.error("Exception in test case",x);
 			return false;
 		}
 		catch (AssertionError x) {
-			// FIXME
-			x.printStackTrace();
+			Logger.info("Test case failed",x);
 			return false;
 		}
 	}
