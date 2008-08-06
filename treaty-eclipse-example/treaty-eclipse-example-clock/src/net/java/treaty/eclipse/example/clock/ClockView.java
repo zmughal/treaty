@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.osgi.framework.Bundle;
 
@@ -337,18 +336,19 @@ public class ClockView extends ViewPart {
 						String owner = x.getContributor().getName();
 						Bundle bundle = Platform.getBundle(owner);
 						URL url = bundle.getResource(format);
-						DateFormatProvider provider = new DateFormatProvider();
-						provider.format = url;
-						provider.name = url.getPath();
-						provider.type = "XML-defined date format";
-						provider.provider = x;
-						provider.resource = url.getPath();
-						DateFormatter formatter = loadFormatter(url);
-						if (formatter!=null) {
-							provider.formatter=formatter;
-							providers.add(provider);
+						if (url!=null) {
+							DateFormatProvider provider = new DateFormatProvider();
+							provider.format = url;
+							provider.name = url.getPath();
+							provider.type = "XML-defined date format";
+							provider.provider = x;
+							provider.resource = url.getPath();
+							DateFormatter formatter = loadFormatter(url);
+							if (formatter!=null) {
+								provider.formatter=formatter;
+								providers.add(provider);
+							}
 						}
-						
 					}
 				}
 			}
