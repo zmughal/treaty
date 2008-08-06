@@ -53,9 +53,9 @@ public abstract class EclipseConnector implements Connector {
 	protected Contract loadContract () {
 		EclipsePlugin owner = (EclipsePlugin)this.getOwner();
 		if (owner!=null) {
-			URL url = owner.getResource(this.getContractLocation(this));
+			URL url = owner.getResource(getContractLocation(this));
 			if (url!=null) {
-				System.out.println("contract url found " + url);
+				Logger.info("contract url found " + url);
 				ContractReader reader = new ContractReader(new EclipseResourceManager());
 				try {
 					SimpleContract contract = reader.read(url.openStream());

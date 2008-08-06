@@ -43,9 +43,14 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 					Class c = Platform.getBundle(pluginId).loadClass(clazz);
 					vocContributions.add((ContractVocabulary)c.newInstance());
 				}
-				catch (Exception ex) {
-					// FIXME
-					ex.printStackTrace();
+				catch (ClassNotFoundException ex) {
+					Logger.error("Cannot load vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
+				}
+				catch (IllegalAccessException ex) {
+					Logger.error("Cannot instantiate vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
+				}
+				catch (InstantiationException ex) {
+					Logger.error("Cannot instantiate vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
 				}
 			}
 		}

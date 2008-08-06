@@ -11,10 +11,13 @@
 
 package net.java.treaty.eclipse.views;
 
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.java.treaty.*;
 import net.java.treaty.eclipse.*;
 import net.java.treaty.VerificationResult;
@@ -25,6 +28,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
@@ -54,6 +58,7 @@ public class ContractView extends ViewPart {
 	private Action actVerify;
 	// this is the model displayed - a list of plugins with contracts
 	private Collection<EclipsePlugin> plugins = null;
+	private Map<String,Image> icons = new HashMap<String,Image>();
 
 	private void initModel() {
 		plugins = new Builder().extractContracts();
@@ -179,7 +184,6 @@ public class ContractView extends ViewPart {
 		}
 		
 		private void addNodes(TreeParent parent,EclipsePlugin plugin) {
-			Collection<EclipsePlugin> plugins = new Builder().extractContracts();
 			for (EclipseExtensionPoint xp:plugin.getExtensionPoints()) {
 				TreeParent node = new TreeParent(xp);
 				parent.addChild(node);	
@@ -222,15 +226,12 @@ public class ContractView extends ViewPart {
 				x.setContract(d);
 				d.addProperty(VERIFICATION_RESULT, VerificationResult.FAILURE);
 				d.addProperty(VERIFICATION_EXCEPTION, t);
-				// TODO
-				TreeObject errorObject = new TreeObject(d);
-				parent.addChild(errorObject);
-				t.printStackTrace();
+				Logger.error("Error loading contract", t);
 			}
 		}
 		
 		private void addNodes(TreeParent parent,SimpleContract contract) {
-			
+			/*
 			TreeParent rNode = new TreeParent("extension point resources");
 			parent.addChild(rNode);
 			for (Resource r:contract.getConsumerResources()) {
@@ -244,14 +245,15 @@ public class ContractView extends ViewPart {
 			
 			rNode = new TreeParent("constraints");
 			parent.addChild(rNode);
+			*/
 			for (AbstractCondition c:contract.getConstraints()) {
 				// top level conjunction displayed as set
 				if (c instanceof Conjunction) {
 					for (AbstractCondition c2:((Conjunction)c).getParts()) {
-						addNodes(rNode,c2);
+						addNodes(parent,c2);
 					}
 				}
-				else addNodes(rNode,c);
+				else addNodes(parent,c);
 			}
 		}
 		private void addResourceNode(TreeParent parent,Resource r) {
@@ -304,24 +306,6 @@ public class ContractView extends ViewPart {
 		private static final String TYPE_JAVA_CLASS = "http://www.massey.ac.nz/se/plugincontracts/java/InstantiableClass";
 		private static final String TYPE_JUNIT= "http://www.massey.ac.nz/se/plugincontracts/junit/TestCase";
 		private static final String TYPE_JAVA_INTERFACE = "http://www.massey.ac.nz/se/plugincontracts/java/AbstractType";
-		
-		// icons
-		private Image ICON_PLUGIN = getImageDescriptor("icons/plugin.gif").createImage();
-		private Image ICON_EXTENSION = getImageDescriptor("icons/extension.gif").createImage();
-		private Image ICON_EXTENSIONPOINT = getImageDescriptor("icons/extensionpoint.gif").createImage();
-		private Image ICON_CONTRACT = getImageDescriptor("icons/contract.gif").createImage();
-		private Image ICON_CONSTRAINT = getImageDescriptor("icons/constraint.gif").createImage();
-		private Image ICON_CONSTANT = getImageDescriptor("icons/constant.png").createImage();
-		private Image ICON_VARIABLE = getImageDescriptor("icons/variable.png").createImage();
-		private Image ICON_LINK = getImageDescriptor("icons/link.gif").createImage();
-		private Image ICON_CLASS = getImageDescriptor("icons/class.gif").createImage();
-		private Image ICON_CLASS_VAR = getImageDescriptor("icons/class_var.gif").createImage();
-		private Image ICON_INTERFACE = getImageDescriptor("icons/interface.gif").createImage();
-		private Image ICON_INTERFACE_VAR = getImageDescriptor("icons/interface_var.gif").createImage();
-		private Image ICON_JUNIT = getImageDescriptor("icons/junit.gif").createImage();
-		private Image ICON_STATUS_FAILURE = getImageDescriptor("icons/status_failure.gif").createImage();
-		private Image ICON_STATUS_SUCCESS = getImageDescriptor("icons/status_success.gif").createImage();
-		private Image ICON_STATUS_OPEN = getImageDescriptor("icons/status_open.gif").createImage();
 		   
 		private String toString(RelationshipCondition c) {
 			StringBuffer buf = new StringBuffer();
@@ -422,13 +406,13 @@ public class ContractView extends ViewPart {
 					return null;
 				}
 				if (status==VerificationResult.FAILURE) {
-					return ICON_STATUS_FAILURE;
+					return getIcon("status_failure.gif");
 				}
 				else if (status==VerificationResult.SUCCESS) {
-					return ICON_STATUS_SUCCESS;
+					return getIcon("status_success.gif");
 				}
 				else {
-					return ICON_STATUS_OPEN;
+					return getIcon("status_open.gif");
 				}
 			}
 			return null;
@@ -441,39 +425,39 @@ public class ContractView extends ViewPart {
 			if (obj instanceof Connector) {
 				Connector c = (Connector)obj;
 				if (c.getType()==ConnectorType.SUPPLIER) {
-					return ICON_EXTENSION;
+					return getIcon("extension.gif");
 				}
 				else if (c.getType()==ConnectorType.CONSUMER) {
-					return ICON_EXTENSIONPOINT;
+					return getIcon("extensionpoint.gif");
 				}
 			}
 			else if (obj instanceof Component) {
-				return ICON_PLUGIN;
+				return getIcon("plugin.gif");
 			}			
 			else if (obj instanceof Contract) {
-				return ICON_CONTRACT;
+				return getIcon("contract.gif");
 			}
 			else if (obj instanceof RelationshipCondition) {
-				return ICON_CONSTRAINT;
+				return getIcon("constraint.gif");
 			}
 			else if (obj instanceof Resource) {
 				boolean var = ((Resource)obj).getName()==null;
 				String type = ((Resource)obj).getType().toString();
 				if (TYPE_JAVA_CLASS.equals(type)) {
-					return var?ICON_CLASS_VAR:ICON_CLASS;
+					return var?getIcon("class_var.gif"):getIcon("class.gif");
 				}
 				else if (TYPE_JAVA_INTERFACE.equals(type)) {
-					return var?ICON_INTERFACE_VAR:ICON_INTERFACE;
+					return var?getIcon("intreface_var.gif"):getIcon("interface.gif");
 				}
 				else if (TYPE_JUNIT.equals(type) && !var) {
-					return ICON_JUNIT;
+					return getIcon("junit.gif");
 				}
 				else {
-					return var?ICON_VARIABLE:ICON_CONSTANT;
+					return var?getIcon("variable.png"):getIcon("constant.png");
 				}
 			}
 			else if (obj instanceof KeyValueNode && (((KeyValueNode)obj).key.equals("relationship"))) { // relationships
-				return ICON_LINK;
+				return getIcon("link.gif");
 			}
 
 			else if (n instanceof TreeParent) {
@@ -488,31 +472,15 @@ public class ContractView extends ViewPart {
 			
 		}
 		@Override
-		public void dispose() {
-			ICON_PLUGIN.dispose();
-			ICON_CONTRACT.dispose();
-			ICON_CONSTRAINT.dispose();
-			ICON_EXTENSION.dispose();
-			ICON_EXTENSIONPOINT.dispose();
-			ICON_CONSTANT.dispose();
-			ICON_VARIABLE.dispose();
-			ICON_LINK.dispose();
-			ICON_CLASS.dispose();
-			ICON_CLASS_VAR.dispose();
-			ICON_INTERFACE.dispose();
-			ICON_INTERFACE_VAR.dispose();
-			ICON_JUNIT.dispose();
-			ICON_STATUS_FAILURE.dispose();
-			ICON_STATUS_SUCCESS.dispose();
-			ICON_STATUS_OPEN.dispose();
-		}
-		@Override
 		public boolean isLabelProperty(Object arg0, String arg1) {
 			return false;
 		}
 		@Override
 		public void removeListener(ILabelProviderListener arg0) {
 			
+		}
+		@Override
+		public void dispose() {
 		}
 		
 
@@ -541,11 +509,14 @@ public class ContractView extends ViewPart {
 		
 		TreeColumn col2 = new TreeColumn(viewer.getTree(), SWT.LEFT);
 	    col2.setText("plugin contracts");
-	    col2.setWidth(600);
+	    
+	    Rectangle bounds = viewer.getTree().getDisplay().getBounds();
+	    System.out.println(bounds.width);
+	    col2.setWidth(Math.max(600,bounds.width-400));
 	    
 	    TreeColumn col1 = new TreeColumn(viewer.getTree(), SWT.LEFT);
 	    col1.setText("status");
-	    col1.setWidth(200);
+	    col1.setWidth(150);
 
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
@@ -786,9 +757,27 @@ public class ContractView extends ViewPart {
 		}
 	}
 	private void loadResource(SimpleContract sc,ResourceLoader l,Connector con,Resource r) throws ResourceLoaderException {
-			if (!r.isLoaded()) {
+			if (r.isProvided()&&!r.isLoaded()) {
 					Object value = l.load(r.getType(), r.getName(), con);
 					r.setValue(value);
 			}
 	}
+	private Image getIcon(String name) {
+		String path = "icons/"+name;
+		Image icon = icons.get(path);
+		if (icon==null) {
+			icon = getImageDescriptor(path).createImage();
+			icons.put(path,icon);
+		}
+		return icon;
+	}
+
+	@Override
+	public void dispose() {
+		for (Image icon:icons.values()) {
+			icon.dispose();
+		}
+		super.dispose();
+	}
+	
 }
