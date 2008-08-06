@@ -2,7 +2,7 @@
 <feature
       id="net.java.treaty.eclipse"
       label="treaty contract framework"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="Jens Dietrich">
 
    <description url="http://code.google.com/p/treaty">
