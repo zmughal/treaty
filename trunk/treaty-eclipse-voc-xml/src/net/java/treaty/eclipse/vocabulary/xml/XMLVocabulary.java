@@ -94,6 +94,7 @@ public class XMLVocabulary implements  ContractVocabulary {
 		        }
 		        catch (Exception x){}
 			} catch (Exception x) {
+				x.printStackTrace();
 				throw new VerificationException("Validation of the XML document failed" ,x);
 			}
 			
