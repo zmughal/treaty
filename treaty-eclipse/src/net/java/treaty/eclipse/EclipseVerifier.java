@@ -68,9 +68,10 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
 		}
 		catch (VerificationException x) {
+			
 			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
 			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
-			throw x;
+			throw (VerificationException)x.fillInStackTrace();
 		}
 		return;
 	}
@@ -86,7 +87,7 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		catch (VerificationException x) {
 			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
 			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
-			throw x;
+			throw (VerificationException)x.fillInStackTrace();
 		}
 		return;
 	}
