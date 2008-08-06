@@ -194,16 +194,20 @@ public class VocabularyView extends ViewPart {
 			for (int j=0;j<attributes.length;j++) {
 				IConfigurationElement p = attributes[j];
 				String clazz = p.getAttribute("class");
-				// FIXME
-				System.out.println(clazz);
 				try {
 					Class c = Platform.getBundle(pluginId).loadClass(clazz);
 					return (ContractVocabulary)c.newInstance();
 				}
-				catch (Exception ex) {
-					// FIXME
-					ex.printStackTrace();
+				catch (ClassNotFoundException ex) {
+					Logger.error("Cannot load vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
 				}
+				catch (IllegalAccessException ex) {
+					Logger.error("Cannot instantiate vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
+				}
+				catch (InstantiationException ex) {
+					Logger.error("Cannot instantiate vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
+				}
+
 			}
 			return null;
 		}

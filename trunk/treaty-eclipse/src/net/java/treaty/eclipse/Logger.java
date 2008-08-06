@@ -22,25 +22,25 @@ public class Logger {
 	   public static void info(String msg) {
 		      info(msg, null);
 	   }
-	   public static void info(String msg, Exception e) {
+	   public static void info(String msg, Throwable e) {
 	      log(msg,e,Status.INFO);
 	   }
 	   
 	   public static void warn(String msg) {
 		      warn(msg, null);
 	   }
-	   public static void warn(String msg, Exception e) {
+	   public static void warn(String msg, Throwable e) {
 	      log(msg,e,Status.WARNING);
 	   }
 	   
 	   public static void error(String msg) {
 		      error(msg, null);
 	   }
-	   public static void error(String msg, Exception e) {
+	   public static void error(String msg, Throwable e) {
 	      log(msg,e,Status.ERROR);
 	   }
 	   
-	   public static void log(String msg, Exception e,int status) {
+	   public static void log(String msg, Throwable e,int status) {
 		      Activator.getDefault().getLog().log(new Status(status, Activator.PLUGIN_ID, Status.OK, msg, e));
 	   }
 
