@@ -26,6 +26,10 @@ See the License for the specific language governing permissions
 and limitations under the License.
    </license>
 
+   <url>
+      <update label="Treaty" url="http://treaty.googlecode.com/svn/trunk/treaty-eclipse-updatesite/site.xml"/>
+   </url>
+
    <plugin
          id="net.java.treaty.eclipse"
          download-size="0"
