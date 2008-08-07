@@ -44,7 +44,6 @@
          </menu>
          <action
                label="Clock Example"
-               icon="icons/sample.gif"
                class="net.java.treaty.eclipse.example.clock.DisplayClockView"
                tooltip="Opens the clock sample application"
                menubarPath="treaty/treaty"
