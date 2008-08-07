@@ -10,12 +10,16 @@
 
 package net.java.treaty.eclipse.vocabulary.xml;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -83,18 +87,30 @@ public class XMLVocabulary implements  ContractVocabulary {
 			try {
 				URL schemaURL = (URL)res2.getValue();
 				URL instanceURL = (URL)res1.getValue();
-				SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-		        Schema schema = factory.newSchema(schemaURL);
-		        javax.xml.validation.Validator validator = schema.newValidator();
-		        InputStream in = instanceURL.openStream();
-		        Source source = new StreamSource(in);
-		        validator.validate(source);
-		        try {
-		        	in.close();
-		        }
-		        catch (Exception x){}
+				SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+				if (schemaURL==null) {
+					throw new VerificationException("Cannot validate XML instance against schema - schema URL is null for resource " +res2.getName());
+				}
+				else if (instanceURL==null) {
+					throw new VerificationException("Cannot validate XML instance against schema - instance URL is null for resource " +res1.getName());
+				}
+				else if (factory==null) {
+					throw new VerificationException("Cannot validate XML instance against schema - cannot load XML Schema factory");
+				}
+				else {
+			        Schema schema = factory.newSchema(schemaURL);
+			        javax.xml.validation.Validator validator = schema.newValidator();
+			        InputStream in = instanceURL.openStream();
+			        Source source = new StreamSource(in);
+			        validator.validate(source);
+			        try {
+			        	in.close();
+			        }
+			        catch (Exception x){}
+			        
+				}
 			} catch (Exception x) {
-				x.printStackTrace();
+				Logger.info("XML validation has failed", x);
 				throw new VerificationException("Validation of the XML document failed" ,x);
 			}
 			
@@ -107,9 +123,10 @@ public class XMLVocabulary implements  ContractVocabulary {
 	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException {
 		if (!type.toString().startsWith(NS)) 
 			throw new ResourceLoaderException("This plugin cannot be used to instantiate resources of this type: " + type);
-		
 		try {
-			return connector.getOwner().getResource(name);
+			Object value = connector.getOwner().getResource(name);
+			Logger.info("loaded resource " + name + " : " + value + " from plugin " + connector.getOwner().getId());
+			return value;
 		}
 		catch (Exception x) {
 			throw new ResourceLoaderException("Cannot locate xml resource: "+name,x);
