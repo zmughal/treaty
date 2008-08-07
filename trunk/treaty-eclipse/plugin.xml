@@ -18,7 +18,6 @@
          </menu>
          <action
                label="Contract Browser"
-               icon="icons/sample.gif"
                class="net.java.treaty.eclipse.actions.DisplayContractView"
                tooltip="List plugin contracts found"
                menubarPath="treaty/treaty"
@@ -26,11 +25,17 @@
          </action>
          <action
                label="Vocabulary Browser"
-               icon="icons/sample.gif"
                class="net.java.treaty.eclipse.actions.DisplayVocabularyView"
                tooltip="List installed contract vocabulary"
                menubarPath="treaty/treaty"
                id="net.java.treaty.eclipse.actions.DisplayVocabularyView">
+         </action>
+         <action
+               label="Documentation (online)"
+               class="net.java.treaty.eclipse.actions.OpenOnlineDoc"
+               tooltip="Opens the online documentation in a web browser"
+               menubarPath="treaty/treaty"
+               id="net.java.treaty.eclipse.actions.OpenOnlineDoc">
          </action>
       </actionSet>
    </extension>
