@@ -58,7 +58,7 @@ public class EclipsePlugin implements Component {
 	}
 	
 	public URL getResource(String adr) {
-		return this.getBundle().getResource(adr);
+		return this.getBundle().getEntry(adr);
 	}
 	
 	public boolean hasContracts() {
