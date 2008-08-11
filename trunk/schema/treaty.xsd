@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Paul A Robertson (Institute of Information Sciences and Technology) -->
-<!-- edited with XMLSpy v2006 rel. 3 U (http://www.altova.com) by Jens Dietrich (Massy University) -->
+<!-- edited by Jens Dietrich (Massy University) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="contract">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="extensionpoint">
+				<xs:element name="consumer">
 					<xs:complexType>
 						<xs:sequence minOccurs="0" maxOccurs="unbounded">
 							<xs:element ref="resource"/>
@@ -13,7 +12,7 @@
 						<xs:attribute name="id" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="extension">
+				<xs:element name="supplier">
 					<xs:complexType>
 						<xs:sequence minOccurs="0" maxOccurs="unbounded">
 							<xs:element ref="resource"/>
