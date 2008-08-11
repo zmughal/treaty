@@ -2,7 +2,7 @@
 <feature
       id="net.java.treaty.example.clock"
       label="Treaty Clock Example"
-      version="1.0.6"
+      version="1.0.7"
       provider-name="Jens Dietrich, Massey University">
 
    <description url="Treaty Contract Framework">
