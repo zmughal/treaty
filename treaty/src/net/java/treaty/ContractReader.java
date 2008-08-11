@@ -63,14 +63,14 @@ public class ContractReader  {
 		SimpleContract contract = new SimpleContract();
 		
 		// read extension resources
-		XPath xpath =  createXPath("/contract/extension/resource");
+		XPath xpath =  createXPath("/contract/supplier/resource");
 		List<Element> nodes = xpath.selectNodes(doc);
 		List<Resource> resources = readResources(nodes);
 		for (Resource r:resources) {
 			contract.addSupplierResource(r);
 		}
 		// read extension point resources
-		xpath =  createXPath("/contract/extensionpoint/resource");
+		xpath =  createXPath("/contract/consumer/resource");
 		nodes = xpath.selectNodes(doc);
 		resources = readResources(nodes);
 		for (Resource r:resources) {
