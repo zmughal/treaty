@@ -66,6 +66,11 @@ public class ContractView extends ViewPart {
 	private void initModel() {
 		plugins = new Builder().extractContracts();
 	}
+	
+	enum OwnerType {
+		extension, 
+		extensionpoint
+	}
 
 	class KeyValueNode {
 		String key,value = null;
@@ -133,6 +138,8 @@ public class ContractView extends ViewPart {
 	}
 
 	class ViewContentProvider implements IStructuredContentProvider, ITreeContentProvider {
+
+		
 		private TreeParent invisibleRoot;
 
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -234,6 +241,13 @@ public class ContractView extends ViewPart {
 		}
 		
 		private void addNodes(TreeParent parent,SimpleContract contract) {
+			Map<Resource,OwnerType> ownerTypes = new HashMap<Resource,OwnerType>();
+			for (Resource r:contract.getConsumerResources()) {
+				ownerTypes.put(r,OwnerType.extensionpoint);				
+			}
+			for (Resource r:contract.getSupplierResources()) {
+				ownerTypes.put(r,OwnerType.extension);				
+			}
 			/*
 			TreeParent rNode = new TreeParent("extension point resources");
 			parent.addChild(rNode);
@@ -253,31 +267,31 @@ public class ContractView extends ViewPart {
 				// top level conjunction displayed as set
 				if (c instanceof Conjunction) {
 					for (AbstractCondition c2:((Conjunction)c).getParts()) {
-						addNodes(parent,c2);
+						addNodes(parent,c2,ownerTypes);
 					}
 				}
-				else addNodes(parent,c);
+				else addNodes(parent,c,ownerTypes);
 			}
 		}
-		private void addResourceNode(TreeParent parent,Resource r) {
+		private void addResourceNode(TreeParent parent,Resource r,Map<Resource,OwnerType> ownerTypes) {
 			TreeParent node = new TreeParent(r);
 			parent.addChild(node);
-			addNodes(node,r);	
+			addNodes(node,r,ownerTypes);	
 		}
-		private void addNodes(TreeParent parent,AbstractCondition c) {
+		private void addNodes(TreeParent parent,AbstractCondition c,Map<Resource,OwnerType> ownerTypes) {
 			if (c instanceof RelationshipCondition) {
 				RelationshipCondition cc = (RelationshipCondition)c;
 				TreeParent node = new TreeParent(cc);
 				parent.addChild(node);
-				addResourceNode(node,cc.getResource1());
+				addResourceNode(node,cc.getResource1(),ownerTypes);
 				node.addChild(new TreeObject(new KeyValueNode("relationship",cc.getRelationship().toString())));
-				addResourceNode(node,cc.getResource2());
+				addResourceNode(node,cc.getResource2(),ownerTypes);
 			}
 			else if (c instanceof PropertyCondition) {
 				PropertyCondition cc = (PropertyCondition)c;
 				TreeParent node = new TreeParent(cc);
 				parent.addChild(node);
-				addResourceNode(node,cc.getResource());
+				addResourceNode(node,cc.getResource(),ownerTypes);
 				node.addChild(new TreeObject(new KeyValueNode("property",cc.getProperty().toString())));
 				node.addChild(new TreeObject(new KeyValueNode("value",""+cc.getValue())));
 			}
@@ -286,11 +300,11 @@ public class ContractView extends ViewPart {
 				TreeParent node = new TreeParent(cc);
 				parent.addChild(node);
 				for (AbstractCondition part:cc.getParts()) {
-					addNodes(node,part);
+					addNodes(node,part,ownerTypes);
 				}
 			}
 		}
-		private void addNodes(TreeParent parent,Resource r) {
+		private void addNodes(TreeParent parent,Resource r,Map<Resource,OwnerType> ownerTypes) {
 			parent.addChild(new TreeObject(new KeyValueNode("id",r.getId())));
 			parent.addChild(new TreeObject(new KeyValueNode("type",r.getType().toString())));			
 			if (r.getName()!=null) {
@@ -298,6 +312,10 @@ public class ContractView extends ViewPart {
 			}
 			else if (r.getRef()!=null) {
 				parent.addChild(new TreeObject(new KeyValueNode("reference",r.getRef())));
+			}
+			OwnerType otype = ownerTypes.get(r);
+			if (otype!=null) {
+				parent.addChild(new TreeObject(new KeyValueNode("provided by",otype.toString())));			
 			}
 			
 			// parent.addChild(new TreeObject(new KeyValueNode("value",""+r.getValue())));
