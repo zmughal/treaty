@@ -10,3 +10,4 @@ Require-Bundle: org.eclipse.ui,
  net.java.treaty.eclipse.example.clock
 Eclipse-LazyStart: true
 Export-Package: net.java.treaty.eclipse.example.clock.shortdateformatter
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

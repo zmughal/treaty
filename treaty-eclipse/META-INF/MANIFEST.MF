@@ -16,3 +16,4 @@ Bundle-ClassPath: .,
  lib/jdom.jar
 Export-Package: net.java.treaty,
  net.java.treaty.eclipse
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

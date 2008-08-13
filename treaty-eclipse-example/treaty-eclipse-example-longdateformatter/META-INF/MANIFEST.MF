@@ -9,3 +9,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Eclipse-LazyStart: true
 Import-Package: net.java.treaty.eclipse.example.clock
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

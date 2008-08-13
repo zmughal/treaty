@@ -10,3 +10,4 @@ Require-Bundle: org.eclipse.ui,
  net.java.treaty.eclipse,
  org.junit4;visibility:=reexport
 Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
