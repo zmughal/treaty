@@ -9,3 +9,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  net.java.treaty.eclipse
 Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

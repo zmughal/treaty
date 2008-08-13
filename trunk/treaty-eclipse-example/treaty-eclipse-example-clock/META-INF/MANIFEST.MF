@@ -12,3 +12,4 @@ Eclipse-LazyStart: true
 Export-Package: net.java.treaty.eclipse.example.clock
 Bundle-ClassPath: .,
  lib/jdom.jar
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
