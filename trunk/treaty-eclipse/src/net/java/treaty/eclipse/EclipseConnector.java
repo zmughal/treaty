@@ -15,6 +15,7 @@ import java.net.URL;
 import net.java.treaty.Component;
 import net.java.treaty.Connector;
 import net.java.treaty.Contract;
+import net.java.treaty.PropertySupport;
 import net.java.treaty.SimpleContract;
 import net.java.treaty.TreatyException;
 import net.java.treaty.ContractReader;
@@ -24,7 +25,7 @@ import net.java.treaty.ContractReader;
  * @author Jens Dietrich
  */
 
-public abstract class EclipseConnector implements Connector {
+public abstract class EclipseConnector extends PropertySupport implements Connector {
 	
 	public static String getContractLocation(Connector c) {
 		return "/META-INF/"+c.getId()+".contract";

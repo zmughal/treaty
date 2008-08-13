@@ -1,15 +1,5 @@
 package net.java.treaty.eclipse;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.osgi.framework.Bundle;
-
-import net.java.treaty.Component;
-import net.java.treaty.Connector;
-import net.java.treaty.Contract;
-
 /*
  * Copyright (C) 2008 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
@@ -20,12 +10,21 @@ import net.java.treaty.Contract;
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import org.osgi.framework.Bundle;
+import net.java.treaty.Component;
+import net.java.treaty.Connector;
+import net.java.treaty.Contract;
+import net.java.treaty.PropertySupport;
+
 /**
  * Represents plugins. This is a wrapper class.
  * @author Jens Dietrich
  */
 
-public class EclipsePlugin implements Component {
+public class EclipsePlugin extends PropertySupport implements Component {
 
 	private List<EclipseExtensionPoint> extensionPoints = new ArrayList<EclipseExtensionPoint>();
 	private List<EclipseExtension> extensions = new ArrayList<EclipseExtension>();
