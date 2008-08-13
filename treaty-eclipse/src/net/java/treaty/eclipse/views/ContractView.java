@@ -400,10 +400,10 @@ public class ContractView extends ViewPart {
 		}
 		// get the load/verification status as string
 		private String getStatus(Object n) {
-			if (n instanceof Constraint) {
-				Constraint c = (Constraint)n;
+			if (n instanceof Annotatable) {
+				Annotatable c = (Annotatable)n;
 				Object status = c.getProperty(VERIFICATION_RESULT);
-				if (!c.isInstantiated()) {
+				if (c instanceof Constraint && !((Constraint)c).isInstantiated()) {
 					return "not instantiated";
 				}
 				if (status==VerificationResult.FAILURE) {
@@ -420,10 +420,10 @@ public class ContractView extends ViewPart {
 		}
 		// get the load/verification status icon
 		private Image getStatusIcon(Object n) {
-			if (n instanceof Constraint) {
-				Constraint c = (Constraint)n;
+			if (n instanceof Annotatable) {
+				Annotatable c = (Annotatable)n;
 				Object status = c.getProperty(VERIFICATION_RESULT);
-				if (!c.isInstantiated()) {
+				if (c instanceof Constraint && !((Constraint)c).isInstantiated()) {
 					return null;
 				}
 				if (status==VerificationResult.FAILURE) {
@@ -667,16 +667,18 @@ public class ContractView extends ViewPart {
 		for (EclipsePlugin p:plugins) {
 			contracts.addAll(p.getInstantiatedContracts());
 		}
-		final VerificationReport dummyReport = new VerificationReport() {
+		final VerificationReport verReport = new VerificationReport() {
+			Contract contract = null;
 			public Contract getContract() {
-				return null;
+				return contract;
 			}
 			public void log(Object context, VerificationResult result,String... remarks) {
-				if (context instanceof PropertySupport) {
-					((PropertySupport)context).setProperty(VERIFICATION_RESULT,result);
+				if (context instanceof AbstractCondition) {
+					((AbstractCondition)context).setProperty(VERIFICATION_RESULT,result);
 				}
 			}
-			public void setContract(Contract contract) {				
+			public void setContract(Contract contract) {
+				this.contract=contract;
 			}			
 		};
 	    final Job job = new Job("Treaty component verification") {
@@ -710,9 +712,10 @@ public class ContractView extends ViewPart {
 	        	monitor.subTask("checking contracts");
 	        	for (Contract c:contracts) {
 	        		//System.out.println("checking contract " + c);
-	        		boolean result = c.check(dummyReport, verifier);
+	        		boolean result = c.check(verReport, verifier);
 	        		if (!result) failedContracts.add(c);
 	        		doneContracts.add(c);
+	        		propagateResults(c);
 	        		monitor.worked(1);
 	        		updateTree(false);
 	        		if (monitor.isCanceled()) return Status.CANCEL_STATUS;
@@ -737,6 +740,43 @@ public class ContractView extends ViewPart {
 	    job.schedule();
 
 	}
+	private void combineResults(Annotatable a,Annotatable part) {
+		VerificationResult r = (VerificationResult)part.getProperty(VERIFICATION_RESULT);
+		if (r==null) {
+			r = VerificationResult.UNKNOWN;
+		}
+		VerificationResult old = (VerificationResult)a.getProperty(VERIFICATION_RESULT);
+		if (old==null) {
+			a.setProperty(VERIFICATION_RESULT, r);
+		}
+		else if (r==VerificationResult.FAILURE) {
+			a.setProperty(VERIFICATION_RESULT, VerificationResult.FAILURE);
+		}
+		else if (r==VerificationResult.SUCCESS && old==VerificationResult.SUCCESS) {
+			//keep success
+		}
+		else if (r==VerificationResult.UNKNOWN && old==VerificationResult.SUCCESS) {
+			a.setProperty(VERIFICATION_RESULT, VerificationResult.UNKNOWN);
+		}	
+	}
+	private void propagateResults(Contract c) {
+		if (c instanceof AggregatedContract) {
+			AggregatedContract ac = (AggregatedContract)c;
+			for (Contract part:ac.getParts()) {
+				propagateResults(part);
+				combineResults(ac,part);
+			}
+		}
+		else if (c instanceof SimpleContract) {
+			SimpleContract sc = (SimpleContract)c;
+			for (AbstractCondition part:sc.getConstraints()) {
+				combineResults(sc,part);	
+				combineResults(sc.getSupplier(),sc);
+				combineResults(sc.getSupplier().getOwner(),sc.getSupplier());
+			}
+		}
+	}
+
 	private void reportVerificationResult(List<Contract> allContracts, List<Contract> failedContracts) {
 		int c = allContracts.size();
 		int f = failedContracts.size();
@@ -774,6 +814,10 @@ public class ContractView extends ViewPart {
 			for (AbstractCondition cond:sc.getConstraints()) {
 				resetVerificationStatus(cond);
 			}
+			sc.getSupplier().removeProperty(VERIFICATION_RESULT);
+			sc.getConsumer().removeProperty(VERIFICATION_RESULT);
+			sc.getSupplier().getOwner().removeProperty(VERIFICATION_RESULT);
+			sc.getConsumer().getOwner().removeProperty(VERIFICATION_RESULT);
 		}
 	}
 
