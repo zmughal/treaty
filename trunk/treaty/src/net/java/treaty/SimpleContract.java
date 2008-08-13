@@ -153,6 +153,7 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	 * @see nz.ac.massey.treaty.IContract#check(nz.ac.massey.treaty.verification.VerificationReport, nz.ac.massey.treaty.verification.ConditionVerifier)
 	 */
 	public boolean check(VerificationReport report,Verifier verifier) {
+		report.setContract(this);
 		boolean result = true;
 		for (AbstractCondition p:this.constraints) 
 			result = result && p.check(report,verifier); 

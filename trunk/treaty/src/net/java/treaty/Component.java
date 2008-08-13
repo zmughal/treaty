@@ -20,9 +20,22 @@ import java.util.List;
  */
 
 
-public interface Component {
+public interface Component extends Annotatable {
+	/**
+	 * Get a unique id.
+	 * @return
+	 */
 	String getId();
+	/**
+	 * Get a list of connectors.
+	 * @return
+	 */
 	List<Connector> getConnectors();
+	/**
+	 * Get the resource for the given name.
+	 * @param adr
+	 * @return
+	 */
 	URL getResource(String adr);
 	
 }

@@ -10,27 +10,43 @@
 
 package net.java.treaty;
 
+import java.util.Iterator;
+
+
 /**
- * This interface abstracts from extension points (consuming) and extensions (providing).  
+ * Interface for a general-purpose annotation mechanism.  
  * @author Jens Dietrich
  */
 
-public interface Connector extends Annotatable {
-	/**
-	 * Indicates the connector type.
-	 * @return
-	 */
-	ConnectorType getType();
-	/**
-	 * Get the connector id.
-	 * For instance, this could be the id of the eclipse extension point or extension.
-	 * @return
-	 */
-	String getId();
-	/**
-	 * Get the component that owns this connector.
-	 * @return
-	 */
-	Component getOwner();
 
+public interface Annotatable {
+
+	/**
+	 * Add a new property.public boolean isInstantiated()
+	 * @param key
+	 * @param value
+	 */
+	public abstract void setProperty(String key, Object value);
+
+	/**
+	 * Removes a property.
+	 * @param key
+	 * @return the value of the removed annotation or null if there is no such property
+	 */
+	public abstract Object removeProperty(String key);
+
+	/**
+	 * Get the annotation for a given key.
+	 * @param key
+	 * @return
+	 */
+	public abstract Object getProperty(String key);
+
+	/**
+	 * Get the property keys.
+	 * @return an iterator
+	 */
+	public abstract Iterator<String> getPropertyNames();
+
+	
 }

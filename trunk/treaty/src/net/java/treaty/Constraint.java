@@ -19,34 +19,8 @@ import java.util.Iterator;
  */
 
 
-public interface Constraint extends Visitable{
+public interface Constraint extends Visitable,Annotatable{
 
-	/**
-	 * Add a new property.public boolean isInstantiated()
-	 * @param key
-	 * @param value
-	 */
-	public abstract void setProperty(String key, Object value);
-
-	/**
-	 * Removes a property.
-	 * @param key
-	 * @return the value of the removed annotation or null if there is no such property
-	 */
-	public abstract Object removeProperty(String key);
-
-	/**
-	 * Get the annotation for a given key.
-	 * @param key
-	 * @return
-	 */
-	public abstract Object getProperty(String key);
-
-	/**
-	 * Get the property keys.
-	 * @return an iterator
-	 */
-	public abstract Iterator<String> getPropertyNames();
 	/**
 	 * Check the condition.
 	 * @param report a report that can be used to log details
