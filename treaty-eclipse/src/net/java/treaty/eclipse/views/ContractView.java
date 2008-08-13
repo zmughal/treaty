@@ -424,7 +424,7 @@ public class ContractView extends ViewPart {
 				Annotatable c = (Annotatable)n;
 				Object status = c.getProperty(VERIFICATION_RESULT);
 				if (c instanceof Constraint && !((Constraint)c).isInstantiated()) {
-					return null;
+					return getIcon("status_notinstantiated.gif");
 				}
 				if (status==VerificationResult.FAILURE) {
 					return getIcon("status_failure.gif");
@@ -773,6 +773,8 @@ public class ContractView extends ViewPart {
 				combineResults(sc,part);	
 				combineResults(sc.getSupplier(),sc);
 				combineResults(sc.getSupplier().getOwner(),sc.getSupplier());
+				combineResults(sc.getConsumer(),sc);
+				combineResults(sc.getConsumer().getOwner(),sc.getSupplier());
 			}
 		}
 	}
