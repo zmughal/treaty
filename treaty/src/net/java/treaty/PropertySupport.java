@@ -13,11 +13,11 @@ package net.java.treaty;
 import java.util.*;
 
 /**
- * Interface for classes that can be annotated.
+ * Abstract superclass for classes that can be annotated.
  * @author <a href="http://www-ist.massey.ac.nz/JBDietrich/">Jens Dietrich</a>
  */
 
-public abstract class PropertySupport implements Constraint {
+public abstract class PropertySupport  implements Annotatable {
 	
 	private Map<String,Object> properties = new HashMap<String,Object>();
 	
