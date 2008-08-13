@@ -44,7 +44,6 @@ public class EclipsePlugin implements Component {
 		this.extensionPoints.add(xp);
 	}
 	
-	@Override
 	public String getId() {
 		return this.bundle.getSymbolicName();
 	}
@@ -75,8 +74,6 @@ public class EclipsePlugin implements Component {
 	public List<EclipseExtension> getExtensions() {
 		return extensions;
 	}
-
-	@Override
 	public List<Connector> getConnectors() {
 		List<Connector> connectors = new ArrayList<Connector>();
 		connectors.addAll(this.getExtensionPoints());

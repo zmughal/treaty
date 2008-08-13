@@ -40,7 +40,6 @@ public class EclipseExtensionPoint extends EclipseConnector {
 		owner.addExtensionPoint(this);
 	}
 	
-	@Override
 	public ConnectorType getType() {
 		return ConnectorType.CONSUMER;
 	}
@@ -61,7 +60,6 @@ public class EclipseExtensionPoint extends EclipseConnector {
 		return false;
 	}
 
-	@Override
 	public String getId() {
 		return this.extensionPoint.getUniqueIdentifier();
 	}

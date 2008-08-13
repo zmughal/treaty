@@ -57,7 +57,6 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 	}
 
 	
-	@Override
 	public void check(RelationshipCondition condition) throws VerificationException {
 		URI uri = condition.getRelationship();
 		try {
@@ -76,7 +75,6 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		return;
 	}
 	
-	@Override
 	public void check(PropertyCondition condition) throws VerificationException {
 		URI uri = condition.getProperty();
 		try {
@@ -101,8 +99,6 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		throw new VerificationException("No vocabulary found to check condition with predicate " + uri);
 	}
 	
-
-	@Override
 	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException {
 		for (ContractVocabulary voc:vocContributions) {
 			if (voc.getContributedTypes().contains(type)) {

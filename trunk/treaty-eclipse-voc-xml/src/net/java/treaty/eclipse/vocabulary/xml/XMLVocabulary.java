@@ -133,7 +133,6 @@ public class XMLVocabulary implements  ContractVocabulary {
 		}
 	}
 	
-	@Override
 	public void check(PropertyCondition relationshipCondition) throws VerificationException {
 		throw new VerificationException("This vocabulary does not define property conditions");
 	}

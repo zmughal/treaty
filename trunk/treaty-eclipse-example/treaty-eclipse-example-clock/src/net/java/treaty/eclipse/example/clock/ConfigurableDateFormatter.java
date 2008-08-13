@@ -28,7 +28,6 @@ public class ConfigurableDateFormatter implements DateFormatter {
 	public String format(Date date) {
 		return format.format(date);
 	}
-	@Override
 	public String getName() {
 		return "date formatter configured by an xml file";
 	}

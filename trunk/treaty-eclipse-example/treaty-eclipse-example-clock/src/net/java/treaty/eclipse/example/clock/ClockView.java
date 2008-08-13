@@ -175,7 +175,6 @@ public class ClockView extends ViewPart {
 		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener(){
 
-			@Override
 			public void selectionChanged(SelectionChangedEvent e) {
 				int idx = viewer.getTable().getSelectionIndex();
 				if (idx>-1) {

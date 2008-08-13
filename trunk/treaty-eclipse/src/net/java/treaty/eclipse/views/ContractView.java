@@ -488,19 +488,15 @@ public class ContractView extends ViewPart {
 			
 			return null;
 		}
-		@Override
 		public void addListener(ILabelProviderListener arg0) {
 			
 		}
-		@Override
 		public boolean isLabelProperty(Object arg0, String arg1) {
 			return false;
 		}
-		@Override
 		public void removeListener(ILabelProviderListener arg0) {
 			
 		}
-		@Override
 		public void dispose() {
 		}
 		
@@ -677,17 +673,14 @@ public class ContractView extends ViewPart {
 			contracts.addAll(p.getInstantiatedContracts());
 		}
 		final VerificationReport dummyReport = new VerificationReport() {
-			@Override
 			public Contract getContract() {
 				return null;
 			}
-			@Override
 			public void log(Object context, VerificationResult result,String... remarks) {
 				if (context instanceof PropertySupport) {
 					((PropertySupport)context).setProperty(VERIFICATION_RESULT,result);
 				}
 			}
-			@Override
 			public void setContract(Contract contract) {				
 			}			
 		};
@@ -733,26 +726,11 @@ public class ContractView extends ViewPart {
 
 	    };
 	    job.addJobChangeListener(new IJobChangeListener() {
-
-			@Override
-			public void aboutToRun(IJobChangeEvent e) {}
-
-			@Override
-			public void awake(IJobChangeEvent e) {}
-
-			@Override
-			public void done(IJobChangeEvent e) {
-				updateTree(false);
-			}
-
-			@Override
-			public void running(IJobChangeEvent e) {
-			}
-
-			@Override
-			public void scheduled(IJobChangeEvent e) {}
-
-			@Override
+	    	public void aboutToRun(IJobChangeEvent e) {}			
+			public void awake(IJobChangeEvent e) {}			
+			public void done(IJobChangeEvent e) {updateTree(false);}			
+			public void running(IJobChangeEvent e) {}			
+			public void scheduled(IJobChangeEvent e) {}			
 			public void sleeping(IJobChangeEvent e) {}
 		});
 	    
