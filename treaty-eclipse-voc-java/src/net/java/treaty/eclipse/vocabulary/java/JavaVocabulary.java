@@ -113,7 +113,6 @@ public class JavaVocabulary implements  ContractVocabulary {
 			throw new VerificationException("predicate not supported + " + rel);
 	}
 
-	@Override
 	public void check(PropertyCondition relationshipCondition) throws VerificationException {
 		throw new VerificationException("This vocabulary does not define property conditions");
 	}

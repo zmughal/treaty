@@ -30,7 +30,6 @@ import net.java.treaty.ResourceLoaderException;
 
 public class EclipseResourceManager implements ResourceManager {
 
-	@Override
 	public String resolve(URI type, String ref,net.java.treaty.Connector connector)	throws ResourceLoaderException {
 		if (! (connector instanceof EclipseExtension)) {
 			throw new ResourceLoaderException("This resource loader can only bind resources from EclipseExtensions");

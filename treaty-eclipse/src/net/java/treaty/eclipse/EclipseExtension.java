@@ -35,12 +35,10 @@ public class EclipseExtension extends EclipseConnector {
 		this.setOwner(owner);
 	}
 
-	@Override
 	public ConnectorType getType() {
 		return ConnectorType.SUPPLIER;
 	}
 
-	@Override
 	public String getId() {
 		return this.extension.getUniqueIdentifier();
 	}

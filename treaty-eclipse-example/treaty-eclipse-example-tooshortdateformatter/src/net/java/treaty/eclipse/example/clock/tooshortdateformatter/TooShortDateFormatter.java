@@ -22,11 +22,11 @@ import net.java.treaty.eclipse.example.clock.DateFormatter;
 
 public class TooShortDateFormatter implements DateFormatter {
 	private SimpleDateFormat DF = new SimpleDateFormat("dd.MM. HH.mm.ss");
-	@Override
+	
 	public String format(Date date) {
 		return DF.format(date);
 	}
-	@Override
+	
 	public String getName() {
 		return "too short date format";
 	}

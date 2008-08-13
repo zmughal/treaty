@@ -23,12 +23,11 @@ import net.java.treaty.eclipse.example.clock.DateFormatter;
 public class LongDateFormatter implements DateFormatter {
 
 	static DateFormat DF = DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG);
-	@Override
+	
 	public String format(Date date) {
 		return DF.format(date);
 	}
 
-	@Override
 	public String getName() {
 		return "long date format";
 	}
