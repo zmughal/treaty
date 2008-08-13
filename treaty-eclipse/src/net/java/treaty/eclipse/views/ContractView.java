@@ -628,13 +628,6 @@ public class ContractView extends ViewPart {
 		actVerify.setToolTipText("runs verification");
 	}
 
-	private void showMessage(String message) {
-		MessageDialog.openInformation(
-			viewer.getControl().getShell(),
-			"Plugin Contracts",
-			message);
-	}
-
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
@@ -669,6 +662,8 @@ public class ContractView extends ViewPart {
 	private void actVerify () {
 		// collect contracts
 		final List<Contract> contracts = new ArrayList<Contract>();
+		final List<Contract> failedContracts = new ArrayList<Contract>();
+		final List<Contract> doneContracts = new ArrayList<Contract>();
 		for (EclipsePlugin p:plugins) {
 			contracts.addAll(p.getInstantiatedContracts());
 		}
@@ -715,7 +710,9 @@ public class ContractView extends ViewPart {
 	        	monitor.subTask("checking contracts");
 	        	for (Contract c:contracts) {
 	        		//System.out.println("checking contract " + c);
-	        		c.check(dummyReport, verifier);
+	        		boolean result = c.check(dummyReport, verifier);
+	        		if (!result) failedContracts.add(c);
+	        		doneContracts.add(c);
 	        		monitor.worked(1);
 	        		updateTree(false);
 	        		if (monitor.isCanceled()) return Status.CANCEL_STATUS;
@@ -728,7 +725,10 @@ public class ContractView extends ViewPart {
 	    job.addJobChangeListener(new IJobChangeListener() {
 	    	public void aboutToRun(IJobChangeEvent e) {}			
 			public void awake(IJobChangeEvent e) {}			
-			public void done(IJobChangeEvent e) {updateTree(false);}			
+			public void done(IJobChangeEvent e) {
+				updateTree(false);
+				reportVerificationResult(doneContracts,failedContracts);
+			}			
 			public void running(IJobChangeEvent e) {}			
 			public void scheduled(IJobChangeEvent e) {}			
 			public void sleeping(IJobChangeEvent e) {}
@@ -737,6 +737,29 @@ public class ContractView extends ViewPart {
 	    job.schedule();
 
 	}
+	private void reportVerificationResult(List<Contract> allContracts, List<Contract> failedContracts) {
+		int c = allContracts.size();
+		int f = failedContracts.size();
+		String message = null;
+		if (failedContracts.size()==0) {
+			message = ""+c+" contract instances have been verified successfully";
+		}
+		else {
+			message = ""+c+" contract instances checked, verification has failed for "
+			+f+" contract instances. Verification status annotations have been added to the contract view.";	
+		}
+		final String m = message;
+		Runnable r = new Runnable() {
+			public void run() {			
+				MessageDialog.openInformation(
+					viewer.getControl().getShell(),
+					"Verification result",
+					m);
+			}
+		};
+		viewer.getControl().getDisplay().syncExec(r);
+	}
+
 	private void resetVerificationStatus(Contract c) {
 		c.removeProperty(VERIFICATION_RESULT);
 		c.removeProperty(VERIFICATION_EXCEPTION);
