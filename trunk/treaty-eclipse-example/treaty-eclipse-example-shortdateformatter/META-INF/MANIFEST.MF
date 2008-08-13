@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Short date formatter
 Bundle-SymbolicName: net.java.treaty.eclipse.example.clock.shortdateformatter;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: net.java.treaty.eclipse.example.clock.shortdateformatter.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,
