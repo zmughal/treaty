@@ -79,5 +79,9 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+   </extension>
+
 
 </plugin>

@@ -27,7 +27,7 @@ import net.java.treaty.eclipse.EclipsePlugin;
 
 public class JavaVocabulary implements  ContractVocabulary {
 
-	public static final String NS = "http://www.massey.ac.nz/se/plugincontracts/java/";
+	public static final String NS = "http://www.treaty.org/java#";
 	// types
 	public static final String ABSTRACT_TYPE = NS+"AbstractType";
 	public static final String INSTANTIABLE_CLASS = NS+"InstantiableClass";

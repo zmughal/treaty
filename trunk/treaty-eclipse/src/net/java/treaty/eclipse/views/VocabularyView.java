@@ -13,13 +13,17 @@ package net.java.treaty.eclipse.views;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import net.java.treaty.eclipse.*;
-import net.java.treaty.ContractVocabulary;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.part.*;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -27,12 +31,7 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IContributor;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
+import org.semanticweb.owl.model.*;
 
 
 /**
@@ -43,17 +42,16 @@ import org.eclipse.core.runtime.Platform;
 public class VocabularyView extends ViewPart {
 	
 	private TreeViewer viewer;
+	private StyledText text;
 	private DrillDownAdapter drillDownAdapter;
 	private Action actRefresh;
 	
 	private Image ICON_PLUGIN = this.getImageDescriptor("icons/plugin.gif").createImage();
-	private Image ICON_EXTENSION = this.getImageDescriptor("icons/extension.gif").createImage();
-	private Image ICON_PREDICATE = this.getImageDescriptor("icons/link.gif").createImage();
-	private Image ICON_TYPE = this.getImageDescriptor("icons/class.gif").createImage();
+	private Image ICON_PREDICATE = this.getImageDescriptor("icons/owl_property.gif").createImage();
+	private Image ICON_TYPE = this.getImageDescriptor("icons/owl_class.gif").createImage();
 	
 	class KeyValueNode {
 		String key,value = null;
-
 		public KeyValueNode(String key, String value) {
 			super();
 			this.key = key;
@@ -155,96 +153,147 @@ public class VocabularyView extends ViewPart {
 	 */
 		private void initialize() {		
 			invisibleRoot = new TreeParent("");
-			addNodes(invisibleRoot);
+			Vocabulary vocabulary = Vocabulary.getDefault();
+			addNodes(invisibleRoot,vocabulary.getOntology());
 		}
 
-		private void addNodes(TreeParent parent) {
-			IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
-			IExtensionPoint xp = registry.getExtensionPoint("net.java.treaty.eclipse.vocabulary");
-			for (IExtension x:xp.getExtensions()) {
-				TreeParent node = new TreeParent(x.getContributor());
-				parent.addChild(node);	
-				addNodes(node,x);								
-			}		
+		private void addNodes(TreeParent parent,OWLOntology ontology) {
+				addNodes(parent,ontology,0);
 		}
-		private void addNodes(TreeParent parent,IExtension x) {
-			ContractVocabulary voc = loadVocabulary(x);
-			if (voc!=null) {	
-				addNodes(parent,voc);	
+		private void addNodes(TreeParent parent, OWLOntology ontology,int level) {
+			// MAX LEVEL to handle loops
+			if (level>=42) {				
+				return;
 			}
-		}
-		private void addNodes(TreeParent parent,ContractVocabulary voc) {
-			TreeParent node = new TreeParent("contributed types");
-			parent.addChild(node);	
-			for (URI type:voc.getContributedTypes()) {
-				TreeObject n = new TreeObject(type);
-				node.addChild(n);
-			};
-			node = new TreeParent("contributed predicates");
-			parent.addChild(node);	
-			for (URI type:voc.getContributedPredicates()) {
-				TreeObject n = new TreeObject(type);
-				node.addChild(n);
-			};
-		}
-		
-		private ContractVocabulary loadVocabulary(IExtension x) {
-			IConfigurationElement[] attributes = x.getConfigurationElements();
-			String pluginId = x.getContributor().getName();
-			for (int j=0;j<attributes.length;j++) {
-				IConfigurationElement p = attributes[j];
-				String clazz = p.getAttribute("class");
-				try {
-					Class c = Platform.getBundle(pluginId).loadClass(clazz);
-					return (ContractVocabulary)c.newInstance();
+			
+			if (level==0) {
+				// add classes without superclass axioms
+				for (OWLClass c:ontology.getReferencedClasses()) {
+					Collection<OWLSubClassAxiom> sca =ontology.getSubClassAxiomsForLHS(c) ;
+					// TODO check if owl:Thing is declared as superclass
+					boolean toplevel = sca.size()==0;
+					if (!toplevel && sca.size()==1) {
+						OWLDescription sc = sca.iterator().next().getSuperClass();
+						toplevel = sc.isOWLThing();
+					}
+					if (toplevel && !c.isOWLThing()) {
+						TreeParent node = new TreeParent(c);
+						parent.addChild(node);
+						addNodes(node,ontology,level+1);
+					}
 				}
-				catch (ClassNotFoundException ex) {
-					Logger.error("Cannot load vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
-				}
-				catch (IllegalAccessException ex) {
-					Logger.error("Cannot instantiate vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
-				}
-				catch (InstantiationException ex) {
-					Logger.error("Cannot instantiate vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
-				}
-
 			}
-			return null;
+			else {
+				OWLClass superClass = (OWLClass)parent.getObject();
+				for (OWLClass c:ontology.getReferencedClasses()) {
+					for (OWLSubClassAxiom ax:ontology.getSubClassAxiomsForLHS(c)) {
+						if (superClass.equals(ax.getSuperClass())) {
+							TreeParent node = new TreeParent(c);
+							parent.addChild(node);
+							addNodes(node,ontology,level+1);
+						}
+					}
+				}
+				// add properties
+				for (OWLObjectProperty p:ontology.getReferencedObjectProperties()) {
+					for (OWLDescription d:p.getDomains(ontology)) {
+						if (d.equals(superClass)) {
+							TreeObject node = new TreeObject(p);
+							parent.addChild(node);	
+						}
+					}
+				}
+			}
+			
 		}
-		
 		
 	}
-	class ViewLabelProvider extends LabelProvider {
-		
-		public String getText(Object n) {
+	class ViewLabelProvider implements ITableLabelProvider {
+		public URI LABEL_ANNOTATION = URI.create("http://www.w3.org/2000/01/rdf-schema#label");
+		public String getColumnText(Object n, int col) {
 			Object obj = ((TreeObject)n).getObject();
-			if (obj instanceof IExtension) {
-				String id = ((IExtension)obj).getUniqueIdentifier();
-				return id==null?obj.toString():id;
+			if (col==0 && obj instanceof OWLNamedObject) {
+				URI uri = ((OWLNamedObject)obj).getURI();
+				return uri==null?obj.toString():uri.toString();
 			}
-			else if (obj instanceof IContributor) {
-				return ((IContributor)obj).getName();
+			else if (col==1 && obj instanceof OWLEntity) {
+				OWLEntity c = (OWLEntity)obj;
+				for (OWLAnnotation ann:c.getAnnotations(Vocabulary.getDefault().getOntology(),LABEL_ANNOTATION)){
+					String value = ann.getAnnotationValue()==null?null:ann.getAnnotationValue().toString();
+					if (value!=null && value.startsWith(Vocabulary.OWNER_ANNOTATION)) {
+						return value.substring(Vocabulary.OWNER_ANNOTATION.length()+1);
+					}
+				}
+				return "";
 			}
-			else return obj.toString();
+			else if (col==2 && obj instanceof OWLObjectProperty) {
+				OWLObjectProperty p = (OWLObjectProperty)obj;
+				StringBuffer b = new StringBuffer();
+				for (OWLDescription r:p.getRanges(Vocabulary.getDefault().getOntology())) {
+					if (b.length()>0) {
+						b.append(',');
+					}
+					if (r instanceof OWLNamedObject) {
+						b.append(((OWLNamedObject)r).getURI());
+					}
+					else {
+						b.append(r);
+					}
+				}
+				return b.toString();
+			}
+			else if (col==2 && obj instanceof OWLDataProperty) {
+				OWLDataProperty p = (OWLDataProperty)obj;
+				StringBuffer b = new StringBuffer();
+				for (OWLDataRange r:p.getRanges(Vocabulary.getDefault().getOntology())) {
+					if (b.length()>0) {
+						b.append(',');
+					}
+					if (r instanceof OWLNamedObject) {
+						b.append(((OWLNamedObject)r).getURI());
+					}
+					else {
+						b.append(r);
+					}
+				}
+				return b.toString();
+			}
+			else return "";
 		}
-		public Image getImage(Object n) {
+		public Image getColumnImage(Object n, int col) {
 			Object obj = ((TreeObject)n).getObject();
-			
-			if (obj instanceof IContributor) {
-				return ICON_PLUGIN;
-			}		
-			else if (obj instanceof IExtension) {
-				return ICON_EXTENSION;
+			if (col==0 && obj instanceof OWLClass) {
+				return ICON_TYPE;
+			}
+			else if (col==0 && obj instanceof OWLObjectProperty) {
+				return ICON_PREDICATE;
+			}
+			else if (col==1) {
+				String txt = getColumnText(n,col);
+				if (txt!=null && txt.length()>0) {
+					return ICON_PLUGIN;
+				}				
+			}
+			else if (col==2) {
+				String txt = getColumnText(n,col);
+				if (txt!=null && txt.length()>0) {
+					return ICON_TYPE;
+				}				
 			}
 
-			else if (n instanceof TreeParent) {
-				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
-			}
-			
 			return null;
 		}
-		
-
+		public void addListener(ILabelProviderListener arg0) {
+			
+		}
+		public boolean isLabelProperty(Object arg0, String arg1) {
+			return false;
+		}
+		public void removeListener(ILabelProviderListener arg0) {
+			
+		}
+		public void dispose() {
+		}
 	}
 
 	/**
@@ -262,15 +311,42 @@ public class VocabularyView extends ViewPart {
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		
+		final TabFolder tabFolder = new TabFolder(parent, SWT.BORDER);
+		
+		TabItem tabItem1 = new TabItem(tabFolder, SWT.NULL);
+	    tabItem1.setText("types and properties");
+
+	    viewer = new TreeViewer(tabFolder, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);	    
+
+		viewer.getTree().setHeaderVisible(true);		
+		TreeColumn col1 = new TreeColumn(viewer.getTree(), SWT.LEFT);
+	    col1.setText("type or property");
+	    col1.setWidth(350);
+		TreeColumn col2 = new TreeColumn(viewer.getTree(), SWT.LEFT);
+	    col2.setText("contributed by"); 
+	    col2.setWidth(300);
+		TreeColumn col3 = new TreeColumn(viewer.getTree(), SWT.LEFT);
+	    col3.setText("property type (range)"); 
+	    col3.setWidth(200);
+	    
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setInput(getViewSite());		
+	    viewer.setInput(getViewSite());	
 	    
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
+		
+		tabItem1.setControl(viewer.getControl());
+		
+		TabItem tabItem2 = new TabItem(tabFolder, SWT.NULL);
+	    tabItem2.setText("merged ontology (owl)");	
+	    text = new StyledText(tabFolder, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	    text.setText(Vocabulary.getDefault().getOWL());
+	    tabItem2.setControl(text);
+		
 	}
 
 	private void hookContextMenu() {
@@ -313,7 +389,11 @@ public class VocabularyView extends ViewPart {
 	private void makeActions() {
 		actRefresh = new Action() {
 			public void run() {
+				text.setText("");
+				Vocabulary.reset();
+				Vocabulary.getDefault();
 				viewer.setContentProvider(new ViewContentProvider());
+				text.setText(Vocabulary.getDefault().getOWL());
 			}
 		};
 		actRefresh.setText("refresh");
@@ -339,7 +419,6 @@ public class VocabularyView extends ViewPart {
 	@Override
 	public void dispose() {
 		ICON_PLUGIN.dispose();
-		ICON_EXTENSION.dispose();
 		ICON_PREDICATE.dispose();
 		ICON_TYPE.dispose();
 		super.dispose();
