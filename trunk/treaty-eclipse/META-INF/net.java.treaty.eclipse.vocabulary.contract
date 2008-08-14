@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- example contract as used in the prototype -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.1/schema/treaty.xsd">
+	<consumer>
+		<resource id="VocabularyDef">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<!-- this is the actual class name, it can be loaded with the plugin classloader -->
+			<name>net.java.treaty.ContractVocabulary</name>
+		</resource>
+	</consumer>
+	<supplier>
+		<resource id="ContributedVocabulary">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>/vocabulary/@class</ref>
+		</resource>
+	</supplier>
+	<constraints>
+			<and>
+				<condition resource1="ContributedVocabulary" resource2="VocabularyDef" relationship="http://www.treaty.org/java#implements"/>
+			</and>
+	</constraints>
+</contract>
