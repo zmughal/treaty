@@ -105,7 +105,7 @@ public class TestRunner {
 			return true;
 		}
 		catch (Exception x) {			
-			Logger.error("Exception in test case",x);
+			Logger.info("Exception in test case, this might be ok",x);
 			return false;
 		}
 		catch (AssertionError x) {
