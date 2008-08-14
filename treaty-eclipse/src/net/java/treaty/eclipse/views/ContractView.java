@@ -333,7 +333,7 @@ public class ContractView extends ViewPart {
 			buf.append(toString(c.getResource1()));
 			buf.append(' ');
 			String p = c.getRelationship().toString();
-			p = p.substring(p.lastIndexOf('/')+1); // last token
+			p = p.substring(p.lastIndexOf('#')+1); // last token
 			buf.append(p);
 			buf.append(' ');
 			buf.append(toString(c.getResource2()));
@@ -344,7 +344,7 @@ public class ContractView extends ViewPart {
 			buf.append(toString(c.getResource()));
 			buf.append(' ');
 			String p = c.getProperty().toString();
-			p = p.substring(p.lastIndexOf('/')+1); // last token
+			p = p.substring(p.lastIndexOf('#')+1); // last token
 			buf.append(p);
 			buf.append(' ');
 			buf.append(c.getValue());
