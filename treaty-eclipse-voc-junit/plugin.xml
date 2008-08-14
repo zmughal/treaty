@@ -3,7 +3,7 @@
 <plugin>
    <extension
          point="net.java.treaty.eclipse.vocabulary">
-          <vocabulary class="net.java.treaty.eclipse.vocabulary.junit.JUnitVocabulary"/> 
+          <vocabulary class="net.java.treaty.eclipse.vocabulary.junit.JUnitVocabulary" ontology="/vocabulary/junit.owl"/> 
    </extension>
 
 </plugin>

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: treaty for eclipse
 Bundle-SymbolicName: net.java.treaty.eclipse; singleton:=true
-Bundle-Version: 1.0.8
+Bundle-Version: 1.0.9
 Bundle-Activator: net.java.treaty.eclipse.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,
@@ -13,7 +13,8 @@ Bundle-ClassPath: .,
  lib/jaxen-core.jar,
  lib/jaxen-jdom.jar,
  lib/saxpath.jar,
- lib/jdom.jar
+ lib/jdom.jar,
+ lib/owlapi-bin.jar
 Export-Package: net.java.treaty,
  net.java.treaty.eclipse
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

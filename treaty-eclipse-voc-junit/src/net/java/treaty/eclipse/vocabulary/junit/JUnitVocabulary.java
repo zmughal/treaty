@@ -26,11 +26,11 @@ import net.java.treaty.eclipse.EclipsePlugin;
 public class JUnitVocabulary implements ContractVocabulary {
 	
 	
-	public static final String NS = "http://www.massey.ac.nz/se/plugincontracts/junit/";
+	public static final String NS = "http://www.treaty.org/junit#";
 	// types
 	public static final String TESTCASE = NS+"TestCase";
 	// types defined elsewhere
-	public static final String INSTANTIABLE_CLASS = "http://www.massey.ac.nz/se/plugincontracts/java/InstantiableClass";
+	public static final String INSTANTIABLE_CLASS = "http://www.treaty.org/java#InstantiableClass";
 	
 	// relationships
 	public static final String VERIFIES = NS+"verifies";
