@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/net.java.treaty.eclipse_1.0.16.jar" id="net.java.treaty.eclipse" version="1.0.16">
+   <feature url="features/net.java.treaty.example.clock_1.0.10.jar" id="net.java.treaty.example.clock" version="1.0.10">
       <category name="Treaty"/>
    </feature>
-   <feature url="features/net.java.treaty.example.clock_1.0.10.jar" id="net.java.treaty.example.clock" version="1.0.10">
+   <feature url="features/net.java.treaty.eclipse_1.0.17.jar" id="net.java.treaty.eclipse" version="1.0.17">
       <category name="Treaty"/>
    </feature>
    <category-def name="Treaty" label="Treaty"/>
