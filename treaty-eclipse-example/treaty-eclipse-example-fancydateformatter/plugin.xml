@@ -7,5 +7,4 @@
          point="net.java.treaty.eclipse.example.clock.dateformatter">
          <serviceprovider formatdef="/dateformat.xml"/> 
    </extension>
-
 </plugin>
