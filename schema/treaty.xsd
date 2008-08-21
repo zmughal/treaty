@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited by Jens Dietrich (Massy University) -->
+<!-- edited by Jens Dietrich (Massey University) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="contract">
 		<xs:complexType>
@@ -23,11 +23,16 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="condition">
+	<xs:element name="relationship">
 		<xs:complexType>
 			<xs:attribute name="resource1" type="xs:IDREF" use="required"/>
 			<xs:attribute name="resource2" type="xs:IDREF" use="required"/>
 			<xs:attribute name="relationship" type="xs:anyURI" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="mustexist">
+		<xs:complexType>
+			<xs:attribute name="resource" type="xs:IDREF" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="or" type="abstractcondition"/>
@@ -58,7 +63,7 @@
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="propertycondition">
+	<xs:element name="property">
 		<xs:complexType>
 			<xs:attribute name="resource" type="xs:IDREF" use="optional">
 				<xs:annotation>
@@ -76,9 +81,11 @@
 				<xs:element ref="and"/>
 				<xs:element ref="or"/>
 				<xs:element ref="xor"/>
-				<xs:element ref="condition"/>
-				<xs:element ref="propertycondition"/>
+				<xs:element ref="relationship"/>
+				<xs:element ref="property"/>
+				<xs:element ref="mustexist"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+
 </xs:schema>
