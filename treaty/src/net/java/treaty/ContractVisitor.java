@@ -30,6 +30,7 @@ public interface ContractVisitor {
 	public boolean visit(XDisjunction condition);
 	public boolean visit(RelationshipCondition relationshipCondition);
 	public boolean visit(PropertyCondition condition);
+	public boolean visit(ExistsCondition condition);
 	
 	public void endVisit(Contract contract);
 	public void endVisit(Resource resource);
@@ -41,4 +42,5 @@ public interface ContractVisitor {
 	public void endVisit(RelationshipCondition relationshipCondition);
 	public void endVisit(PropertyCondition condition);
 	public void endVisitConditions(Collection<AbstractCondition> conditions);
+	public void endVisit(ExistsCondition condition);
 }

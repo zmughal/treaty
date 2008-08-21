@@ -30,5 +30,11 @@ public interface Verifier {
 	 * @param a condition
 	 * @throws VerificationException thrown only if verification fails
 	 */
-	public void check(PropertyCondition relationshipCondition) throws VerificationException; 
+	public void check(PropertyCondition relationshipCondition) throws VerificationException;
+	/**
+	 * Check an exists condition. 
+	 * @param a condition
+	 * @throws VerificationException thrown only if verification fails
+	 */
+	public void check(ExistsCondition relationshipCondition) throws VerificationException;
 }

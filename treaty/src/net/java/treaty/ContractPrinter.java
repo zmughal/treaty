@@ -128,6 +128,11 @@ public class ContractPrinter implements ContractVisitor {
 		out.println(condition);
 		return true;
 	}
+	
+	public boolean visit(ExistsCondition condition) {	
+		out.println(condition);
+		return true;
+	}
 
 	public void endVisit(Contract contract) {
 		dos();
@@ -159,6 +164,10 @@ public class ContractPrinter implements ContractVisitor {
 	}
 	
 	public void endVisit(RelationshipCondition relationshipCondition) {
+		
+	}
+	
+	public void endVisit(ExistsCondition condition) {
 		
 	}
 
