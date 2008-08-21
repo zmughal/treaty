@@ -89,10 +89,10 @@ public class ContractReader  {
 		return contract;
 	}
 	private void readConditions(Element node, ConditionContext context, SimpleContract contract) throws JDOMException, InvalidContractException, URISyntaxException {
-		XPath xpath =  createXPath("condition|propertyCondition|and|or|xor");
+		XPath xpath =  createXPath("relationship|property|mustExist|and|or|xor");
 		List<Element> nodes = xpath.selectNodes(node);
 		for (Element e:nodes) {
-			if (e.getName().equals("propertycondition")){
+			if (e.getName().equals("property")){
 				PropertyCondition condition = new PropertyCondition();
 				String resourceRef = e.getAttributeValue("resource");
 				Resource resource = contract.getResource(resourceRef);
@@ -107,7 +107,7 @@ public class ContractReader  {
 				condition.setValue(value);
 				context.addCondition(condition);
 			}
-			else if (e.getName().equals("condition")){
+			else if (e.getName().equals("relationship")){
 				RelationshipCondition relationshipCondition = new RelationshipCondition();
 				
 				String resourceRef1 = e.getAttributeValue("resource1");
@@ -125,6 +125,17 @@ public class ContractReader  {
 				relationshipCondition.setRelationship(new URI(relationship));
 				
 				context.addCondition(relationshipCondition);
+			}
+			else if (e.getName().equals("mustExist")){
+				ExistsCondition condition = new ExistsCondition();
+				
+				String resourceRef = e.getAttributeValue("resource");
+				Resource resource = contract.getResource(resourceRef);
+				if (resource==null)
+					throw new InvalidContractException("Invalid resource reference in must exist condition: " + condition);
+				condition.setResource(resource);
+				
+				context.addCondition(condition);
 			}
 			else if (e.getName().equals("and")) {
 				Conjunction conjunction = new Conjunction();

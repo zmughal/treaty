@@ -27,6 +27,7 @@ public interface ResourceLoader {
 	 * @param type a type
 	 * @param name the resource name, e.g. a class name
 	 * @param connector the connector, e.g. it may provide the classloader
+	 * @param checkType if true the type is checked
 	 * @return the object created for the name, e.g. an instance of java.lang.Class
 	 * @throws VerificationException
 	 */
