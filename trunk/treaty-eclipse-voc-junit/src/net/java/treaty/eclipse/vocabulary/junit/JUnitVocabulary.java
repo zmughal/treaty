@@ -10,6 +10,10 @@
 
 package net.java.treaty.eclipse.vocabulary.junit;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -77,6 +81,7 @@ public class JUnitVocabulary implements ContractVocabulary {
 		assert res2.isLoaded();
 		if (VERIFIES.equals(rel)) {		
 			Class test = (Class)res2.getValue();
+			this.checkJUnit4Type(res2,test);
 			Class tested = (Class)res1.getValue();
 			try {
 				boolean result = new TestRunner().run(test, tested);
@@ -127,5 +132,51 @@ public class JUnitVocabulary implements ContractVocabulary {
 	public void check(PropertyCondition relationshipCondition) throws VerificationException {
 		throw new VerificationException("This vocabulary does not define property conditions");
 	}
+	
+	public void check(ExistsCondition condition) throws VerificationException {
+		Resource resource = condition.getResource();
+		assert resource.isInstantiated();
+		assert resource.isLoaded();
+		Class clazz = (Class)resource.getValue();
+		if (TESTCASE.equals(resource.getType())) {
+			checkJUnit4Type(resource,clazz);
+		}
+	}
 
+	private void checkJUnit4Type(Resource resource,Class clazz) throws VerificationException {
+		
+		if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
+			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this is class should not be abstract");
+		if (!Modifier.isPublic(clazz.getModifiers())) {
+			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this class must be public");
+		}
+		// check for constructor with parameter used for dependency injection
+		boolean ok = false;
+		for (Constructor constructor:clazz.getConstructors()) {
+			if (Modifier.isPublic(constructor.getModifiers()) && constructor.getParameterTypes().length==1) {
+				ok = true;
+				break;
+			}
+		}
+		if (!ok) {
+			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this class must have a public constructor with one parameter");
+		}
+		// check that at least one test case exists
+		ok = false;
+		for (Method method:clazz.getMethods()) {
+			if (Modifier.isPublic(method.getModifiers())) {
+				for (Annotation anno:method.getAnnotations()) {
+					if ("org.junit.Test".equals(anno.annotationType().getName())) {
+						ok = true;
+						break;
+					}
+				}
+				
+			}
+		}
+		if (!ok) {
+			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this class must have at least one test method annotated with @org.junit.Test");
+		}
+	}
+	
 }
