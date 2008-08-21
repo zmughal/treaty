@@ -60,7 +60,7 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 	public void check(RelationshipCondition condition) throws VerificationException {
 		URI uri = condition.getRelationship();
 		try {
-			ContractVocabulary voc = this.findVocabulary(uri);
+			ContractVocabulary voc = this.findVocabularyForProperty(uri);
 			voc.check(condition); 
 			//System.out.println("checked ok: " + condition);
 			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
@@ -78,7 +78,7 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 	public void check(PropertyCondition condition) throws VerificationException {
 		URI uri = condition.getProperty();
 		try {
-			ContractVocabulary voc = this.findVocabulary(uri);
+			ContractVocabulary voc = this.findVocabularyForProperty(uri);
 			voc.check(condition); 
 			//System.out.println("checked ok: " + condition);
 		}
@@ -90,9 +90,32 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		return;
 	}
 	
-	private ContractVocabulary findVocabulary(URI uri)  throws VerificationException {	
+	public void check(ExistsCondition condition) throws VerificationException {
+		Resource resource = condition.getResource();
+		try {
+			ContractVocabulary voc = this.findVocabularyForType(resource.getType());
+			voc.check(condition); 
+			//System.out.println("checked ok: " + condition);
+		}
+		catch (VerificationException x) {
+			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
+			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
+			throw (VerificationException)x.fillInStackTrace();
+		}
+		return;
+	}
+	
+	private ContractVocabulary findVocabularyForProperty(URI uri)  throws VerificationException {	
 		for (ContractVocabulary voc:vocContributions) {
 			if (voc.getContributedPredicates().contains(uri)) {
+				return voc;
+			}
+		}
+		throw new VerificationException("No vocabulary found to check condition with predicate " + uri);
+	}
+	private ContractVocabulary findVocabularyForType(URI uri)  throws VerificationException {	
+		for (ContractVocabulary voc:vocContributions) {
+			if (voc.getContributedTypes().contains(uri)) {
 				return voc;
 			}
 		}

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: treaty for eclipse
 Bundle-SymbolicName: net.java.treaty.eclipse; singleton:=true
-Bundle-Version: 1.0.11
+Bundle-Version: 1.0.12
 Bundle-Activator: net.java.treaty.eclipse.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,
@@ -15,6 +15,46 @@ Bundle-ClassPath: .,
  lib/saxpath.jar,
  lib/jdom.jar,
  lib/owlapi-bin.jar
-Export-Package: net.java.treaty,
- net.java.treaty.eclipse
+Export-Package: com.clarkparsia.explanation,
+ com.clarkparsia.explanation.io,
+ com.clarkparsia.explanation.util,
+ edu.unika.aifb.rdf.api.syntax,
+ edu.unika.aifb.rdf.api.util,
+ net.java.treaty;uses:="org.apache.log4j",
+ net.java.treaty.eclipse;
+  uses:="org.eclipse.core.runtime,
+   org.eclipse.jface.resource,
+   net.java.treaty,
+   org.eclipse.ui.plugin,
+   org.semanticweb.owl.model,
+   org.osgi.framework",
+ org.coode.manchesterowlsyntax,
+ org.coode.obo.parser,
+ org.coode.owl.functionalparser,
+ org.coode.owl.functionalrenderer,
+ org.coode.owl.krssparser,
+ org.coode.owl.latex,
+ org.coode.owl.owlxmlparser,
+ org.coode.owl.rdf.model,
+ org.coode.owl.rdf.rdfxml,
+ org.coode.owl.rdf.renderer,
+ org.coode.owl.rdf.turtle,
+ org.coode.owl.rdfxml.parser,
+ org.coode.owlapi.owlxml.renderer,
+ org.coode.string,
+ org.coode.xml,
+ org.semanticweb.owl,
+ org.semanticweb.owl.apibinding,
+ org.semanticweb.owl.debugging,
+ org.semanticweb.owl.expression,
+ org.semanticweb.owl.inference,
+ org.semanticweb.owl.io,
+ org.semanticweb.owl.metrics,
+ org.semanticweb.owl.model;uses:="org.semanticweb.owl.io,org.semanticweb.owl.vocab",
+ org.semanticweb.owl.normalform,
+ org.semanticweb.owl.profiles,
+ org.semanticweb.owl.util,
+ org.semanticweb.owl.vocab,
+ uk.ac.manchester.cs.bhig.util,
+ uk.ac.manchester.cs.owl
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

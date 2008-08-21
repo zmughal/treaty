@@ -31,7 +31,6 @@ import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
@@ -248,21 +247,18 @@ public class ContractView extends ViewPart {
 			for (Resource r:contract.getSupplierResources()) {
 				ownerTypes.put(r,OwnerType.extension);				
 			}
-			/*
+			
 			TreeParent rNode = new TreeParent("extension point resources");
 			parent.addChild(rNode);
 			for (Resource r:contract.getConsumerResources()) {
-				addResourceNode(rNode,r);				
+				addResourceNode(rNode,r,ownerTypes);				
 			}
 			rNode = new TreeParent("extension resources");
 			parent.addChild(rNode);
 			for (Resource r:contract.getSupplierResources()) {
-				addResourceNode(rNode,r);	
+				addResourceNode(rNode,r,ownerTypes);	
 			}
 			
-			rNode = new TreeParent("constraints");
-			parent.addChild(rNode);
-			*/
 			for (AbstractCondition c:contract.getConstraints()) {
 				// top level conjunction displayed as set
 				if (c instanceof Conjunction) {
@@ -294,6 +290,12 @@ public class ContractView extends ViewPart {
 				addResourceNode(node,cc.getResource(),ownerTypes);
 				node.addChild(new TreeObject(new KeyValueNode("property",cc.getProperty().toString())));
 				node.addChild(new TreeObject(new KeyValueNode("value",""+cc.getValue())));
+			}
+			else if (c instanceof ExistsCondition) {
+				ExistsCondition ec = (ExistsCondition)c;
+				TreeParent node = new TreeParent(ec);
+				parent.addChild(node);
+				addResourceNode(node,ec.getResource(),ownerTypes);
 			}
 			else if (c instanceof ComplexCondition) {
 				ComplexCondition cc = (ComplexCondition)c;
@@ -350,6 +352,12 @@ public class ContractView extends ViewPart {
 			buf.append(c.getValue());
 			return buf.toString();
 		}
+		private String toString(ExistsCondition c) {
+			StringBuffer buf = new StringBuffer();
+			buf.append(toString(c.getResource()));
+			buf.append(" must exist");
+			return buf.toString();
+		}
 		private String toString(Resource r) {
 			if (r.getName()!=null) {
 				return r.getName();
@@ -392,6 +400,9 @@ public class ContractView extends ViewPart {
 			}
 			else if (obj instanceof PropertyCondition) {
 				return toString((PropertyCondition)obj);
+			}
+			else if (obj instanceof ExistsCondition) {
+				return toString((ExistsCondition)obj);
 			}
 			else if (obj instanceof ComplexCondition) {
 				return ((ComplexCondition)obj).getConnective();
@@ -458,7 +469,7 @@ public class ContractView extends ViewPart {
 			else if (obj instanceof Contract) {
 				return getIcon("contract.gif");
 			}
-			else if (obj instanceof RelationshipCondition) {
+			else if (obj instanceof AbstractCondition && !(obj instanceof ComplexCondition)) {
 				return getIcon("constraint.gif");
 			}
 			else if (obj instanceof Resource) {
@@ -711,7 +722,8 @@ public class ContractView extends ViewPart {
 	        	
 	        	monitor.subTask("checking contracts");
 	        	for (Contract c:contracts) {
-	        		//System.out.println("checking contract " + c);
+	        		// System.out.println("checking contract " + c);
+	        		// TODO: contracts also fail when mandatory resources cannot be loaded
 	        		boolean result = c.check(verReport, verifier);
 	        		if (!result) failedContracts.add(c);
 	        		doneContracts.add(c);

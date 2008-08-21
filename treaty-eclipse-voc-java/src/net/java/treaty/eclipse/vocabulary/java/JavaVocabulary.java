@@ -10,6 +10,7 @@
 
 package net.java.treaty.eclipse.vocabulary.java;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -105,7 +106,9 @@ public class JavaVocabulary implements  ContractVocabulary {
 		assert res2.isLoaded();
 		if (IMPLEMENTS.equals(rel)) {
 			Class class1 = (Class)res1.getValue();
-			Class class2 = (Class)res2.getValue();			
+			checkInstantiableClass(res1,class1);
+			Class class2 = (Class)res2.getValue();
+			checkAbstractType(res2,class2);
 			if (class2.isAssignableFrom(class1)) {}
 			else throw new VerificationException("condition not satisfied + " + condition);
 		}
@@ -115,6 +118,38 @@ public class JavaVocabulary implements  ContractVocabulary {
 
 	public void check(PropertyCondition relationshipCondition) throws VerificationException {
 		throw new VerificationException("This vocabulary does not define property conditions");
+	}
+	
+	public void check(ExistsCondition condition) throws VerificationException {
+		Resource resource = condition.getResource();
+		assert resource.isInstantiated();
+		assert resource.isLoaded();
+		Class clazz = (Class)resource.getValue();
+		if (ABSTRACT_TYPE.equals(resource.getType())) {
+			checkAbstractType(resource,clazz);
+		}
+		else if (INSTANTIABLE_CLASS.equals(resource.getType())) {
+			checkInstantiableClass(resource,clazz);
+		}
+	}
+	
+	private void checkAbstractType(Resource r,Class clazz) throws VerificationException {
+		if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
+			return;
+		else 
+			throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an abstract java type");
+	}
+	
+	private void checkInstantiableClass(Resource r,Class clazz) throws VerificationException {
+		try {
+			Constructor constructor = clazz.getConstructor(new Class[]{});
+			if (constructor==null || !Modifier.isPublic(constructor.getModifiers())) {
+				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an instantiable java type");
+			}
+		}
+		catch (Exception x) {
+			throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an instantiable java type");
+		}
 	}
 	
 	

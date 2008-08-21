@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- example contract as used in the prototype -->
-<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.1/schema/treaty.xsd">
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.2/schema/treaty.xsd">
 	<consumer>
 		<resource id="VocabularyDef">
 			<type>http://www.treaty.org/java#AbstractType</type>
@@ -13,10 +13,15 @@
 			<type>http://www.treaty.org/java#InstantiableClass</type>
 			<ref>/vocabulary/@class</ref>
 		</resource>
+		<resource id="Ontology">
+			<type>http://www.treaty.org/owl#Ontology</type>
+			<ref>/vocabulary/@ontology</ref>
+		</resource>
 	</supplier>
 	<constraints>
 			<and>
-				<condition resource1="ContributedVocabulary" resource2="VocabularyDef" relationship="http://www.treaty.org/java#implements"/>
+				<relationship resource1="ContributedVocabulary" resource2="VocabularyDef" relationship="http://www.treaty.org/java#implements"/>
+				<mustExist resource="Ontology"/>
 			</and>
 	</constraints>
 </contract>
