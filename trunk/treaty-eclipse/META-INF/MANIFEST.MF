@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: treaty for eclipse
 Bundle-SymbolicName: net.java.treaty.eclipse; singleton:=true
-Bundle-Version: 1.0.14
+Bundle-Version: 1.0.15
 Bundle-Activator: net.java.treaty.eclipse.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,
