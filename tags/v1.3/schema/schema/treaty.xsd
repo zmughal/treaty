@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited by Jens Dietrich (Massey University) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="contract">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="consumer">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+							<xs:element ref="resource"/>
+						</xs:sequence>
+						<xs:attribute name="id" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="supplier">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+							<xs:element ref="resource"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="constraints" type="abstractcondition"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="relationship">
+		<xs:complexType>
+			<xs:attribute name="resource1" type="xs:IDREF" use="required"/>
+			<xs:attribute name="resource2" type="xs:IDREF" use="required"/>
+			<xs:attribute name="type" type="xs:anyURI" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="mustexist">
+		<xs:complexType>
+			<xs:attribute name="resource" type="xs:IDREF" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="or" type="abstractcondition"/>
+	<xs:element name="and" type="abstractcondition"/>
+	<xs:element name="xor" type="abstractcondition"/>
+	<xs:element name="resource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="type" type="xs:anyURI"/>
+				<xs:element name="path" type="xs:string" minOccurs="0"/>
+				<xs:choice>
+					<xs:element name="name" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>the name of the resource</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ref">
+						<xs:annotation>
+							<xs:documentation>a resource reference that can be used to find the name of the resource. Usually an XPATH expression pointing to a location in plugin.xml</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:ID" use="required">
+				<xs:annotation>
+					<xs:documentation>unique id useful in order to reference resources in conditions</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:attribute name="resource" type="xs:IDREF" use="optional">
+				<xs:annotation>
+					<xs:documentation>if null, the resource is the extension</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="type" type="xs:anyURI" use="required"/>
+			<xs:attribute name="operator" type="xs:anyURI" use="required"/>
+			<xs:attribute name="value" type="xs:anySimpleType" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="abstractcondition">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:choice>
+				<xs:element ref="and"/>
+				<xs:element ref="or"/>
+				<xs:element ref="xor"/>
+				<xs:element ref="relationship"/>
+				<xs:element ref="property"/>
+				<xs:element ref="mustexist"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>
