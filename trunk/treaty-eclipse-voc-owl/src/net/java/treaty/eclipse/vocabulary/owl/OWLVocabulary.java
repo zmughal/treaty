@@ -10,7 +10,6 @@
 
 package net.java.treaty.eclipse.vocabulary.owl;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -19,12 +18,8 @@ import java.util.Collection;
 import java.util.Collections;
 import org.osgi.framework.Bundle;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLDataFactory;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import net.java.treaty.*;
-import net.java.treaty.eclipse.Activator;
 import net.java.treaty.eclipse.EclipsePlugin;
 
 
