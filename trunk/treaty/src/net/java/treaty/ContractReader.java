@@ -99,7 +99,7 @@ public class ContractReader  {
 				if (resource==null)
 					throw new InvalidContractException("Invalid resource reference in condition: " + resourceRef);
 				condition.setResource(resource);
-				String property = e.getAttributeValue("property");
+				String property = e.getAttributeValue("type");
 				condition.setProperty(new URI(property));
 				String operator = e.getAttributeValue("operator");
 				condition.setOperator(new URI(operator));
@@ -121,7 +121,7 @@ public class ContractReader  {
 				if (resource2==null)
 					throw new InvalidContractException("Invalid resource reference at position 2 in condition: " + relationshipCondition);
 				relationshipCondition.setResource2(resource2);
-				String relationship = e.getAttributeValue("relationship");
+				String relationship = e.getAttributeValue("type");
 				relationshipCondition.setRelationship(new URI(relationship));
 				
 				context.addCondition(relationshipCondition);
