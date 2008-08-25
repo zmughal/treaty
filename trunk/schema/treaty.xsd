@@ -27,7 +27,7 @@
 		<xs:complexType>
 			<xs:attribute name="resource1" type="xs:IDREF" use="required"/>
 			<xs:attribute name="resource2" type="xs:IDREF" use="required"/>
-			<xs:attribute name="relationship" type="xs:anyURI" use="required"/>
+			<xs:attribute name="type" type="xs:anyURI" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="mustexist">
@@ -70,7 +70,7 @@
 					<xs:documentation>if null, the resource is the extension</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="property" type="xs:anyURI" use="required"/>
+			<xs:attribute name="type" type="xs:anyURI" use="required"/>
 			<xs:attribute name="operator" type="xs:anyURI" use="required"/>
 			<xs:attribute name="value" type="xs:anySimpleType" use="required"/>
 		</xs:complexType>
