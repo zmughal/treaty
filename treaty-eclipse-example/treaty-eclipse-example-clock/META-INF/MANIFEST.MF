@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Simple desktop clock
 Bundle-SymbolicName: net.java.treaty.eclipse.example.clock; singleton:=true
-Bundle-Version: 1.0.11
+Bundle-Version: 1.0.12
 Bundle-Activator: net.java.treaty.eclipse.example.clock.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,

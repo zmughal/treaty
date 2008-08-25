@@ -6,7 +6,9 @@
 	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.4  (Linux)">
 	<META NAME="CREATED" CONTENT="0;0">
 	<META NAME="CHANGEDBY" CONTENT="Jens Dietrich">
-	<META NAME="CHANGED" CONTENT="20080825;21365300">
+	<META NAME="CHANGED" CONTENT="20080826;1311000">
+	<META NAME="CHANGEDBY" CONTENT="Jens Dietrich">
+	<META NAME="CHANGEDBY" CONTENT="Jens Dietrich">
 </HEAD>
 <BODY LANG="en-GB" DIR="LTR">
 <H1>Defining the Contract</H1>
@@ -20,10 +22,10 @@ name:
 plugin has a contract defined in</P>
 <P><A NAME="q_yi"></A><A NAME="kf5g1"></A><A HREF="http://treaty.googlecode.com/svn/trunk/treaty-eclipse-example/treaty-eclipse-example-clock/META-INF/net.java.treaty.eclipse.example.clock.dateformatter.contract">net.java.treaty.eclipse.example.clock/META-INF/net.java.treaty.eclipse.example.clock.dateformatter.contract</A>
 </P>
-<P><A NAME="kf5g5"></A>This mechanism is non-invasive in Main
-Topicthe following sense: neither of the meta-data files of the
-plugin (plugin.xml, manifest.mf) needs to be modified, and providing
-a contract is optional. 
+<P><A NAME="kf5g5"></A>This mechanism is non-invasive in the
+following sense: neither of the meta-data files of the plugin
+(plugin.xml, manifest.mf) needs to be modified, and providing a
+contract is optional. 
 </P>
 <P><A NAME="ljbe18"></A><A NAME="l428"></A>The structure of a
 contract is defined by an <A HREF="http://treaty.googlecode.com/svn/tags/v1.2/schema/treaty.xsd">XML
@@ -31,7 +33,7 @@ Schema</A>. A contract consists of the following parts:
 </P>
 <OL>
 	<LI><P><A NAME="ljbe21"></A><A NAME="ljbe20"></A><A NAME="ljbe19"></A>
-	The definition of consumer (extensionpoint) resources 
+	The definition of consumer (extension point) resources 
 	</P>
 	<LI><P><A NAME="ljbe23"></A><A NAME="ljbe22"></A>The definition of
 	(supplier) extension resources. 
@@ -74,13 +76,13 @@ contracts (condition 1 and 4), semantic contracts (condition 2) and
 quality of service (non-functional) contracts (condition
 3).<BR><BR><FONT FACE="Courier New">&lt;constraints&gt;</FONT><BR><FONT FACE="Courier New">&lt;xor&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;and&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;relationship
 resource1=&quot;Formatter&quot;
-resource2=&quot;Interface&quot;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">relationship=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/java/implements&quot;/&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;relationship
+resource2=&quot;Interface&quot;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">type=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/java/implements&quot;/&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;relationship
 resource1=&quot;Formatter&quot; resource2=&quot;FunctionalTests&quot;
-</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">relationship=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/junit/verifies&quot;/&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;relationship
+</FONT><BR><FONT FACE="Courier New, monospace">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type</FONT><FONT FACE="Courier New">=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/junit/verifies&quot;/&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;relationship
 resource1=&quot;Formatter&quot; resource2=&quot;QoSTests&quot;
-</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">relationship=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/junit/verifies&quot;/&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;/and&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;condition
+</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">type=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/junit/verifies&quot;/&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;/and&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;condition
 resource1=&quot;FormatString&quot; resource2=&quot;DateFormatDef&quot;
-relationship=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/xml/instantiates&quot;/&gt;</FONT><BR><FONT FACE="Courier New">&lt;/xor&gt;</FONT><BR><FONT FACE="Courier New">&lt;/constraints&gt;</FONT><BR><FONT FACE="Courier New">&lt;/contract&gt;</FONT>
+type=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/xml/instantiates&quot;/&gt;</FONT><BR><FONT FACE="Courier New">&lt;/xor&gt;</FONT><BR><FONT FACE="Courier New">&lt;/constraints&gt;</FONT><BR><FONT FACE="Courier New">&lt;/contract&gt;</FONT>
 </P>
 </BODY>
 </HTML>

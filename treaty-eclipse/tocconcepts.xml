@@ -2,7 +2,6 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Concepts" link_to="toc.xml#concepts"> 
-	<topic label="Introduction"  href="html/concepts/introduction.html"/> 
 	<topic label="The Treaty Contract Language"  href="html/concepts/contracts.html"/>
 	<topic label="Treaty for Eclipse"  href="html/concepts/treaty4eclipse.html"/>
 	<topic label="Contract Vocabularies"  href="html/concepts/vocabularies.html"/>
