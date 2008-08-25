@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>Sub Topic</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.4  (Linux)">
+	<META NAME="CREATED" CONTENT="0;0">
+	<META NAME="CHANGEDBY" CONTENT="Jens Dietrich">
+	<META NAME="CHANGED" CONTENT="20080825;21365300">
+</HEAD>
+<BODY LANG="en-GB" DIR="LTR">
+<H1>Defining the Contract</H1>
+<P><A NAME="ljbe12"></A>Contracts are added to plugins with extension
+points. A contract is defined by an XML file that has the following
+name: 
+</P>
+<P><A NAME="o10h"></A><A NAME="ljbe13"></A><B>plugin-folder/META-INF/&lt;extensionpoint_id&gt;.contract</B>
+</P>
+<P><A NAME="ljbe14"></A><A NAME="kf5g0"></A>For instance, the clock
+plugin has a contract defined in</P>
+<P><A NAME="q_yi"></A><A NAME="kf5g1"></A><A HREF="http://treaty.googlecode.com/svn/trunk/treaty-eclipse-example/treaty-eclipse-example-clock/META-INF/net.java.treaty.eclipse.example.clock.dateformatter.contract">net.java.treaty.eclipse.example.clock/META-INF/net.java.treaty.eclipse.example.clock.dateformatter.contract</A>
+</P>
+<P><A NAME="kf5g5"></A>This mechanism is non-invasive in Main
+Topicthe following sense: neither of the meta-data files of the
+plugin (plugin.xml, manifest.mf) needs to be modified, and providing
+a contract is optional. 
+</P>
+<P><A NAME="ljbe18"></A><A NAME="l428"></A>The structure of a
+contract is defined by an <A HREF="http://treaty.googlecode.com/svn/tags/v1.2/schema/treaty.xsd">XML
+Schema</A>. A contract consists of the following parts: 
+</P>
+<OL>
+	<LI><P><A NAME="ljbe21"></A><A NAME="ljbe20"></A><A NAME="ljbe19"></A>
+	The definition of consumer (extensionpoint) resources 
+	</P>
+	<LI><P><A NAME="ljbe23"></A><A NAME="ljbe22"></A>The definition of
+	(supplier) extension resources. 
+	</P>
+	<LI><P><A NAME="ljbe25"></A><A NAME="ljbe24"></A>Constraints
+	(conditions). 
+	</P>
+</OL>
+<P><BR>In the first part, the resources provided by the plugin that
+provides the extension point are defined. Resources are typed, the
+types are identified by URI defined in a vocabulary (ontology).
+Resources have names referencing classes or resources of the
+respective plugin.<BR><BR><FONT FACE="Courier New">&lt;consumer
+id=&quot;dateformatter&quot;&gt;</FONT><BR><FONT FACE="Courier New">&lt;resource
+id=&quot;Interface&quot;&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;type&gt;http://www.massey.ac.nz/se/plugincontracts/java/AbstractType&lt;/type&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;name&gt;net.java.treaty.eclipse.example.clock.DateFormatter&lt;/name&gt;</FONT><BR><FONT FACE="Courier New">&lt;/resource&gt;</FONT><BR><FONT FACE="Courier New">&lt;resource
+id=&quot;QoSTests&quot;&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;type&gt;http://www.massey.ac.nz/se/plugincontracts/junit/TestCase&lt;/type&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;name&gt;net.java.treaty.eclipse.example.clock.DateFormatterPerformanceTests&lt;/name&gt;</FONT><BR><FONT FACE="Courier New">&lt;/resource&gt;
+</FONT><BR><FONT FACE="Courier New">&lt;resource
+id=&quot;FunctionalTests&quot;&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;type&gt;http://www.massey.ac.nz/se/plugincontracts/junit/TestCase&lt;/type&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;name&gt;net.java.treaty.eclipse.example.clock.DateFormatterFunctionalTests&lt;/name&gt;</FONT><BR><FONT FACE="Courier New">&lt;/resource&gt;
+</FONT><BR><FONT FACE="Courier New">&lt;resource
+id=&quot;DateFormatDef&quot;&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;type&gt;http://www.massey.ac.nz/se/plugincontracts/xml/XMLSchema&lt;/type&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;name&gt;/dateformat.xsd&lt;/name&gt;</FONT><BR><FONT FACE="Courier New">&lt;/resource&gt;
+</FONT><BR><FONT FACE="Courier New">&lt;/consumer&gt;</FONT><BR><BR>In
+the second part resources provided by the plugin that has the
+extension are defined. At this stage, this plugin is not yet known.
+Therefore, resources are defined through references. The references
+are XPath expressions pointing to locations inside the plugin.xml
+configuration file of the plugin. This is consistent with the
+mechanism used by Eclipse plugins - plugin.xml elements and
+attributes are used to provide configuration elements, and these
+elements and attributes are defined in the extension point
+schema.<BR><BR><FONT FACE="Courier New">&lt;supplier&gt;</FONT><BR><FONT FACE="Courier New">&lt;resource
+id=&quot;Formatter&quot;&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;type&gt;http://www.massey.ac.nz/se/plugincontracts/java/InstantiableClass&lt;/type&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;ref&gt;/serviceprovider/@class&lt;/ref&gt;</FONT><BR><FONT FACE="Courier New">&lt;/resource&gt;</FONT><BR><FONT FACE="Courier New">&lt;resource
+id=&quot;FormatString&quot;&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;type&gt;http://www.massey.ac.nz/se/plugincontracts/xml/XMLInstance&lt;/type&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;ref&gt;/serviceprovider/@formatdef&lt;/ref&gt;</FONT><BR><FONT FACE="Courier New">&lt;/resource&gt;
+</FONT><BR><FONT FACE="Courier New">&lt;/supplier&gt;</FONT><BR><BR>Finally,
+constraints are defined describing the relationship between resources
+provided by both sides. These constraints can be composed using
+logical connectives such as OR, XOR, AND and NOT. The relationships
+types are defined in a contract vocabulary, and support the
+representation of various kinds of contracts such as syntactic
+contracts (condition 1 and 4), semantic contracts (condition 2) and
+quality of service (non-functional) contracts (condition
+3).<BR><BR><FONT FACE="Courier New">&lt;constraints&gt;</FONT><BR><FONT FACE="Courier New">&lt;xor&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;and&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;relationship
+resource1=&quot;Formatter&quot;
+resource2=&quot;Interface&quot;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">relationship=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/java/implements&quot;/&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;relationship
+resource1=&quot;Formatter&quot; resource2=&quot;FunctionalTests&quot;
+</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">relationship=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/junit/verifies&quot;/&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;relationship
+resource1=&quot;Formatter&quot; resource2=&quot;QoSTests&quot;
+</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">relationship=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/junit/verifies&quot;/&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;/and&gt;</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;<FONT FACE="Courier New">&lt;condition
+resource1=&quot;FormatString&quot; resource2=&quot;DateFormatDef&quot;
+relationship=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;http://www.massey.ac.nz/se/plugincontracts/xml/instantiates&quot;/&gt;</FONT><BR><FONT FACE="Courier New">&lt;/xor&gt;</FONT><BR><FONT FACE="Courier New">&lt;/constraints&gt;</FONT><BR><FONT FACE="Courier New">&lt;/contract&gt;</FONT>
+</P>
+</BODY>
+</HTML>
