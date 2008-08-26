@@ -10,7 +10,6 @@
 
 package net.java.treaty.eclipse.vocabulary.xml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,16 +18,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
-import org.xml.sax.SAXException;
-
-import net.java.treaty.*;
+import javax.xml.validation.SchemaFactory;import net.java.treaty.*;
 
 
 /**
@@ -146,7 +139,7 @@ public class XMLVocabulary implements  ContractVocabulary {
 		assert resource.isInstantiated();
 		assert resource.isLoaded();
 		URL url = (URL)resource.getValue();
-		if (SCHEMA.equals(resource.getType())) {
+		if (SCHEMA.equals(resource.getType().toString())) {
 			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			try {
 				factory.newSchema(url);
@@ -155,7 +148,7 @@ public class XMLVocabulary implements  ContractVocabulary {
 				throw new VerificationException("The schema "+ url +" cannot be parsed",x);
 			}
 		}
-		else if (INSTANCE.equals(resource.getType())) {
+		else if (INSTANCE.equals(resource.getType().toString())) {
 			try {
 				DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(url.openStream());
 			} catch (Exception x) {
