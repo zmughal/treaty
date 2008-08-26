@@ -125,10 +125,10 @@ public class JavaVocabulary implements  ContractVocabulary {
 		assert resource.isInstantiated();
 		assert resource.isLoaded();
 		Class clazz = (Class)resource.getValue();
-		if (ABSTRACT_TYPE.equals(resource.getType())) {
+		if (ABSTRACT_TYPE.equals(resource.getType().toString())) {
 			checkAbstractType(resource,clazz);
 		}
-		else if (INSTANTIABLE_CLASS.equals(resource.getType())) {
+		else if (INSTANTIABLE_CLASS.equals(resource.getType().toString())) {
 			checkInstantiableClass(resource,clazz);
 		}
 	}
@@ -142,6 +142,12 @@ public class JavaVocabulary implements  ContractVocabulary {
 	
 	private void checkInstantiableClass(Resource r,Class clazz) throws VerificationException {
 		try {
+			if (Modifier.isAbstract(clazz.getModifiers())) {
+				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is an abstract (and not an instantiable) java type");
+			}
+			if (clazz.isInterface()) {
+				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is an interface and not an instantiable java type");
+			}
 			Constructor constructor = clazz.getConstructor(new Class[]{});
 			if (constructor==null || !Modifier.isPublic(constructor.getModifiers())) {
 				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an instantiable java type");
