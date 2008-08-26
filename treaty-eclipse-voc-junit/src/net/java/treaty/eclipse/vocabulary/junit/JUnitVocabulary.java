@@ -138,7 +138,7 @@ public class JUnitVocabulary implements ContractVocabulary {
 		assert resource.isInstantiated();
 		assert resource.isLoaded();
 		Class clazz = (Class)resource.getValue();
-		if (TESTCASE.equals(resource.getType())) {
+		if (TESTCASE.equals(resource.getType().toString())) {
 			checkJUnit4Type(resource,clazz);
 		}
 	}
@@ -159,7 +159,7 @@ public class JUnitVocabulary implements ContractVocabulary {
 			}
 		}
 		if (!ok) {
-			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this class must have a public constructor with one parameter");
+			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this class must have a public constructor with one parameter to inject the object to be tested");
 		}
 		// check that at least one test case exists
 		ok = false;
