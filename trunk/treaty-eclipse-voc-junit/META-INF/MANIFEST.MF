@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: junit vocabulary for treaty
 Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.junit;singleton:=true
-Bundle-Version: 1.0.5
+Bundle-Version: 1.0.6
 Bundle-Activator: net.java.treaty.eclipse.vocabulary.junit.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,
