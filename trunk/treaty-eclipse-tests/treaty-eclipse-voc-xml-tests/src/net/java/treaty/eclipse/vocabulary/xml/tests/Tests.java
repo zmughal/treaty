@@ -57,7 +57,7 @@ public class Tests {
 		r.setName(name);		
 		String id = Activator.PLUGIN_ID;
 		Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(id);
-		// note: load does not work, Bundle#getEntry does not load resources from fragements
+		// note: load does not work, Bundle#getEntry does not load resources from fragments
 		// but getResource does
 		// this seems to contradict http://www.eclipsezone.com/eclipse/forums/t101557.rhtml
 		Object value = bundle.getResource(name);
