@@ -324,11 +324,6 @@ public class ContractView extends ViewPart {
 		}
 	}
 	class ViewLabelProvider implements ITableLabelProvider {
-		// FIXME here we have hard coded dependencies to vocabulary extensions
-		// the icons should be supplied by the respective plugins
-		private static final String TYPE_JAVA_CLASS = "http://www.massey.ac.nz/se/plugincontracts/java/InstantiableClass";
-		private static final String TYPE_JUNIT= "http://www.massey.ac.nz/se/plugincontracts/junit/TestCase";
-		private static final String TYPE_JAVA_INTERFACE = "http://www.massey.ac.nz/se/plugincontracts/java/AbstractType";
 		   
 		private String toString(RelationshipCondition c) {
 			StringBuffer buf = new StringBuffer();
@@ -474,15 +469,9 @@ public class ContractView extends ViewPart {
 			}
 			else if (obj instanceof Resource) {
 				boolean var = ((Resource)obj).getName()==null;
-				String type = ((Resource)obj).getType().toString();
-				if (TYPE_JAVA_CLASS.equals(type)) {
-					return var?getIcon("class_var.gif"):getIcon("class.gif");
-				}
-				else if (TYPE_JAVA_INTERFACE.equals(type)) {
-					return var?getIcon("intreface_var.gif"):getIcon("interface.gif");
-				}
-				else if (TYPE_JUNIT.equals(type) && !var) {
-					return getIcon("junit.gif");
+				Image icon = IconProvider.findIcon(((Resource)obj).getType(), var);
+				if (icon!=null) {
+					return icon;
 				}
 				else {
 					return var?getIcon("variable.png"):getIcon("constant.png");
