@@ -545,8 +545,7 @@ public class ContractView extends ViewPart {
 				Object obj = getSelectedObject();
 				boolean f = obj!=null && obj instanceof PropertySupport && ((PropertySupport)obj).getProperty(Constants.VERIFICATION_EXCEPTION)!=null;
 				actPrintStackTrace.setEnabled(f);
-				f = obj!=null && obj instanceof SimpleContract;
-				actShowContractSource.setEnabled(f);
+				actShowContractSource.setEnabled(getSelectedContract()!=null);
 			}});
 		
 		makeActions();
@@ -561,6 +560,27 @@ public class ContractView extends ViewPart {
 		}
 		return ((TreeObject)sel[0].getData()).getObject();
 	}
+	private SimpleContract getSelectedContract() {
+		TreeItem[] sel = viewer.getTree().getSelection();
+		if (sel==null || sel.length==0) {
+			return null;
+		}
+		TreeObject to = (TreeObject)sel[0].getData();
+		return findContract(to);
+	}
+	
+	private SimpleContract findContract(TreeObject to) {
+		Object obj = to.getObject();
+		TreeObject parent = to.getParent();
+		if (obj instanceof SimpleContract) {
+			return (SimpleContract)obj;
+		}
+		else if (parent!=null) {
+			return findContract(parent);
+		}
+		return null;
+	}
+
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
@@ -643,9 +663,8 @@ public class ContractView extends ViewPart {
 	}
 
 	private void actShowContractSource() {
-		Object obj = getSelectedObject();
-		if (obj instanceof SimpleContract) {
-			SimpleContract contract = (SimpleContract)obj;
+		SimpleContract contract = getSelectedContract();
+		if (contract!=null) {
 			try {
 				URL url = contract.getLocation();
 				new ReadmeDialog(new Shell(),url).open();
