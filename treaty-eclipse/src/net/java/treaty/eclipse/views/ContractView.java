@@ -22,6 +22,7 @@ import net.java.treaty.*;
 import net.java.treaty.eclipse.*;
 import net.java.treaty.VerificationResult;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.*;
@@ -58,6 +59,7 @@ public class ContractView extends ViewPart {
 	private Action actRefresh;
 	private Action actVerify;
 	private Action actPrintStackTrace;
+	private Action actShowContractSource;
 	// this is the model displayed - a list of plugins with contracts
 	private Collection<EclipsePlugin> plugins = null;
 	private Map<String,Image> icons = new HashMap<String,Image>();
@@ -543,6 +545,8 @@ public class ContractView extends ViewPart {
 				Object obj = getSelectedObject();
 				boolean f = obj!=null && obj instanceof PropertySupport && ((PropertySupport)obj).getProperty(Constants.VERIFICATION_EXCEPTION)!=null;
 				actPrintStackTrace.setEnabled(f);
+				f = obj!=null && obj instanceof SimpleContract;
+				actShowContractSource.setEnabled(f);
 			}});
 		
 		makeActions();
@@ -586,6 +590,7 @@ public class ContractView extends ViewPart {
 		manager.add(actRefresh);
 		manager.add(actVerify);
 		manager.add(actPrintStackTrace);
+		manager.add(actShowContractSource);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -626,6 +631,31 @@ public class ContractView extends ViewPart {
 		actVerify.setText("verify");
 		actVerify.setImageDescriptor(getImageDescriptor("icons/verify.gif"));
 		actVerify.setToolTipText("runs verification");
+		
+		actShowContractSource = new Action() {
+			public void run() {
+				actShowContractSource();
+			}
+		};
+		actShowContractSource.setEnabled(false);
+		actShowContractSource.setText("display contract source");
+		actShowContractSource.setToolTipText("displays the XML source code of the contract");
+	}
+
+	private void actShowContractSource() {
+		Object obj = getSelectedObject();
+		if (obj instanceof SimpleContract) {
+			SimpleContract contract = (SimpleContract)obj;
+			try {
+				URL url = contract.getLocation();
+				new ReadmeDialog(new Shell(),url).open();
+			}
+			catch (Exception x) {}
+		}
+		
+		
+		
+		
 	}
 
 	/**
