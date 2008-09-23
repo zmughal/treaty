@@ -630,8 +630,8 @@ public class ContractView extends ViewPart {
 				actPrintStackTrace();
 			}
 		};
-		actPrintStackTrace.setText("print verification exception stack trace");
-		actPrintStackTrace.setToolTipText("Outputs the verification exception stack trace to the console");
+		actPrintStackTrace.setText("display verification exception details");
+		actPrintStackTrace.setToolTipText("Displays the verification exception stack trace");
 		actPrintStackTrace.setEnabled(false);
 		
 		actRefresh = new Action() {
@@ -667,14 +667,10 @@ public class ContractView extends ViewPart {
 		if (contract!=null) {
 			try {
 				URL url = contract.getLocation();
-				new ReadmeDialog(new Shell(),url).open();
+				new ViewContractSourceDialog(new Shell(),url).open();
 			}
 			catch (Exception x) {}
 		}
-		
-		
-		
-		
 	}
 
 	/**
@@ -698,11 +694,12 @@ public class ContractView extends ViewPart {
 		Object obj = this.getSelectedObject();
 		if (obj!=null && obj instanceof PropertySupport && ((PropertySupport)obj).getProperty(Constants.VERIFICATION_EXCEPTION)!=null){
 			Exception x = (Exception)((PropertySupport)obj).getProperty(Constants.VERIFICATION_EXCEPTION);
-			
-			//open dialog - problem: exception is not null but not shown - related to threading??
-			//IStatus status = new Status(Status.ERROR,Activator.PLUGIN_ID,0, x.getMessage(),x) ;
-			//ErrorDialog.openError(this.viewer.getTree().getShell(), "Verification exception","Verification has failed", status);
-			x.printStackTrace(System.err);
+			if (x!=null) {
+				try {
+					new ViewExceptionStackTraceDialog(new Shell(),x).open();
+				}
+				catch (Exception xx) {}
+			}
 		}
 	}
 	/**
