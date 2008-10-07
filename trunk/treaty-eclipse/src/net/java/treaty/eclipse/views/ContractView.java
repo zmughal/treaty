@@ -11,7 +11,6 @@
 
 package net.java.treaty.eclipse.views;
 
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import net.java.treaty.*;
 import net.java.treaty.eclipse.*;
+import net.java.treaty.eclipse.jobs.VerificationJob;
+import net.java.treaty.eclipse.jobs.VerificationJobListener;
 import net.java.treaty.VerificationResult;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -45,7 +46,6 @@ import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
 import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;
-
 
 /**
  * Contract viewer.
@@ -708,8 +708,6 @@ public class ContractView extends ViewPart {
 	private void actVerify () {
 		// collect contracts
 		final List<Contract> contracts = new ArrayList<Contract>();
-		final List<Contract> failedContracts = new ArrayList<Contract>();
-		final List<Contract> doneContracts = new ArrayList<Contract>();
 		for (EclipsePlugin p:plugins) {
 			contracts.addAll(p.getInstantiatedContracts());
 		}
@@ -727,105 +725,29 @@ public class ContractView extends ViewPart {
 				this.contract=contract;
 			}			
 		};
-	    final Job job = new Job("Treaty component verification") {
-	         protected IStatus run(IProgressMonitor monitor) {
-	        	monitor.beginTask("run verification", (2*contracts.size())+3);
-	        	
-	        	monitor.subTask("Reset verification status");
-	        	for (Contract c:contracts) {
-	        		resetVerificationStatus(c);
-	        	}
-	        	updateTree(false);
-	        	if (monitor.isCanceled()) return Status.CANCEL_STATUS;
-	        	
-	        	monitor.subTask("loading installed vocabularies");
-	        	EclipseVerifier verifier = new EclipseVerifier();
-	        	monitor.worked(3);
-	        	
-	        	// loading resources
-	        	for (Contract c:contracts) {
-	        		//System.out.println("loading resources in " + c);
-	        		try {
-						loadResources(c,verifier);
-					} catch (ResourceLoaderException e) {
-						c.setProperty(VERIFICATION_RESULT,VerificationResult.FAILURE);
-						c.setProperty(VERIFICATION_EXCEPTION,e);
-					}
-	        		monitor.worked(1);
-	        		if (monitor.isCanceled()) return Status.CANCEL_STATUS;
-	        	}
-	        	
-	        	monitor.subTask("checking contracts");
-	        	for (Contract c:contracts) {
-	        		// System.out.println("checking contract " + c);
-	        		// TODO: contracts also fail when mandatory resources cannot be loaded
-	        		boolean result = c.check(verReport, verifier);
-	        		if (!result) failedContracts.add(c);
-	        		doneContracts.add(c);
-	        		propagateResults(c);
-	        		monitor.worked(1);
-	        		updateTree(false);
-	        		if (monitor.isCanceled()) return Status.CANCEL_STATUS;
-	        	}
-	        	return Status.OK_STATUS;	        	 
-	         }
-
-
-	    };
+		VerificationJob job = new VerificationJob("Treaty component verification",contracts,verReport);
+		VerificationJobListener jobListener = new VerificationJobListener() {
+			public void verificationStatusChanged() {
+				updateTree(false);
+			}			
+		};
+		job.addVerificationJobListener(jobListener);
+	    
 	    job.addJobChangeListener(new IJobChangeListener() {
 	    	public void aboutToRun(IJobChangeEvent e) {}			
 			public void awake(IJobChangeEvent e) {}			
 			public void done(IJobChangeEvent e) {
 				updateTree(false);
-				reportVerificationResult(doneContracts,failedContracts);
+				VerificationJob vJob = (VerificationJob)e.getJob();
+				reportVerificationResult(vJob.getDoneContracts(),vJob.getFailedContracts());
 			}			
 			public void running(IJobChangeEvent e) {}			
 			public void scheduled(IJobChangeEvent e) {}			
 			public void sleeping(IJobChangeEvent e) {}
 		});
-	    
 	    job.schedule();
 
 	}
-	private void combineResults(Annotatable a,Annotatable part) {
-		VerificationResult r = (VerificationResult)part.getProperty(VERIFICATION_RESULT);
-		if (r==null) {
-			r = VerificationResult.UNKNOWN;
-		}
-		VerificationResult old = (VerificationResult)a.getProperty(VERIFICATION_RESULT);
-		if (old==null) {
-			a.setProperty(VERIFICATION_RESULT, r);
-		}
-		else if (r==VerificationResult.FAILURE) {
-			a.setProperty(VERIFICATION_RESULT, VerificationResult.FAILURE);
-		}
-		else if (r==VerificationResult.SUCCESS && old==VerificationResult.SUCCESS) {
-			//keep success
-		}
-		else if (r==VerificationResult.UNKNOWN && old==VerificationResult.SUCCESS) {
-			a.setProperty(VERIFICATION_RESULT, VerificationResult.UNKNOWN);
-		}	
-	}
-	private void propagateResults(Contract c) {
-		if (c instanceof AggregatedContract) {
-			AggregatedContract ac = (AggregatedContract)c;
-			for (Contract part:ac.getParts()) {
-				propagateResults(part);
-				combineResults(ac,part);
-			}
-		}
-		else if (c instanceof SimpleContract) {
-			SimpleContract sc = (SimpleContract)c;
-			for (AbstractCondition part:sc.getConstraints()) {
-				combineResults(sc,part);	
-				combineResults(sc.getSupplier(),sc);
-				combineResults(sc.getSupplier().getOwner(),sc.getSupplier());
-				combineResults(sc.getConsumer(),sc);
-				combineResults(sc.getConsumer().getOwner(),sc.getSupplier());
-			}
-		}
-	}
-
 	private void reportVerificationResult(List<Contract> allContracts, List<Contract> failedContracts) {
 		int c = allContracts.size();
 		int f = failedContracts.size();
@@ -849,38 +771,6 @@ public class ContractView extends ViewPart {
 		viewer.getControl().getDisplay().syncExec(r);
 	}
 
-	private void resetVerificationStatus(Contract c) {
-		c.removeProperty(VERIFICATION_RESULT);
-		c.removeProperty(VERIFICATION_EXCEPTION);
-		if (c instanceof AggregatedContract) {
-			AggregatedContract ac = (AggregatedContract)c;
-			for (Contract part:ac.getParts()) {
-				resetVerificationStatus(part);
-			}
-		}
-		else if (c instanceof SimpleContract) {
-			SimpleContract sc = (SimpleContract)c;
-			for (AbstractCondition cond:sc.getConstraints()) {
-				resetVerificationStatus(cond);
-			}
-			sc.getSupplier().removeProperty(VERIFICATION_RESULT);
-			sc.getConsumer().removeProperty(VERIFICATION_RESULT);
-			sc.getSupplier().getOwner().removeProperty(VERIFICATION_RESULT);
-			sc.getConsumer().getOwner().removeProperty(VERIFICATION_RESULT);
-		}
-	}
-
-	private void resetVerificationStatus(AbstractCondition c) {
-		c.removeProperty(VERIFICATION_RESULT);
-		c.removeProperty(VERIFICATION_EXCEPTION);
-		if (c instanceof ComplexCondition) {
-			ComplexCondition cc = (ComplexCondition)c;
-			for (AbstractCondition part:cc.getParts()) {
-				resetVerificationStatus(part);
-			}
-		}
-	}
-
 	// refreshes the tree labels
 	private void updateTree(boolean sync) {
 		Runnable r = new Runnable() {
@@ -890,28 +780,6 @@ public class ContractView extends ViewPart {
 		};
 		if (sync) viewer.getTree().getDisplay().syncExec(r);
 		else viewer.getTree().getDisplay().asyncExec(r);
-	}
-	private void loadResources(Contract c,ResourceLoader l) throws ResourceLoaderException {
-		if (c instanceof AggregatedContract) {
-			for (Contract part:((AggregatedContract)c).getParts()) {
-				loadResources(part,l);
-			}
-		}
-		else if (c instanceof SimpleContract) {
-			SimpleContract sc = (SimpleContract)c;
-			for (Resource r:sc.getConsumerResources()) {
-				loadResource(sc,l,c.getConsumer(),r);
-			}
-			for (Resource r:sc.getSupplierResources()) {
-				loadResource(sc,l,c.getSupplier(),r);
-			}
-		}
-	}
-	private void loadResource(SimpleContract sc,ResourceLoader l,Connector con,Resource r) throws ResourceLoaderException {
-			if (r.isProvided()&&!r.isLoaded()) {
-					Object value = l.load(r.getType(), r.getName(), con);
-					r.setValue(value);
-			}
 	}
 	private Image getIcon(String name) {
 		String path = "icons/"+name;
