@@ -53,7 +53,8 @@ public class ContractView extends ViewPart {
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
 	private Action actRefresh;
-	private Action actVerify;
+	private Action actVerifyAll;
+	private Action actVerifySelected;
 	private Action actPrintStackTrace;
 	private Action actShowContractSource;
 	// this is the model displayed - a list of plugins with contracts
@@ -542,6 +543,9 @@ public class ContractView extends ViewPart {
 				boolean f = obj!=null && obj instanceof PropertySupport && ((PropertySupport)obj).getProperty(Constants.VERIFICATION_EXCEPTION)!=null;
 				actPrintStackTrace.setEnabled(f);
 				actShowContractSource.setEnabled(getSelectedContract()!=null);
+				
+				List<Contract> iConstracts = getSelectedInstantiatedContracts();
+				actVerifySelected.setEnabled(iConstracts!=null&&!iConstracts.isEmpty());
 			}});
 		
 		makeActions();
@@ -599,12 +603,14 @@ public class ContractView extends ViewPart {
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(actRefresh);
 		manager.add(new Separator());
-		manager.add(actVerify);
+		manager.add(actVerifyAll);
+		manager.add(actVerifySelected);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(actRefresh);
-		manager.add(actVerify);
+		manager.add(actVerifyAll);
+		manager.add(actVerifySelected);
 		manager.add(actPrintStackTrace);
 		manager.add(actShowContractSource);
 		manager.add(new Separator());
@@ -615,7 +621,8 @@ public class ContractView extends ViewPart {
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(actRefresh);
-		manager.add(actVerify);
+		manager.add(actVerifyAll);
+		manager.add(actVerifySelected);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
@@ -639,14 +646,24 @@ public class ContractView extends ViewPart {
 		actRefresh.setImageDescriptor(getImageDescriptor("icons/refresh.gif"));
 		actRefresh.setToolTipText("Reloads all contracts and resets verification status of all contracts");
 		
-		actVerify = new Action() {
+		actVerifyAll = new Action() {
 			public void run() {
-				actVerify();
+				actVerifyAll();
 			}
 		};
-		actVerify.setText("verify");
-		actVerify.setImageDescriptor(getImageDescriptor("icons/verify.gif"));
-		actVerify.setToolTipText("runs verification");
+		actVerifyAll.setText("verify all");
+		actVerifyAll.setImageDescriptor(getImageDescriptor("icons/verify_all.gif"));
+		actVerifyAll.setToolTipText("run verification for all contracts");
+		
+		actVerifySelected = new Action() {
+			public void run() {
+				actVerifySelected();
+			}
+		};
+		actVerifySelected.setText("verify selection");
+		actVerifySelected.setImageDescriptor(getImageDescriptor("icons/verify_sel.gif"));
+		actVerifySelected.setToolTipText("runs verification for selected contracts");
+		actVerifySelected.setEnabled(false);
 		
 		actShowContractSource = new Action() {
 			public void run() {
@@ -698,15 +715,86 @@ public class ContractView extends ViewPart {
 			}
 		}
 	}
+	private List<Contract> getSelectedInstantiatedContracts() {
+		List<Contract> contracts = new ArrayList<Contract>();
+		SimpleContract c = this.getSelectedContract();
+		if (c!=null) {
+			if (c.isInstantiated()) {
+				contracts.add(c);
+			}
+			else {
+				EclipseExtensionPoint xp = (EclipseExtensionPoint)c.getConsumer();
+				addIContract(xp,contracts);
+			}
+		}
+		else {
+			TreeItem[] sel = viewer.getTree().getSelection();
+			if (sel==null || sel.length==0) {
+				return contracts;
+			}
+			Object obj =((TreeObject)sel[0].getData()).getObject(); // selected object
+			TreeItem parent = sel[0].getParentItem();
+
+			if (obj instanceof EclipseExtension) {
+				addIContract((EclipseExtension)obj,contracts);
+			}
+			else if (obj instanceof EclipseExtensionPoint) {
+				addIContract((EclipseExtensionPoint)obj,contracts);
+			}
+			else if (obj instanceof EclipsePlugin) {				
+				EclipsePlugin p = (EclipsePlugin)obj;
+				if (parent!=null && "contract instances".equals(parent.getData())) {
+					// folder for instances
+					for (EclipseExtension x:p.getExtensions()) {
+						addIContract(x,contracts);
+					}
+				}
+				else {
+					// parent of extension points
+					for (EclipseExtensionPoint xp:p.getExtensionPoints()) {
+						addIContract(xp,contracts);
+					}
+				}
+			}
+		}
+		
+		return contracts;
+	}
+	private void addIContract(EclipseExtension x,List<Contract> contracts) {
+		Contract con = x.getContract();
+		if (con!=null && con.isInstantiated()) {
+			contracts.add(con);
+		}	
+	}
+	private void addIContract(EclipseExtensionPoint xp,List<Contract> contracts) {
+		for (EclipseExtension x:xp.getExtensions()) {
+			addIContract(x,contracts);
+		}
+	}
 	/**
-	 * Run verification.
+	 * Run verification for selected contracts.
 	 */
-	private void actVerify () {
+	private void actVerifySelected () {
+		List<Contract> contracts = getSelectedInstantiatedContracts();
+		if (contracts!=null && !contracts.isEmpty()) {
+			verify(contracts);
+		}
+	}
+	/**
+	 * Run verification for all contracts.
+	 */
+	private void actVerifyAll () {
 		// collect contracts
 		final List<Contract> contracts = new ArrayList<Contract>();
 		for (EclipsePlugin p:plugins) {
 			contracts.addAll(p.getInstantiatedContracts());
 		}
+		verify(contracts);
+	}
+	/**
+	 * Run verification.
+	 */
+	private void verify (List<Contract> contracts) {
 		final VerificationReport verReport = new VerificationReport() {
 			Contract contract = null;
 			public Contract getContract() {

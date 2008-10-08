@@ -10,21 +10,17 @@
 package net.java.treaty.eclipse.views;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import net.java.treaty.eclipse.Logger;
-
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
-import org.semanticweb.owl.model.OWLOntology;
 
 /**
  * Provider for icons representing types in user interfaces.
