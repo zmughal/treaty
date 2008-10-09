@@ -60,6 +60,8 @@ public class ContractView extends ViewPart {
 	// this is the model displayed - a list of plugins with contracts
 	private Collection<EclipsePlugin> plugins = null;
 	private Map<String,Image> icons = new HashMap<String,Image>();
+	// strings 
+	private static final String LABEL_INSTANCES = "contract instances";
 
 	private void initModel() {
 		plugins = new Builder().extractContracts();
@@ -207,7 +209,7 @@ public class ContractView extends ViewPart {
 				addNodes(node,(SimpleContract)c);
 				
 				// extensions
-				node = new TreeParent("contract instances");
+				node = new TreeParent(LABEL_INSTANCES);
 				parent.addChild(node);
 				for (EclipseExtension x:xp.getExtensions()) {
 					TreeParent node2 = new TreeParent(x.getOwner());
@@ -743,7 +745,7 @@ public class ContractView extends ViewPart {
 			}
 			else if (obj instanceof EclipsePlugin) {				
 				EclipsePlugin p = (EclipsePlugin)obj;
-				if (parent!=null && "contract instances".equals(parent.getData())) {
+				if (parent!=null && LABEL_INSTANCES.equals(parent.getData().toString())) {
 					// folder for instances
 					for (EclipseExtension x:p.getExtensions()) {
 						addIContract(x,contracts);
