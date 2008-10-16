@@ -152,8 +152,12 @@ public class ContractReader  {
 				readConditions(e,xdisjunction,contract);
 				context.addCondition(xdisjunction);
 			}
+			else if (e.getName().equals("not")) {
+				Negation neg = new Negation();
+				readConditions(e,neg,contract);
+				context.addCondition(neg);
+			}
 		}
-		
 	}
 	private List<Resource> readResources(List<Element> nodes) throws InvalidContractException{
 		List<Resource> resources = new ArrayList<Resource>();

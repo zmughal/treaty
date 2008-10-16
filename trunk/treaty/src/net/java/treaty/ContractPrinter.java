@@ -106,6 +106,11 @@ public class ContractPrinter implements ContractVisitor {
 		ios();
 		return true;
 	}
+	public boolean visit(Negation condition) {
+		out.println("not");
+		ios();
+		return true;
+	}
 	
 	public boolean visit(RelationshipCondition relationshipCondition) {
 		pos();
@@ -160,6 +165,9 @@ public class ContractPrinter implements ContractVisitor {
 	} 
 	
 	public void endVisit(XDisjunction condition) {
+		dos();
+	}
+	public void endVisit(Negation condition) {
 		dos();
 	}
 	
