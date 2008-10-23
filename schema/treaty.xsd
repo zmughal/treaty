@@ -119,7 +119,8 @@
 			<xs:attribute name="resource" type="xs:IDREF" use="required"/>
 			<xs:attribute name="type" type="xs:anyURI" use="required"/>
 			<xs:attribute name="operator" type="xs:anyURI" use="required"/>
-			<xs:attribute name="value" type="xs:string" use="required"/>
+			<xs:attribute name="property" type="xs:anyURI" use="required"/>
+			<xs:attribute name="value" type="xs:anySimpleType" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="mustExist">
