@@ -2,11 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: treaty for eclipse
 Bundle-SymbolicName: net.java.treaty.eclipse; singleton:=true
-Bundle-Version: 1.0.18
+Bundle-Version: 1.0.19
 Bundle-Activator: net.java.treaty.eclipse.Activator
 Bundle-Vendor: Jens Dietrich
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
  lib/treaty.jar,
@@ -28,7 +27,7 @@ Export-Package: com.clarkparsia.explanation,
    org.eclipse.ui.plugin,
    org.semanticweb.owl.model,
    org.osgi.framework",
- net.java.treaty.eclipse.views,
+ net.java.treaty.eclipse.jobs,
  org.coode.manchesterowlsyntax,
  org.coode.obo.parser,
  org.coode.owl.functionalparser,
