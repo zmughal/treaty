@@ -811,15 +811,12 @@ public class ContractView extends ViewPart {
 				this.contract=contract;
 			}			
 		};
-		VerificationJob job = new VerificationJob("Treaty component verification",contracts,verReport);
-		VerificationJobListener jobListener = new VerificationJobListener() {
+		VerificationJobListener vListener = new VerificationJobListener() {
 			public void verificationStatusChanged() {
 				updateTree(false);
 			}			
 		};
-		job.addVerificationJobListener(jobListener);
-	    
-	    job.addJobChangeListener(new IJobChangeListener() {
+	    IJobChangeListener jListener = new IJobChangeListener() {
 	    	public void aboutToRun(IJobChangeEvent e) {}			
 			public void awake(IJobChangeEvent e) {}			
 			public void done(IJobChangeEvent e) {
@@ -830,8 +827,8 @@ public class ContractView extends ViewPart {
 			public void running(IJobChangeEvent e) {}			
 			public void scheduled(IJobChangeEvent e) {}			
 			public void sleeping(IJobChangeEvent e) {}
-		});
-	    job.schedule();
+		};
+		ContractRepository.getDefault().verify(contracts,verReport,vListener,jListener);
 
 	}
 	private void reportVerificationResult(List<Contract> allContracts, List<Contract> failedContracts) {
