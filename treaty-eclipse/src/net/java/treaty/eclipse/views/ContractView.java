@@ -64,7 +64,8 @@ public class ContractView extends ViewPart {
 	private static final String LABEL_INSTANCES = "contract instances";
 
 	private void initModel() {
-		plugins = new Builder().extractContracts();
+		ContractRepository.reset();
+		plugins = ContractRepository.getDefault().getPluginsWithContracts();
 	}
 	
 	enum OwnerType {

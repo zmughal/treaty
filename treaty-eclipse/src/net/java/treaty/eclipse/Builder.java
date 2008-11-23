@@ -25,7 +25,7 @@ import org.osgi.framework.Bundle;
  * @author Jens Dietrich
  */
 
-public class Builder {
+class Builder {
 	public Collection<EclipsePlugin> extractContracts() {
 		
 		Map<String,EclipsePlugin> plugins = new HashMap<String,EclipsePlugin>();
