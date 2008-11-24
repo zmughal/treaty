@@ -4,7 +4,4 @@
    <extension point="net.java.treaty.eclipse.vocabulary" id="net.java.treaty.eclipse.vocabulary.java" name="net.java.treaty.eclipse.vocabulary.java">
           <vocabulary class="net.java.treaty.eclipse.vocabulary.java.JavaVocabulary" ontology="/vocabulary/java.owl"/> 
    </extension>
-   <extension point="net.java.treaty.eclipse.typeicons" id="net.java.treaty.eclipse.typeicons.java" name="net.java.treaty.eclipse.typeicons.java">
-          <iconprovider class="net.java.treaty.eclipse.vocabulary.java.IconProvider"/> 
-   </extension>
 </plugin>
