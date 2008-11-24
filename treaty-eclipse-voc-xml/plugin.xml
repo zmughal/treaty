@@ -5,8 +5,4 @@
          point="net.java.treaty.eclipse.vocabulary" id="net.java.treaty.eclipse.vocabulary.xml" name="net.java.treaty.eclipse.vocabulary.xml">
           <vocabulary class="net.java.treaty.eclipse.vocabulary.xml.XMLVocabulary" ontology="/vocabulary/xml.owl"/> 
    </extension>
-   <extension point="net.java.treaty.eclipse.typeicons" id="net.java.treaty.eclipse.typeicons.xml" name="net.java.treaty.eclipse.typeicons.xml">
-          <iconprovider class="net.java.treaty.eclipse.vocabulary.xml.IconProvider"/> 
-   </extension>
-
 </plugin>
