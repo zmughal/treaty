@@ -868,7 +868,6 @@ public class ContractView extends ViewPart {
 	}
 	private Image getIcon(String name) {
 		String path = "icons/"+name;
-		System.out.println("get icon: "+path);
 		Image icon = icons.get(path);
 		if (icon==null) {
 			icon = getImageDescriptor(path).createImage();

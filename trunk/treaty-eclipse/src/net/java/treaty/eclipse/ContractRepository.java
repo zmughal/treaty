@@ -66,7 +66,7 @@ public class ContractRepository {
 	}
 	
 	public void verify(Collection<Contract> contracts,VerificationReport verReport,VerificationJobListener vListener,IJobChangeListener jListener) {
-		VerificationJob job = new VerificationJob("Treaty component verification 2",contracts,verReport);
+		VerificationJob job = new VerificationJob("Treaty component verification",contracts,verReport);
 		job.addVerificationJobListener(vListener);
 		job.addJobChangeListener(jListener);
 		ISchedulingRule combinedRule = null;
