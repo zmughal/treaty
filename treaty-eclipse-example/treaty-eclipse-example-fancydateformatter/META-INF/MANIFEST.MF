@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Treaty_eclipse_example_francydateformatter Plug-in
+Bundle-Name: fancy dateformatter using an XML template string
 Bundle-SymbolicName: net.java.treaty.eclipse.example.clock.fancydateformatter;singleton:=true
-Bundle-Version: 1.0.4
+Bundle-Version: 1.0.5
 Bundle-Activator: net.java.treaty.eclipse.example.clock.fancydateformatter.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,
