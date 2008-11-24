@@ -5,8 +5,4 @@
          point="net.java.treaty.eclipse.vocabulary" id="net.java.treaty.eclipse.vocabulary.junit" name="net.java.treaty.eclipse.vocabulary.junit">
           <vocabulary class="net.java.treaty.eclipse.vocabulary.junit.JUnitVocabulary" ontology="/vocabulary/junit.owl"/> 
    </extension>
-  <extension point="net.java.treaty.eclipse.typeicons" id="net.java.treaty.eclipse.typeicons.junit" name="net.java.treaty.eclipse.typeicons.junit">
-          <iconprovider class="net.java.treaty.eclipse.vocabulary.junit.IconProvider"/> 
-  </extension>
-
 </plugin>
