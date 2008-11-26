@@ -23,10 +23,24 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	
 	private java.util.Map<String,Resource> supplierResources =  new java.util.LinkedHashMap<String,Resource>();
 	private java.util.Map<String,Resource> consumerResources =  new java.util.LinkedHashMap<String,Resource>();
+	// these are other "external" resources, e.g. provided by additional contract plugins
+	private java.util.Map<String,Resource> externalResources =  new java.util.LinkedHashMap<String,Resource>();
 	private java.util.List<AbstractCondition> constraints = new java.util.ArrayList<AbstractCondition>();
 	private Connector consumer = null;
 	private Connector supplier = null;
+	// the owner is used if a third party owns the contract
+	private Connector owner = null;
 	private URL location = null; // the physical location of the contract
+
+	public Connector getOwner() {
+		return owner;
+	}
+	public void setOwner(Connector owner) {
+		this.owner = owner;
+		for (Resource r:externalResources.values()) {
+			r.setOwner(owner);
+		}
+	}
 	
 	public SimpleContract() {
 		super();
@@ -56,14 +70,32 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	}
 	public void addConsumerResource(Resource r) throws InvalidContractException {
 		this.checkId(r);
-		// if (!r.isResolved()) throw new InvalidContractException();
-		r.setOwner(this.supplier);
+		if (!r.isInstantiated()) throw new InvalidContractException("External resources cannot be variables");
+		r.setOwner(this.consumer);
 		this.consumerResources.put(r.getId(),r);
 	}
+	public void addExternalResource(Resource r) throws InvalidContractException {
+		this.checkId(r);
+		r.setOwner(owner);
+		this.externalResources.put(r.getId(),r);
+	}
+    public java.util.Collection<Resource> getConsumerResources() {
+        return consumerResources.values();
+	}
+	public java.util.Collection<Resource> getSupplierResources() {
+	        return supplierResources.values();
+	}
+	public java.util.Collection<Resource> getExternalResources() {
+        return externalResources.values();
+	}
+
 	public Resource getResource(String id) {
 		Resource r = this.consumerResources.get(id);
 		if (r==null) {
 			r = this.supplierResources.get(id);
+		}
+		if (r==null) {
+			r = this.externalResources.get(id);
 		}
 		return r;
 			
@@ -71,18 +103,15 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	private void checkId(Resource r) throws InvalidContractException {
 		if (this.consumerResources.containsKey(r.getId()))
 			throw new InvalidContractException("A resource with this id is already registered as extension resource: " + r.getId());
-		if (this.supplierResources.containsKey(r.getId()))
+		else if (this.supplierResources.containsKey(r.getId()))
 			throw new InvalidContractException("A resource with this id is already registered as extension point resource: " + r.getId());
+		else if (this.externalResources.containsKey(r.getId()))
+			throw new InvalidContractException("A resource with this id is already registered as external resource: " + r.getId());
 	}
 	public java.util.List<AbstractCondition> getConstraints() {
 		return constraints;
 	}
-	public java.util.Collection<Resource> getConsumerResources() {
-		return consumerResources.values();
-	}
-	public java.util.Collection<Resource> getSupplierResources() {
-		return supplierResources.values();
-	}
+
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.IContract#accept(nz.ac.massey.treaty.ContractVisitor)
 	 */
@@ -100,6 +129,12 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 					r.accept(visitor);
 				}
 				visitor.endVisitExtensionResources(this.supplierResources.values());
+			}
+			if (visitor.visitExternalResources(this.supplierResources.values())) {
+				for (Resource r:this.externalResources.values()) {
+					r.accept(visitor);
+				}
+				visitor.endVisitExternalResources(this.supplierResources.values());
 			}
 			if (visitor.visitConditions(this.constraints)) {
 				for (AbstractCondition c:getConstraints()) {
@@ -174,6 +209,9 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	}
 	public void setConsumer(Connector consumer) {
 		this.consumer = consumer;
+		for (Resource r:consumerResources.values()) {
+			r.setOwner(consumer);
+		}
 	}
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.IContract#getSupplier()
@@ -183,6 +221,9 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	}
 	public void setSupplier(Connector supplier) {
 		this.supplier = supplier;
+		for (Resource r:supplierResources.values()) {
+			r.setOwner(supplier);
+		}
 	}
 	/**
 	 * Indicates whether the contract has unbound variables.

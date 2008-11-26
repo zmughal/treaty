@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Tests for OWL vocabulary
-Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.owl.tests
-Bundle-Version: 1.0.0
-Bundle-Vendor: Jens Dietrich
-Fragment-Host: net.java.treaty.eclipse.vocabulary.owl;bundle-version="1.0.1"
-Require-Bundle: org.junit4
