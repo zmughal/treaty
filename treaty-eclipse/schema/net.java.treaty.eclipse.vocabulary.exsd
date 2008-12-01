@@ -6,7 +6,7 @@
          <meta.schema plugin="net.java.treaty.eclipse" id="net.java.treaty.eclipse.vocabulary" name="treaty contract vocabularies"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         Extension point to plugin in additional vocabulary elements.
       </documentation>
    </annotation>
 

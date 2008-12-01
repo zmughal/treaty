@@ -12,6 +12,8 @@ package net.java.treaty.eclipse;
 
 import java.io.IOException;
 import java.net.URL;
+
+import net.java.treaty.AggregatedContract;
 import net.java.treaty.Component;
 import net.java.treaty.Connector;
 import net.java.treaty.Contract;
@@ -51,25 +53,39 @@ public abstract class EclipseConnector extends PropertySupport implements Connec
 		return contract;
 	}
 	
-	protected Contract loadContract () {
-		EclipsePlugin owner = (EclipsePlugin)this.getOwner();
+	public void addContract (URL url,EclipseConnector contractOwner) {
+		SimpleContract newContract = null; 
 		if (owner!=null) {
-			URL url = owner.getResource(getContractLocation(this));
 			if (url!=null) {
-				Logger.info("contract url found " + url);
+				Logger.info("Loading contract from " + url);
 				ContractReader reader = new ContractReader(new EclipseResourceManager());
 				try {
-					SimpleContract contract = reader.read(url.openStream());
-					contract.setLocation(url);
-					return contract;
+					newContract = reader.read(url.openStream());
+					newContract.setLocation(url);
+					if (contractOwner!=null) {
+						newContract.setOwner(contractOwner);
+					}
+					configureNewContract(newContract);
 				} catch (TreatyException e) {
-					e.printStackTrace();
+					Logger.error("Exception loading contract from " + url,e);
 				} catch (IOException e) {
-					e.printStackTrace();
+					Logger.error("Exception loading contract from " + url,e);
 				}	
 			}
 		}
-		return null;
+		if (contract==null) {
+			contract = newContract;
+		}
+		else {
+			// contract aggregation
+			Logger.info("Aggregating contracts " + url + " and " + this.contract);
+			this.contract = new AggregatedContract(this.contract,newContract);
+			
+		}
+	}
+
+	protected void configureNewContract(SimpleContract newContract) {
+		// by default nothing to do here
 	}
 
 }

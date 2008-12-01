@@ -10,6 +10,7 @@
 
 package net.java.treaty.eclipse;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -36,7 +37,6 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	public EclipseExtensionPoint(EclipsePlugin owner, IExtensionPoint xp) {
 		super(owner);
 		this.extensionPoint = xp;
-		this.contract = loadContract ();
 		owner.addExtensionPoint(this);
 	}
 	
@@ -64,13 +64,21 @@ public class EclipseExtensionPoint extends EclipseConnector {
 		return this.extensionPoint.getUniqueIdentifier();
 	}
 	
-	protected Contract loadContract () {
-		Contract contract = super.loadContract();
-		if (contract instanceof SimpleContract) {
-			((SimpleContract)contract).setConsumer(this);
-		}
-		return contract;
+	protected void configureNewContract(SimpleContract newContract) {
+		super.configureNewContract(newContract);
+		newContract.setConsumer(this);
 	}
 	
-
+	@Override
+	public String toString() {
+		return new StringBuffer()
+			.append(this.getClass().getName())
+			.append('(')
+			.append(this.extensionPoint==null?"?":this.extensionPoint.getUniqueIdentifier())
+			.append(",defined in ")
+			.append(this.getOwner())
+			.append(')')
+			.toString();
+	}
+	
 }

@@ -189,6 +189,9 @@ public class VerificationJob extends Job {
 			for (Resource r:sc.getSupplierResources()) {
 				loadResource(sc,l,c.getSupplier(),r);
 			}
+			for (Resource r:sc.getExternalResources()) {
+				loadResource(sc,l,r.getOwner(),r);
+			}
 		}
 	}
 	private void loadResource(SimpleContract sc,ResourceLoader l,Connector con,Resource r) throws ResourceLoaderException {
