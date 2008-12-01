@@ -28,7 +28,6 @@ public class EclipseExtension extends EclipseConnector {
 	public EclipseExtension(EclipsePlugin owner, IExtension extension) {
 		super(owner);
 		this.extension=extension;
-		loadContract ();
 		if (owner!=null) {
 			owner.addExtension(this);
 		}
@@ -55,5 +54,16 @@ public class EclipseExtension extends EclipseConnector {
 		this.contract = c;
 	}
 	
+	@Override
+	public String toString() {
+		return new StringBuffer()
+			.append(this.getClass().getName())
+			.append('(')
+			.append(this.extension==null?"?":this.extension.getUniqueIdentifier())
+			.append(",defined in ")
+			.append(this.getOwner())
+			.append(')')
+			.toString();
+	}
 
 }

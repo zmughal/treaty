@@ -83,6 +83,12 @@ public class ContractPrinter implements ContractVisitor {
 		return true;
 	}
 
+	public boolean visitExternalResources(Collection<Resource> resources) {
+		out.println("external resources:");
+		ios();
+		return true;
+	}
+	
 	public boolean visitConditions(List<AbstractCondition> name) {
 		out.println("conditions:");
 		ios();
@@ -149,6 +155,10 @@ public class ContractPrinter implements ContractVisitor {
 	}
 
 	public void endVisitExtensionResources(Collection<Resource> resources) {
+		dos();
+	}
+	
+	public void endVisitExternalResources(Collection<Resource> resources) {
 		dos();
 	}
 

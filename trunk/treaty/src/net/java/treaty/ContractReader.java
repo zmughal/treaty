@@ -76,6 +76,13 @@ public class ContractReader  {
 		for (Resource r:resources) {
 			contract.addConsumerResource(r);
 		}
+		// read third party resources
+		xpath =  createXPath("/contract/external/resource");
+		nodes = xpath.selectNodes(doc);
+		resources = readResources(nodes);
+		for (Resource r:resources) {
+			contract.addExternalResource(r);
+		}
 		
 		// read conditions
 		Element eConstraints = doc.getRootElement().getChild("constraints");

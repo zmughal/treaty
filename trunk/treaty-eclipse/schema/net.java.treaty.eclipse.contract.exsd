@@ -3,10 +3,10 @@
 <schema targetNamespace="net.java.treaty.eclipse">
 <annotation>
       <appInfo>
-         <meta.schema plugin="net.java.treaty.eclipse" id="net.java.treaty.eclipse.typeicons" name="net.java.treaty.eclipse.typeicons"/>
+         <meta.schema plugin="net.java.treaty.eclipse" id="net.java.treaty.eclipse.vocabulary" name="treaty contract vocabularies"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         Extension point for contracts that can be added to describe the relationship between components without adding them directly to components.
       </documentation>
    </annotation>
 
@@ -39,15 +39,15 @@
       </complexType>
    </element>
 
-   <element name="iconprovider">
+   <element name="contract">
       <complexType>
-         <attribute name="class" type="string">
+         <attribute name="location" type="string">
             <annotation>
                <documentation>
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java"/>
+                  <meta.attribute kind="resource"/>
                </appInfo>
             </annotation>
          </attribute>

@@ -95,6 +95,16 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		}
 		return contracts;
 	}
+
+	@Override
+	public String toString() {
+		return new StringBuffer()
+			.append(this.getClass().getName())
+			.append('(')
+			.append(getId())
+			.append(')')
+			.toString();
+	}
 	
 
 

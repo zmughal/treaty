@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -71,7 +70,8 @@ public class ContractView extends ViewPart {
 	
 	enum OwnerType {
 		extension, 
-		extensionpoint
+		extensionpoint,
+		thirdparty
 	}
 
 	class KeyValueNode {
@@ -204,72 +204,108 @@ public class ContractView extends ViewPart {
 		}
 		
 		private void addNodes(TreeParent parent,EclipseExtensionPoint xp) {
-			Contract c = xp.getContract();				
-			if (c instanceof SimpleContract) {
-				TreeParent node = new TreeParent(c);
-				parent.addChild(node);
-				addNodes(node,(SimpleContract)c);
-				
-				// extensions
-				node = new TreeParent(LABEL_INSTANCES);
-				parent.addChild(node);
-				for (EclipseExtension x:xp.getExtensions()) {
-					TreeParent node2 = new TreeParent(x.getOwner());
-					node.addChild(node2);
-					addNodes(node2,x,(SimpleContract)c);	
-				}
-			}		
-			
+			Contract c = xp.getContract();			
 
+			TreeParent node = new TreeParent(c);
+			parent.addChild(node);
+			addNodes(node,c);
 			
+			// extensions
+			node = new TreeParent(LABEL_INSTANCES);
+			parent.addChild(node);
+			for (EclipseExtension x:xp.getExtensions()) {
+				TreeParent node2 = new TreeParent(x.getOwner());
+				node.addChild(node2);
+				addNodes(node2,x);	
+			}	
 		}
-		private void addNodes(TreeParent parent,EclipseExtension x,SimpleContract c) {			
+		private void addNodes(TreeParent parent,EclipseExtension x) {			
 			TreeParent node = new TreeParent(x);
 			parent.addChild(node);
-			try {
-				SimpleContract instantiatedContract = (SimpleContract)c.bindSupplier(x, new EclipseResourceManager());
-				x.setContract(instantiatedContract);
-				TreeParent node2 = new TreeParent(instantiatedContract);
+			Contract c = x.getContract();
+			if (c instanceof SimpleContract) {
+				TreeParent node2 = new TreeParent(c);
 				node.addChild(node2);
-				addNodes(node2,instantiatedContract);
+				addNodes2(node2,c);
 			}
-			catch (Exception t) {
-				SimpleContract d = new SimpleContract() ; // dummy contract
-				x.setContract(d);
-				d.setProperty(VERIFICATION_RESULT, VerificationResult.FAILURE);
-				d.setProperty(VERIFICATION_EXCEPTION, t);
-				Logger.error("Error loading contract", t);
+			if (c instanceof AggregatedContract) {
+				AggregatedContract aContract = (AggregatedContract)c;
+				TreeParent node2 = new TreeParent(aContract);
+				node.addChild(node2);
+				for (Contract part:aContract.getParts()) {
+					addNodes2(node2,part);
+				}
 			}
 		}
 		
-		private void addNodes(TreeParent parent,SimpleContract contract) {
-			Map<Resource,OwnerType> ownerTypes = new HashMap<Resource,OwnerType>();
-			for (Resource r:contract.getConsumerResources()) {
-				ownerTypes.put(r,OwnerType.extensionpoint);				
+		private void addNodes2(TreeParent parent,Contract c) {			
+
+			if (c instanceof SimpleContract) {
+				// FIXME contract instantiation should be done in Builder
+				//SimpleContract instantiatedContract = (SimpleContract)c.bindSupplier(x, new EclipseResourceManager());
+				//x.setContract(instantiatedContract);
+				TreeParent node2 = new TreeParent(c);
+				parent.addChild(node2);
+				addNodes(node2,c);
 			}
-			for (Resource r:contract.getSupplierResources()) {
-				ownerTypes.put(r,OwnerType.extension);				
+			if (c instanceof AggregatedContract) {
+				AggregatedContract aContract = (AggregatedContract)c;
+				TreeParent node2 = new TreeParent(aContract);
+				parent.addChild(node2);
+				for (Contract part:aContract.getParts()) {
+					addNodes2(node2,part);
+				}		
 			}
-			
-			TreeParent rNode = new TreeParent("extension point resources");
-			parent.addChild(rNode);
-			for (Resource r:contract.getConsumerResources()) {
-				addResourceNode(rNode,r,ownerTypes);				
-			}
-			rNode = new TreeParent("extension resources");
-			parent.addChild(rNode);
-			for (Resource r:contract.getSupplierResources()) {
-				addResourceNode(rNode,r,ownerTypes);	
-			}
-			
-			for (AbstractCondition c:contract.getConstraints()) {
-				// top level conjunction displayed as set
-				if (c instanceof Conjunction) {
-					for (AbstractCondition c2:((Conjunction)c).getParts()) {
-						addNodes(parent,c2,ownerTypes);
-					}
+		}
+
+		private void addNodes(TreeParent parent,Contract contract) {
+			if (contract instanceof SimpleContract) {
+				SimpleContract sContract = (SimpleContract)contract;
+				Map<Resource,OwnerType> ownerTypes = new HashMap<Resource,OwnerType>();
+				for (Resource r:sContract.getConsumerResources()) {
+					ownerTypes.put(r,OwnerType.extensionpoint);				
 				}
-				else addNodes(parent,c,ownerTypes);
+				for (Resource r:sContract.getSupplierResources()) {
+					ownerTypes.put(r,OwnerType.extension);				
+				}
+				for (Resource r:sContract.getExternalResources()) {
+					ownerTypes.put(r,OwnerType.thirdparty);				
+				}
+				
+				TreeParent rNode = new TreeParent("extension point resources");
+				parent.addChild(rNode);
+				for (Resource r:sContract.getConsumerResources()) {
+					addResourceNode(rNode,r,ownerTypes);				
+				}
+				rNode = new TreeParent("extension resources");
+				parent.addChild(rNode);
+				for (Resource r:sContract.getSupplierResources()) {
+					addResourceNode(rNode,r,ownerTypes);	
+				}
+				rNode = new TreeParent("third party resources");
+				parent.addChild(rNode);
+				for (Resource r:sContract.getExternalResources()) {
+					addResourceNode(rNode,r,ownerTypes);	
+				}
+				
+				for (AbstractCondition c:sContract.getConstraints()) {
+					// top level conjunction displayed as set
+					if (c instanceof Conjunction) {
+						for (AbstractCondition c2:((Conjunction)c).getParts()) {
+							addNodes(parent,c2,ownerTypes);
+						}
+					}
+					else addNodes(parent,c,ownerTypes);
+				}
+			}
+			else if (contract instanceof AggregatedContract) {
+				AggregatedContract aContract = (AggregatedContract)contract;
+				for (Contract c:aContract.getParts()) {
+					// add children recursively
+					TreeParent node = new TreeParent(c);
+					parent.addChild(node);
+					addNodes(node,c);
+				}
 			}
 		}
 		private void addResourceNode(TreeParent parent,Resource r,Map<Resource,OwnerType> ownerTypes) {
