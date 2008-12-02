@@ -154,6 +154,7 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 		SimpleContract contract = new SimpleContract();
 		contract.setConsumer(this.getConsumer());
 		contract.setSupplier(connector);
+		contract.setOwner(this.getOwner());
 		contract.setLocation(this.getLocation());
 		contract.consumerResources.putAll(this.consumerResources);
 		contract.externalResources.putAll(this.externalResources);
@@ -174,6 +175,7 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 		contract.setConsumer(connector);
 		contract.setSupplier(this.getSupplier());
 		contract.setLocation(this.getLocation());
+		contract.setOwner(this.getOwner());
 		contract.supplierResources.putAll(this.supplierResources);
 		for (Resource r:this.consumerResources.values()) {
 			contract.addConsumerResource(r.instantiate(connector,loader));
