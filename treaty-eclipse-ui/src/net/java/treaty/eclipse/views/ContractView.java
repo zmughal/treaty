@@ -271,21 +271,27 @@ public class ContractView extends ViewPart {
 				for (Resource r:sContract.getExternalResources()) {
 					ownerTypes.put(r,OwnerType.thirdparty);				
 				}
-				
-				TreeParent rNode = new TreeParent("extension point resources");
-				parent.addChild(rNode);
-				for (Resource r:sContract.getConsumerResources()) {
-					addResourceNode(rNode,r,ownerTypes);				
+				TreeParent rNode = null;
+				if (sContract.getConsumerResources().size()>0){
+					rNode = new TreeParent(getResourceLabel("extension point resources",sContract.getConsumer()));
+					parent.addChild(rNode);
+					for (Resource r:sContract.getConsumerResources()) {
+						addResourceNode(rNode,r,ownerTypes);				
+					}
 				}
-				rNode = new TreeParent("extension resources");
-				parent.addChild(rNode);
-				for (Resource r:sContract.getSupplierResources()) {
-					addResourceNode(rNode,r,ownerTypes);	
+				if (sContract.getSupplierResources().size()>0){
+					rNode = new TreeParent(getResourceLabel("extension resources",sContract.getSupplier()));
+					parent.addChild(rNode);
+					for (Resource r:sContract.getSupplierResources()) {
+						addResourceNode(rNode,r,ownerTypes);	
+					}
 				}
-				rNode = new TreeParent("third party resources");
-				parent.addChild(rNode);
-				for (Resource r:sContract.getExternalResources()) {
-					addResourceNode(rNode,r,ownerTypes);	
+				if (sContract.getExternalResources().size()>0){
+					rNode = new TreeParent(getResourceLabel("third party resources",sContract.getOwner()));
+					parent.addChild(rNode);
+					for (Resource r:sContract.getExternalResources()) {
+						addResourceNode(rNode,r,ownerTypes);	
+					}
 				}
 				
 				for (AbstractCondition c:sContract.getConstraints()) {
@@ -307,6 +313,18 @@ public class ContractView extends ViewPart {
 					addNodes(node,c);
 				}
 			}
+		}
+		private Object getResourceLabel(String string, Connector c) {
+			StringBuffer b = new StringBuffer(string);
+			if (c!=null) {
+				Component comp = c.getOwner();
+				if (comp!=null) {
+					b.append(" (defined in ");
+					b.append(comp.getId());
+					b.append(')');
+				}
+			}
+			return b.toString();
 		}
 		private void addResourceNode(TreeParent parent,Resource r,Map<Resource,OwnerType> ownerTypes) {
 			TreeParent node = new TreeParent(r);
@@ -413,13 +431,24 @@ public class ContractView extends ViewPart {
 				return ((Component)obj).getId();
 			}
 			else if (obj instanceof SimpleContract) {
-				URL url = ((SimpleContract)obj).getLocation();
+				SimpleContract c = (SimpleContract)obj;
+				URL url = c.getLocation();
 				if (url==null) {
 					return "a contract";
 				}
 				else {
+					// check whether contract has been provided by third party
+					if (c.getOwner()!=null && !c.getConsumer().equals(c.getOwner())) {
+						Connector conn = c.getOwner();
+						Component comp = conn.getOwner();
+						String id = comp.getId();
+						return id+url.getPath();
+					}
 					return url.getPath(); // context is defined by parent node
 				}
+			}
+			else if (obj instanceof AggregatedContract) {
+				return "composite contract";
 			}
 			else if (obj instanceof Resource) {
 				Resource r = (Resource)obj;

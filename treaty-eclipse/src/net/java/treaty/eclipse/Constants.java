@@ -18,4 +18,5 @@ public interface Constants {
 	// keys used to annotate contracts and conditions
 	public static final String VERIFICATION_RESULT = "net.java.treaty.eclipse.verification.result";
 	public static final String VERIFICATION_EXCEPTION = "net.java.treaty.eclipse.verification.exception";
+
 }
