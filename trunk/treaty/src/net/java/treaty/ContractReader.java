@@ -96,8 +96,8 @@ public class ContractReader  {
 		return contract;
 	}
 	private void readConditions(Element node, ConditionContext context, SimpleContract contract) throws JDOMException, InvalidContractException, URISyntaxException {
-		XPath xpath =  createXPath("relationship|property|mustExist|and|or|xor");
-		List<Element> nodes = xpath.selectNodes(node);
+		
+		List<Element> nodes = node.getChildren();
 		for (Element e:nodes) {
 			if (e.getName().equals("property")){
 				PropertyCondition condition = new PropertyCondition();
