@@ -362,6 +362,12 @@ public class ContractView extends ViewPart {
 					addNodes(node,part,ownerTypes);
 				}
 			}
+			else if (c instanceof Negation) {
+				Negation cc = (Negation)c;
+				TreeParent node = new TreeParent(cc);
+				parent.addChild(node);
+				addNodes(node,cc.getNegatedCondition(),ownerTypes);
+			}
 		}
 		private void addNodes(TreeParent parent,Resource r,Map<Resource,OwnerType> ownerTypes) {
 			parent.addChild(new TreeObject(new KeyValueNode("id",r.getId())));
@@ -469,6 +475,9 @@ public class ContractView extends ViewPart {
 			}
 			else if (obj instanceof ComplexCondition) {
 				return ((ComplexCondition)obj).getConnective();
+			}
+			else if (obj instanceof Negation) {
+				return "not";
 			}
 			return obj.toString();
 		}
