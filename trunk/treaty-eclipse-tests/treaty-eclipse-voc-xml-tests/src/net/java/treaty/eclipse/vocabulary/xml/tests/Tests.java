@@ -172,6 +172,26 @@ public class Tests {
 		rel.setRelationship(new URI(VOC.INSTANTIATES));
 		VOC.check(rel);
 	}
-
+	
+	@Test
+	public void testRelationshipDTD1() throws Exception {
+		Resource r1 = this.getResource(VOC.DTD,"/testdata/peoplelist.dtd");
+		Resource r2 = this.getResource(VOC.INSTANCE,"/testdata/peoplelist1.xml");
+		RelationshipCondition rel = new RelationshipCondition();
+		rel.setResource1(r2);
+		rel.setResource2(r1);
+		rel.setRelationship(new URI(VOC.INSTANTIATES_DTD));
+		VOC.check(rel);
+	}
+	@Test(expected = VerificationException.class)
+	public void testRelationshipDTD2() throws Exception {
+		Resource r1 = this.getResource(VOC.DTD,"/testdata/peoplelist.dtd");
+		Resource r2 = this.getResource(VOC.INSTANCE,"/testdata/dateformat3.xml");
+		RelationshipCondition rel = new RelationshipCondition();
+		rel.setResource1(r2);
+		rel.setResource2(r1);
+		rel.setRelationship(new URI(VOC.INSTANTIATES_DTD));
+		VOC.check(rel);
+	}
 	
 }
