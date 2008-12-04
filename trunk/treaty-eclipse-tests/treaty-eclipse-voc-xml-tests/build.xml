@@ -31,11 +31,11 @@
 	<property name="bundleBootClasspath" value="${bootclasspath}"/>
 
 	<target name="init" depends="properties">
-		<condition property="pluginTemp" value="${buildTempFolder}/plugins">
+<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
 			<isset property="buildTempFolder"/>
 		</condition>
 		<property name="pluginTemp" value="${basedir}"/>
-		<condition property="build.result.folder" value="${pluginTemp}/net.java.treaty.eclipse.vocabulary.xml_1.0.0">
+<condition property="build.result.folder" value="${pluginTemp}/net.java.treaty.eclipse.vocabulary.xml_1.0.0"		>
 			<isset property="buildTempFolder"/>
 		</condition>
 		<property name="build.result.folder" value="${basedir}"/>
@@ -63,61 +63,42 @@
 		<delete dir="${temp.folder}/@dot.bin"/>
 		<mkdir dir="${temp.folder}/@dot.bin"/>
 		<path id="@dot.classpath">
-			<pathelement path="${build.result.folder}/../treaty-eclipse-voc-xml/bin/"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse.vocabulary.xml_1.0.15/bin/"/>
+			<pathelement path="../treaty-eclipse-voc-xml/bin/"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse.vocabulary.xml_1.0.16/bin/"/>
 			<pathelement path="${build.result.folder}/../treaty-eclipse-voc-xml/@dot"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse.vocabulary.xml_1.0.15/@dot"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.ui_3.3.1.M20071128-0800.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.runtime_3.3.100.v20070530.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.osgi_3.3.2.R33x_v20080105.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.equinox.common_3.3.0.v20070426.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.jobs_3.3.1.R33x_v20070709.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.runtime.compatibility.registry_3.2.100.v20070316/runtime_registry_compatibility.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.runtime.compatibility.registry_3.2.100.v20070316/@dot"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.equinox.registry_3.3.1.R33x_v20070802.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.equinox.preferences_3.2.101.R33x_v20080117.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.contenttype_3.2.100.v20070319.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.runtime.compatibility.auth_3.2.100.v20070502.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.equinox.app_1.0.1.R33x_v20070828.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.osgi.services_3.1.200.v20070605.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/javax.servlet_2.4.0.v200706111738.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.swt_3.3.2.v3349d.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.swt.gtk.linux.x86_3.3.2.v3349.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.jface_3.3.2.M20080207-0800.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.commands_3.3.0.I20070605-0010.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.ui.workbench_3.3.2.M20080207-0800.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.ui.workbench.compatibility_3.2.0.I20070319-0010/@dot"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.ui.workbench.compatibility_3.2.0.I20070319-0010/compatibility.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/com.ibm.icu_3.6.1.v20070906.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.help_3.3.2.v20071126_33x.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.expressions_3.3.0.v20070606-0010.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.jface.databinding_1.1.1.M20080207-0800.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.databinding_1.0.1.M20070822-0800.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.resources_3.3.1.R33x_v20080205.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.resources.compatibility_3.2.100.v20070502.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.ant.core_3.1.200.v20070522.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.variables_3.2.0.v20070426.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.filesystem_1.1.0.v20070606.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.eclipse.core.filesystem.linux.x86_1.1.0.v20070416.jar"/>
-			<pathelement path="${build.result.folder}/../treaty-eclipse/bin/"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.18/bin/"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse.vocabulary.xml_1.0.16/@dot"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.core.runtime_3.4.0.v20080512.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.osgi_3.4.0.v20080605-1900.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.equinox.common_3.4.0.v20080421-2006.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.core.jobs_3.4.0.v20080512.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.core.runtime.compatibility.registry_3.2.200.v20080610/runtime_registry_compatibility.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.core.runtime.compatibility.registry_3.2.200.v20080610/@dot"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.equinox.registry_3.4.0.v20080516-0950.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.equinox.preferences_3.2.200.v20080421-2006.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.core.contenttype_3.3.0.v20080604-1400.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.core.runtime.compatibility.auth_3.2.100.v20070502.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.equinox.app_1.1.0.v20080421-2006.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.eclipse.osgi.services_3.1.200.v20071203.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/javax.servlet_2.4.0.v200806031604.jar"/>
+			<pathelement path="../treaty-eclipse/bin/"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.19/bin/"/>
 			<pathelement path="${build.result.folder}/../treaty-eclipse/@dot"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.18/@dot"/>
-			<pathelement path="${build.result.folder}/../treaty-eclipse/bin"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.18/bin"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.19/@dot"/>
+			<pathelement path="../treaty-eclipse/bin"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.19/bin"/>
 			<pathelement path="../treaty-eclipse/lib/treaty.jar"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.18/lib/treaty.jar"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.19/lib/treaty.jar"/>
 			<pathelement path="../treaty-eclipse/lib/jaxen-core.jar"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.18/lib/jaxen-core.jar"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.19/lib/jaxen-core.jar"/>
 			<pathelement path="../treaty-eclipse/lib/jaxen-jdom.jar"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.18/lib/jaxen-jdom.jar"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.19/lib/jaxen-jdom.jar"/>
 			<pathelement path="../treaty-eclipse/lib/saxpath.jar"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.18/lib/saxpath.jar"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.19/lib/saxpath.jar"/>
 			<pathelement path="../treaty-eclipse/lib/jdom.jar"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.18/lib/jdom.jar"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.19/lib/jdom.jar"/>
 			<pathelement path="../treaty-eclipse/lib/owlapi-bin.jar"/>
-			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.18/lib/owlapi-bin.jar"/>
-			<pathelement path="../../../eclipse3.3.2/plugins/org.junit4_4.3.1/junit.jar"/>
+			<pathelement path="${build.result.folder}/../net.java.treaty.eclipse_1.0.19/lib/owlapi-bin.jar"/>
+			<pathelement path="../../../eclipse3.4/plugins/org.junit4_4.3.1/junit.jar"/>
 		</path>
 		<!-- compile the source code -->
 		<javac destdir="${temp.folder}/@dot.bin" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}"		>
@@ -144,11 +125,21 @@
 
 	<target name="src.zip" depends="init" unless="src.zip">
 		<mkdir dir="${build.result.folder}"/>
+		<antcall target="zip.src.zip"/>
+	</target>
+	<target name="zip.src.zip">
 		<zip destfile="${build.result.folder}/src.zip" filesonly="false" whenempty="skip" update="false">
 			<fileset dir="src/">
 				<include name="**/*.java"/>
 			</fileset>
 		</zip>
+	</target>
+	<target name="copy.src.zip">
+		<copy todir="${source.destination.folder}/" failonerror="true" overwrite="true">
+			<fileset dir="src/">
+				<include name="**/*.java"/>
+			</fileset>
+		</copy>
 	</target>
 
 	<target name="build.jars" depends="init" description="Compile classes and build nested jars for the plug-in: net.java.treaty.eclipse.vocabulary.xml.">
@@ -183,7 +174,22 @@
 	<target name="gather.sources" depends="init" if="destination.temp.folder">
 		<mkdir dir="${destination.temp.folder}/net.java.treaty.eclipse.vocabulary.xml_1.0.0"/>
 		<copy file="${build.result.folder}/src.zip" todir="${destination.temp.folder}/net.java.treaty.eclipse.vocabulary.xml_1.0.0" failonerror="false" overwrite="false"/>
-		<copy todir="${destination.temp.folder}/net.java.treaty.eclipse.vocabulary.xml_1.0.0" failonerror="false" overwrite="false">
+		<antcall target="copy.src.includes">
+			<param name="source.destination.folder" value="${destination.temp.folder}/net.java.treaty.eclipse.vocabulary.xml_1.0.0"/>
+		</antcall>
+	</target>
+
+	<target name="gather.individual.sources" depends="init">
+		<antcall target="copy.src.zip">
+			<param name="source.destination.folder" value="${destination.temp.folder}"/>
+		</antcall>
+		<antcall target="copy.src.includes">
+			<param name="source.destination.folder" value="${destination.temp.folder}"/>
+		</antcall>
+	</target>
+
+	<target name="copy.src.includes" depends="init">
+		<copy todir="${source.destination.folder}" failonerror="false" overwrite="false">
 			<fileset dir="${basedir}">
 				<include name="src/testdata/"/>
 				<include name="testdata/"/>
@@ -209,7 +215,7 @@
 	</target>
 
 	<target name="refresh" depends="init" if="eclipse.running" description="Refresh this folder.">
-		<eclipse.convertPath fileSystemPath="/home/jens/development/treaty/workspace-jpf/treaty-eclipse-voc-xml-tests" property="resourcePath"/>
+		<eclipse.convertPath fileSystemPath="/home/jens/development/treaty/workspace2/treaty-eclipse-voc-xml-tests" property="resourcePath"/>
 		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
 	</target>
 
