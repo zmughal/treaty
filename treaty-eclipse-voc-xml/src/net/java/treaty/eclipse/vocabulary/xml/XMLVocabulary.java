@@ -10,7 +10,6 @@
 
 package net.java.treaty.eclipse.vocabulary.xml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,9 +22,13 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
-import com.wutka.dtd.DTDParser;
-
+import org.iso_relax.verifier.Verifier;
+import org.iso_relax.verifier.VerifierFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import com.sun.msv.driver.textui.DebugController;
+import com.sun.msv.reader.dtd.DTDReader;
+import com.sun.msv.verifier.jarv.TheFactoryImpl;
 import net.java.treaty.*;
 
 
@@ -48,6 +51,38 @@ public class XMLVocabulary implements  ContractVocabulary {
 	// registry
 	private Collection<URI> predicates = null;
 	private Collection<URI> types = null;
+	
+	class Controller extends DebugController {
+		Controller() {
+			super(false);
+		}
+		private Exception exception = null;
+		private String exceptionMessage = null;
+
+		public String getExceptionMessage() {
+			return exceptionMessage;
+		}
+		public Exception getException() {
+			return exception;
+		}
+		@Override
+		public void error(Locator[] l, String s, Exception x) {
+			super.error(l, s, x);
+			// only record first exception
+			if (exception==null) {
+				exception = x;
+			}
+			if (exceptionMessage==null) {
+				exceptionMessage = s;
+			}
+		}
+		@Override
+		public void warning(Locator[] l, String s) {
+			super.warning(l, s);
+		}
+		
+		
+	};
 	
 	public XMLVocabulary() {
 		super();
@@ -120,37 +155,15 @@ public class XMLVocabulary implements  ContractVocabulary {
 			}
 		}
 		else if (INSTANTIATES_DTD.equals(rel)) {
-			try {
+			try {				
 				URL schemaURL = (URL)res2.getValue();
 				URL instanceURL = (URL)res1.getValue();
-				SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.XML_DTD_NS_URI);
-				if (schemaURL==null) {
-					throw new VerificationException("Cannot validate XML instance against DTD - URL is null for resource " +res2.getName());
-				}
-				else if (instanceURL==null) {
-					throw new VerificationException("Cannot validate XML instance against DTD - instance URL is null for resource " +res1.getName());
-				}
-				else if (factory==null) {
-					throw new VerificationException("Cannot validate XML instance against DTD - cannot load DTD factory");
-				}
-				else {
-			        Schema schema = factory.newSchema(schemaURL);
-			        javax.xml.validation.Validator validator = schema.newValidator();
-			        InputStream in = instanceURL.openStream();
-			        Source source = new StreamSource(in);
-			        validator.validate(source);
-			        try {
-			        	in.close();
-			        }
-			        catch (Exception x){}
-			        /*
-			         * SAXParser saxParser = factory.newSAXParser();
-			         * saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
-			         * static final String JAXP_SCHEMA_SOURCE =
-    "http://java.sun.com/xml/jaxp/properties/schemaSource";
-saxParser.setProperty(JAXP_SCHEMA_SOURCE,
-    new File(schemaSource)); 
-			         */
+				VerifierFactory factory = VerifierFactory.newInstance("http://www.w3.org/XML/1998/namespace");
+				org.iso_relax.verifier.Schema schema = factory.compileSchema(schemaURL.toString());
+				Verifier verifier = schema.newVerifier();
+
+				if (!verifier.verify(instanceURL.toString())) {
+					throw new VerificationException("Validation of the XML document against DTD failed");
 				}
 			} catch (Exception x) {
 				Logger.info("XML validation against DTD has failed", x);
@@ -193,13 +206,15 @@ saxParser.setProperty(JAXP_SCHEMA_SOURCE,
 			}
 		}
 		else if (DTD.equals(resource.getType().toString())) {
-			try {
-				DTDParser parser = new DTDParser(url);
-				parser.parse();
-			}
-			// wutka parser exceptions subclass IOException!
-			catch (IOException x) {
+			Controller controller = new Controller();
+			DTDReader.parse(new InputSource(url.toString()),controller);
+			Exception x = controller.getException();
+			String msg = controller.getExceptionMessage();
+			if (x!=null) {
 				throw new VerificationException("The dtd "+ url +" cannot be parsed",x);
+			}
+			else if (msg!=null) {
+				throw new VerificationException("The dtd "+ url +" cannot be parsed, details: " + msg);
 			}
 		}
 		else if (INSTANCE.equals(resource.getType().toString())) {

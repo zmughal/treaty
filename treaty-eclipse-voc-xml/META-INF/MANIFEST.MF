@@ -9,7 +9,9 @@ Require-Bundle: org.eclipse.core.runtime,
  net.java.treaty.eclipse
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: com.wutka.dtd,
- net.java.treaty.eclipse.vocabulary.xml
-Bundle-ClassPath: lib/dtdparser121.jar,
- .
+Export-Package: net.java.treaty.eclipse.vocabulary.xml
+Bundle-ClassPath: .,
+ lib/isorelax.jar,
+ lib/msv.jar,
+ lib/relaxngDatatype.jar,
+ lib/xsdlib.jar

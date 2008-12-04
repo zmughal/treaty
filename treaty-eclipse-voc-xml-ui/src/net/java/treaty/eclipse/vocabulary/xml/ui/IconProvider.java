@@ -40,6 +40,9 @@ public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
 		else if (XMLVocabulary.INSTANCE.equals(t)) {
 			d = isVariable?getImageDescriptor("icons/xml_var.gif"):getImageDescriptor("icons/xml.gif");
 		}
+		else if (XMLVocabulary.DTD.equals(t)) {
+			d = isVariable?getImageDescriptor("icons/dtd_var.gif"):getImageDescriptor("icons/dtd.gif");
+		}
 		if (d!=null) {
 			return d.createImage();
 		}
