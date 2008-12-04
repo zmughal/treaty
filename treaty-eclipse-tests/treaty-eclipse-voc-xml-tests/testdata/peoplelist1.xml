@@ -1,0 +1,10 @@
+<!-- from http://en.wikipedia.org/wiki/Document_Type_Definition -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE people_list SYSTEM "example.dtd">
+<people_list>
+  <person>
+    <name>Neptune Cheung</name>
+    <birthdate>04/02/1977</birthdate>
+    <gender>Male</gender>
+  </person>
+</people_list>

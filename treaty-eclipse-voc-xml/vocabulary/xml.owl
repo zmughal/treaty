@@ -13,10 +13,16 @@
   <owl:Class rdf:ID="XMLSchema">
   	<rdfs:subClassOf rdf:resource="#XMLInstance"/>
   </owl:Class>
+  <owl:Class rdf:ID="DTD">
+  	<rdfs:subClassOf rdf:resource="#XMLInstance"/>
+  </owl:Class>
  
   <owl:ObjectProperty rdf:ID="instantiates">
     <rdfs:range rdf:resource="#XMLSchema"/>
     <rdfs:domain rdf:resource="#XMLInstance"/>
   </owl:ObjectProperty>
-
+  <owl:ObjectProperty rdf:ID="instantiatesDTD">
+    <rdfs:range rdf:resource="#DTD"/>
+    <rdfs:domain rdf:resource="#XMLInstance"/>
+  </owl:ObjectProperty>
 </rdf:RDF>

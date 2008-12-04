@@ -10,6 +10,7 @@
 
 package net.java.treaty.eclipse.vocabulary.xml;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,7 +22,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;import net.java.treaty.*;
+import javax.xml.validation.SchemaFactory;
+
+import com.wutka.dtd.DTDParser;
+
+import net.java.treaty.*;
 
 
 /**
@@ -36,8 +41,10 @@ public class XMLVocabulary implements  ContractVocabulary {
 	// types
 	public static final String INSTANCE = NS+"XMLInstance";
 	public static final String SCHEMA = NS+"XMLSchema";
+	public static final String DTD = NS+"DTD";
 	// relationships
 	public static final String INSTANTIATES = NS+"instantiates";
+	public static final String INSTANTIATES_DTD = NS+"instantiatesDTD";
 	// registry
 	private Collection<URI> predicates = null;
 	private Collection<URI> types = null;
@@ -51,6 +58,7 @@ public class XMLVocabulary implements  ContractVocabulary {
 			predicates = new ArrayList<URI>();
 			try {
 				predicates.add(new URI(INSTANTIATES));
+				predicates.add(new URI(INSTANTIATES_DTD));
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
@@ -64,6 +72,7 @@ public class XMLVocabulary implements  ContractVocabulary {
 			try {
 				types.add(new URI(SCHEMA));
 				types.add(new URI(INSTANCE));
+				types.add(new URI(DTD));
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
@@ -104,14 +113,49 @@ public class XMLVocabulary implements  ContractVocabulary {
 			        	in.close();
 			        }
 			        catch (Exception x){}
-			        
 				}
 			} catch (Exception x) {
-				Logger.info("XML validation has failed", x);
-				throw new VerificationException("Validation of the XML document failed" ,x);
+				Logger.info("XML validation against XMLSchema has failed", x);
+				throw new VerificationException("Validation of the XML document against XMLSchema failed" ,x);
 			}
-			
-
+		}
+		else if (INSTANTIATES_DTD.equals(rel)) {
+			try {
+				URL schemaURL = (URL)res2.getValue();
+				URL instanceURL = (URL)res1.getValue();
+				SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.XML_DTD_NS_URI);
+				if (schemaURL==null) {
+					throw new VerificationException("Cannot validate XML instance against DTD - URL is null for resource " +res2.getName());
+				}
+				else if (instanceURL==null) {
+					throw new VerificationException("Cannot validate XML instance against DTD - instance URL is null for resource " +res1.getName());
+				}
+				else if (factory==null) {
+					throw new VerificationException("Cannot validate XML instance against DTD - cannot load DTD factory");
+				}
+				else {
+			        Schema schema = factory.newSchema(schemaURL);
+			        javax.xml.validation.Validator validator = schema.newValidator();
+			        InputStream in = instanceURL.openStream();
+			        Source source = new StreamSource(in);
+			        validator.validate(source);
+			        try {
+			        	in.close();
+			        }
+			        catch (Exception x){}
+			        /*
+			         * SAXParser saxParser = factory.newSAXParser();
+			         * saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
+			         * static final String JAXP_SCHEMA_SOURCE =
+    "http://java.sun.com/xml/jaxp/properties/schemaSource";
+saxParser.setProperty(JAXP_SCHEMA_SOURCE,
+    new File(schemaSource)); 
+			         */
+				}
+			} catch (Exception x) {
+				Logger.info("XML validation against DTD has failed", x);
+				throw new VerificationException("Validation of the XML document against DTD failed" ,x);
+			}
 		}
 		else 
 			throw new VerificationException("predicate not supported + " + rel);
@@ -146,6 +190,16 @@ public class XMLVocabulary implements  ContractVocabulary {
 			}
 			catch (Exception x) {
 				throw new VerificationException("The schema "+ url +" cannot be parsed",x);
+			}
+		}
+		else if (DTD.equals(resource.getType().toString())) {
+			try {
+				DTDParser parser = new DTDParser(url);
+				parser.parse();
+			}
+			// wutka parser exceptions subclass IOException!
+			catch (IOException x) {
+				throw new VerificationException("The dtd "+ url +" cannot be parsed",x);
 			}
 		}
 		else if (INSTANCE.equals(resource.getType().toString())) {

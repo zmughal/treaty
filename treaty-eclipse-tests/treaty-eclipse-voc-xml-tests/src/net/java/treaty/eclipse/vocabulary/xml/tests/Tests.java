@@ -107,6 +107,8 @@ public class Tests {
 		c.setResource(r);
 		VOC.check(c);
 	}
+	
+	
 	@Test(expected = VerificationException.class)
 	public void testTypes7() throws Exception {
 		Resource r = this.getResource(VOC.SCHEMA,"/testdata/dateformat3.xml");
@@ -117,6 +119,22 @@ public class Tests {
 	@Test(expected = VerificationException.class)
 	public void testTypes8() throws Exception {
 		Resource r = this.getResource(VOC.INSTANCE,"testdata/dateformat3.xml");
+		ExistsCondition c = new ExistsCondition();
+		c.setResource(r);
+		VOC.check(c);
+	}
+	
+	@Test
+	public void testTypes9() throws Exception {
+		Resource r = this.getResource(VOC.DTD,"testdata/peoplelist.dtd");
+		ExistsCondition c = new ExistsCondition();
+		c.setResource(r);
+		VOC.check(c);
+	}
+	
+	@Test(expected = VerificationException.class)
+	public void testTypes10() throws Exception {
+		Resource r = this.getResource(VOC.DTD,"testdata/peoplelist.nodtd");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
