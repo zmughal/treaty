@@ -15,17 +15,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import net.java.treaty.Contract;
-import net.java.treaty.SimpleContract;
-
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.osgi.framework.Bundle;
-import org.semanticweb.owl.model.OWLOntology;
 
 /**
  * Utility class that extracts plugins with contracts.
