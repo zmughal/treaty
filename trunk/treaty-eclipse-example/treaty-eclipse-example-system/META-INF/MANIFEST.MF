@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Treaty_eclipse_example_system Plug-in
+Bundle-SymbolicName: net.java.treaty.eclipse.system; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: net.java.treaty.eclipse.system.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
