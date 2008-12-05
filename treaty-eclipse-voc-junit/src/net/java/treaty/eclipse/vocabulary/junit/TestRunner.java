@@ -15,7 +15,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -34,6 +39,7 @@ public class TestRunner {
 		Method before = null;
 		Method after = null;
 		List<Method> tests = new ArrayList<Method>();
+		List<Long> timeouts = new ArrayList<Long>();
 		
 		// collect tests 
 		for (Method method:test.getMethods()) {
@@ -50,7 +56,9 @@ public class TestRunner {
 					}
 					else if (aName.equals("org.junit.Test")) {
 						tests.add(method);
-						//System.out.println("Junit test detected: " + method);
+						org.junit.Test testAnnotation = (org.junit.Test)annotation;
+						long timeout = testAnnotation.timeout();
+						timeouts.add(timeout);
 					}
 				}
 			}
@@ -75,9 +83,11 @@ public class TestRunner {
 		
 		// test single test case
 		if (constructor!=null) {
-			for (Method testCase:tests) {
+			for (int i=0;i<tests.size();i++) {
+				Method testCase = tests.get(i);
+				long timeout = timeouts.get(i);
 				// if one test fails other tests will not be evaluated!
-				result = result && runSingleTest(constructor,tested,testCase,before,after);
+				result = result && runSingleTest(constructor,tested,testCase,before,after,timeout);
 			}
 			return result;
 		}
@@ -87,18 +97,34 @@ public class TestRunner {
 		}
 	}
 
-	private boolean runSingleTest(Constructor constructor, Class[] tested,Method testCase, Method before, Method after) {
+	private boolean runSingleTest(Constructor constructor, Class[] tested,final Method testCase, Method before, Method after,long timeout) {
 		try {
+			ExecutorService ES = Executors.newSingleThreadExecutor();
 			Object[] params = new Object[tested.length];
 			for (int i=0;i<params.length;i++) {
 				params[i] = tested[i].newInstance();
 			}
-			Object test = constructor.newInstance(params);
+			final Object test = constructor.newInstance(params);
 			
 			// before
 			if (before!=null) before.invoke(test,new Object[]{});
 			// test
-			testCase.invoke(test,new Object[]{});
+			if (timeout==0) {
+				testCase.invoke(test,new Object[]{});
+			}
+			else {
+				// run with timeout
+				Callable<Object> task = new Callable<Object>() {
+					@Override
+					public Object call() throws Exception {
+						testCase.invoke(test,new Object[]{});
+						return null;
+					}
+				};
+				Collection<Callable<Object>> tasks = new ArrayList<Callable<Object>>(); 
+				tasks.add(task);
+				ES.invokeAny(tasks,timeout,TimeUnit.MILLISECONDS);
+			}
 			// after
 			if (after!=null) after.invoke(test,new Object[]{});
 			
