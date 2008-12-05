@@ -197,9 +197,11 @@ public class ContractView extends ViewPart {
 		
 		private void addNodes(TreeParent parent,EclipsePlugin plugin) {
 			for (EclipseExtensionPoint xp:plugin.getExtensionPoints()) {
-				TreeParent node = new TreeParent(xp);
-				parent.addChild(node);	
-				addNodes(node,xp);
+				if (xp.hasContracts()) {
+					TreeParent node = new TreeParent(xp);
+					parent.addChild(node);	
+					addNodes(node,xp);
+				}
 			}					
 		}
 		
