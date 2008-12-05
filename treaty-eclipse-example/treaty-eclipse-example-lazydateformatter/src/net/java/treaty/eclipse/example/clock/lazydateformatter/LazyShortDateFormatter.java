@@ -25,10 +25,8 @@ public class LazyShortDateFormatter implements DateFormatter {
 	public String format(Date date) {
 
 		try {
-			Thread.currentThread().sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+			Thread.sleep(1100);
+		} catch (InterruptedException e) {}
 		return DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.MEDIUM).format(date);
 
 	}
