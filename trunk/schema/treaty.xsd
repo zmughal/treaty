@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="contract">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="consumer"/>
-				<xs:element ref="supplier"/>
-				<xs:element ref="constraints"/>
+		<xs:complexType>	
+			<xs:sequence maxOccurs="unbounded" minOccurs="0">
+				<xs:element name="consumer" type="resource_owner" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="supplier" type="resource_owner" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="external" type="resource_owner" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="constraints" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="consumer">
-		<xs:complexType>
+	<xs:complexType name="resource_owner">
 			<xs:sequence minOccurs="0" maxOccurs="unbounded">
 				<xs:element ref="resource"/>
 			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="supplier">
-		<xs:complexType>
-			<xs:sequence minOccurs="0" maxOccurs="unbounded">
-				<xs:element ref="resource"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	</xs:complexType>
 	<xs:element name="constraints">
 		<xs:complexType>
 			<xs:choice>
