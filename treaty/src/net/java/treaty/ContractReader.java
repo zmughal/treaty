@@ -107,9 +107,15 @@ public class ContractReader  {
 					throw new InvalidContractException("Invalid resource reference in condition: " + resourceRef);
 				condition.setResource(resource);
 				String property = e.getAttributeValue("type");
-				condition.setProperty(new URI(property));
+				condition.setProperty(property);
 				String operator = e.getAttributeValue("operator");
-				condition.setOperator(new URI(operator));
+				Operator op = Operator.getInstance(operator);
+				if (op==null) {
+					throw new InvalidContractException("Invalid operator symbol encountered: " + operator);
+				}
+				else {
+					condition.setOperator(op);
+				}
 				String value = e.getAttributeValue("value");
 				condition.setValue(value);
 				context.addCondition(condition);
