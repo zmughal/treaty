@@ -10,7 +10,6 @@
 
 package net.java.treaty;
 
-import java.net.URI;
 import java.util.Map;
 
 
@@ -23,22 +22,22 @@ import java.util.Map;
 public class PropertyCondition extends AbstractCondition {
 
 	private Resource resource = null;
-	private URI property = null;
-	private URI operator = null;
+	private String property = null;
+	private Operator operator = null;
 	private String value = null;
 	public PropertyCondition() {
 		super();
 	}
-	public URI getOperator() {
+	public Operator getOperator() {
 		return operator;
 	}
-	public void setOperator(URI operator) {
+	public void setOperator(Operator operator) {
 		this.operator = operator;
 	}
-	public URI getProperty() {
+	public String getProperty() {
 		return property;
 	}
-	public void setProperty(URI property) {
+	public void setProperty(String property) {
 		this.property = property;
 	}
 	public Resource getResource() {
