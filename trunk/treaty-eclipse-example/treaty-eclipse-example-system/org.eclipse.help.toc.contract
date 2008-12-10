@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- contract for org.eclipse.help.toc.contract-->
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
-	<external>
-		<resource id="toc_dtd">
-			<type>http://www.treaty.org/xml#DTD</type>
-			<name>toc.dtd</name>
-		</resource>		
-	</external>
 	<supplier>
 		<resource id="toc">
 			<type>http://www.treaty.org/xml#XMLInstance</type>
 			<ref>/toc/@file</ref>
 		</resource>
 	</supplier>
+	<external>
+		<resource id="toc_dtd">
+			<type>http://www.treaty.org/xml#DTD</type>
+			<name>toc.dtd</name>
+		</resource>		
+	</external>
 	<constraints>
 		<relationship resource1="toc" resource2="toc_dtd" type="http://www.treaty.org/xml#instantiatesDTD"/>
 	</constraints>

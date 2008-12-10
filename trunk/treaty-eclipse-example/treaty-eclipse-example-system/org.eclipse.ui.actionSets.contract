@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ui.actionSets-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="Delegate">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>/action/@class</ref>
+		</resource>
+		<resource id="Style">
+			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<ref>/action/@style</ref>
+		</resource>
+	</supplier>
+	<external>
+		<resource id="ActionDelegate">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.IWorkbenchWindowActionDelegate</name>
+		</resource>	
+		<resource id="PulldownDelegate">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.IWorkbenchWindowPulldownDelegate</name>
+		</resource>		
+	</external>
+	<constraints>
+		<and>
+			<!-- if the style attribute exists, it must be either push, radio, toggle or pulldown -->
+			<!-- the style attribute is not required, the DTD defines push as default: -->
+			<!-- style (push|radio|toggle|pulldown) "push" -->
+			<or>
+				<not>
+					<mustExist resource="Style"/>
+				</not>
+				<property resource="Style" operator="IN" value="push,radio,toggle,pulldown"/>
+			</or>
+			<!-- class is optional, but if it exists the interface to be implemented depends on the value of Style-->
+			<or>
+				<or>
+					<not>
+						<mustExist resource="Delegate"/>
+					</not>
+				</or>
+				<or>
+					<relationship resource1="Delegate" resource2="ActionDelegate" type="http://www.treaty.org/java#implements"/>
+					<and>
+						<property resource="Style" operator="=" value="pulldown"/>
+						<relationship resource1="Delegate" resource2="PulldownDelegate" type="http://www.treaty.org/java#implements"/>
+					</and>
+				</or>
+			</or>
+		</and>
+	</constraints>
+</contract>

@@ -4,5 +4,7 @@
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.help.toc" name="contract for org.eclipse.help.toc">
           <contract location="org.eclipse.help.toc.contract"/> 
    </extension>
-
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.actionSets" name="contract for org.eclipse.ui.actionSets">
+          <contract location="org.eclipse.ui.actionSets.contract"/> 
+   </extension>
 </plugin>
