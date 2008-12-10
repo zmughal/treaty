@@ -16,6 +16,7 @@ package net.java.treaty.eclipse;
  */
 
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -76,22 +77,35 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 	}
 	
 	public void check(PropertyCondition condition) throws VerificationException {
-		URI uri = condition.getProperty();
-		try {
-			ContractVocabulary voc = this.findVocabularyForProperty(uri);
-			voc.check(condition); 
-			//System.out.println("checked ok: " + condition);
-		}
-		catch (VerificationException x) {
-			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
-			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
-			throw (VerificationException)x.fillInStackTrace();
-		}
-		return;
+		
+			Operator operator = condition.getOperator();
+			String value = condition.getValue();
+			String property = condition.getProperty();
+			Object obj = null;
+			if (property==null) {
+				obj = condition.getResource().getValue(); 
+			}
+			if (!operator.compare(obj,value)) {
+				condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
+				throw new VerificationException("Verification failed, condition is not satisfied: "+condition);
+			}
+
 	}
 	
 	public void check(ExistsCondition condition) throws VerificationException {
 		Resource resource = condition.getResource();
+		URI type = resource.getType();
+		
+		// built-in type string
+		if (type.toString().equals("http://www.w3.org/2001/XMLSchema:string")) {
+			assert resource.isInstantiated();
+			assert resource.isLoaded();
+			if (resource.getValue()==null)
+				throw new VerificationException("Resource value should not be null");
+			if (!(resource.getValue() instanceof String))
+				throw new VerificationException("Resource value " + resource.getValue() + " must be string, but is "+resource.getValue().getClass());
+		}
+		
 		try {
 			ContractVocabulary voc = this.findVocabularyForType(resource.getType());
 			voc.check(condition); 
@@ -123,6 +137,11 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 	}
 	
 	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException {
+		// built-in type string
+		if (type.toString().equals("http://www.w3.org/2001/XMLSchema:string")) {
+			return name;
+		}
+		// load plugin types
 		for (ContractVocabulary voc:vocContributions) {
 			if (voc.getContributedTypes().contains(type)) {
 				try {
