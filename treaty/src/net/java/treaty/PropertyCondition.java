@@ -91,4 +91,21 @@ public class PropertyCondition extends AbstractCondition {
 	public boolean isInstantiated() {
 		return this.getResource().isInstantiated();
 	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("aPropertyCondition(");
+		if (this.property!=null) {
+			buf.append(this.property);
+		}
+		else {
+			buf.append("this");
+		}
+		buf.append(' ')
+			.append(this.operator.getName())
+			.append(' ')
+			.append(this.value);
+		return buf.toString();
+	}
+	
 }
