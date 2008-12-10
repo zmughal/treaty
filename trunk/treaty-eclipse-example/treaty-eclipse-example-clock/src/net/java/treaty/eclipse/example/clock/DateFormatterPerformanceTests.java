@@ -41,12 +41,9 @@ public class DateFormatterPerformanceTests {
 		formatter = null;
 	}
 	// date formatting should not take more than 10 ms
-	@Test
+	@Test(timeout=10)
 	public void testSpeed() {
-		long timeBefore = System.currentTimeMillis();
-		String s = formatter.format(testedDate);
-		long timeAfter = System.currentTimeMillis();
-		assertTrue(10>(timeAfter-timeBefore));
+		formatter.format(testedDate);
 	}
 
 }
