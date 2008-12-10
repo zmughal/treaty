@@ -10,6 +10,8 @@
 
 package net.java.treaty;
 
+import java.util.StringTokenizer;
+
 /**
  * Operators to be used in property conditions.
  * TODO: complete list 
@@ -20,7 +22,7 @@ public abstract class Operator {
 	
 
 	
-	static class EQUALS extends Operator {
+	static class EQ extends Operator {
 		public boolean compare(Object o1,Object o2) {
 			return o1==null?o2==null:o1.equals(o2);
 		}
@@ -28,14 +30,38 @@ public abstract class Operator {
 			return "=";
 		}
 	};
+	static class NEQ extends Operator {
+		public boolean compare(Object o1,Object o2) {
+			return o1==null?o2!=null:!o1.equals(o2);
+		}
+		public String getName() {
+			return "!=";
+		}
+	};
+	static class IN extends Operator {
+		public boolean compare(Object o1,Object o2) {
+			if (o1==null) return false;
+			if (o2==null) return false;
+			String e = o1.toString();
+			for (StringTokenizer tok=new StringTokenizer(o2.toString(),",");tok.hasMoreTokens();) {
+				if (e.equals(tok.nextToken())) {
+					return true;
+				}
+			}
+			return false;
+		}
+		public String getName() {
+			return "IN";
+		}
+	};
 	
 	public static Operator[] INSTANCES = {
-			new EQUALS()		
+			new EQ(),new NEQ(),new IN()		
 		};
 		
 		public static Operator getInstance(String name) {
 			for (Operator o:INSTANCES) {
-				if (o.getName().equals(name)) {
+				if (o.getName().equalsIgnoreCase(name)) {
 					return o;
 				}
 			}
