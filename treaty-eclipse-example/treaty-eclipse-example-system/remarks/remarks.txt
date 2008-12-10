@@ -1,0 +1,8 @@
+org.eclipse.help.toc
+
+- 10/16 contracts fail
+- common problem: Caused by: com.sun.msv.verifier.ValidityViolation: tag name "enablement" is not allowed. Possible tag names are: <anchor>,<link>,<topic>
+- see also: http://www.eclipse.org/eclipse/platform-ua/proposals/help/remote_help/proposal.html
+
+
+
