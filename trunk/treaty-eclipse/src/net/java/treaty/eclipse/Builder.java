@@ -42,6 +42,12 @@ class Builder {
 			Bundle b = org.eclipse.core.runtime.Platform.getBundle(c.getName());
 			plugins.put(b.getSymbolicName(),new EclipsePlugin(b));
 			// also register the plugins with extension points
+			
+			// tmp starts
+			if (xpoint.getExtensions().length>10)
+				System.out.println(""+xpoint.getUniqueIdentifier()+" has "+xpoint.getExtensions().length+" extensions");
+			// tmp ends 
+			
 			for (IExtension x:xpoint.getExtensions()) {
 				c = x.getContributor();
 				b = org.eclipse.core.runtime.Platform.getBundle(c.getName());
@@ -118,14 +124,16 @@ class Builder {
 		EclipseResourceManager eclipseMgr = new EclipseResourceManager();
 		for (EclipsePlugin p:l) {
 			for (EclipseExtensionPoint xp:p.getExtensionPoints()) {
-				Contract c = xp.getContract();
-				for (EclipseExtension x:xp.getExtensions()) {
-					try {
-						Contract instantiatedContract = c.bindSupplier(x,eclipseMgr);
-						x.setContract(instantiatedContract);
-					}
-					catch (Exception e) {
-						Logger.error("Error instantiating contract "+c+" for extension "+x.getId(), e);
+				if (xp.hasContracts()) {
+					Contract c = xp.getContract();
+					for (EclipseExtension x:xp.getExtensions()) {
+						try {
+							Contract instantiatedContract = c.bindSupplier(x,eclipseMgr);
+							x.setContract(instantiatedContract);
+						}
+						catch (Exception e) {
+							Logger.error("Error instantiating contract "+c+" for extension "+x.getId(), e);
+						}
 					}
 				}
 			}
