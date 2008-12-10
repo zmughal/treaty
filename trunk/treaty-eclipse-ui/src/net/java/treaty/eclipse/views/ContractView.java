@@ -347,7 +347,10 @@ public class ContractView extends ViewPart {
 				TreeParent node = new TreeParent(cc);
 				parent.addChild(node);
 				addResourceNode(node,cc.getResource(),ownerTypes);
-				node.addChild(new TreeObject(new KeyValueNode("property",cc.getProperty().toString())));
+				if (cc.getProperty()!=null) {
+					node.addChild(new TreeObject(new KeyValueNode("property",cc.getProperty().toString())));
+				}
+				node.addChild(new TreeObject(new KeyValueNode("op",cc.getOperator().getName())));
 				node.addChild(new TreeObject(new KeyValueNode("value",""+cc.getValue())));
 			}
 			else if (c instanceof ExistsCondition) {
@@ -405,9 +408,11 @@ public class ContractView extends ViewPart {
 			StringBuffer buf = new StringBuffer();
 			buf.append(toString(c.getResource()));
 			buf.append(' ');
-			String p = c.getProperty().toString();
-			p = p.substring(p.lastIndexOf('#')+1); // last token
-			buf.append(p);
+			if (c.getProperty()!=null) {
+				buf.append(c.getProperty());
+			}
+			buf.append(' ');
+			buf.append(c.getOperator().getName());
 			buf.append(' ');
 			buf.append(c.getValue());
 			return buf.toString();
