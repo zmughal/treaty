@@ -9,7 +9,7 @@
 	<supplier>
 		<resource id="Contract">
 			<type>http://www.treaty.org/xml#XMLInstance</type>
-			<ref>/contract/@location</ref>
+			<ref>contract/@location</ref>
 		</resource>
 	</supplier>
 	<constraints>
