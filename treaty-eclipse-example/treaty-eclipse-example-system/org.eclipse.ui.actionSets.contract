@@ -6,11 +6,11 @@
 	<supplier>
 		<resource id="Delegate">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
-			<ref>/action/@class</ref>
+			<ref>actionSet/action/@class</ref>
 		</resource>
 		<resource id="Style">
 			<type>http://www.w3.org/2001/XMLSchema:string</type>
-			<ref>/action/@style</ref>
+			<ref>actionSet/action/@style</ref>
 		</resource>
 	</supplier>
 	<external>

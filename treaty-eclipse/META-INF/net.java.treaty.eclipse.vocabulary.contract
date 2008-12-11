@@ -10,11 +10,11 @@
 	<supplier>
 		<resource id="ContributedVocabulary">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
-			<ref>/vocabulary/@class</ref>
+			<ref>vocabulary/@class</ref>
 		</resource>
 		<resource id="Ontology">
 			<type>http://www.treaty.org/owl#Ontology</type>
-			<ref>/vocabulary/@ontology</ref>
+			<ref>vocabulary/@ontology</ref>
 		</resource>
 	</supplier>
 	<constraints>
