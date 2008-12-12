@@ -68,4 +68,8 @@ public class SchemaTests {
 	public void test5a() throws Exception {
 		doTest("_1_net.java.treaty.eclipse.contract.contract");
 	}
+	@Test
+	public void test6() throws Exception {
+		doTest("org.eclipse.ui.actionSets.contract");
+	}
 }
