@@ -10,6 +10,8 @@
 
 package net.java.treaty;
 
+import java.util.Collection;
+
 
 /**
  * Contracts that are composed from sub contracts.
@@ -25,6 +27,7 @@ public class AggregatedContract extends PropertySupport implements Contract{
 		super();
 		this.parts = parts;
 	}
+
 
 	public void accept(ContractVisitor visitor) {
 		boolean f = visitor.visit(this);

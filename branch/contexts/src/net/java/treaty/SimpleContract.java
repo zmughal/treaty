@@ -11,6 +11,11 @@
 package net.java.treaty;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -150,22 +155,58 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	 * @see nz.ac.massey.treaty.IContract#bindSupplier(nz.ac.massey.treaty.Connector, nz.ac.massey.treaty.verification.ResourceLoader)
 	 */
 	public Contract bindSupplier(Connector connector,ResourceManager loader, ContextManager contextManager) throws TreatyException {
-		SimpleContract contract = new SimpleContract();
-		contract.setConsumer(this.getConsumer());
-		contract.setSupplier(connector);
-		contract.setOwner(this.getOwner());
-		contract.setLocation(this.getLocation());
-		contract.consumerResources.putAll(this.consumerResources);
-		contract.externalResources.putAll(this.externalResources);
-		Map<Resource,Resource> instantiations = new HashMap<Resource,Resource>();
+
+		// instantiate resources
+		Map<Resource,Collection<Resource>> instantiations = new HashMap<Resource,Collection<Resource>>();
 		for (Resource r:this.supplierResources.values()) {
-			contract.addSupplierResource(r.instantiate(connector,loader));
+			Resource instance = r.instantiate(connector,loader);
+			register(r,instance,instantiations);
 		} 
-		for (AbstractCondition c:this.constraints) {
-			contract.addCondition(c.replaceResources(contract.supplierResources));
-		}
+		// split by context
+		Map<String,Map<Resource,Collection<Resource>>> instantiationsByContext = contextManager.cluster(instantiations);
 		
-		return contract;
+
+		List<SimpleContract> contracts = new ArrayList<SimpleContract>(); // list, one per context
+		// built instantiated contracts
+		for (Map.Entry<String,Map<Resource,Collection<Resource>>> e:instantiationsByContext.entrySet()) {
+			String context = e.getKey();
+			SimpleContract contract = new SimpleContract();
+			contracts.add(contract);
+			contract.setConsumer(this.getConsumer());
+			contract.setSupplier(connector);
+			contract.setOwner(this.getOwner());
+			contract.setLocation(this.getLocation());
+			contract.consumerResources.putAll(this.consumerResources);
+			contract.externalResources.putAll(this.externalResources);
+			Map<Resource,Collection<Resource>> m = e.getValue();
+			for (Collection<Resource> c:m.values()) {
+				for (Resource ir:c) {
+					// note that this might now override entries!!
+					contract.addSupplierResource(ir);
+				}
+			}
+			for (AbstractCondition c:this.constraints) {
+				contract.addCondition(c.replaceResources(contract.supplierResources));
+			}
+		}
+		if (contracts.size()==1) {
+			return contracts.get(0);
+		}
+		else {
+			Contract[] parts = new Contract[contracts.size()];
+			contracts.toArray(parts);
+			return new AggregatedContract(parts);
+		}
+
+	}
+	private void register(Resource r, Resource instance,Map<Resource, Collection<Resource>> instantiations) {
+		Collection<Resource> instances = instantiations.get(r);
+		if (instances==null) {
+			instances = new ArrayList<Resource>();			
+			instantiations.put(r,instances);
+		}
+		instances.add(instance);
+		
 	}
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.Contract#bindConsumer(nz.ac.massey.treaty.Connector, nz.ac.massey.treaty.verification.ResourceLoader)
