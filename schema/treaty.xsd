@@ -11,8 +11,9 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="resource_owner">
-			<xs:sequence minOccurs="0" maxOccurs="unbounded">
-				<xs:element ref="resource"/>
+			<xs:sequence>
+				<xs:element name="context" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="resource" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 	</xs:complexType>
 	<xs:element name="constraints">
