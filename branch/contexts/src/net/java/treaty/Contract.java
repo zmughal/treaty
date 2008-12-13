@@ -26,21 +26,19 @@ public interface Contract extends Constraint {
 	 * A new contract will be returned that has no supplier variables. 
 	 * @param connector the supplier
 	 * @param loader the loader
-	 * @param contextManager the context manager
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	public abstract Contract bindSupplier(Connector connector,ResourceManager loader,ContextManager contextManager) throws TreatyException;
+	public abstract Contract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException;
 
 	/**
 	 * Instantiate this contract with a consumer.
 	 * A new contract will be returned that has no consumer variables. 
 	 * @param connector the consumer
 	 * @param loader the loader
-	 * @param contextManager the context manager
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	public abstract Contract bindConsumer(Connector connector,ResourceManager loader,ContextManager contextManager) throws TreatyException;	
+	public abstract Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException;	
 
 }

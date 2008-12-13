@@ -11,6 +11,7 @@
 package net.java.treaty;
 
 import java.net.URI;
+import java.util.List;
 
 
 
@@ -27,11 +28,20 @@ public interface ResourceManager {
 	 * @param type a type
 	 * @param ref a reference to the object, e.g. an xpath expression or a property name in a meta data file
 	 * @param connector the connector
+	 * @param context the instantiation context
 	 * @return the resource name, e.g. a class name
 	 * @throws VerificationException
 	 */
-	public String resolve(URI type,String ref,Connector connector) throws ResourceLoaderException;
-
-
+	public String resolve(URI type,String ref,Connector connector,InstantiationContext context) throws ResourceLoaderException;
+	/**
+	 * Get a list of instantiation contexts. Using instantiation contexts allows suppliers to
+	 * define multiple extensions. I.e., there will be one contract instance per context.
+	 * If this is not supported by the component model, a singleton containing the default context
+	 * should be returned.
+	 * @param connector the connector
+	 * @param contextDef the context definition, e.g. an XPath expression defining a context node in a config file like plugin.xml (in  Eclipse)
+	 * @return a list of instantiation contexts
+	 */
+	public List<InstantiationContext> getInstantiationContexts(Connector connector,String contextDefinition) throws ResourceLoaderException;
 	
 }

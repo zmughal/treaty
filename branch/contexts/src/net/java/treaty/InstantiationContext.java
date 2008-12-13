@@ -10,26 +10,6 @@
 
 package net.java.treaty;
 
-/**
- * Exception indicating problems when associating contexts with resource instantiations.
- * @author Jens Dietrich
- */
-
-public class ContextManagerException extends TreatyException {
-
-	public ContextManagerException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public ContextManagerException(String message) {
-		super(message);
-	}
-
-	public ContextManagerException(Throwable cause) {
-		super(cause);
-	}
-
-	public ContextManagerException() {
-	}
-
+public interface InstantiationContext {
+	static final InstantiationContext DEFAULT_CONTEXT = new InstantiationContext(){};
 }

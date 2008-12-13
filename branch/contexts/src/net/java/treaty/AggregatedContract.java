@@ -44,23 +44,23 @@ public class AggregatedContract extends PropertySupport implements Contract{
 	}
 
 	/* (non-Javadoc)
-	 * @see nz.ac.massey.treaty.Contract#check(nz.ac.massey.treaty.verification.VerificationReport, nz.ac.massey.treaty.verification.ConditionVerifier)
+	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager) 
 	 */
-	public AggregatedContract bindSupplier(Connector connector,ResourceManager loader,ContextManager contextManager) throws TreatyException {
+	public AggregatedContract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException {
 		Contract[] boundParts = new Contract[parts.length];
 		for (int i=0;i<parts.length;i++) {
-			boundParts[i] = parts[i].bindSupplier(connector,loader,contextManager);
+			boundParts[i] = parts[i].bindSupplier(connector,loader);
 		}
 		return new AggregatedContract(boundParts);
 	}
 
 	/* (non-Javadoc)
-	 * @see nz.ac.massey.treaty.Contract#check(nz.ac.massey.treaty.verification.VerificationReport, nz.ac.massey.treaty.verification.ConditionVerifier)
+	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager) 
 	 */
-	public AggregatedContract bindConsumer(Connector connector,ResourceManager loader,ContextManager contextManager) throws TreatyException{
+	public AggregatedContract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException{
 		Contract[] boundParts = new Contract[parts.length];
 		for (int i=0;i<parts.length;i++) {
-			boundParts[i] = parts[i].bindConsumer(connector,loader,contextManager);
+			boundParts[i] = parts[i].bindConsumer(connector,loader);
 		}
 		return new AggregatedContract(boundParts);
 	}
