@@ -37,8 +37,8 @@ public class Negation extends AbstractCondition implements ConditionContext{
 		}
 		visitor.endVisit(this);		
 	}
-	public boolean check(VerificationReport report,Verifier validator) {
-		boolean r = negatedCondition.check(report,validator);
+	public boolean check(VerificationReport report,Verifier validator,VerificationPolicy policy) {
+		boolean r = negatedCondition.check(report,validator,policy);
 		if (!r)
 			report.log(this,VerificationResult.SUCCESS);
 		else 

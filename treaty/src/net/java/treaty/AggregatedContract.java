@@ -10,6 +10,8 @@
 
 package net.java.treaty;
 
+import java.util.Collection;
+
 
 /**
  * Contracts that are composed from sub contracts.
@@ -26,6 +28,7 @@ public class AggregatedContract extends PropertySupport implements Contract{
 		this.parts = parts;
 	}
 
+
 	public void accept(ContractVisitor visitor) {
 		boolean f = visitor.visit(this);
 		if (f) {
@@ -40,13 +43,8 @@ public class AggregatedContract extends PropertySupport implements Contract{
 		
 	}
 
-	/**
-	 * Instantiate this contract with a supplier.
-	 * A new contract will be returned that has no supplier variables. 
-	 * @param connector the supplier
-	 * @param loader the loader
-	 * @return a new contract
-	 * @throws InvalidContractException
+	/* (non-Javadoc)
+	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager) 
 	 */
 	public AggregatedContract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException {
 		Contract[] boundParts = new Contract[parts.length];
@@ -56,13 +54,8 @@ public class AggregatedContract extends PropertySupport implements Contract{
 		return new AggregatedContract(boundParts);
 	}
 
-	/**
-	 * Instantiate this contract with a consumer.
-	 * A new contract will be returned that has no consumer variables. 
-	 * @param connector the consumer
-	 * @param loader the loader
-	 * @return a new contract
-	 * @throws InvalidContractException
+	/* (non-Javadoc)
+	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager) 
 	 */
 	public AggregatedContract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException{
 		Contract[] boundParts = new Contract[parts.length];
@@ -76,12 +69,13 @@ public class AggregatedContract extends PropertySupport implements Contract{
 	 * Check this contract using a verifier. Add the results to the report.
 	 * @param report
 	 * @param verifier
+	 * @param policy
 	 * @return
 	 */
-	public boolean check(VerificationReport report,Verifier verifier) {
+	public boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy) {
 		boolean result = true;
 		for (Contract part:parts) {
-			result = result&&part.check(report, verifier);
+			result = result&&part.check(report, verifier,policy);
 		}
 		return result;
 	}

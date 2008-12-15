@@ -35,7 +35,10 @@ public class Resource implements Visitable {
 	private Object value = null;
 	private Connector owner = null;
 	private boolean provided = true; // in case this is an optional parameter not actually provided by an extension
+	private InstantiationContext context = null;
 	
+
+
 	public Resource() {
 		super();
 	}
@@ -71,6 +74,14 @@ public class Resource implements Visitable {
 
 	public void setType(URI type) {
 		this.type = type;
+	}
+	
+	public InstantiationContext getContext() {
+		return context;
+	}
+
+	public void setContext(InstantiationContext context) {
+		this.context = context;
 	}
 	
 	public boolean isInstantiated() {
@@ -120,20 +131,21 @@ public class Resource implements Visitable {
 	/**
 	 * Instantiate a resource. This will replace the variable by a name.
 	 * @param connector the connector (e.g. extension) 
+	 * @param context the instantiation context
 	 * @param mgr the resource manager
 	 * @return the instantiated resource or null in case the resource is optional and
 	 * is not supplied by the connector
 	 * @throws TreatyException if the resource cannot be instantiated
 	 */
-	public Resource instantiate (Connector connector,ResourceManager mgr) throws ResourceLoaderException {
+	public Resource instantiate (Connector connector,InstantiationContext context,ResourceManager mgr) throws ResourceLoaderException {
 
-		assert value== null;
+		assert value==null;
 		Resource r = new Resource();
 		r.setId(this.getId());
 		r.setType(this.getType());
 		r.setRef(this.getRef());
 		r.setOwner(connector);
-		String name = mgr.resolve(getType(),getRef(),connector);
+		String name = mgr.resolve(getType(),getRef(),connector,context);
 		if (name==null) {
 			r.setProvided(false);
 		}
