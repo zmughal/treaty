@@ -69,12 +69,13 @@ public class AggregatedContract extends PropertySupport implements Contract{
 	 * Check this contract using a verifier. Add the results to the report.
 	 * @param report
 	 * @param verifier
+	 * @param policy
 	 * @return
 	 */
-	public boolean check(VerificationReport report,Verifier verifier) {
+	public boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy) {
 		boolean result = true;
 		for (Contract part:parts) {
-			result = result&&part.check(report, verifier);
+			result = result&&part.check(report, verifier,policy);
 		}
 		return result;
 	}

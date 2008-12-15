@@ -12,10 +12,7 @@ package net.java.treaty;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 
@@ -242,10 +239,6 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 				contract.supplierResources.putAll(this.supplierResources);
 			}
 			
-			for (Resource r:this.supplierResources.values()) {
-				Resource instance = r.instantiate(connector,context,loader);
-				contract.addSupplierResource(instance);
-			} 
 			for (AbstractCondition c:this.constraints) {
 				contract.addCondition(c.replaceResources(contract.supplierResources));
 			}
@@ -272,11 +265,17 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.Contract#check(nz.ac.massey.treaty.verification.VerificationReport, nz.ac.massey.treaty.verification.ConditionVerifier)
 	 */
-	public boolean check(VerificationReport report,Verifier verifier) {
+	public boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy) {
 		report.setContract(this);
 		boolean result = true;
-		for (AbstractCondition p:this.constraints) 
-			result = result && p.check(report,verifier); 
+		if (policy==VerificationPolicy.DETAILED) {
+			for (AbstractCondition p:this.constraints) 
+				result = result & p.check(report,verifier,policy); 
+		}
+		else {
+			for (AbstractCondition p:this.constraints) 
+				result = result && p.check(report,verifier,policy); 			
+		}
 		if (result)
 			report.log(this,VerificationResult.SUCCESS);
 		else 
@@ -329,4 +328,19 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	public void setLocation(URL location) {
 		this.location = location;
 	}
+	@Override
+	public String toString() {
+		if (this.location==null)
+			return super.toString();
+		else {
+			return new StringBuffer()
+				.append(super.toString())
+				.append('(')
+				.append(this.location)
+				.append(')')
+				.toString();			
+		}
+	}
+	
+	
 }

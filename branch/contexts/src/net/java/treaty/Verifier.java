@@ -19,6 +19,9 @@ package net.java.treaty;
  */
 
 public interface Verifier {
+	public enum Policy {
+		DETAILED, FAST
+	}
 	/**
 	 * Check a relationship condition. 
 	 * @param a condition
@@ -37,4 +40,5 @@ public interface Verifier {
 	 * @throws VerificationException thrown only if verification fails
 	 */
 	public void check(ExistsCondition relationshipCondition) throws VerificationException;
+
 }

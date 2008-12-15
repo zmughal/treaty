@@ -37,10 +37,10 @@ public class XDisjunction extends ComplexCondition {
 		}
 		visitor.endVisit(this);		
 	}
-	public boolean check(VerificationReport report,Verifier validator) {
+	public boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy) {
 		int okcount = 0;
 		for (AbstractCondition p:parts) {
-			okcount = okcount +(p.check(report,validator)?1:0);
+			okcount = okcount +(p.check(report,verifier,policy)?1:0);
 		}
 		if (okcount==1)
 			report.log(this,VerificationResult.SUCCESS);
