@@ -38,15 +38,27 @@ public class Conjunction extends ComplexCondition {
 		visitor.endVisit(this);		
 	}
 
-	public boolean check(VerificationReport report,Verifier validator) {
-		boolean result = true;
-		for (AbstractCondition p:parts) 
-			result = result && p.check(report,validator);
-		if (result)
-			report.log(this,VerificationResult.SUCCESS);
-		else 
-			report.log(this,VerificationResult.FAILURE,"some parts of this condition are not satisfied");
-		return result;
+	public boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy) {
+		if (policy==VerificationPolicy.DETAILED) {
+			boolean result = true;
+			for (AbstractCondition p:parts) 
+				result = result & p.check(report,verifier,policy);
+			if (result)
+				report.log(this,VerificationResult.SUCCESS);
+			else 
+				report.log(this,VerificationResult.FAILURE,"some parts of this condition are not satisfied");
+			return result;
+		}
+		else {
+			boolean result = true;
+			for (AbstractCondition p:parts) 
+				result = result && p.check(report,verifier,policy);
+			if (result)
+				report.log(this,VerificationResult.SUCCESS);
+			else 
+				report.log(this,VerificationResult.FAILURE,"some parts of this condition are not satisfied");
+			return result;
+		}
 	}
 	/**
 	 * Get the name of the logical connective used.

@@ -95,7 +95,7 @@ public class RelationshipCondition extends AbstractCondition {
 		return c;
 	}
 	
-	public boolean check(VerificationReport report,Verifier verifier) {
+	public boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy) {
 		boolean result = true;
 		if (!this.getResource1().isProvided()) {
 			report.log(this,VerificationResult.FAILURE,"Parameter " + this.getResource1().getRef() + " is not provided for the first resource");

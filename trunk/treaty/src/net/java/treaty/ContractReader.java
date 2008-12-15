@@ -63,25 +63,31 @@ public class ContractReader  {
 		SimpleContract contract = new SimpleContract();
 		
 		// read extension resources
-		XPath xpath =  createXPath("/contract/supplier/resource");
-		List<Element> nodes = xpath.selectNodes(doc);
-		List<Resource> resources = readResources(nodes);
+		List<Resource> resources = readResources(doc,"/contract/supplier/resource");
 		for (Resource r:resources) {
 			contract.addSupplierResource(r);
 		}
+		String context = readContext(doc,"/contract/supplier/context");
+		if (context!=null) {
+			contract.setSupplierContext(context);
+		}
 		// read extension point resources
-		xpath =  createXPath("/contract/consumer/resource");
-		nodes = xpath.selectNodes(doc);
-		resources = readResources(nodes);
+		resources = readResources(doc,"/contract/consumer/resource");
 		for (Resource r:resources) {
 			contract.addConsumerResource(r);
 		}
+		context = readContext(doc,"/contract/consumer/context");
+		if (context!=null) {
+			contract.setConsumerContext(context);
+		}
 		// read third party resources
-		xpath =  createXPath("/contract/external/resource");
-		nodes = xpath.selectNodes(doc);
-		resources = readResources(nodes);
+		resources = readResources(doc,"/contract/external/resource");
 		for (Resource r:resources) {
 			contract.addExternalResource(r);
+		}
+		context = readContext(doc,"/contract/supplier/context");
+		if (context!=null) {
+			contract.setExternalContext(context);
 		}
 		
 		// read conditions
@@ -94,6 +100,15 @@ public class ContractReader  {
 		}
 		
 		return contract;
+	}
+
+	private String readContext(Document doc, String xpath) throws JDOMException {
+		XPath xp =  createXPath(xpath);
+		Element node = (Element)xp.selectSingleNode(doc);
+		if (node!=null) {
+			return node.getText();
+		}
+		return null;
 	}
 	private void readConditions(Element node, ConditionContext context, SimpleContract contract) throws JDOMException, InvalidContractException, URISyntaxException {
 		
@@ -172,7 +187,10 @@ public class ContractReader  {
 			}
 		}
 	}
-	private List<Resource> readResources(List<Element> nodes) throws InvalidContractException{
+	private List<Resource> readResources(Document doc,String xpath) throws InvalidContractException, JDOMException{
+		XPath xp =  createXPath(xpath);
+		List<Element> nodes = xp.selectNodes(doc);
+		
 		List<Resource> resources = new ArrayList<Resource>();
 		for (Element node:nodes) {
 			Resource r = new Resource();

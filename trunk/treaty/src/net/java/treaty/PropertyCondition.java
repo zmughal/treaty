@@ -69,7 +69,7 @@ public class PropertyCondition extends AbstractCondition {
 		
 		return c;
 	}
-	public boolean check(VerificationReport report,Verifier verifier) {
+	public boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy) {
 		boolean result = true;
 		if (!this.getResource().isProvided()) {
 			report.log(this,VerificationResult.FAILURE,"Parameter " + this.getResource().getRef() + " is not provided for the first resource");

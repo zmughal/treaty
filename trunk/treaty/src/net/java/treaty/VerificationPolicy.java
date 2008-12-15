@@ -10,29 +10,14 @@
 
 package net.java.treaty;
 
-import java.util.Iterator;
-
-
 /**
- * Interface for contracts and conditions.  
+ * Defines the policy used for verification. 
+ * FAST: visits only contract branches necessary to compute the result
+ * DETAILED: visists all branches
  * @author Jens Dietrich
  */
 
 
-public interface Constraint extends Visitable,Annotatable{
-
-	/**
-	 * Check the condition.
-	 * @param report a report that can be used to log details
-	 * @param verifier the verifier that can be used to check atomic conditions
-	 * @param policy the policy used
-	 * @return whether the check succeeded
-	 */
-	public abstract boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy);
-	/**
-	 * Indicates whether all resources have been instantiated.
-	 * @return a boolean
-	 */
-	public boolean isInstantiated();
-	
+public enum VerificationPolicy {
+	FAST,DETAILED
 }
