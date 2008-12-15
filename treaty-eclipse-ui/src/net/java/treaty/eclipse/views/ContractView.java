@@ -442,11 +442,17 @@ public class ContractView extends ViewPart {
 			}
 			else if (obj instanceof EclipseExtension) {
 				EclipseExtension x = (EclipseExtension)obj;
-				return new StringBuffer() 
+				StringBuffer b = new StringBuffer() 
 					.append(x.getOwner().getId())
-					.append('/')
-					.append(x.getId())
-					.toString();
+					.append('/');
+				String id = x.getId();
+				if (id==null) {
+					b.append("anonymous extension");
+				}	
+				else {
+					b.append(x.getId());
+				}
+				return b.toString();
 			}
 			else if (obj instanceof Component) {
 				return ((Component)obj).getId();

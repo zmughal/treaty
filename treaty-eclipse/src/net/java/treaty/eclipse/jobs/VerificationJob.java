@@ -84,7 +84,9 @@ public class VerificationJob extends Job {
     		try {
 				loadResources(c,verifier);
 			} catch (ResourceLoaderException e) {
-				c.setProperty(VERIFICATION_RESULT,VerificationResult.FAILURE);
+				// do not set result to failure - even if resources cannot be loaded, contract
+				// could still succeed, e.g. when conditions are disjunctions
+				// c.setProperty(VERIFICATION_RESULT,VerificationResult.FAILURE); 
 				c.setProperty(VERIFICATION_EXCEPTION,e);
 			}
     		monitor.worked(1);
@@ -160,6 +162,9 @@ public class VerificationJob extends Job {
 			}
 			sc.getSupplier().removeProperty(VERIFICATION_RESULT);
 			sc.getConsumer().removeProperty(VERIFICATION_RESULT);
+			if (sc.getOwner()!=null) {
+				sc.getOwner().removeProperty(VERIFICATION_RESULT);
+			}
 			sc.getSupplier().getOwner().removeProperty(VERIFICATION_RESULT);
 			sc.getConsumer().getOwner().removeProperty(VERIFICATION_RESULT);
 		}
