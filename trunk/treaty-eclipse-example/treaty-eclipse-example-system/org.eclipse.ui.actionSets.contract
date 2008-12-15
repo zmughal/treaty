@@ -4,13 +4,18 @@
 <!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
 	<supplier>
+		<context>actionSet/action</context>
 		<resource id="Delegate">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
-			<ref>actionSet/action/@class</ref>
+			<ref>@class</ref>
 		</resource>
 		<resource id="Style">
 			<type>http://www.w3.org/2001/XMLSchema:string</type>
-			<ref>actionSet/action/@style</ref>
+			<ref>@style</ref>
+		</resource>
+		<resource id="Retarget">
+			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<ref>@retarget</ref>
 		</resource>
 	</supplier>
 	<external>
@@ -33,6 +38,10 @@
 					<mustExist resource="Style"/>
 				</not>
 				<property resource="Style" operator="IN" value="push,radio,toggle,pulldown"/>
+			</or>
+			<or>
+				<property resource="Retarget" operator="=" value="true"/>
+				<mustExist resource="ActionDelegate"/>
 			</or>
 			<!-- class is optional, but if it exists the interface to be implemented depends on the value of Style-->
 			<or>

@@ -25,6 +25,7 @@ import net.java.treaty.Resource;
 import net.java.treaty.ResourceLoader;
 import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.SimpleContract;
+import net.java.treaty.VerificationPolicy;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.eclipse.EclipseVerifier;
@@ -94,7 +95,7 @@ public class VerificationJob extends Job {
     	for (Contract c:contracts) {
     		// System.out.println("checking contract " + c);
     		// TODO: contracts also fail when mandatory resources cannot be loaded
-    		boolean result = c.check(verReport, verifier);
+    		boolean result = c.check(verReport, verifier,VerificationPolicy.DETAILED);
     		if (!result) failedContracts.add(c);
     		doneContracts.add(c);
     		propagateResults(c);

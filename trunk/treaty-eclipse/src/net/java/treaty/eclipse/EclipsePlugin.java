@@ -88,7 +88,8 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		for (EclipseExtensionPoint xp:this.getExtensionPoints()) {
 			for (EclipseExtension x:xp.getExtensions()) {
 				Contract c = x.getContract();
-				if (c!=null && c.isInstantiated()) {
+				// check all contracts
+				if (c!=null/* && c.isInstantiated()*/) {
 					contracts.add(c);
 				}
 			}

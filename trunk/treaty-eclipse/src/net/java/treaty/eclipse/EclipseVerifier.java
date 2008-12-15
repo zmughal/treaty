@@ -11,12 +11,11 @@
 package net.java.treaty.eclipse;
 
 /**
- * Verifier for eclipse.
+ * Verifier for Eclipse.
  * @author Jens Dietrich
  */
 
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -153,6 +152,7 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		}
 		throw new ResourceLoaderException("No vocabulary found to load resource " + type);
 	}
+
 
 
 }

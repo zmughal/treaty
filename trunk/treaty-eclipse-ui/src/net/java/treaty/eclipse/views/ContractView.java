@@ -216,9 +216,9 @@ public class ContractView extends ViewPart {
 			node = new TreeParent(LABEL_INSTANCES);
 			parent.addChild(node);
 			for (EclipseExtension x:xp.getExtensions()) {
-				TreeParent node2 = new TreeParent(x.getOwner());
-				node.addChild(node2);
-				addNodes(node2,x);	
+				//TreeParent node2 = new TreeParent(x.getOwner());
+				//node.addChild(node2);
+				addNodes(node,x);	
 			}	
 		}
 		private void addNodes(TreeParent parent,EclipseExtension x) {			
@@ -437,8 +437,16 @@ public class ContractView extends ViewPart {
 			Object obj = ((TreeObject)n).getObject();
 			if (col==1) return getStatus(obj);
 			
-			if (obj instanceof Connector) {
+			if (obj instanceof EclipseExtensionPoint) {
 				return ((Connector)obj).getId();
+			}
+			else if (obj instanceof EclipseExtension) {
+				EclipseExtension x = (EclipseExtension)obj;
+				return new StringBuffer() 
+					.append(x.getOwner().getId())
+					.append('/')
+					.append(x.getId())
+					.toString();
 			}
 			else if (obj instanceof Component) {
 				return ((Component)obj).getId();
@@ -493,9 +501,6 @@ public class ContractView extends ViewPart {
 			if (n instanceof Annotatable) {
 				Annotatable c = (Annotatable)n;
 				Object status = c.getProperty(VERIFICATION_RESULT);
-				if (c instanceof Constraint && !((Constraint)c).isInstantiated()) {
-					return "not instantiated";
-				}
 				if (status==VerificationResult.FAILURE) {
 					return "failure";
 				}
@@ -513,9 +518,10 @@ public class ContractView extends ViewPart {
 			if (n instanceof Annotatable) {
 				Annotatable c = (Annotatable)n;
 				Object status = c.getProperty(VERIFICATION_RESULT);
+				/**
 				if (c instanceof Constraint && !((Constraint)c).isInstantiated()) {
 					return getIcon("status_notinstantiated.gif");
-				}
+				}*/
 				if (status==VerificationResult.FAILURE) {
 					return getIcon("status_failure.gif");
 				}
