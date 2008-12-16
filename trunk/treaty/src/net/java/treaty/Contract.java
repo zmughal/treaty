@@ -40,5 +40,9 @@ public interface Contract extends Constraint {
 	 * @throws InvalidContractException
 	 */
 	public abstract Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException;	
-
+	/**
+	 * Convert the contract to an equivalent, more compact form.
+	 * @return a contract
+	 */
+	public Contract pack();
 }

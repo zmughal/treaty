@@ -283,7 +283,41 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 		return result;
 	}
 
-
+	/**
+	 * Convert the contract to an equivalent, more compact form.
+	 * This is not yet fully recursive, it just removes top-level conjunction
+	 * in order to flatten the structure.
+	 * @return a contract
+	 */
+	public Contract pack() {
+		boolean f = true;
+		for (AbstractCondition c:constraints) {
+			f = f && (c instanceof Conjunction);
+		}
+		if (f) {
+			SimpleContract sc = new SimpleContract();
+			sc.consumer = this.consumer;
+			sc.supplier = this.supplier;
+			sc.owner = this.owner;
+			sc.consumerContext = this.consumerContext;
+			sc.externalContext = this.externalContext;
+			sc.supplierContext = this.supplierContext;
+			sc.consumerResources = this.consumerResources;
+			sc.supplierResources = this.supplierResources;
+			sc.externalResources = this.externalResources;
+			sc.constraints = new ArrayList<AbstractCondition>();
+			for (AbstractCondition c:constraints) {
+				Conjunction conj = (Conjunction)c;
+				for (AbstractCondition cp:conj.getParts()) {
+					sc.constraints.add(cp);
+				}
+			}
+			return sc;
+		}
+		else {
+			return this;
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.IContract#getConsumer()
