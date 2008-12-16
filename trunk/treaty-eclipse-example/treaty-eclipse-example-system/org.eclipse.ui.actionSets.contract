@@ -18,7 +18,8 @@
 			<ref>@retarget</ref>
 		</resource>
 	</supplier>
-	<external>
+	<!-- resources defined either here or in other plugins this plugin depends on-->
+	<external>		
 		<resource id="ActionDelegate">
 			<type>http://www.treaty.org/java#AbstractType</type>
 			<name>org.eclipse.ui.IWorkbenchWindowActionDelegate</name>
