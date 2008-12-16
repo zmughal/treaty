@@ -6,7 +6,7 @@
 			<type>http://www.treaty.org/xml#XMLInstance</type>
 			<!-- not that the xpath expression starts with a / - this will result in looking for -->
 			<!-- nodes using this expression: /plugin/extension[@point="org.eclipse.help.toc"]//toc/@file -->
-			<!-- and thuis will look for nested toc/@file nodes (the "//" !!)-->
+			<!-- and this will look for nested toc/@file nodes (the "//" !!)-->
 			<ref>/toc/@file</ref>
 		</resource>
 	</supplier>
