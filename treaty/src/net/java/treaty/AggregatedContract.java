@@ -46,23 +46,23 @@ public class AggregatedContract extends PropertySupport implements Contract{
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager) 
 	 */
-	public AggregatedContract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException {
+	public Contract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException {
 		Contract[] boundParts = new Contract[parts.length];
 		for (int i=0;i<parts.length;i++) {
 			boundParts[i] = parts[i].bindSupplier(connector,loader);
 		}
-		return new AggregatedContract(boundParts);
+		return new AggregatedContract(boundParts).pack();
 	}
 
 	/* (non-Javadoc)
 	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager) 
 	 */
-	public AggregatedContract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException{
+	public Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException{
 		Contract[] boundParts = new Contract[parts.length];
 		for (int i=0;i<parts.length;i++) {
 			boundParts[i] = parts[i].bindConsumer(connector,loader);
 		}
-		return new AggregatedContract(boundParts);
+		return new AggregatedContract(boundParts).pack();
 	}
 
 	/**
@@ -119,5 +119,18 @@ public class AggregatedContract extends PropertySupport implements Contract{
 		}
 		return true;
 	}
-
+	/**
+	 * Convert the contract to an equivalent, more compact form.
+	 * @return a contract
+	 */
+	public Contract pack() {
+		if (parts.length==1) {
+			return parts[0].pack();
+		}
+		Contract[] newParts = new Contract[parts.length];
+		for (int i=0;i<parts.length;i++) {
+			newParts[i]=parts[i].pack();
+		}
+		return new AggregatedContract(newParts);
+	}
 }
