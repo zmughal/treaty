@@ -13,6 +13,8 @@ package net.java.treaty.eclipse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.MultiRule;
@@ -27,11 +29,17 @@ import net.java.treaty.eclipse.jobs.VerificationJobListener;
  * @author Jens Dietrich
  */
 public class ContractRepository {
+	private Collection<EclipsePlugin> plugins = null;
 	
-	private ContractRepository() {
+	public ContractRepository(Collection<EclipsePlugin> pluginsWithContracts) {
 		super();
+		this.plugins = pluginsWithContracts;
 	}
 	private static ContractRepository DEFAULT_INSTANCE = null;
+	
+	public void install() {
+		DEFAULT_INSTANCE = this;
+	}
 	
 	public Collection<EclipsePlugin> getPluginsWithContracts() {
 		return plugins;
@@ -51,22 +59,14 @@ public class ContractRepository {
 		return contracts;
 	}
 	
-	private Collection<EclipsePlugin> plugins = null;
-	public static void reset(IJobChangeListener jListener) {
-		DEFAULT_INSTANCE=null;
-		ContractLoadingJob job = new ContractLoadingJob("Reload contracts");
-		job.addJobChangeListener(jListener);
+	
+	public static void reset(IJobChangeListener listener) {
+		final ContractLoadingJob job = new ContractLoadingJob("Loading contracts");
+		job.addJobChangeListener(listener);
 		job.schedule();
 	}
 	public static ContractRepository getDefault()  {
-		synchronized (ContractRepository.class) {
-			if (DEFAULT_INSTANCE==null) {
-				DEFAULT_INSTANCE = new ContractRepository();
-				// TODO initialize
-				DEFAULT_INSTANCE.plugins = new Builder().extractContracts();
-			}
-			return DEFAULT_INSTANCE;
-		}
+		return DEFAULT_INSTANCE;
 	}
 	
 	public void verify(Collection<Contract> contracts,VerificationReport verReport,VerificationJobListener vListener,IJobChangeListener jListener) {

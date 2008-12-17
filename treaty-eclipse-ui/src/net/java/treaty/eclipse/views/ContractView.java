@@ -155,7 +155,40 @@ public class ContractView extends ViewPart {
 			return children.size()>0;
 		}
 	}
+	class DummyViewContentProvider implements IStructuredContentProvider, ITreeContentProvider {
+		private Object ROOT = new Object();
+		private String INITIALIZING = "initializing, please wait ..";
+		@Override
+		public Object[] getElements(Object inputElement) {
+			if (inputElement.equals(getViewSite())) {
+				return getChildren(ROOT);
+			}
+			return getChildren(inputElement);
+		}
+		@Override
+		public void dispose() {}
+		@Override
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+		@Override
+		public Object[] getChildren(Object parent) {
+			if (parent == ROOT) {
+				return new String[]{INITIALIZING};
+			}
+			return new Object[]{};
+		}
 
+		@Override
+		public Object getParent(Object element) {
+			if (element==INITIALIZING)
+				return ROOT;
+			return null;
+		}
+
+		@Override
+		public boolean hasChildren(Object element) {
+			return element==ROOT;
+		}
+	};
 	class ViewContentProvider implements IStructuredContentProvider, ITreeContentProvider {
 
 		
@@ -441,6 +474,9 @@ public class ContractView extends ViewPart {
 		}
 
 		public String getColumnText(Object n, int col) {
+			if (!(n instanceof TreeObject)) {
+				return col==0?n.toString():"";
+			}
 			
 			Object obj = ((TreeObject)n).getObject();
 			if (col==1) return getStatus(obj);
@@ -549,6 +585,10 @@ public class ContractView extends ViewPart {
 			return null;
 		}
 		public Image getColumnImage(Object n, int col) {
+			if (!(n instanceof TreeObject)) {
+				return null;
+			}
+			
 			Object obj = ((TreeObject)n).getObject();
 			if (col==1) {
 				return getStatusIcon(obj);
@@ -637,9 +677,12 @@ public class ContractView extends ViewPart {
 	    TreeColumn col1 = new TreeColumn(viewer.getTree(), SWT.LEFT);
 	    col1.setText("status");
 	    col1.setWidth(150);
-
+ 
+	    viewer.setLabelProvider(new ViewLabelProvider());
 		actReset(); // background initialisation
-		viewer.setLabelProvider(new ViewLabelProvider());
+		
+		viewer.setContentProvider(new DummyViewContentProvider());
+		viewer.setInput(getViewSite());
 		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent e) {
@@ -662,7 +705,12 @@ public class ContractView extends ViewPart {
 		if (sel==null || sel.length==0) {
 			return null;
 		}
-		return ((TreeObject)sel[0].getData()).getObject();
+		else if (sel[0].getData() instanceof TreeObject) {
+			return ((TreeObject)sel[0].getData()).getObject();
+		}
+		else {
+			return sel[0].getData();
+		}
 	}
 	private SimpleContract getSelectedContract() {
 		TreeItem[] sel = viewer.getTree().getSelection();
@@ -815,7 +863,6 @@ public class ContractView extends ViewPart {
 					}
 				};
 				viewer.getTree().getDisplay().asyncExec(r);
-
 			}
 			@Override
 			public void running(IJobChangeEvent event) {}
@@ -825,6 +872,8 @@ public class ContractView extends ViewPart {
 			public void sleeping(IJobChangeEvent event) {}
 			
 		};
+		viewer.setContentProvider(new DummyViewContentProvider());
+		viewer.setInput(getViewSite());
 		ContractRepository.reset(listener);
 	}
 	/**
