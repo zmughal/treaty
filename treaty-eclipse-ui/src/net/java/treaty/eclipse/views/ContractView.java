@@ -679,7 +679,7 @@ public class ContractView extends ViewPart {
 	    col1.setWidth(150);
  
 	    viewer.setLabelProvider(new ViewLabelProvider());
-		actReset(); // background initialisation
+		
 		
 		viewer.setContentProvider(new DummyViewContentProvider());
 		viewer.setInput(getViewSite());
@@ -698,8 +698,16 @@ public class ContractView extends ViewPart {
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
+		
+		actReset(); // background initialisation
 	}
-
+	private void switchActions(boolean on) {
+		this.actVerifyAll.setEnabled(on);
+		this.actRefresh.setEnabled(on);
+		List<Contract> iConstracts = getSelectedInstantiatedContracts();
+		this.actVerifySelected.setEnabled(on&&iConstracts!=null&&!iConstracts.isEmpty());
+		
+	}
 	private Object getSelectedObject() {
 		TreeItem[] sel = viewer.getTree().getSelection();
 		if (sel==null || sel.length==0) {
@@ -860,6 +868,7 @@ public class ContractView extends ViewPart {
 						plugins = ContractRepository.getDefault().getPluginsWithContracts();
 						viewer.setContentProvider(new ViewContentProvider());
 						viewer.setInput(getViewSite());
+						switchActions(true);
 					}
 				};
 				viewer.getTree().getDisplay().asyncExec(r);
@@ -872,8 +881,9 @@ public class ContractView extends ViewPart {
 			public void sleeping(IJobChangeEvent event) {}
 			
 		};
+		switchActions(false);
 		viewer.setContentProvider(new DummyViewContentProvider());
-		viewer.setInput(getViewSite());
+		viewer.setInput(getViewSite());		
 		ContractRepository.reset(listener);
 	}
 	/**
@@ -953,7 +963,7 @@ public class ContractView extends ViewPart {
 	private void actVerifySelected () {
 		List<Contract> contracts = getSelectedInstantiatedContracts();
 		if (contracts!=null && !contracts.isEmpty()) {
-			verify(contracts);
+			verify(contracts,false);
 		}
 	}
 	/**
@@ -965,12 +975,12 @@ public class ContractView extends ViewPart {
 		for (EclipsePlugin p:plugins) {
 			contracts.addAll(p.getInstantiatedContracts());
 		}
-		verify(contracts);
+		verify(contracts,true);
 	}
 	/**
 	 * Run verification.
 	 */
-	private void verify (List<Contract> contracts) {
+	private void verify (List<Contract> contracts,boolean disableActions) {
 		final VerificationReport verReport = new VerificationReport() {
 			Contract contract = null;
 			public Contract getContract() {
@@ -997,11 +1007,15 @@ public class ContractView extends ViewPart {
 				updateTree();
 				VerificationJob vJob = (VerificationJob)e.getJob();
 				reportVerificationResult(vJob.getDoneContracts(),vJob.getFailedContracts());
+				switchActions(true);
 			}			
 			public void running(IJobChangeEvent e) {}			
 			public void scheduled(IJobChangeEvent e) {}			
 			public void sleeping(IJobChangeEvent e) {}
 		};
+		if (disableActions) {
+			switchActions(false);
+		}
 		ContractRepository.getDefault().verify(contracts,verReport,vListener,jListener);
 
 	}
