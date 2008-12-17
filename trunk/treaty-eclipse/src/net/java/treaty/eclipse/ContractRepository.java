@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.MultiRule;
 import net.java.treaty.Contract;
 import net.java.treaty.VerificationReport;
+import net.java.treaty.eclipse.jobs.ContractLoadingJob;
 import net.java.treaty.eclipse.jobs.VerificationJob;
 import net.java.treaty.eclipse.jobs.VerificationJobListener;
 /**
@@ -51,8 +52,11 @@ public class ContractRepository {
 	}
 	
 	private Collection<EclipsePlugin> plugins = null;
-	public static void reset() {
+	public static void reset(IJobChangeListener jListener) {
 		DEFAULT_INSTANCE=null;
+		ContractLoadingJob job = new ContractLoadingJob("Reload contracts");
+		job.addJobChangeListener(jListener);
+		job.schedule();
 	}
 	public static ContractRepository getDefault()  {
 		synchronized (ContractRepository.class) {
