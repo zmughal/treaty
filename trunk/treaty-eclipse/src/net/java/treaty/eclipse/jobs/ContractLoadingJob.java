@@ -52,7 +52,7 @@ public class ContractLoadingJob extends Job {
 	}
 
     protected IStatus run(IProgressMonitor monitor) {
-    	monitor.beginTask("Analysing contracts",13000);
+    	monitor.beginTask("Analysing contracts",11000); // about 10% befoe instantiation 
     	
     	monitor.subTask("Analysing plugins");
 		Map<String,EclipsePlugin> plugins = new HashMap<String,EclipsePlugin>();
@@ -78,7 +78,7 @@ public class ContractLoadingJob extends Job {
 				plugins.put(b.getSymbolicName(),new EclipsePlugin(b));				
 			}
 		}
-		monitor.worked(500);
+		monitor.worked(200);
 		
 		monitor.subTask("Searching for contracts in extension points");
 		for (IExtensionPoint xpoint:xpoints) {
@@ -101,7 +101,7 @@ public class ContractLoadingJob extends Job {
 				extensions.put(tx.getId(),tx);
 			}					
 		}	
-		monitor.worked(1000);
+		monitor.worked(500);
 		
 		monitor.subTask("Searching for external contracts");
 		// look external contracts supplied by third parties
@@ -138,7 +138,7 @@ public class ContractLoadingJob extends Job {
 				Logger.error("Error loading vocabulary from "+pluginId,e);
 			}
 		}
-		monitor.worked(1000);
+		monitor.worked(250);
 		
 		// filter contracts
 		monitor.subTask("Filtering contracts");
@@ -148,7 +148,7 @@ public class ContractLoadingJob extends Job {
 				l.add(p);
 			}
 		}
-		monitor.worked(5);
+		monitor.worked(50);
 		
 		
 		// instantiate contracts
@@ -168,9 +168,12 @@ public class ContractLoadingJob extends Job {
 		int increment = 10000/counter;
 		for (EclipsePlugin p:l) {
 			for (EclipseExtensionPoint xp:p.getExtensionPoints()) {
+				String xpn = xp.getId();
 				if (xp.hasContracts()) {
 					Contract c = xp.getContract();
 					for (EclipseExtension x:xp.getExtensions()) {
+						String xn = x.getOwner().getId();
+						monitor.subTask("Instantiating contracts for extension point "+xpn + " in " + xn);
 						try {
 							Contract instantiatedContract = c.bindSupplier(x,eclipseMgr);
 							x.setContract(instantiatedContract);
