@@ -64,8 +64,25 @@ public class ContractView extends ViewPart {
 	private static final String LABEL_INSTANCES = "contract instances";
 
 	private void initModel() {
-		ContractRepository.reset();
-		plugins = ContractRepository.getDefault().getPluginsWithContracts();
+		IJobChangeListener listener = new IJobChangeListener() {
+			@Override
+			public void aboutToRun(IJobChangeEvent event) {}
+			@Override
+			public void awake(IJobChangeEvent event) {}
+			@Override
+			public void done(IJobChangeEvent event) {
+				plugins = ContractRepository.getDefault().getPluginsWithContracts();
+			}
+			@Override
+			public void running(IJobChangeEvent event) {}
+			@Override
+			public void scheduled(IJobChangeEvent event) {}
+			@Override
+			public void sleeping(IJobChangeEvent event) {}
+			
+		};
+		ContractRepository.reset(listener);
+		
 	}
 	
 	enum OwnerType {
@@ -172,22 +189,13 @@ public class ContractView extends ViewPart {
 				return ((TreeParent)parent).hasChildren();
 			return false;
 		}
-	/*
-	 * We will set up a dummy model to initialize tree hierarchy.
-	 * In a real code, you will connect to a real model and
-	 * expose its hierarchy.
-	 */
+
 		private void initialize() {		
 			invisibleRoot = new TreeParent("");
 			addNodes(invisibleRoot);
 		}
-		
 
-		
 		private void addNodes(TreeParent parent) {
-			if (plugins==null) {
-				initModel();
-			}
 			for (EclipsePlugin plugin:plugins) {
 				TreeParent node = new TreeParent(plugin);
 				parent.addChild(node);					
@@ -630,9 +638,8 @@ public class ContractView extends ViewPart {
 	    col1.setText("status");
 	    col1.setWidth(150);
 
-		viewer.setContentProvider(new ViewContentProvider());
+		actReset(); // background initialisation
 		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setInput(getViewSite());
 		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent e) {
@@ -793,9 +800,32 @@ public class ContractView extends ViewPart {
 	 * Reset model, reload all contracts.
 	 */
 	private void actReset() {
-		this.initModel();
-		this.viewer.setContentProvider(new ViewContentProvider());
-		viewer.setInput(getViewSite());
+		IJobChangeListener listener = new IJobChangeListener() {
+			@Override
+			public void aboutToRun(IJobChangeEvent event) {}
+			@Override
+			public void awake(IJobChangeEvent event) {}
+			@Override
+			public void done(IJobChangeEvent event) {
+				Runnable r = new Runnable() {
+					public void run() {
+						plugins = ContractRepository.getDefault().getPluginsWithContracts();
+						viewer.setContentProvider(new ViewContentProvider());
+						viewer.setInput(getViewSite());
+					}
+				};
+				viewer.getTree().getDisplay().asyncExec(r);
+
+			}
+			@Override
+			public void running(IJobChangeEvent event) {}
+			@Override
+			public void scheduled(IJobChangeEvent event) {}
+			@Override
+			public void sleeping(IJobChangeEvent event) {}
+			
+		};
+		ContractRepository.reset(listener);
 	}
 	/**
 	 * Print the verification exception stack trace.
@@ -908,14 +938,14 @@ public class ContractView extends ViewPart {
 		};
 		VerificationJobListener vListener = new VerificationJobListener() {
 			public void verificationStatusChanged() {
-				updateTree(false);
+				updateTree();
 			}			
 		};
 	    IJobChangeListener jListener = new IJobChangeListener() {
 	    	public void aboutToRun(IJobChangeEvent e) {}			
 			public void awake(IJobChangeEvent e) {}			
 			public void done(IJobChangeEvent e) {
-				updateTree(false);
+				updateTree();
 				VerificationJob vJob = (VerificationJob)e.getJob();
 				reportVerificationResult(vJob.getDoneContracts(),vJob.getFailedContracts());
 			}			
@@ -950,14 +980,13 @@ public class ContractView extends ViewPart {
 	}
 
 	// refreshes the tree labels
-	private void updateTree(boolean sync) {
+	private void updateTree() {
 		Runnable r = new Runnable() {
 			public void run() {
 				viewer.refresh(true);
 			}
 		};
-		if (sync) viewer.getTree().getDisplay().syncExec(r);
-		else viewer.getTree().getDisplay().asyncExec(r);
+		viewer.getTree().getDisplay().asyncExec(r);
 	}
 	private Image getIcon(String name) {
 		String path = "icons/"+name;
