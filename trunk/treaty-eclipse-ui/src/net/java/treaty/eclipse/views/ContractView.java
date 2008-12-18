@@ -699,7 +699,7 @@ public class ContractView extends ViewPart {
 		hookContextMenu();
 		contributeToActionBars();
 		
-		actReset(); // background initialisation
+		actLoadContracts(true); // background initialisation
 	}
 	private void switchActions(boolean on) {
 		this.actVerifyAll.setEnabled(on);
@@ -799,7 +799,7 @@ public class ContractView extends ViewPart {
 		
 		actRefresh = new Action() {
 			public void run() {
-				actReset();
+				actLoadContracts(false);
 			}
 		};
 		actRefresh.setText("reset");
@@ -855,7 +855,7 @@ public class ContractView extends ViewPart {
 	/**
 	 * Reset model, reload all contracts.
 	 */
-	private void actReset() {
+	private void actLoadContracts(boolean isInitialRun) {
 		IJobChangeListener listener = new IJobChangeListener() {
 			@Override
 			public void aboutToRun(IJobChangeEvent event) {}
@@ -884,7 +884,12 @@ public class ContractView extends ViewPart {
 		switchActions(false);
 		viewer.setContentProvider(new DummyViewContentProvider());
 		viewer.setInput(getViewSite());		
-		ContractRepository.reset(listener);
+		if (isInitialRun) {
+			ContractRepository.init(listener);
+		}
+		else {
+			ContractRepository.reset(listener);
+		}
 	}
 	/**
 	 * Print the verification exception stack trace.

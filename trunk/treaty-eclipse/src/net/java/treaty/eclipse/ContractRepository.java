@@ -61,7 +61,12 @@ public class ContractRepository {
 	
 	
 	public static void reset(IJobChangeListener listener) {
-		final ContractLoadingJob job = new ContractLoadingJob("Loading contracts");
+		final ContractLoadingJob job = new ContractLoadingJob("Reloading contracts",false);
+		job.addJobChangeListener(listener);
+		job.schedule();
+	}
+	public static void init(IJobChangeListener listener) {
+		final ContractLoadingJob job = new ContractLoadingJob("Loading contracts",true);
 		job.addJobChangeListener(listener);
 		job.schedule();
 	}
