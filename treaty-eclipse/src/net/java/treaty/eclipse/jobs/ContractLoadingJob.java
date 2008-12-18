@@ -41,15 +41,21 @@ import org.osgi.framework.Bundle;
 
 public class ContractLoadingJob extends Job {
 	
+	private boolean isInitialScan = true;
+	
+	public ContractLoadingJob(String name,boolean isInitialScan) {
+		super(name);
+		this.isInitialScan = isInitialScan;
+	}
+	
+	
 	private Collection<EclipsePlugin> plugins = new Vector<EclipsePlugin>();
 	
 	public Collection<EclipsePlugin> getPlugins() {
 		return plugins;
 	}
 
-	public ContractLoadingJob(String name) {
-		super(name);
-	}
+
 
     protected IStatus run(IProgressMonitor monitor) {
     	monitor.beginTask("Analysing contracts",11000); // about 10% befoe instantiation 
@@ -79,6 +85,7 @@ public class ContractLoadingJob extends Job {
 			}
 		}
 		monitor.worked(200);
+		if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
 		
 		monitor.subTask("Searching for contracts in extension points");
 		for (IExtensionPoint xpoint:xpoints) {
@@ -102,6 +109,7 @@ public class ContractLoadingJob extends Job {
 			}					
 		}	
 		monitor.worked(500);
+		if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
 		
 		monitor.subTask("Searching for external contracts");
 		// look external contracts supplied by third parties
@@ -139,6 +147,7 @@ public class ContractLoadingJob extends Job {
 			}
 		}
 		monitor.worked(250);
+		if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
 		
 		// filter contracts
 		monitor.subTask("Filtering contracts");
@@ -149,7 +158,7 @@ public class ContractLoadingJob extends Job {
 			}
 		}
 		monitor.worked(50);
-		
+		if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
 		
 		// instantiate contracts
 		// compute steps
@@ -172,6 +181,7 @@ public class ContractLoadingJob extends Job {
 				if (xp.hasContracts()) {
 					Contract c = xp.getContract();
 					for (EclipseExtension x:xp.getExtensions()) {
+						if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
 						String xn = x.getOwner().getId();
 						monitor.subTask("Instantiating contracts for extension point "+xpn + " in " + xn);
 						try {
