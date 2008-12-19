@@ -2,7 +2,7 @@
 <feature
       id="net.java.treaty.eclipse.system"
       label="Contracts for standard Eclipse extension points"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="Jens Dietrich, Massey University">
 
    <description url="http://www.example.com/description">
@@ -32,7 +32,7 @@ permissions and limitations under the License.
          id="net.java.treaty.eclipse.system"
          download-size="50"
          install-size="50"
-         version="1.0.0"
+         version="1.0.1"
          unpack="false"/>
 
 </feature>

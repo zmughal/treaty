@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: contracts for standard extension points
 Bundle-SymbolicName: net.java.treaty.eclipse.system; singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: net.java.treaty.eclipse.system.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
