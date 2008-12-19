@@ -10,7 +10,6 @@
 
 package net.java.treaty.eclipse.example.clock;
 
-import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import org.junit.After;

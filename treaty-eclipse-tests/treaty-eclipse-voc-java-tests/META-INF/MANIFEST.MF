@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for Java vocabulary
 Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.java.tests
-Bundle-Version: 1.0.0
+Bundle-Version: 1.1.0
 Bundle-Vendor: Jens Dietrich
 Fragment-Host: net.java.treaty.eclipse.vocabulary.java;bundle-version="1.0.5"
 Require-Bundle: org.junit4

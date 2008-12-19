@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Treaty_eclipse_example_system Plug-in
+Bundle-Name: contracts for standard extension points
 Bundle-SymbolicName: net.java.treaty.eclipse.system; singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: net.java.treaty.eclipse.system.Activator
@@ -9,3 +9,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui;bundle-version="3.4.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Jens Dietrich

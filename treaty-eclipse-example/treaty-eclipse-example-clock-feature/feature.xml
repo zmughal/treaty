@@ -6,9 +6,9 @@
       provider-name="Jens Dietrich, Massey University">
 
    <description url="Treaty Contract Framework">
-      This plugin adds a desktop clock view to Eclipse that has a date (and
-time) format extension point. Date formats are provided by other
-plugins either by implementing a DateFormatter interface or by
+      This plugin adds a desktop clock view to Eclipse that has a date
+(and time) format extension point. Date formats are provided
+by other plugins either by implementing a DateFormatter interface or by
 providing an XML format string. The contract contains several
 conditions, including (Java and XML) interface conditions as
 well as semantic and quality of service conditions expressed
