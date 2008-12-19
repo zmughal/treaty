@@ -3,10 +3,10 @@
    <feature url="features/net.java.treaty.eclipse_1.1.0.jar" id="net.java.treaty.eclipse" version="1.1.0">
       <category name="Treaty"/>
    </feature>
-   <feature url="features/net.java.treaty.eclipse.system_1.0.0.jar" id="net.java.treaty.eclipse.system" version="1.0.0">
+   <feature url="features/net.java.treaty.example.clock_1.0.14.jar" id="net.java.treaty.example.clock" version="1.0.14">
       <category name="Treaty"/>
    </feature>
-   <feature url="features/net.java.treaty.example.clock_1.0.14.jar" id="net.java.treaty.example.clock" version="1.0.14">
+   <feature url="features/net.java.treaty.eclipse.system_1.0.1.jar" id="net.java.treaty.eclipse.system" version="1.0.1">
       <category name="Treaty"/>
    </feature>
    <category-def name="Treaty" label="Treaty"/>
