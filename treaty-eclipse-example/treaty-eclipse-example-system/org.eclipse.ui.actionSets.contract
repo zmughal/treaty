@@ -40,6 +40,7 @@
 				</not>
 				<property resource="Style" operator="IN" value="push,radio,toggle,pulldown"/>
 			</or>
+			<!-- if retarget is set to true, class attribute must not be provided -->
 			<or>
 				<property resource="Retarget" operator="=" value="true"/>
 				<mustExist resource="ActionDelegate"/>
