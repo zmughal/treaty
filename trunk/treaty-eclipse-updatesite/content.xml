@@ -3,13 +3,13 @@
 <repository name='file:/home/jens/development/treaty/workspace2/treaty-eclipse-updatesite/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1229677866650'/>
+    <property name='p2.timestamp' value='1229895634814'/>
   </properties>
   <references size='2'>
     <repository url='http://treaty.googlecode.com/svn/trunk/treaty-eclipse-updatesite/site.xml' type='0' options='0'/>
     <repository url='http://treaty.googlecode.com/svn/trunk/treaty-eclipse-updatesite/site.xml' type='1' options='0'/>
   </references>
-  <units size='57'>
+  <units size='64'>
     <unit id='net.java.treaty.eclipse.vocabulary.xml' version='1.0.15'>
       <update id='net.java.treaty.eclipse.vocabulary.xml' range='[0.0.0,1.0.15)' severity='0'/>
       <properties size='2'>
@@ -1892,7 +1892,7 @@
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt.ui;bundle-version=&quot;3.4.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.system.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.1&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.system; singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: contracts for standard extension points&#xA;Bundle-Vendor: Jens Dietrich&#xA;
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt.ui;bundle-version=&quot;3.4.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.system.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.1&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.system; singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: contracts for standard extension points&#xA;Bundle-Vendor: Jens Dietrich
           </instruction>
         </instructions>
       </touchpointData>
@@ -1932,6 +1932,249 @@
       <copyright>
         Copyright (C) 2008 Jens Dietrich
       </copyright>
+    </unit>
+    <unit id='net.java.treaty.eclipse.system.feature.group' version='1.0.2' singleton='false'>
+      <update id='net.java.treaty.eclipse.system.feature.group' range='[0.0.0,1.0.2)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Contracts for standard Eclipse extension points'/>
+        <property name='org.eclipse.equinox.p2.description' value='This feature adds contracts to some standard Eclipse extension points'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.system.feature.group' version='1.0.2'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.system' range='[1.0.2,1.0.2]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.system.feature.jar' range='[1.0.2,1.0.2]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.apache.org/licenses/LICENSE-2.0'>
+          Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);&#xA;you may not use this file except in compliance with the License.&#xA;You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.&#xA;Unless required by applicable law or agreed to in writing, software&#xA;distributed under the License is distributed on an &quot;AS IS&quot; BASIS,&#xA;WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express&#xA;or implied. See the License for the specific language governing&#xA;permissions and limitations under the License.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (C) 2008 Jens Dietrich
+      </copyright>
+    </unit>
+    <unit id='net.java.treaty.eclipse.feature.group' version='1.1.1' singleton='false'>
+      <update id='net.java.treaty.eclipse.feature.group' range='[0.0.0,1.1.1)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty Contract Framework'/>
+        <property name='org.eclipse.equinox.p2.description' value='Treaty is a contract framework for arbitrary component models. The Treaty for Eclipse feature contains adapters for Eclipse plugins/OSGi bundles, views to show contracts between plugins (bundles) and installed contract vocabularies, and actions to check these contracts and verify the installed plugins.&#xA;Treaty for Eclipse also contains an example application that uses complex contracts to describe the relationships of plugins consuming and providing services.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/treaty'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.feature.group' version='1.1.1'/>
+      </provides>
+      <requires size='10'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse' range='[1.1.1,1.1.1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.java' range='[1.1.0,1.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.junit' range='[1.1.0,1.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml' range='[1.1.0,1.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.owl' range='[1.1.0,1.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.java.ui' range='[1.1.0,1.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.junit.ui' range='[1.1.0,1.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml.ui' range='[1.1.0,1.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.ui' range='[1.1.0,1.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.feature.jar' range='[1.1.1,1.1.1]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://www.apache.org/licenses/LICENSE-2.0'>
+          Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (C) 2008 Jens Dietrich
+      </copyright>
+    </unit>
+    <unit id='net.java.treaty.eclipse.system.feature.jar' version='1.0.2'>
+      <update id='net.java.treaty.eclipse.system.feature.jar' range='[0.0.0,1.0.2)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Contracts for standard Eclipse extension points'/>
+        <property name='org.eclipse.equinox.p2.description' value='This feature adds contracts to some standard Eclipse extension points'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.system.feature.jar' version='1.0.2'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.java.treaty.eclipse.system' version='1.0.2'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.java.treaty.eclipse.system' version='1.0.2'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.apache.org/licenses/LICENSE-2.0'>
+          Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);&#xA;you may not use this file except in compliance with the License.&#xA;You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.&#xA;Unless required by applicable law or agreed to in writing, software&#xA;distributed under the License is distributed on an &quot;AS IS&quot; BASIS,&#xA;WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express&#xA;or implied. See the License for the specific language governing&#xA;permissions and limitations under the License.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (C) 2008 Jens Dietrich
+      </copyright>
+    </unit>
+    <unit id='net.java.treaty.eclipse.system' version='1.0.2'>
+      <update id='net.java.treaty.eclipse.system' range='[0.0.0,1.0.2)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='contracts for standard extension points'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.system' version='1.0.2'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.system' version='1.0.2'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='3'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.ui' range='3.4.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.system' version='1.0.2'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt.ui;bundle-version=&quot;3.4.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.system.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.2&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.system; singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: contracts for standard extension points&#xA;Bundle-Vendor: Jens Dietrich&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='net.java.treaty.eclipse.feature.jar' version='1.1.1'>
+      <update id='net.java.treaty.eclipse.feature.jar' range='[0.0.0,1.1.1)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty Contract Framework'/>
+        <property name='org.eclipse.equinox.p2.description' value='Treaty is a contract framework for arbitrary component models. The Treaty for Eclipse feature contains adapters for Eclipse plugins/OSGi bundles, views to show contracts between plugins (bundles) and installed contract vocabularies, and actions to check these contracts and verify the installed plugins.&#xA;Treaty for Eclipse also contains an example application that uses complex contracts to describe the relationships of plugins consuming and providing services.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/treaty'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.feature.jar' version='1.1.1'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.java.treaty.eclipse' version='1.1.1'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.java.treaty.eclipse' version='1.1.1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license url='http://www.apache.org/licenses/LICENSE-2.0'>
+          Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (C) 2008 Jens Dietrich
+      </copyright>
+    </unit>
+    <unit id='net.java.treaty.eclipse.vocabulary.xml.translated_host_properties' version='1.1.0'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml' range='1.1.0' greedy='false'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml' range='1.1.0' greedy='false'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
+    <unit id='net.java.treaty.eclipse' version='1.1.1'>
+      <update id='net.java.treaty.eclipse' range='[0.0.0,1.1.1)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='treaty for eclipse'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich'/>
+      </properties>
+      <provides size='40'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse' version='1.1.1'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse' version='1.1.1'/>
+        <provided namespace='java.package' name='com.clarkparsia.explanation' version='0.0.0'/>
+        <provided namespace='java.package' name='com.clarkparsia.explanation.io' version='0.0.0'/>
+        <provided namespace='java.package' name='com.clarkparsia.explanation.util' version='0.0.0'/>
+        <provided namespace='java.package' name='edu.unika.aifb.rdf.api.syntax' version='0.0.0'/>
+        <provided namespace='java.package' name='edu.unika.aifb.rdf.api.util' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse.jobs' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.manchesterowlsyntax' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.obo.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.functionalparser' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.functionalrenderer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.krssparser' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.latex' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.owlxmlparser' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.rdf.model' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.rdf.rdfxml' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.rdf.renderer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.rdf.turtle' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owl.rdfxml.parser' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.owlapi.owlxml.renderer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.string' version='0.0.0'/>
+        <provided namespace='java.package' name='org.coode.xml' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.apibinding' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.debugging' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.expression' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.inference' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.io' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.metrics' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.model' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.normalform' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.profiles' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.util' version='0.0.0'/>
+        <provided namespace='java.package' name='org.semanticweb.owl.vocab' version='0.0.0'/>
+        <provided namespace='java.package' name='uk.ac.manchester.cs.bhig.util' version='0.0.0'/>
+        <provided namespace='java.package' name='uk.ac.manchester.cs.owl' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse' version='1.1.1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Export-Package: com.clarkparsia.explanation,com.clarkparsia.explanation.io,com.clarkparsia.explanation.util,edu.unika.aifb.rdf.api.syntax,edu.unika.aifb.rdf.api.util,net.java.treaty;uses:=&quot;org.apache.log4j&quot;,net.java.treaty.eclipse; uses:=&quot;org.eclipse.core.runtime,  org.eclipse.jface.resource,  net.java.treaty,  org.eclipse.ui.plugin,  org.semanticweb.owl.model,  org.osgi.framework&quot;,net.java.treaty.eclipse.jobs,org.coode.manchesterowlsyntax,org.coode.obo.parser,org.coode.owl.functionalparser,org.coode.owl.functionalrenderer,org.coode.owl.krssparser,org.coode.owl.latex,org.coode.owl.owlxmlparser,org.coode.owl.rdf.model,org.coode.owl.rdf.rdfxml,org.coode.owl.rdf.renderer,org.coode.owl.rdf.turtle,org.coode.owl.rdfxml.parser,org.coode.owlapi.owlxml.renderer,org.coode.string,org.coode.xml,org.semanticweb.owl,org.semanticweb.owl.apibinding,org.semanticweb.owl.debugging,org.semanticweb.owl.expression,org.semanticweb.owl.inference,org.semanticweb.owl.io,org.semanticweb.owl.metrics,org.semanticweb.owl.model;uses:=&quot;org.semanticweb.owl.io,org.semanticweb.owl.vocab&quot;,org.semanticweb.owl.normalform,org.semanticweb.owl.profiles,org.semanticweb.owl.util,org.semanticweb.owl.vocab,uk.ac.manchester.cs.bhig.util,uk.ac.manchester.cs.owl&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.runtime&#xA;Bundle-Activator: net.java.treaty.eclipse.Activator&#xA;Bundle-Name: treaty for eclipse&#xA;Bundle-Version: 1.1.1&#xA;Bundle-Vendor: Jens Dietrich&#xA;Bundle-SymbolicName: net.java.treaty.eclipse; singleton:=true&#xA;Bundle-ClassPath: .,lib/treaty.jar,lib/jaxen-core.jar,lib/jaxen-jdom.jar,lib/saxpath.jar,lib/jdom.jar,lib/owlapi-bin.jar&#xA;Manifest-Version: 1.0&#xA;Eclipse-LazyStart: true&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
     </unit>
   </units>
 </repository>
