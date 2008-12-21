@@ -74,8 +74,8 @@ public class ContractLoadingJob extends Job {
 			// also register the plugins with extension points
 			
 			// tmp starts
-			if (xpoint.getExtensions().length>10)
-				System.out.println(""+xpoint.getUniqueIdentifier()+" has "+xpoint.getExtensions().length+" extensions");
+			//if (xpoint.getExtensions().length>10)
+			// 	 System.out.println(""+xpoint.getUniqueIdentifier()+" has "+xpoint.getExtensions().length+" extensions");
 			// tmp ends 
 			
 			for (IExtension x:xpoint.getExtensions()) {
