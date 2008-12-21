@@ -13,7 +13,7 @@
 	<external>
 		<resource id="toc_dtd">
 			<type>http://www.treaty.org/xml#DTD</type>
-			<name>toc.dtd</name>
+			<name>contract_resources/org.eclipse.help.toc/toc.dtd</name>
 		</resource>		
 	</external>
 	<constraints>
