@@ -2,7 +2,7 @@
 <feature
       id="net.java.treaty.eclipse"
       label="Treaty Contract Framework"
-      version="1.1.0"
+      version="1.1.1"
       provider-name="Jens Dietrich, Massey University">
 
    <description url="http://code.google.com/p/treaty">
@@ -26,63 +26,63 @@ Treaty for Eclipse also contains an example application that uses complex contra
          id="net.java.treaty.eclipse"
          download-size="400"
          install-size="400"
-         version="1.1.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="net.java.treaty.eclipse.vocabulary.java"
          download-size="10"
          install-size="10"
-         version="1.1.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="net.java.treaty.eclipse.vocabulary.junit"
          download-size="10"
          install-size="10"
-         version="1.1.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="net.java.treaty.eclipse.vocabulary.xml"
          download-size="10"
          install-size="10"
-         version="1.1.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="net.java.treaty.eclipse.vocabulary.owl"
          download-size="10"
          install-size="10"
-         version="1.1.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="net.java.treaty.eclipse.vocabulary.java.ui"
          download-size="10"
          install-size="10"
-         version="1.1.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="net.java.treaty.eclipse.vocabulary.junit.ui"
          download-size="10"
          install-size="10"
-         version="1.1.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="net.java.treaty.eclipse.vocabulary.xml.ui"
          download-size="10"
          install-size="10"
-         version="1.1.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="net.java.treaty.eclipse.ui"
          download-size="50"
          install-size="50"
-         version="1.1.0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
