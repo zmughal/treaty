@@ -1,0 +1,13 @@
+<!ELEMENT contexts (context)* ) >
+
+<!ELEMENT context (description?,topic*) >
+<!ATTLIST context
+  id CDATA #REQUIRED
+  title CDATA #IMPLIED >
+
+<!ELEMENT description (#PCDATA)>
+
+<!ELEMENT topic EMPTY >
+<!ATTLIST topic
+   label CDATA #REQUIRED
+   href CDATA #REQUIRED > 
