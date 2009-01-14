@@ -11,8 +11,9 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:complexType name="resource_owner">
-			<xs:sequence minOccurs="0" maxOccurs="unbounded">
-				<xs:element ref="resource"/>
+			<xs:sequence>
+				<xs:element name="context" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="resource" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 	</xs:complexType>
 	<xs:element name="constraints">
@@ -109,9 +110,12 @@
 	<xs:element name="property">
 		<xs:complexType>
 			<xs:attribute name="resource" type="xs:IDREF" use="required"/>
-			<xs:attribute name="type" type="xs:anyURI" use="required"/>
-			<xs:attribute name="operator" type="xs:anyURI" use="required"/>
-			<xs:attribute name="property" type="xs:anyURI" use="required"/>
+			<!-- operators built into XPath are supported such as =, !=, &lt; -->
+			<!-- TODO use a narrower type here -->
+			<xs:attribute name="operator" type="xs:anySimpleType" use="required"/>
+			<!-- if property is not set, it is the resource itself (like self in Smalltalk or this in Java) -->
+			<xs:attribute name="property" type="xs:string" use="optional"/>
+			<!-- the resource or resource property is compared with this value -->
 			<xs:attribute name="value" type="xs:anySimpleType" use="required"/>
 		</xs:complexType>
 	</xs:element>
