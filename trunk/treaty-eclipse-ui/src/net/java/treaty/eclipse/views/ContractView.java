@@ -10,6 +10,7 @@
 
 package net.java.treaty.eclipse.views;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,6 +58,7 @@ public class ContractView extends ViewPart {
 	private Action actVerifySelected;
 	private Action actPrintStackTrace;
 	private Action actShowContractSource;
+	private Action actExport;
 	// this is the model displayed - a list of plugins with contracts
 	private Collection<EclipsePlugin> plugins = null;
 	private Map<String,Image> icons = new HashMap<String,Image>();
@@ -783,6 +785,7 @@ public class ContractView extends ViewPart {
 		manager.add(actRefresh);
 		manager.add(actVerifyAll);
 		manager.add(actVerifySelected);
+		manager.add(actExport);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
@@ -833,6 +836,31 @@ public class ContractView extends ViewPart {
 		actShowContractSource.setEnabled(false);
 		actShowContractSource.setText("display contract source");
 		actShowContractSource.setToolTipText("displays the XML source code of the contract");
+	
+		actExport = new Action() {
+			public void run() {
+				actExport();
+			}
+		};
+		actExport.setEnabled(false);
+		actExport.setText("export verification results");
+		actExport.setToolTipText("export the results of the verification results");
+	}
+
+	private void actExport() {
+		// TODO finish, error handling, selecting an exporter if there are many
+		List<Exporter> list = Exporter.getInstances();
+		if (list.size()>0) {
+			Exporter exporter = list.get(0);
+			Collection<Contract> contracts = ContractRepository.getDefault().getInstantiatedContracts();
+			try {
+				exporter.export(contracts);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	private void actShowContractSource() {
@@ -1013,6 +1041,7 @@ public class ContractView extends ViewPart {
 				VerificationJob vJob = (VerificationJob)e.getJob();
 				reportVerificationResult(vJob.getDoneContracts(),vJob.getFailedContracts());
 				switchActions(true);
+				actExport.setEnabled(true);
 			}			
 			public void running(IJobChangeEvent e) {}			
 			public void scheduled(IJobChangeEvent e) {}			
