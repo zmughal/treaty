@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-	
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.help.toc" name="contract for org.eclipse.help.toc">
           <contract location="org.eclipse.help.toc.contract"/>
    </extension>
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.actionSets" name="contract for org.eclipse.ui.actionSets">
           <contract location="org.eclipse.ui.actionSets.contract"/>
    </extension>	
+
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.help.contexts" name="contract for org.eclipse.help.contexts">
           <contract location="org.eclipse.help.contexts.contract"/> 
    </extension>
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.preferencePages" name="contract for org.eclipse.ui.preferencePages">
           <contract location="org.eclipse.ui.preferencePages.contract"/> 
+   </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.team.core.fileTypes" name="contract for org.eclipse.team.core.fileTypes">
+          <contract location="org.eclipse.team.core.fileTypes.contract"/> 
    </extension>
 </plugin>
