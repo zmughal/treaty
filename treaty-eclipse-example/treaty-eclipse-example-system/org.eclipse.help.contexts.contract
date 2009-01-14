@@ -10,8 +10,8 @@
 			<ref>/contexts/@file</ref>
 		</resource>
 		<resource id="Provider">
-			<type>http://www.treaty.org/java#InstanitableClass</type>
-			<ref>@class</ref>
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>/contextProvider/@class</ref>
 		</resource>
 	</supplier>
 	<external>
@@ -25,9 +25,9 @@
 		</resource>	
 	</external>
 	<constraints>
-		<and>
+		<or>
 			<relationship resource1="contexts" resource2="contexts_dtd" type="http://www.treaty.org/xml#instantiatesDTD"/>
 			<relationship resource1="Provider" resource2="ContextProvider" type="http://www.treaty.org/java#implements"/>
-		</and>
+		</or>
 	</constraints>
 </contract>
