@@ -11,4 +11,7 @@
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.help.contexts" name="contract for org.eclipse.help.contexts">
           <contract location="org.eclipse.help.contexts.contract"/> 
    </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.preferencePages" name="contract for org.eclipse.ui.preferencePages">
+          <contract location="org.eclipse.ui.preferencePages.contract"/> 
+   </extension>
 </plugin>
