@@ -17,4 +17,7 @@
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.team.core.fileTypes" name="contract for org.eclipse.team.core.fileTypes">
           <contract location="org.eclipse.team.core.fileTypes.contract"/> 
    </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.popupMenus" name="contract for org.eclipse.ui.popupMenus">
+         <contract location="org.eclipse.ui.popupMenus.contract"/> 
+   </extension>
 </plugin>

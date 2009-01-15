@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ui.popupMenus-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<context>objectContribution/action</context>
+		<resource id="ObjectDelegate">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>@class</ref>
+		</resource>
+		<resource id="ObjectStyle">
+			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<ref>@style</ref>
+		</resource>
+		<resource id="ObjectEnablesFor">
+			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<ref>@enablesFor</ref>
+		</resource>
+		</supplier>
+		<supplier>
+		<context>viewerContribution/action</context>
+		<resource id="ViewDelegate">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>@class</ref>
+		</resource>
+		<resource id="ViewStyle">
+			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<ref>@style</ref>
+		</resource>
+		<resource id="ViewEnablesFor">
+			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<ref>@enablesFor</ref>
+		</resource>
+	</supplier>	
+	<!-- resources defined either here or in other plugins this plugin depends on-->
+	<external>		
+		<resource id="ObjectActionDelegate">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.IObjectActionDelegate</name>
+		</resource>	
+		<!-- following resources might be defined for backwards compatibility for object contribution -->		
+		<resource id="ActionDelegate">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.IActionDelegate</name>
+		</resource>	
+		<resource id="ViewActionDelegate">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.IViewActionDelegate</name>
+		</resource>	
+		<resource id="EditorActionDelegate">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.IEditorActionDelegate</name>
+		</resource>			
+	</external>
+	<constraints>
+		<and>
+			<!-- if the style attribute exists, it must be either push, radio, toggle or pulldown -->
+			<!-- the style attribute is not required -->
+			<or>
+				<not>
+					<mustExist resource="ObjectStyle"/>
+					
+				</not>
+				<property resource="ObjectStyle" operator="IN" value="push,radio,toggle,pulldown"/>
+			</or>
+			<or>
+				<not>
+					<mustExist resource="ViewStyle"/>
+					
+				</not>
+				<property resource="ViewStyle" operator="IN" value="push,radio,toggle,pulldown"/>
+			</or>			
+
+			<!-- class implements different interface for viewer contributions than for object contributions-->
+			<and>
+				<or>
+					<mustExist resource="ObjectDelegate"/>
+					<mustExist resource="ViewDelegate"/>
+				</or>
+				<or>
+					<or>
+						<relationship resource1="ObjectDelegate" resource2="ObjectActionDelegate" type="http://www.treaty.org/java#implements"/>
+						<relationship resource1="ObjectDelegate" resource2="ActionDelegate" type="http://www.treaty.org/java#implements"/>
+					</or>
+					<or>
+						<relationship resource1="ViewDelegate" resource2="ViewActionDelegate" type="http://www.treaty.org/java#implements"/>
+						<relationship resource1="ViewDelegate" resource2="EditorActionDelegate" type="http://www.treaty.org/java#implements"/>
+					</or>
+				</or>
+			</and>
+		</and>
+	</constraints>
+</contract>
