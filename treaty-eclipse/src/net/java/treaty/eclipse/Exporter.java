@@ -10,6 +10,7 @@
 
 package net.java.treaty.eclipse;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,5 +59,11 @@ public abstract class Exporter {
 			return INSTANCES;
 		}
 	}
-	public abstract void export(Collection<Contract> contracts) throws IOException;
+	public abstract void export(Collection<Contract> contracts, File file) throws IOException;
+	public abstract boolean exportToFolder();
+	// this is only used if exportToFolder() returns false
+	public abstract String[] getFilterExtensions();
+	public abstract String[] getFilterNames();
+	
+	public abstract String getName();
 }

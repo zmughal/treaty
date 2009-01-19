@@ -10,22 +10,33 @@
 
 package net.java.treaty.eclipse.defaultexporter;
 
-import java.io.IOException;
-import java.util.Collection;
-import net.java.treaty.Contract;
-import net.java.treaty.eclipse.Exporter;
-
 /**
- * Default exporter.
+ * Utility class to hold contract data.
  * @author Jens Dietrich
  */
 
-public class DefaultExporter extends Exporter {
-
-	@Override
-	public void export(Collection<Contract> contracts) throws IOException {
-		System.out.println("dummy exporter, exporting "+contracts.size()+" contracts");
+public class ContractData {
+	
+	public String xp = null;
+	public String x = null;
+	public boolean isAggregated = false;
+	public String result = null;
+	public String exception = null;
+	
+	public String getException() {
+		return exception;
 	}
-	
-	
+	public String getResult() {
+		return result;
+	}
+	public String getXp() {
+		return xp;
+	}
+	public String getX() {
+		return x;
+	}
+	public boolean isAggregated() {
+		return isAggregated;
+	}
+
 }
