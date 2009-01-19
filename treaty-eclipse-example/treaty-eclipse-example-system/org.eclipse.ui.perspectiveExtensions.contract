@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ui.perspectiveExtensions-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="View">
+		<type>http://www.w3.org/2001/XMLSchema:string</type>
+		<ref>perspectiveExtension/view</ref>
+		</resource>
+	</supplier>
+	<supplier>
+		<context>perspectiveExtension/view</context>
+		<resource id="Relationship">
+			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<ref>@relationship</ref>
+		</resource>
+		<resource id="Ratio">
+			<type>http://www.w3.org/2001/XMLSchema:decimal</type>
+			<ref>@ratio</ref>
+		</resource>
+	</supplier>
+	<constraints>
+		<and>
+			<or>
+				<not>
+					<mustExist resource="View"/>
+				</not>
+				<property resource="Relationship" operator="IN" value="stack,fast"/>
+				<and>
+					<property resource="Relationship" operator="IN" value="left,right,top,bottom"/>
+					<!--	<property resource="Ratio" operator="IN" value="stack,left,right,top,bottom,fast"/> -->
+				</and>
+			</or>
+		</and>
+	</constraints>
+</contract>

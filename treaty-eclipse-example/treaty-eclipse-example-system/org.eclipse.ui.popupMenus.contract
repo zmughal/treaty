@@ -89,6 +89,22 @@
 					</or>
 				</or>
 			</and>
+		<!--
+			<or>
+				<not>
+					<mustExist resource="ObjectEnablesFor"/>					
+				</not>
+				<property resource="ObjectEnablesFor" operator="IN" value="!,?,+,multiple,2+,*"/>
+				<!-- IS AN INTEGER -->
+			</or>
+			<or>
+				<not>
+					<mustExist resource="ViewEnablesFor"/>					
+				</not>
+				<property resource="ViewEnablesFor" operator="IN" value="!,?,+,multiple,2+,*"/>
+				<!-- IS AN INTEGER -->
+			</or>
+		-->
 		</and>
 	</constraints>
 </contract>
