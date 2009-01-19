@@ -5,7 +5,7 @@
       id="net.java.treaty.eclipse.defaultexporter"
       name="net.java.treaty.eclipse.defaultexporter"
       point="net.java.treaty.eclipse.exporter">
-      <exporter class="net.java.treaty.eclipse.defaultexporter.DefaultExporter"/> 
+      <exporter class="net.java.treaty.eclipse.defaultexporter.CSVExporter"/> 
    </extension>
 
 </plugin>

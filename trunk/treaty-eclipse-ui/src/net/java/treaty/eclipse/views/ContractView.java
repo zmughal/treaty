@@ -10,6 +10,7 @@
 
 package net.java.treaty.eclipse.views;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ import net.java.treaty.eclipse.jobs.VerificationJobListener;
 import net.java.treaty.eclipse.ui.Activator;
 import net.java.treaty.VerificationResult;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -42,7 +45,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
-import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;
 
 /**
  * Contract viewer.
@@ -767,6 +769,8 @@ public class ContractView extends ViewPart {
 		manager.add(new Separator());
 		manager.add(actVerifyAll);
 		manager.add(actVerifySelected);
+		manager.add(new Separator());
+		manager.add(actExport);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
@@ -785,7 +789,6 @@ public class ContractView extends ViewPart {
 		manager.add(actRefresh);
 		manager.add(actVerifyAll);
 		manager.add(actVerifySelected);
-		manager.add(actExport);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
@@ -842,9 +845,10 @@ public class ContractView extends ViewPart {
 				actExport();
 			}
 		};
-		actExport.setEnabled(false);
-		actExport.setText("export verification results");
-		actExport.setToolTipText("export the results of the verification results");
+		actExport.setEnabled(true);
+		actExport.setText("export constracts");
+		actExport.setImageDescriptor(getImageDescriptor("icons/export.gif"));
+		actExport.setToolTipText("export instantiated contracts and verification results (if available)");
 	}
 
 	private void actExport() {
@@ -854,10 +858,24 @@ public class ContractView extends ViewPart {
 			Exporter exporter = list.get(0);
 			Collection<Contract> contracts = ContractRepository.getDefault().getInstantiatedContracts();
 			try {
-				exporter.export(contracts);
+				String fileName = null;
+				if (exporter.exportToFolder()) {
+					DirectoryDialog dlg = new DirectoryDialog(this.getViewSite().getShell(),SWT.OPEN);
+					dlg.setText("Select target folder for export");
+					fileName = dlg.open();
+				}
+				else {
+					FileDialog dlg = new FileDialog(this.getViewSite().getShell(),SWT.OPEN);
+					dlg.setFilterExtensions(exporter.getFilterExtensions());
+					dlg.setFilterNames(exporter.getFilterNames());
+					dlg.setText("Select file for export");
+					fileName = dlg.open();
+				}
+				if (fileName!=null) {
+					exporter.export(contracts,new File(fileName));
+				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.error("Exception exporting contracts", e);
 			}
 		}
 		

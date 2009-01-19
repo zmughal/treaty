@@ -1,0 +1,4 @@
+extension point,extension,is aggregated contract,verification result,exceptions
+#foreach( $c in $contracts )
+    $c.xp,$c.x,$c.aggregated,$c.result,$c.exception        
+#end
