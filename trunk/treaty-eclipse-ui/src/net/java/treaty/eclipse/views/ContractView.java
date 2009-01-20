@@ -60,10 +60,12 @@ public class ContractView extends ViewPart {
 	private Action actVerifySelected;
 	private Action actPrintStackTrace;
 	private Action actShowContractSource;
-	private Action actExport;
+	private List<Action> actsExport;
 	// this is the model displayed - a list of plugins with contracts
 	private Collection<EclipsePlugin> plugins = null;
 	private Map<String,Image> icons = new HashMap<String,Image>();
+	
+	private List<Exporter> exporters = null;
 	// strings 
 	private static final String LABEL_INSTANCES = "contract instances";
 
@@ -708,6 +710,9 @@ public class ContractView extends ViewPart {
 	private void switchActions(boolean on) {
 		this.actVerifyAll.setEnabled(on);
 		this.actRefresh.setEnabled(on);
+		for (Action act:this.actsExport) {
+			act.setEnabled(on);
+		}
 		List<Contract> iConstracts = getSelectedInstantiatedContracts();
 		this.actVerifySelected.setEnabled(on&&iConstracts!=null&&!iConstracts.isEmpty());
 		
@@ -770,7 +775,9 @@ public class ContractView extends ViewPart {
 		manager.add(actVerifyAll);
 		manager.add(actVerifySelected);
 		manager.add(new Separator());
-		manager.add(actExport);
+		for (Action actExport:this.actsExport) {
+			manager.add(actExport);
+		}
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
@@ -779,6 +786,10 @@ public class ContractView extends ViewPart {
 		manager.add(actVerifySelected);
 		manager.add(actPrintStackTrace);
 		manager.add(actShowContractSource);
+		manager.add(new Separator());
+		for (Action actExport:this.actsExport) {
+			manager.add(actExport);
+		}
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -789,6 +800,10 @@ public class ContractView extends ViewPart {
 		manager.add(actRefresh);
 		manager.add(actVerifyAll);
 		manager.add(actVerifySelected);
+		manager.add(new Separator());
+		for (Action actExport:this.actsExport) {
+			manager.add(actExport);
+		}
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
@@ -840,45 +855,56 @@ public class ContractView extends ViewPart {
 		actShowContractSource.setText("display contract source");
 		actShowContractSource.setToolTipText("displays the XML source code of the contract");
 	
-		actExport = new Action() {
-			public void run() {
-				actExport();
+		class ExportAction extends Action {
+			private Exporter exporter = null;
+			ExportAction(Exporter x) {
+				super();
+				this.exporter=x;
 			}
+			public void run() {
+				actExport(exporter);
+			}
+			
 		};
-		actExport.setEnabled(true);
-		actExport.setText("export constracts");
-		actExport.setImageDescriptor(getImageDescriptor("icons/export.gif"));
-		actExport.setToolTipText("export instantiated contracts and verification results (if available)");
+		this.actsExport = new ArrayList<Action>();
+		for (Exporter exporter:this.getExporters()) {
+			Action actExport = new ExportAction(exporter);
+			actExport.setEnabled(true);
+			actExport.setText(exporter.getName());
+			actExport.setImageDescriptor(getImageDescriptor("icons/export.gif"));
+			actExport.setToolTipText("export instantiated contracts and verification results (if available), exporter used: "+exporter.getName());
+			actsExport.add(actExport);
+		}
+	}
+	private List<Exporter> getExporters() {
+		if (exporters==null) {
+			exporters = Exporter.getInstances();
+		}
+		return exporters;
 	}
 
-	private void actExport() {
-		// TODO finish, error handling, selecting an exporter if there are many
-		List<Exporter> list = Exporter.getInstances();
-		if (list.size()>0) {
-			Exporter exporter = list.get(0);
-			Collection<Contract> contracts = ContractRepository.getDefault().getInstantiatedContracts();
-			try {
-				String fileName = null;
-				if (exporter.exportToFolder()) {
-					DirectoryDialog dlg = new DirectoryDialog(this.getViewSite().getShell(),SWT.OPEN);
-					dlg.setText("Select target folder for export");
-					fileName = dlg.open();
-				}
-				else {
-					FileDialog dlg = new FileDialog(this.getViewSite().getShell(),SWT.OPEN);
-					dlg.setFilterExtensions(exporter.getFilterExtensions());
-					dlg.setFilterNames(exporter.getFilterNames());
-					dlg.setText("Select file for export");
-					fileName = dlg.open();
-				}
-				if (fileName!=null) {
-					exporter.export(contracts,new File(fileName));
-				}
-			} catch (IOException e) {
-				Logger.error("Exception exporting contracts", e);
+	private void actExport(Exporter exporter) {
+		Collection<Contract> contracts = ContractRepository.getDefault().getInstantiatedContracts();
+		try {
+			String fileName = null;
+			if (exporter.exportToFolder()) {
+				DirectoryDialog dlg = new DirectoryDialog(this.getViewSite().getShell(),SWT.OPEN);
+				dlg.setText("Select target folder for export");
+				fileName = dlg.open();
 			}
-		}
-		
+			else {
+				FileDialog dlg = new FileDialog(this.getViewSite().getShell(),SWT.OPEN);
+				dlg.setFilterExtensions(exporter.getFilterExtensions());
+				dlg.setFilterNames(exporter.getFilterNames());
+				dlg.setText("Select file for export");
+				fileName = dlg.open();
+			}
+			if (fileName!=null) {
+				exporter.export(contracts,new File(fileName));
+			}
+		} catch (IOException e) {
+			Logger.error("Exception exporting contracts", e);
+		}		
 	}
 
 	private void actShowContractSource() {
@@ -1059,7 +1085,6 @@ public class ContractView extends ViewPart {
 				VerificationJob vJob = (VerificationJob)e.getJob();
 				reportVerificationResult(vJob.getDoneContracts(),vJob.getFailedContracts());
 				switchActions(true);
-				actExport.setEnabled(true);
 			}			
 			public void running(IJobChangeEvent e) {}			
 			public void scheduled(IJobChangeEvent e) {}			
