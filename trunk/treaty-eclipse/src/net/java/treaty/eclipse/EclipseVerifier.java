@@ -91,18 +91,57 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 
 	}
 	
+	private void checkBuiltInDatatype(Object v,URI type) throws VerificationException {
+		String t = type.toString();
+		// FIXME - remove this tmp hack
+		if (t.equals("http://www.w3.org/2001/XMLSchema:string")) {
+			System.out.println("oudated data type URI used !!: http://www.w3.org/2001/XMLSchema#string");
+		}
+		if (t.equals("http://www.w3.org/2001/XMLSchema#string")) {
+			return; 
+		}
+		// int should be used !! see http://www.w3.org/TR/xmlschema-2/
+		else if (t.equals("http://www.w3.org/2001/XMLSchema#int") || t.equals("http://www.w3.org/2001/XMLSchema#int")) {
+			if (v instanceof Integer) return;
+			try {
+				Integer.parseInt(v.toString());
+			}
+			catch (NumberFormatException x) {
+				throw new VerificationException(v.toString() + " is not an integer");
+			}
+		}
+		else if (t.equals("http://www.w3.org/2001/XMLSchema#double")) {
+			if (v instanceof Double) return;
+			try {
+				Double.parseDouble(v.toString());
+			}
+			catch (NumberFormatException x) {
+				throw new VerificationException(v.toString() + " is not a double");
+			}
+		}
+		else if (t.equals("http://www.w3.org/2001/XMLSchema#boolean")) {
+			if (v instanceof Double) return;
+			try {
+				Boolean.parseBoolean(v.toString());
+			}
+			catch (NumberFormatException x) {
+				throw new VerificationException(v.toString() + " is not a boolean");
+			}
+		}
+		else throw new VerificationException("unsupported data type: " + type);
+	}
 	public void check(ExistsCondition condition) throws VerificationException {
 		Resource resource = condition.getResource();
 		URI type = resource.getType();
 		
 		// built-in type string
-		if (type.toString().equals("http://www.w3.org/2001/XMLSchema:string")) {
+		if (type.toString().startsWith("http://www.w3.org/2001/XMLSchema")) {
 			assert resource.isInstantiated();
 			assert resource.isLoaded();
 			if (resource.getValue()==null)
 				throw new VerificationException("Resource value should not be null");
-			if (!(resource.getValue() instanceof String))
-				throw new VerificationException("Resource value " + resource.getValue() + " must be string, but is "+resource.getValue().getClass());
+			checkBuiltInDatatype(resource.getValue(),type);
+			return;
 		}
 		
 		try {
