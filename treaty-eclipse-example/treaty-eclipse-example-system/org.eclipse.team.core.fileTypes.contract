@@ -5,7 +5,7 @@
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
 	<supplier>
 		<resource id="Type">
-			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>/fileTypes/@type</ref>
 		</resource>
 	</supplier>

@@ -10,11 +10,11 @@
 			<ref>@class</ref>
 		</resource>
 		<resource id="ObjectStyle">
-			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>@style</ref>
 		</resource>
 		<resource id="ObjectEnablesFor">
-			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>@enablesFor</ref>
 		</resource>
 		</supplier>
@@ -25,11 +25,11 @@
 			<ref>@class</ref>
 		</resource>
 		<resource id="ViewStyle">
-			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>@style</ref>
 		</resource>
 		<resource id="ViewEnablesFor">
-			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>@enablesFor</ref>
 		</resource>
 	</supplier>	
@@ -95,14 +95,14 @@
 					<mustExist resource="ObjectEnablesFor"/>					
 				</not>
 				<property resource="ObjectEnablesFor" operator="IN" value="!,?,+,multiple,2+,*"/>
-				<!-- IS AN INTEGER -->
-			</or>
+		
+		</or>
 			<or>
 				<not>
 					<mustExist resource="ViewEnablesFor"/>					
 				</not>
 				<property resource="ViewEnablesFor" operator="IN" value="!,?,+,multiple,2+,*"/>
-				<!-- IS AN INTEGER -->
+	
 			</or>
 		-->
 		</and>
