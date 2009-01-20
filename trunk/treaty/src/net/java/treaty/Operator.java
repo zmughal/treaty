@@ -11,6 +11,7 @@
 package net.java.treaty;
 
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * Operators to be used in property conditions.
@@ -44,7 +45,7 @@ public abstract class Operator {
 			if (o2==null) return false;
 			String e = o1.toString();
 			for (StringTokenizer tok=new StringTokenizer(o2.toString(),",");tok.hasMoreTokens();) {
-				if (e.equals(tok.nextToken())) {
+				if (e.equals(tok.nextToken().trim())) {
 					return true;
 				}
 			}
@@ -55,8 +56,65 @@ public abstract class Operator {
 		}
 	};
 	
+	static class REGEX extends Operator {
+		public boolean compare(Object o1,Object o2) {
+			if (!(o1 instanceof String)) {
+				throw new IllegalArgumentException("the first parameter must be a string");
+			}
+			if (!(o2 instanceof String)) {
+				throw new IllegalArgumentException("the second parameter must be a string");
+			}
+			return Pattern.matches((String)o2,(String)o1);
+			
+		}
+		public String getName() {
+			return "matches";
+		}
+	};
+	
+	static class LT extends Operator {
+		public boolean compare(Object o1,Object o2) {
+			double d1 = toDouble(o1);
+			double d2 = toDouble(o2);
+			return d1<d2;
+		}
+		public String getName() {
+			return "<";
+		}
+	};
+	static class LTE extends Operator {
+		public boolean compare(Object o1,Object o2) {
+			double d1 = toDouble(o1);
+			double d2 = toDouble(o2);
+			return d1<d2;
+		}
+		public String getName() {
+			return "<=";
+		}
+	};
+	static class GT extends Operator {
+		public boolean compare(Object o1,Object o2) {
+			double d1 = toDouble(o1);
+			double d2 = toDouble(o2);
+			return d1<d2;
+		}
+		public String getName() {
+			return ">";
+		}
+	};
+	static class GTE extends Operator {
+		public boolean compare(Object o1,Object o2) {
+			double d1 = toDouble(o1);
+			double d2 = toDouble(o2);
+			return d1<d2;
+		}
+		public String getName() {
+			return ">=";
+		}
+	};
+	
 	public static Operator[] INSTANCES = {
-			new EQ(),new NEQ(),new IN()		
+			new EQ(),new NEQ(),new IN(), new REGEX(), new LT(), new GT(), new LTE(), new GTE()	
 		};
 		
 		public static Operator getInstance(String name) {
@@ -71,4 +129,18 @@ public abstract class Operator {
 	
 	public abstract boolean compare(Object o1,Object o2);
 	public abstract String getName();
+	
+	private static double toDouble(Object obj) {
+		if (obj instanceof String) {
+			return Double.parseDouble((String) obj);
+		}
+		else if (obj instanceof Double) {
+			return (Double)obj;
+		}
+		else if (obj instanceof Integer) {
+			return ((Integer)obj).doubleValue();
+		}
+		else throw new IllegalArgumentException("double parameter expected here");
+	}
+	
 }
