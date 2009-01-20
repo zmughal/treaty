@@ -176,9 +176,30 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 	
 	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException {
 		// built-in type string
-		if (type.toString().equals("http://www.w3.org/2001/XMLSchema:string")) {
+		String t = type.toString();
+		if (t.equals("http://www.w3.org/2001/XMLSchema#string")) {
 			return name;
 		}
+		else if (t.equals("http://www.w3.org/2001/XMLSchema#int") || t.equals("http://www.w3.org/2001/XMLSchema#integer")) {
+			try {
+				return Integer.parseInt(name);
+			}
+			catch (NumberFormatException x) {
+				throw new ResourceLoaderException(x);
+			}
+		}
+		else if (t.equals("http://www.w3.org/2001/XMLSchema#double")) {
+			try {
+				return Double.parseDouble(name);
+			}
+			catch (NumberFormatException x) {
+				throw new ResourceLoaderException(x);
+			}
+		}
+		else if (t.equals("http://www.w3.org/2001/XMLSchema#boolean")) {
+			return Boolean.parseBoolean(name);
+		}
+		
 		// load plugin types
 		for (ContractVocabulary voc:vocContributions) {
 			if (voc.getContributedTypes().contains(type)) {
