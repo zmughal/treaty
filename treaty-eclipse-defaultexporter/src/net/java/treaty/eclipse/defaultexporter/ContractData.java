@@ -10,6 +10,8 @@
 
 package net.java.treaty.eclipse.defaultexporter;
 
+import java.util.List;
+
 /**
  * Utility class to hold contract data.
  * @author Jens Dietrich
@@ -22,7 +24,15 @@ public class ContractData {
 	public boolean isAggregated = false;
 	public String result = null;
 	public String exception = null;
+	public List<String> conditionResults = null;
+	public List<String> bindings = null;
 	
+	public List<String> getBindings() {
+		return bindings;
+	}
+	public List<String> getConditionResults() {
+		return conditionResults;
+	}
 	public String getException() {
 		return exception;
 	}
