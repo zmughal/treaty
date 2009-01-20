@@ -10,11 +10,11 @@
 			<ref>@class</ref>
 		</resource>
 		<resource id="Style">
-			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>@style</ref>
 		</resource>
 		<resource id="Retarget">
-			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>@retarget</ref>
 		</resource>
 	</supplier>

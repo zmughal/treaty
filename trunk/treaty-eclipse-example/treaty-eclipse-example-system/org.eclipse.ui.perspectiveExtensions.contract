@@ -5,18 +5,18 @@
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
 	<supplier>
 		<resource id="View">
-		<type>http://www.w3.org/2001/XMLSchema:string</type>
+		<type>http://www.w3.org/2001/XMLSchema#string</type>
 		<ref>perspectiveExtension/view</ref>
 		</resource>
 	</supplier>
 	<supplier>
 		<context>perspectiveExtension/view</context>
 		<resource id="Relationship">
-			<type>http://www.w3.org/2001/XMLSchema:string</type>
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>@relationship</ref>
 		</resource>
 		<resource id="Ratio">
-			<type>http://www.w3.org/2001/XMLSchema:decimal</type>
+			<type>http://www.w3.org/2001/XMLSchema#double</type>
 			<ref>@ratio</ref>
 		</resource>
 	</supplier>
@@ -29,7 +29,8 @@
 				<property resource="Relationship" operator="IN" value="stack,fast"/>
 				<and>
 					<property resource="Relationship" operator="IN" value="left,right,top,bottom"/>
-					<!--	<property resource="Ratio" operator="IN" value="stack,left,right,top,bottom,fast"/> -->
+					<property resource="Ratio" operator="gte" value="0.05"/>
+					<property resource="Ratio" operator="lte" value="0.95"/>
 				</and>
 			</or>
 		</and>
