@@ -79,7 +79,7 @@ public abstract class Operator {
 			return d1<d2;
 		}
 		public String getName() {
-			return "<";
+			return "lt";
 		}
 	};
 	static class LTE extends Operator {
@@ -89,7 +89,7 @@ public abstract class Operator {
 			return d1<d2;
 		}
 		public String getName() {
-			return "<=";
+			return "lte";
 		}
 	};
 	static class GT extends Operator {
@@ -99,7 +99,7 @@ public abstract class Operator {
 			return d1<d2;
 		}
 		public String getName() {
-			return ">";
+			return "gt";
 		}
 	};
 	static class GTE extends Operator {
@@ -109,7 +109,7 @@ public abstract class Operator {
 			return d1<d2;
 		}
 		public String getName() {
-			return ">=";
+			return "gte";
 		}
 	};
 	
