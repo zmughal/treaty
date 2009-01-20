@@ -86,7 +86,7 @@ public abstract class Operator {
 		public boolean compare(Object o1,Object o2) {
 			double d1 = toDouble(o1);
 			double d2 = toDouble(o2);
-			return d1<d2;
+			return d1<=d2;
 		}
 		public String getName() {
 			return "lte";
@@ -96,7 +96,7 @@ public abstract class Operator {
 		public boolean compare(Object o1,Object o2) {
 			double d1 = toDouble(o1);
 			double d2 = toDouble(o2);
-			return d1<d2;
+			return d1>d2;
 		}
 		public String getName() {
 			return "gt";
@@ -106,7 +106,7 @@ public abstract class Operator {
 		public boolean compare(Object o1,Object o2) {
 			double d1 = toDouble(o1);
 			double d2 = toDouble(o2);
-			return d1<d2;
+			return d1>=d2;
 		}
 		public String getName() {
 			return "gte";
