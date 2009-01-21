@@ -58,7 +58,7 @@ public class CSVExporter extends Exporter {
 			Map<String,List<String>> variableNames = new HashMap<String,List<String>>();
 			
 			for (Contract c:contracts) {
-				String xpId = c.getConsumer().getId();
+				String xpId = c.getConsumer()==null?"anonymous_xp":c.getConsumer().getId();
 				List<ContractData> instances = contractsByXP.get(xpId);
 				if (instances==null) {
 					instances = new ArrayList<ContractData>();
@@ -70,7 +70,7 @@ public class CSVExporter extends Exporter {
 				// gather data
 				ContractData d = new ContractData();
 				d.xp = xpId;
-				d.x = c.getSupplier().getId();
+				d.x = c.getSupplier()==null?"anonymous extension":c.getSupplier().getId();
 				d.isAggregated = c instanceof AggregatedContract;
 				String result = VerificationResult.UNKNOWN.toString();
 				VerificationResult vr = (VerificationResult) c.getProperty(Constants.VERIFICATION_RESULT);
