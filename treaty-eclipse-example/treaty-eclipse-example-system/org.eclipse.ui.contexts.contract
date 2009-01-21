@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ui.contexts-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="Name">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>context/@name</ref>
+		</resource>
+		<resource id="Description">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>context/@description</ref>
+		</resource>
+		<resource id="Id">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>context/@id</ref>
+		</resource>		
+	</supplier>
+	<constraints>
+		<and>
+			<mustExist resource="Name"/>
+			<mustExist resource="Description"/>
+			<mustExist resource="Id"/>						
+		</and>
+	</constraints>
+</contract>
