@@ -1,0 +1,8 @@
+implement test for perspectiveExtension/view/@ratio
+attribute:
+
+	if perspectiveExtension/view/@relationship is 
+	either left,right,top,bottom than @ratio has to 
+	be specified as floating point type and have a 
+	value between 0.05 and 0.95
+
