@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.core.resources.markers-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="Value">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>persistent/@value</ref>
+		</resource>
+		<resource id="Type">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>super/@type</ref>
+		</resource>
+		<resource id="Name">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>attribute/@name</ref>
+		</resource>				
+	</supplier>
+	<constraints>
+		<or>
+			<or>
+				<not>
+					<mustExist resource="Value"/>
+				</not>
+				<property resource="Value" operator="IN" value="true,false"/>
+			</or>
+			<mustExist resource="Type"/>
+			<mustExist resource="Name"/>
+		</or>
+	</constraints>
+</contract>

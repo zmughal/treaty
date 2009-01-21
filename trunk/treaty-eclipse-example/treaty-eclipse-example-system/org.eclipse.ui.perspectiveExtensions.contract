@@ -3,12 +3,12 @@
 <!-- this formalises the contract in the help page for this extension point -->
 <!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
-	<supplier>
+	<!--<supplier>
 		<resource id="View">
 		<type>http://www.w3.org/2001/XMLSchema#string</type>
-		<ref>perspectiveExtension/view</ref>
+		<ref>perspectiveExtension/@view</ref>
 		</resource>
-	</supplier>
+	</supplier>-->
 	<supplier>
 		<context>perspectiveExtension/view</context>
 		<resource id="Relationship">
@@ -21,10 +21,9 @@
 		</resource>
 	</supplier>
 	<constraints>
-		<and>
 			<or>
 				<not>
-					<mustExist resource="View"/>
+					<mustExist resource="Relationship"/>
 				</not>
 				<property resource="Relationship" operator="IN" value="stack,fast"/>
 				<and>
@@ -32,7 +31,6 @@
 					<property resource="Ratio" operator="gte" value="0.05"/>
 					<property resource="Ratio" operator="lte" value="0.95"/>
 				</and>
-			</or>
-		</and>
+			</or> 
 	</constraints>
 </contract>
