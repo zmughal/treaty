@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ant.core.antTasks-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="Name">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>antTask/@name</ref>
+		</resource>		
+		<resource id="TaskClass">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>antTask/@class</ref>
+		</resource>
+		<resource id="Library">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>antTask/@library</ref>
+		</resource>
+		<resource id="Headless">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>antTask/@headless</ref>
+		</resource>
+		<resource id="Runtime">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>antTask/@eclipseRuntime</ref>
+		</resource>		
+	</supplier>
+	<!-- resources defined either here or in other plugins this plugin depends on-->
+	<external>		
+		<resource id="AntTask">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.apache.tools.ant.Task</name>
+		</resource>			
+	</external>
+	<constraints>
+		<and>
+			<relationship resource1="TaskClass" resource2="AntTask" type="http://www.treaty.org/java#implements"/>
+			<mustExist resource="Name"/>
+			<mustExist resource="Library"/>
+			<or>
+				<not>
+					<mustExist resource="Headless"/>
+				</not>
+				<property resource="Headless" operator="IN" value="true,false"/>
+			</or>
+			<or>
+				<not>
+					<mustExist resource="Runtime"/>
+				</not>
+				<property resource="Runtime" operator="IN" value="true,false"/>
+			</or>
+		</and>
+	</constraints>
+</contract>

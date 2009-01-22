@@ -9,6 +9,10 @@
 			<type>http://www.treaty.org/java#InstantiableClass</type>
 			<ref>@class</ref>
 		</resource>
+		<resource id="ObjectActionClass">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>class/@class</ref>
+		</resource>		
 		<resource id="ObjectStyle">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>@style</ref>
@@ -24,6 +28,10 @@
 			<type>http://www.treaty.org/java#InstantiableClass</type>
 			<ref>@class</ref>
 		</resource>
+		<resource id="ViewActionClass">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>class/@class</ref>
+		</resource>		
 		<resource id="ViewStyle">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>@style</ref>
@@ -39,6 +47,10 @@
 			<type>http://www.treaty.org/java#AbstractType</type>
 			<name>org.eclipse.ui.IObjectActionDelegate</name>
 		</resource>	
+		<resource id="ExecutableExtension">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.core.runtime.IExecutableExtension</name>
+		</resource>			
 		<!-- following resources might be defined for backwards compatibility for object contribution -->		
 		<resource id="ActionDelegate">
 			<type>http://www.treaty.org/java#AbstractType</type>
@@ -89,22 +101,39 @@
 					</or>
 				</or>
 			</and>
-		<!--
 			<or>
 				<not>
 					<mustExist resource="ObjectEnablesFor"/>					
 				</not>
-				<property resource="ObjectEnablesFor" operator="IN" value="!,?,+,multiple,2+,*"/>
-		
-		</or>
+				<property resource="ObjectEnablesFor" operator="matches" value="\!|\?|\+|(multiple)|(\d)*|((\d)*\+)|\*"/>
+			</or>
 			<or>
 				<not>
 					<mustExist resource="ViewEnablesFor"/>					
 				</not>
-				<property resource="ViewEnablesFor" operator="IN" value="!,?,+,multiple,2+,*"/>
+				<property resource="ViewEnablesFor" operator="matches" value="\!|\?|\+|(multiple)|(\d)*|((\d)*\+)|\*"/>
 	
 			</or>
-		-->
+			<or>
+				<not>
+					<mustExist resource="ObjectActionClass"/>					
+				</not>
+				<or>
+					<relationship resource1="ObjectActionClass" resource2="ExecutableExtension" type="http://www.treaty.org/java#implements"/>
+					<relationship resource1="ObjectActionClass" resource2="ObjectActionDelegate" type="http://www.treaty.org/java#implements"/>
+					<relationship resource1="ObjectActionClass" resource2="ActionDelegate" type="http://www.treaty.org/java#implements"/>
+				</or>
+			</or>
+			<or>
+				<not>
+					<mustExist resource="ViewActionClass"/>					
+				</not>
+				<or>
+					<relationship resource1="ViewActionClass" resource2="ExecutableExtension" type="http://www.treaty.org/java#implements"/>
+					<relationship resource1="ObjectActionClass" resource2="ObjectActionDelegate" type="http://www.treaty.org/java#implements"/>
+					<relationship resource1="ViewActionClass" resource2="EditorActionDelegate" type="http://www.treaty.org/java#implements"/>
+				</or>
+			</or>						
 		</and>
 	</constraints>
 </contract>
