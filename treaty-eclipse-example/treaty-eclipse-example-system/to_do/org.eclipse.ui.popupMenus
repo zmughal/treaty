@@ -1,0 +1,15 @@
+org.eclipse.ui.popupMenus.contract
+
+find out if can verify element objectContribution/filter:
+
+<!ELEMENT filter EMPTY>
+<!ATTLIST filter
+name  CDATA #REQUIRED
+value CDATA #REQUIRED>
+
+This element is used to evaluate the attribute state of each object in the current selection. A match only if each object in the selection has the specified attribute state. Each object in the selection must implement, or adapt to, org.eclipse.ui.IActionFilter.
+
+    * name - the name of an object's attribute. Acceptable names reflect the object type, and should be publicly declared by the plug-in where the object type is declared.
+    * value - the required value of the object's attribute. The acceptable values for the object's attribute should be publicly declared.
+
+Find out how to verify elements objectClass, objectState and pluginState. 
