@@ -20,7 +20,14 @@ import java.util.List;
 public class ContractData {
 	
 	public String xp = null;
-	public String x = null;
+	public String getExtensionPointId() {
+		return extensionPointId;
+	}
+	public String getPluginId() {
+		return pluginId;
+	}
+	public String extensionPointId = null;
+	public String pluginId = null; // owner of the extension point
 	public boolean isAggregated = false;
 	public String result = null;
 	public String exception = null;
@@ -42,9 +49,7 @@ public class ContractData {
 	public String getXp() {
 		return xp;
 	}
-	public String getX() {
-		return x;
-	}
+
 	public boolean isAggregated() {
 		return isAggregated;
 	}

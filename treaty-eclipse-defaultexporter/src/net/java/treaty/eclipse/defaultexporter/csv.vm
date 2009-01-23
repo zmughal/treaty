@@ -1,6 +1,6 @@
-extension,is aggregated contract,verification result #foreach( $c in $conditions),$c #end #foreach( $v in $variables),$v #end
+plugin,extension point,is aggregated contract,verification result #foreach( $c in $conditions),$c #end #foreach( $v in $variables),$v #end
 
 #foreach( $c in $contracts )
-    $c.x,$c.aggregated,$c.result #foreach( $r in $c.conditionResults),$r #end #foreach( $b in $c.bindings),$b #end
+    $c.pluginId,$c.extensionPointId,$c.aggregated,$c.result #foreach( $r in $c.conditionResults),$r #end #foreach( $b in $c.bindings),$b #end
            
 #end
