@@ -34,7 +34,7 @@ import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.Exporter;
 
 /**
- * Default exporter.
+ * Exports results into spreadsheets.
  * @author Jens Dietrich
  */
 
@@ -70,7 +70,8 @@ public class CSVExporter extends Exporter {
 				// gather data
 				ContractData d = new ContractData();
 				d.xp = xpId;
-				d.x = c.getSupplier()==null?"anonymous extension":c.getSupplier().getId();
+				d.pluginId = c.getSupplier().getOwner().getId();
+				d.extensionPointId = c.getSupplier().getId()==null?"anonymous":c.getSupplier().getId();
 				d.isAggregated = c instanceof AggregatedContract;
 				String result = VerificationResult.UNKNOWN.toString();
 				VerificationResult vr = (VerificationResult) c.getProperty(Constants.VERIFICATION_RESULT);
