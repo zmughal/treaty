@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ui.propertyPages-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="PageId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/page/@id</ref>
+		</resource>
+		<resource id="PageName">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/page/@name</ref>
+		</resource>
+		<resource id="PageClass">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>/page/@class</ref>
+		</resource>
+		<resource id="TestValue">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/page/test/@value</ref>
+		</resource>
+		<resource id="TestForcePluginActivation">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/page/test/@forcePluginActivation</ref>
+		</resource>
+		<resource id="CountValue">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>page/count/@value</ref>
+		</resource>
+	</supplier>
+	<constraints>
+		<and>
+			<mustExist resource="PageId"/>
+			<mustExist resource="PageName"/>
+			<or>
+				<not>
+					<mustExist resource="CountValue"/>
+				</not>
+				<property resource="CountValue" operator="matches" value="(\d)*|\*|\?|\+|\!"/>
+			</or>
+			<or>
+				<not>
+					<mustExist resource="TestForcePluginActivation"/>
+				</not>
+				<property resource="TestForcePluginActivation" operator="IN" value="true|false"/>
+			</or>
+		</and>
+	</constraints>
+</contract>

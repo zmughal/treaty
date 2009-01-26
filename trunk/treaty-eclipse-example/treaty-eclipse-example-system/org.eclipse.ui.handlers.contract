@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ui.handlers.contract-->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="HandlerCommandId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/handler/@commandId</ref>
+		</resource>
+		<resource id="HandlerClass">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>/handler/@class</ref>
+		</resource>
+		<resource id="HandlerClassClass">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>/handler/class/@class</ref>
+		</resource>
+		<resource id="ActiveWhenCountValue">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/handler/activeWhen/count/@value</ref>
+		</resource>
+		<resource id="EnableWhenCountValue">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/handler/enableWhen/count/@value</ref>
+		</resource>
+	</supplier>
+	<external>
+		<resource id="IHandler">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.core.commands.IHandler</name>
+		</resource>
+		<resource id="AbstractHandler">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.core.commands.AbstractHandler</name>
+		</resource>		
+	</external>
+	<constraints>
+		<and>
+			<mustExist resource="HandlerCommandId"/>
+			<or>
+				<not>
+					<mustExist resource="HandlerClass"/>
+				</not>
+				<or>
+					<relationship resource1="HandlerClass" resource2="IHandler" type="http://www.treaty.org/java#implements"/>
+					<relationship resource1="HandlerClass" resource2="AbstractHandler" type="http://www.treaty.org/java#implements"/>
+				</or>	
+			</or>
+			<or>
+				<not>
+					<mustExist resource="HandlerClassClass"/>
+				</not>
+				<or>
+					<relationship resource1="HandlerClassClass" resource2="IHandler" type="http://www.treaty.org/java#implements"/>
+					<relationship resource1="HandlerClassClass" resource2="AbstractHandler" type="http://www.treaty.org/java#implements"/>
+				</or>	
+			</or>
+			<or>
+				<not>
+					<mustExist resource="ActiveWhenCountValue"/>
+				</not>
+				<property resource="ActiveWhenCountValue" operator="matches" value="(\d)*|\*\?\!\+"/>
+			</or>
+			<or>
+				<not>
+					<mustExist resource="EnableWhenCountValue"/>
+				</not>
+				<property resource="EnableWhenCountValue" operator="matches" value="(\d)*|\*\?\!\+"/>
+			</or>
+		</and>
+	</constraints>
+</contract>
