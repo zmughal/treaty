@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ui.themes-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="ThemeId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/theme/@id</ref>
+		</resource>
+		<resource id="ThemeElementCategoryId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/themeElementCategory/@id</ref>
+		</resource>
+		<resource id="ThemeElementCategoryClass">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>/themeElementCategory/@class</ref>
+		</resource>
+		<resource id="ColorDefinitionId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/colorDefinition/@id</ref>
+		</resource>
+		<resource id="ColorDefinitionLabel">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/colorDefinition/@label</ref>
+		</resource>
+		<resource id="ColorFactory">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>/colorDefinition/@colorFactory</ref>
+		</resource>
+		<resource id="FontDefinitionId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/fontDefinition/@id</ref>
+		</resource>
+		<resource id="FontDefinitionLabel">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/fontDefinition/@label</ref>
+		</resource>
+		<resource id="DataName">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/data/@name</ref>
+		</resource>
+		<resource id="DataValue">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/data/@value</ref>
+		</resource>
+		<resource id="BindingCategoryId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/categoryPresentationBinding/@categoryId</ref>
+		</resource>
+		<resource id="BindingPresentationId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>/categoryPresentationBinding/@presentationId</ref>
+		</resource>
+	</supplier>
+	<!-- resources defined either here or in other plugins this plugin depends on-->
+	<external>		
+		<resource id="ThemePreview">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.themes.IThemePreview</name>
+		</resource>	
+		<resource id="IColorFactory">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.themes.IColorFactory</name>
+		</resource>		
+	</external>
+	<constraints>
+		<or>
+			<mustExist resource="ThemeId"/>
+			<and>
+				<mustExist resource="ThemeElementCategoryId"/>
+				<relationship resource1="ThemeElementCategoryClass" resource2="ThemePreview" type="http://www.treaty.org/java#implements"/>
+			</and>
+			<and>
+				<mustExist resource="ColorDefinitionId"/>
+				<mustExist resource="ColorDefinitionLabel"/>
+				<relationship resource1="ColorFactory" resource2="IColorFactory" type="http://www.treaty.org/java#implements"/>	
+			</and>
+			<and>				
+				<mustExist resource="FontDefinitionId"/>
+				<mustExist resource="FontDefinitionLabel"/>
+			</and>
+			<and>				
+				<mustExist resource="DataName"/>
+				<mustExist resource="DataValue"/>
+			</and>
+			<and>				
+				<mustExist resource="BindingCategoryId"/>
+				<mustExist resource="BindingPresentationId"/>
+			</and>
+		</or>
+	</constraints>
+</contract>

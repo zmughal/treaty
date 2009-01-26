@@ -1,0 +1,23 @@
+org.eclipse.ui.themes.contract
+
+CHECK whether fontDefinition/@value attribute can be verified:
+
+	value - the font value. This is in the form: fontname-style-height where fontname is the name of a font,
+	style is a font style (one of "regular", "bold", "italic", or "bold italic") and height is an integer
+	representing the font height.
+
+	Example: Times New Roman-bold-36.
+
+	Only one (or neither) of value or defaultsTo may be used.If value is specified, additional value definitions
+	may be specified on a per platform/windowing system basis via the fontValue element.
+
+CHECK whether colorDefinition/@value attribute can be verified:
+
+	value - The default value of this color. The value may be specified in the following ways:
+
+    * a String containing comma separated integers in the form red,green,blue
+    * a String that maps to an SWT color constant (ie: COLOR_RED). 
+
+	Only one of defaultsTo, value or colorFactory may be defined. If value is specified,
+	additional value definitions may be specified on a per platform/windowing system basis via the colorValue
+	element.
