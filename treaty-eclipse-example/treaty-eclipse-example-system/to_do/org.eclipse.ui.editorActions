@@ -1,0 +1,5 @@
+org.eclipse.ui.editorActions.contract
+
+FIXME
+	mustExist EditorContributionId and mustExist EditorContributionTargetId
+	returns false for all extension points.
