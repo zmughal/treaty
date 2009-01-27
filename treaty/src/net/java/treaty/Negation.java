@@ -58,7 +58,8 @@ public class Negation extends AbstractCondition implements ConditionContext{
 	 * instantiate all parts.
 	 */
 	public boolean isInstantiated() {
-		return negatedCondition.isInstantiated();
+		// this is to support "exists not" conditions 
+		return negatedCondition instanceof ExistsCondition|| negatedCondition.isInstantiated();
 	}
 	public AbstractCondition getNegatedCondition() {
 		return negatedCondition;
