@@ -3,9 +3,9 @@
 	<xs:element name="contract">
 		<xs:complexType>	
 			<xs:sequence maxOccurs="unbounded" minOccurs="0">
-				<xs:element name="consumer" type="resource_owner" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="supplier" type="resource_owner" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="external" type="resource_owner" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="consumer" type="resource_owner" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="supplier" type="resource_owner" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="external" type="resource_owner" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="constraints" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
