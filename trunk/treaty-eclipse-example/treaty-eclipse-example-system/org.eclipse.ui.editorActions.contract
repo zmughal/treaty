@@ -10,7 +10,7 @@
 		</resource>
 		<resource id="EditorContributionTargetId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>editorContribution/@targetId</ref>
+			<ref>editorContribution/@targetID</ref>
 		</resource>
 		<resource id="MenuId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
@@ -18,34 +18,31 @@
 		</resource>
 		<resource id="MenuLabel">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/editorContribution/menu/@</ref>
+			<ref>/editorContribution/menu/@label</ref>
 		</resource>
-	</supplier>
-	<supplier>
-		<context>/editorContribution/action</context>
 		<resource id="ActionId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>@id</ref>
+			<ref>/editorContribution/action/@id</ref>
 		</resource>
 		<resource id="ActionLabel">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>@label</ref>
+			<ref>/editorContribution/action/@label</ref>
 		</resource>
 		<resource id="ActionStyle">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>@style</ref>
+			<ref>/editorContribution/action/@style</ref>
 		</resource>
 		<resource id="ActionState">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>@state</ref>
+			<ref>/editorContribution/action/@state</ref>
 		</resource>
 		<resource id="ActionClass">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
-			<ref>@class</ref>
+			<ref>/editorContribution/action/@class</ref>
 		</resource>
 		<resource id="ActionEnablesFor">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>@enablesFor</ref>
+			<ref>/editorContribution/action/@enablesFor</ref>
 		</resource>
 	</supplier>
 	<!-- resources defined either here or in other plugins this plugin depends on-->
@@ -84,7 +81,7 @@
 						<not>
 							<mustExist resource="ActionEnablesFor"/>
 						</not>
-						<property resource="ActionEnablesFor" operator="matches" value="\!|\?|\+|\(multiple)|\((\d)*)+)|(\d)*|\*"/>
+						<property resource="ActionEnablesFor" operator="matches" value="(\d)*|\?|\*|\!|\+|((\d)*\+)|(multiple)"/>
 					</or>
 				</and>
 			</or>
