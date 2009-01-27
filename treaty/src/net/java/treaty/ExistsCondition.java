@@ -10,7 +10,6 @@
 
 package net.java.treaty;
 
-import java.net.URI;
 import java.util.Map;
 
 
@@ -81,9 +80,9 @@ public class ExistsCondition extends AbstractCondition {
 		}
 		
 	}
-	
+	// to check whether the resources exist is part of verification
 	public boolean isInstantiated() {
-		return this.getResource().isInstantiated();
+		return true;
 	}
 	
 
