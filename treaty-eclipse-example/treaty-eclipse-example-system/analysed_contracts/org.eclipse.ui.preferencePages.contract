@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ui.preferencePages.contract-->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<context>page</context>
+		<resource id="PreferencePage">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>@class</ref>
+		</resource>
+	</supplier>
+	<external>
+		<resource id="WorkbenchPreferencePage">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.IWorkbenchPreferencePage</name>
+		</resource>	
+	</external>
+	<constraints>
+		<relationship resource1="PreferencePage" resource2="WorkbenchPreferencePage" type="http://www.treaty.org/java#implements"/>
+	</constraints>
+</contract>
