@@ -1,0 +1,15 @@
+org.eclipse.ui.preferencePages
+
+-	102/105 contracts verified successfullu
+
+-	2/105 contracts not verified
+	- org.eclipse.search
+	- org.eclipse.cdt.ui
+	
+	reason: Cannot parse plugin.xml
+	Caused by: org.jdom.IllegalDataException: The data 
+		"- Template extension for the editor " is not legal for
+		a JDOM comment: Comment data cannot start with a hyphen..
+
+-	1/105 contract fails
+	reason: not an instanciable java type - invalid activator
