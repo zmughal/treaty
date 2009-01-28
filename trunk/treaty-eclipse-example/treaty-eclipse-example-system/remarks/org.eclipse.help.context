@@ -1,0 +1,8 @@
+org.eclipse.help.context
+
+-	15/61 contracts verified successfully
+
+-	46/61 contracts failed
+	- 43 due to using HTML tags within XML document	
+	- 2 contracts due to using invalid element
+	- 1 contract due to using unexpected attribute
