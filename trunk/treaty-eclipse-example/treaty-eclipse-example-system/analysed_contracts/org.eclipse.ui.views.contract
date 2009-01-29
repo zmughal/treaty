@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.ui.views-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="CategoryName">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>category/@name</ref>
+		</resource>		
+		<resource id="Part">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>view/@class</ref>
+		</resource>
+		<resource id="FastViewRatio">
+			<type>http://www.w3.org/2001/XMLSchema#double</type>
+			<ref>view/@fastViewVidthRatio</ref>
+		</resource>
+		<resource id="Location">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>stickyView/@location</ref>
+		</resource>
+	</supplier>
+	<!-- resources defined either here or in other plugins this plugin depends on-->
+	<external>		
+		<resource id="ViewPart">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.ui.IViewPart</name>
+		</resource>			
+	</external>
+	<constraints>
+		<or>
+			<and>
+				<relationship resource1="Part" resource2="ViewPart" type="http://www.treaty.org/java#implements"/>
+				<or>
+					<not>
+						<mustExist resource="FastViewRatio"/>
+					</not>
+					<and>
+						<property resource="FastViewRatio" operator="GTE" value="0.05"/>
+						<property resource="FastViewRatio" operator="LTE" value="0.95"/>
+					</and>
+				</or>
+			</and>
+			<property resource="Location" operator="IN" value="right,left,top,bottom"/>
+			<mustExist resource="CategoryName"/>
+		</or>
+	</constraints>
+</contract>
