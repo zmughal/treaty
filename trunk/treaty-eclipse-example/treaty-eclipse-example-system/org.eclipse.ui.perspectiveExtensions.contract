@@ -3,21 +3,18 @@
 <!-- this formalises the contract in the help page for this extension point -->
 <!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
-	<!--<supplier>
+	<supplier>
 		<resource id="View">
 		<type>http://www.w3.org/2001/XMLSchema#string</type>
 		<ref>perspectiveExtension/@view</ref>
 		</resource>
-	</supplier>-->
-	<supplier>
-		<context>perspectiveExtension/view</context>
 		<resource id="Relationship">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>@relationship</ref>
+			<ref>perspectiveExtension/view@relationship</ref>
 		</resource>
 		<resource id="Ratio">
 			<type>http://www.w3.org/2001/XMLSchema#double</type>
-			<ref>@ratio</ref>
+			<ref>perspectiveExtension/view@ratio</ref>
 		</resource>
 	</supplier>
 	<constraints>

@@ -48,7 +48,7 @@
 				</not>
 				<property resource="Thread" operator="IN" value="main,any"/>
 			</or>
-			<!--<relationship resource1="Application" resource2="IApplication" type="http://www.treaty.org/java#implements"/> -->	
+			<relationship resource1="Application" resource2="IApplication" type="http://www.treaty.org/java#implements"/>	
 		</and>	
 	</constraints>
 </contract>
