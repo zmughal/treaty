@@ -29,6 +29,7 @@ import net.java.treaty.ExistsCondition;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
+import net.java.treaty.SimpleContract;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.Exporter;
@@ -66,22 +67,32 @@ public class CSVExporter extends Exporter {
 					atomicConditions.put(xpId,this.getAtomicConditions(c));
 					variableNames.put(xpId,this.getVariables(c));
 				}
-
-				// gather data
-				ContractData d = new ContractData();
-				d.xp = xpId;
-				d.pluginId = c.getSupplier().getOwner().getId();
-				d.extensionPointId = c.getSupplier().getId()==null?"anonymous":c.getSupplier().getId();
-				d.isAggregated = c instanceof AggregatedContract;
-				String result = VerificationResult.UNKNOWN.toString();
-				VerificationResult vr = (VerificationResult) c.getProperty(Constants.VERIFICATION_RESULT);
-				if (vr!=null) {
-					result = vr.toString();
+				Contract[] parts = null;
+				if (c instanceof SimpleContract) {
+					parts = new Contract[]{c};
 				}
-				d.result = result;
-				d.conditionResults=this.getResults(c,folder);
-				d.bindings=this.getVariableBindings(c);
-				instances.add(d);
+				else if (c instanceof AggregatedContract) {
+					parts = ((AggregatedContract)c).getParts();
+				}
+				// gather data and build contract data
+				for (int i=0;i<parts.length;i++) {
+					Contract p = parts[i];
+					ContractData d = new ContractData();
+					d.xp = xpId;
+					d.pluginId = c.getSupplier().getOwner().getId();
+					d.extensionPointId = c.getSupplier().getId()==null?"anonymous":c.getSupplier().getId();
+					d.isAggregated = c instanceof AggregatedContract;
+					String result = VerificationResult.UNKNOWN.toString();
+					VerificationResult vr = (VerificationResult) p.getProperty(Constants.VERIFICATION_RESULT);
+					if (vr!=null) {
+						result = vr.toString();
+					}
+					d.result = result;
+					d.conditionResults=this.getResults(p,folder);
+					d.bindings=this.getVariableBindings(p);
+					d.partNo=i+1;
+					instances.add(d);
+				}
 			}
 			// load template
 			VelocityEngine ve = new VelocityEngine();
@@ -150,6 +161,12 @@ public class CSVExporter extends Exporter {
 		return exceptions;
 	} 
 	private List<String> getAtomicConditions(Contract contract) {
+		// if contract is aggregated, we need to analyse only one part
+		// since all parts have the same structure
+		if (contract instanceof AggregatedContract && ((AggregatedContract)contract).getParts().length>0) {
+			contract = ((AggregatedContract)contract).getParts()[0];
+		}
+		
 		final List<String> list = new ArrayList<String> ();
 		ContractVisitor visitor = new AbstractContractVisitor() {
 			@Override
@@ -186,6 +203,13 @@ public class CSVExporter extends Exporter {
 	} 
 	
 	private List<String> getVariables(Contract contract) {
+		
+		// if contract is aggregated, we need to analyse only one part
+		// since all parts have the same structure
+		if (contract instanceof AggregatedContract && ((AggregatedContract)contract).getParts().length>0) {
+			contract = ((AggregatedContract)contract).getParts()[0];
+		}
+		
 		final List<String> list = new ArrayList<String> ();
 		final Set<String> vars = new HashSet<String>();
 		ContractVisitor visitor = new AbstractContractVisitor() {
