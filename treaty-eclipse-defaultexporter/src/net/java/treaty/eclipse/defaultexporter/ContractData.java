@@ -33,7 +33,11 @@ public class ContractData {
 	public String exception = null;
 	public List<String> conditionResults = null;
 	public List<String> bindings = null;
+	public int partNo = 1; // this is used when the contract is part of an aggregated contract 
 	
+	public int getPartNo() {
+		return partNo;
+	}
 	public List<String> getBindings() {
 		return bindings;
 	}
