@@ -2,47 +2,74 @@ List of classes implemented by Treaty contracts.
 ================================================
 
 org.eclipse.ui.IEditorPart (Package org.eclipse.ui) - look at
+UI, skip
 
 org.eclipse.ui.IViewPart (Package org.eclipse.ui) - look at getViewSIte method
+NO
 
 org.apache.tools.ant.Task (Package org.apache.tools.ant) - to be looked at
 
+
 org.eclipse.core.runtime.IExecutableExtension (Package org.eclipse.core.runtime) - look at 
+no
 
 org.eclipse.ui.themes.IColorFactory (Package org.eclipse.ui.themes) - look at
 
+
 org.eclipse.core.runtime.content.IContentDescriber (Package org.eclipse.core.runtime.content) - look at
+INTERESTING - JENS
+Note: It is expected that content describer implementations be declared in a package that is exempt from plug-in activation (using the Eclipse-AutoStart bundle manifest header).
 
 org.eclipse.core.commands.IHandler (Package org.eclipse.core.commands) - tested for parameter must not be null
+DONE
 
 org.eclipse.core.expressions.PropertyTester (Package org.eclipse.core.expressions)- not very interesting
+MAYBE
 
 org.eclipse.help.AbstractContextProvider (Package org.eclipse.help) - not very interesting
+NO 
 
 org.eclipse.core.commands.IParameterValues (Package org.eclipse.core.commands) - not very interesting
+NO
 
 org.eclipse.ui.IEditorActionDelegate (Package org.eclipse.ui) - not very interesting
+NO
 
 org.eclipse.ui.IWorkbenchPreferencePage (Package org.eclipse.ui) - not very interesting
+OK
 
 org.eclipse.ui.IWorkbenchWindowPulldownDelegate (Package org.eclipse.ui) - not very interesting
+OK
 
 org.eclipse.ui.IWorkbenchWindowActionDelegate (Package org.eclipse.ui) - not very interesting
+OK
 
 org.eclipse.equinox.application.IApplication (Package org.eclipse.equinox.app) - not very interesting? 
+NO 
 
 org.eclipse.ui.IObjectActionDelegate (Package org.eclipse.ui) - not very interesting
+NO
 
 org.eclipse.ui.IActionDelegate (Package org.eclipse.ui) - not very interesting
+NO
 
 org.eclipse.ui.IViewActionDelegate (Package org.eclipse.ui) -  not very interesting
+NO
 
 org.eclipse.ui.themes.IThemePreview (Package org.eclipse.ui.themes) - not very interesting
+NO
 
 org.eclipse.ui.INewWizard (Package org.eclipse.ui) -  not very interesting
+NO
 
 org.eclipse.core.runtime.content.ITextContentDescriber (Package org.eclipse.core.runtime.content) - same as IContentDescriber
+NO
 
 org.eclipse.ui.IEditorActionBarContributor (Package org.eclipse.ui) - not very interesting
+NO
 
 org.eclipse.core.runtime.IAdapterFactory (Package org.eclipse.core.runtime) - not very interesting
+PERHAPS - we could check for all supported AdapterClasses whether objects can be adapted and the result is either null or an instance of the respective adapter class. 
+The problem is to find good objects. 
+
+ 
