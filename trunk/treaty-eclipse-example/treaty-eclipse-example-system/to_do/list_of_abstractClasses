@@ -1,0 +1,48 @@
+List of classes implemented by Treaty contracts.
+================================================
+
+org.eclipse.ui.IEditorPart (Package org.eclipse.ui) - look at
+
+org.eclipse.ui.IViewPart (Package org.eclipse.ui) - look at getViewSIte method
+
+org.apache.tools.ant.Task (Package org.apache.tools.ant) - to be looked at
+
+org.eclipse.core.runtime.IExecutableExtension (Package org.eclipse.core.runtime) - look at 
+
+org.eclipse.ui.themes.IColorFactory (Package org.eclipse.ui.themes) - look at
+
+org.eclipse.core.runtime.content.IContentDescriber (Package org.eclipse.core.runtime.content) - look at
+
+org.eclipse.core.commands.IHandler (Package org.eclipse.core.commands) - tested for parameter must not be null
+
+org.eclipse.core.expressions.PropertyTester (Package org.eclipse.core.expressions)- not very interesting
+
+org.eclipse.help.AbstractContextProvider (Package org.eclipse.help) - not very interesting
+
+org.eclipse.core.commands.IParameterValues (Package org.eclipse.core.commands) - not very interesting
+
+org.eclipse.ui.IEditorActionDelegate (Package org.eclipse.ui) - not very interesting
+
+org.eclipse.ui.IWorkbenchPreferencePage (Package org.eclipse.ui) - not very interesting
+
+org.eclipse.ui.IWorkbenchWindowPulldownDelegate (Package org.eclipse.ui) - not very interesting
+
+org.eclipse.ui.IWorkbenchWindowActionDelegate (Package org.eclipse.ui) - not very interesting
+
+org.eclipse.equinox.application.IApplication (Package org.eclipse.equinox.app) - not very interesting? 
+
+org.eclipse.ui.IObjectActionDelegate (Package org.eclipse.ui) - not very interesting
+
+org.eclipse.ui.IActionDelegate (Package org.eclipse.ui) - not very interesting
+
+org.eclipse.ui.IViewActionDelegate (Package org.eclipse.ui) -  not very interesting
+
+org.eclipse.ui.themes.IThemePreview (Package org.eclipse.ui.themes) - not very interesting
+
+org.eclipse.ui.INewWizard (Package org.eclipse.ui) -  not very interesting
+
+org.eclipse.core.runtime.content.ITextContentDescriber (Package org.eclipse.core.runtime.content) - same as IContentDescriber
+
+org.eclipse.ui.IEditorActionBarContributor (Package org.eclipse.ui) - not very interesting
+
+org.eclipse.core.runtime.IAdapterFactory (Package org.eclipse.core.runtime) - not very interesting
