@@ -25,4 +25,16 @@ public class EclipseInstantiationContext implements InstantiationContext {
 	public void setContextNode(Element contextNode) {
 		this.contextNode = contextNode;
 	}
+	
+	public String toString() {
+		return super.toString()+'('+getPath(contextNode)+')';
+	}
+
+	private String getPath(Element n) {
+		if (n==null) {
+			return "";
+		}
+		Element p = n.getParentElement();
+		return this.getPath(p)+'/'+n.getName();
+	}
 }
