@@ -72,7 +72,44 @@ public class JavaVocabulary implements  ContractVocabulary {
 			throw new ResourceLoaderException("This plugin cannot be used to instantiate resources of this type: " + type);
 		Bundle b = ((EclipsePlugin)connector.getOwner()).getBundle();
 		try {
-			Class clazz = b.loadClass(name);
+			
+			// note: we remove postfixes starting with : and /
+			// in Eclipse, this is done in 
+			// org.eclipse.core.internal.registry.ConfigurationElement
+			
+			String className = name;
+			String executable = null;
+			int i = name.indexOf(':');
+			if (i != -1) {
+				executable = name.substring(0, i).trim();
+				// initData = prop.substring(i + 1).trim();
+			} else
+				executable = name;
+
+			i = executable.indexOf('/');
+			if (i != -1) {
+				// contributorName = executable.substring(0, i).trim();
+				className = executable.substring(i + 1).trim();
+			} else
+				className = executable;
+			
+			Class clazz = b.loadClass(className);
+			
+			/**
+			 * analyse class types
+			 */
+			/*
+			if (IExecutableExtensionFactory.class.isAssignableFrom(clazz)) {
+				System.out.println("class " + clazz + " implements " + IExecutableExtensionFactory.class.getName());
+			}
+			else if (IExecutableExtension.class.isAssignableFrom(clazz)) {
+				System.out.println("class " + clazz + " implements " + IExecutableExtension.class.getName());
+			}
+			else {
+				System.out.println("class " + clazz + " does not implement " + IExecutableExtension.class.getName()+"[Factory]");
+			}
+			*/
+			
 			if (ABSTRACT_TYPE.equals(type)) {
 				if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
 					return true;
