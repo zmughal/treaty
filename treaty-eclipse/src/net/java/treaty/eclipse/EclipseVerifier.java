@@ -203,11 +203,7 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		// load plugin types
 		for (ContractVocabulary voc:vocContributions) {
 			if (voc.getContributedTypes().contains(type)) {
-				try {
-					return voc.load(type,name,connector);
-				} catch (ResourceLoaderException e) {
-					new VerificationException("Exception loading resource " + name,e);
-				}
+				return voc.load(type,name,connector); // this may throw an exception
 			}
 		}
 		throw new ResourceLoaderException("No vocabulary found to load resource " + type);
