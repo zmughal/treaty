@@ -45,6 +45,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
+import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;;
 
 /**
  * Contract viewer.
@@ -424,12 +425,10 @@ public class ContractView extends ViewPart {
 		private void addNodes(TreeParent parent,Resource r,Map<Resource,OwnerType> ownerTypes) {
 			parent.addChild(new TreeObject(new KeyValueNode("id",r.getId())));
 			parent.addChild(new TreeObject(new KeyValueNode("type",r.getType().toString())));			
-			if (r.getName()!=null) {
-				parent.addChild(new TreeObject(new KeyValueNode("name",r.getName())));
-			}
-			else if (r.getRef()!=null) {
-				parent.addChild(new TreeObject(new KeyValueNode("reference",r.getRef())));
-			}
+			parent.addChild(new TreeObject(new KeyValueNode("name",r.getName())));
+			parent.addChild(new TreeObject(new KeyValueNode("reference",r.getRef())));
+			//parent.addChild(new TreeObject(new KeyValueNode("value",""+r.getValue())));
+			
 			OwnerType otype = ownerTypes.get(r);
 			if (otype!=null) {
 				parent.addChild(new TreeObject(new KeyValueNode("provided by",otype.toString())));			
@@ -471,8 +470,10 @@ public class ContractView extends ViewPart {
 			return buf.toString();
 		}
 		private String toString(Resource r) {
+			
 			if (r.getName()!=null) {
-				return r.getName();
+				boolean loadProblem = r.getValue()==null && r.getProperty(VERIFICATION_EXCEPTION)!=null;
+				return loadProblem?"!" + r.getName():r.getName();
 			}
 			else {
 				return r.getId();

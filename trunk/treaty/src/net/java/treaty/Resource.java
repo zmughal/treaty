@@ -26,7 +26,7 @@ import java.net.URI;
  * @author Jens Dietrich
  */
 
-public class Resource implements Visitable {
+public class Resource extends PropertySupport implements Visitable, Annotatable {
 
 	private String id = null;
 	private URI type = null;

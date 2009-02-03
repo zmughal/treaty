@@ -200,10 +200,15 @@ public class VerificationJob extends Job {
 			}
 		}
 	}
-	private void loadResource(SimpleContract sc,ResourceLoader l,Connector con,Resource r) throws ResourceLoaderException {
+	private void loadResource(SimpleContract sc,ResourceLoader l,Connector con,Resource r)  {
 			if (r.isProvided()&&!r.isLoaded()) {
+				try {
 					Object value = l.load(r.getType(), r.getName(), con);
 					r.setValue(value);
+				}
+				catch (ResourceLoaderException x) {
+					r.setProperty(VERIFICATION_EXCEPTION,x);
+				}
 			}
 	}
 	public Collection<Contract> getContracts() {
