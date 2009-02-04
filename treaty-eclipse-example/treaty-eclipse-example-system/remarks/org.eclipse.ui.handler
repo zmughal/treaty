@@ -1,3 +1,11 @@
 org.eclipse.ui.handlers
 
-- 26/26 contracts succeed
+-	16/21 contracts verified successfully
+
+-	1/21 contracts succeeds - false positive (from contract definition it is not clear
+	that there should be XOR not OR logic between @class and class/@class implementation,
+	so the verification succeeds even for classes that can not be loaded.) 
+
+-	4/21 contracts fail
+	- reason: failed functional test – net.java.treaty.eclipse.system.tests.org.eclipse.core.commands.IHandlerTests
+	(test checks whether throws ExecutionException if the parameter for execute method is null)
