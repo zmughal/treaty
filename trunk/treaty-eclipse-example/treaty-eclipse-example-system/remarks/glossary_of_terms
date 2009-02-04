@@ -6,4 +6,12 @@ reason: Cannot parse plugin.xml
 reason: not an instantiable java type – invalid activator
 
 reason: XML validation against DTD has failed – [reason ie invalid element <b>, unexpected attribute"xy", etc]
+
+reason: not an instantiable java type – can not load the class due to invalid class name (:suffix)/ fixed in revision r368
+
+reason: doesn't implement interface – java class can not be loaded
+
+reason: null point exception – java class can not be loaded
+
+reason: failed functional test – net.java.treaty.eclipse.system.tests.org.eclipse.core.commands.IHandlerTests
 		
