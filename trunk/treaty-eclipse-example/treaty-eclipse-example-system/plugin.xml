@@ -1,64 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+<!-- analysed contracts
+	===================	
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.editorActions" name="contract for org.eclipse.ui.editorActions">
+         <contract location="analysed_contracts/org.eclipse.ui.editorActions.contract"/> 
+   </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.preferencePages" name="contract for org.eclipse.ui.preferencePages">
+          <contract location="analysed_contracts/org.eclipse.ui.preferencePages.contract"/> 
+   </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.help.contexts" name="contract for org.eclipse.help.contexts">
+          <contract location="analysed_contracts/org.eclipse.help.contexts.contract"/> 
+   </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.cpre.expressions.propertyTesters" name="contract for org.eclipse.core.expressions.propertyTesters">
+         <contract location="analysed_contracts/org.eclipse.core.expressions.propertyTesters.contract"/> 
+   </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.contexts" name="contract for org.eclipse.ui.contexts">
+          <contract location="org.eclipse.ui.contexts.contract"/>  
+   </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.commands" name="contract for org.eclipse.ui.commands">
+          <contract location="analysed_contracts/org.eclipse.ui.commands.contract"/>  
+   </extension>  
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.keywords" name="contract for org.eclipse.ui.keywords">
+         <contract location="org.eclipse.ui.keywords.contract"/> 
+   </extension>	
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.views" name="contract for org.eclipse.ui.views">
+         <contract location="org.eclipse.ui.views.contract"/> 
+   </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.team.core.fileTypes" name="contract for org.eclipse.team.core.fileTypes">
+          <contract location="org.eclipse.team.core.fileTypes.contract"/> 
+   </extension> 
+ -->
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.help.toc" name="contract for org.eclipse.help.toc">
           <contract location="org.eclipse.help.toc.contract"/>
    </extension>
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.actionSets" name="contract for org.eclipse.ui.actionSets">
           <contract location="org.eclipse.ui.actionSets.contract"/>
-   </extension>	
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.views" name="contract for org.eclipse.ui.views">
-         <contract location="org.eclipse.ui.views.contract"/> 
-   </extension>
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.preferencePages" name="contract for org.eclipse.ui.preferencePages">
-          <contract location="org.eclipse.ui.preferencePages.contract"/> 
-   </extension>
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.help.contexts" name="contract for org.eclipse.help.contexts">
-          <contract location="org.eclipse.help.contexts.contract"/> 
-   </extension>
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.team.core.fileTypes" name="contract for org.eclipse.team.core.fileTypes">
-          <contract location="org.eclipse.team.core.fileTypes.contract"/> 
    </extension> 
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.perspectiveExtensions" name="contract for org.eclipse.ui.perspectiveExtensions">
          <contract location="org.eclipse.ui.perspectiveExtensions.contract"/> 
-   </extension>  
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.keywords" name="contract for org.eclipse.ui.keywords">
-         <contract location="org.eclipse.ui.keywords.contract"/> 
-   </extension> 
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.core.resources.markers" name="contract for org.eclipse.core.resources.markers">
-         <contract location="org.eclipse.core.resources.markers.contract"/> 
    </extension>
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.bindings" name="contract for org.eclipse.ui.bindings">
          <contract location="org.eclipse.ui.bindings.contract"/> 
    </extension>
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.core.runtime.applications" name="contract for org.eclipse.core.runtime.applications">
-         <contract location="org.eclipse.core.runtime.applications.contract"/> 
-   </extension>      
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.popupMenus" name="contract for org.eclipse.ui.popupMenus">
          <contract location="org.eclipse.ui.popupMenus.contract"/> 
    </extension>
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ant.core.antTasks" name="contract for org.eclipse.ant.core.antTasks">
          <contract location="org.eclipse.ant.core.antTasks.contract"/> 
    </extension>
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.commands" name="contract for org.eclipse.ui.commands">
-          <contract location="org.eclipse.ui.commands.contract"/>  
-   </extension>
-      <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.core.expressions.definitions" name="contract for org.eclipse.core.expressions.definitions">
-          <contract location="org.eclipse.core.expressions.definitions.contract"/> 
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.themes" name="contract for org.eclipse.ui.themes">
+         <contract location="org.eclipse.ui.themes.contract"/> 
    </extension>
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.propertyPages" name="contract for org.eclipse.ui.propertyPages">
          <contract location="org.eclipse.ui.propertyPages.contract"/> 
    </extension>
+      <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.core.expressions.definitions" name="contract for org.eclipse.core.expressions.definitions">
+          <contract location="org.eclipse.core.expressions.definitions.contract"/> 
+   </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.core.runtime.applications" name="contract for org.eclipse.core.runtime.applications">
+         <contract location="org.eclipse.core.runtime.applications.contract"/> 
+   </extension>
    <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.handlers" name="contract for org.eclipse.ui.handlers">
          <contract location="org.eclipse.ui.handlers.contract"/> 
    </extension>
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.cpre.expressions.propertyTesters" name="contract for org.eclipse.core.expressions.propertyTesters">
-         <contract location="org.eclipse.core.expressions.propertyTesters.contract"/> 
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.core.contenttype.contentTypes" name="contract for org.eclipse.core.contenttype.contentTypes">
+         <contract location="org.eclipse.core.contenttype.contentTypes.contract"/> 
    </extension>
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.editorActions" name="contract for org.eclipse.ui.editorActions">
-         <contract location="org.eclipse.ui.editorActions.contract"/> 
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.core.resources.markers" name="contract for org.eclipse.core.resources.markers">
+         <contract location="org.eclipse.core.resources.markers.contract"/> 
    </extension>
-   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.themes" name="contract for org.eclipse.ui.themes">
-         <contract location="org.eclipse.ui.themes.contract"/> 
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.editors" name="contract for org.eclipse.ui.editors">
+         <contract location="org.eclipse.ui.editors.contract"/> 
+   </extension>
+   <extension point="net.java.treaty.eclipse.contract" id="net.java.treaty.eclipse.system.org.eclipse.ui.newWizards" name="contract for org.eclipse.ui.newWizards">
+         <contract location="org.eclipse.ui.newWizards.contract"/> 
    </extension>
 </plugin>
