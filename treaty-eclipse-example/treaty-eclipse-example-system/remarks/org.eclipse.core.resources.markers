@@ -1,0 +1,9 @@
+org.eclipse.core.resources.markers
+
+-	96/98 contracts verified successfully
+
+-	2/98 contracts not verified
+	- org.eclipse.search (2 instances)
+	reason: Cannot parse plugin.xml
+		Caused by: org.jdom.IllegalDataException: The data " " is not legal for
+		a JDOM comment: Comment data cannot start with a hyphen..
