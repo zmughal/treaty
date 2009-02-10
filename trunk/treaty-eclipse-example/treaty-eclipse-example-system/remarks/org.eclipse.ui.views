@@ -7,8 +7,7 @@ org.eclipse.ui.views
 	- org.eclipse.cdt.ui
 	reason: Cannot parse plugin.xml
 		Caused by: org.jdom.IllegalDataException: The data 
-		"- Template extension for the editor " is not legal for
-		a JDOM comment: Comment data cannot start with a hyphen..
+		" " is not legal for a JDOM comment: Comment data cannot start with a hyphen..
 		
 -	1/60 contracts failed
 	- org.eclipse.ecf.example.collab

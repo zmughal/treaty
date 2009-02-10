@@ -1,6 +1,5 @@
 reason: Cannot parse plugin.xml
-		Caused by: org.jdom.IllegalDataException: The data 
-		"- Template extension for the editor " is not legal for
+		Caused by: org.jdom.IllegalDataException: The data " " is not legal for
 		a JDOM comment: Comment data cannot start with a hyphen..
 		
 reason: not an instantiable java type – invalid activator
