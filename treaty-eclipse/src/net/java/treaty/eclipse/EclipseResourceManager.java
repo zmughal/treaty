@@ -45,13 +45,7 @@ public class EclipseResourceManager implements ResourceManager {
 			// NOTE !!: we use the index in the xpath queries, this index orgininates from the EclipseRegistry
 			// and we assume that the order of the extensions is the same as in plugin.xml!!
 			
-			StringBuffer query = new StringBuffer();
-			query.append("/plugin/extension[@point=\"");
-			query.append(extension.getExtensionPoint().getId());
-			query.append("\"][");
-			query.append(extension.getExtensionIndex());
-			query.append("]/");
-			
+			StringBuffer query = this.createXPath(extension);
 			query.append(ref);
 			XPath xpath;
 			try {
@@ -112,10 +106,7 @@ public class EclipseResourceManager implements ResourceManager {
 		// prepend xpath expression to select plugin node
 		// example (serviceprovider/@class is the actual resource reference):
 		// /plugin/extension[@point="net.java.treaty.eclipse.example.clock.dateformatter"]/serviceprovider/@class
-		StringBuffer query = new StringBuffer();
-		query.append("/plugin/extension[@point=\"");
-		query.append(extension.getExtensionPoint().getId());
-		query.append("\"]/");
+		StringBuffer query = this.createXPath(extension);
 		query.append(contextDefinition);
 		try {
 			XPath xpath = XPath.newInstance(query.toString());
@@ -151,4 +142,13 @@ public class EclipseResourceManager implements ResourceManager {
 		
 	}
 
+	private StringBuffer createXPath(EclipseExtension extension) {
+		StringBuffer query = new StringBuffer();
+		query.append("/plugin/extension[@point=\"");
+		query.append(extension.getExtensionPoint().getId());
+		query.append("\"][");
+		query.append(extension.getExtensionIndex());
+		query.append("]/");
+		return query;
+	}
 }
