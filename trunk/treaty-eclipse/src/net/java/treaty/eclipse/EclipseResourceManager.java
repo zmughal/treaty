@@ -44,7 +44,10 @@ public class EclipseResourceManager implements ResourceManager {
 			StringBuffer query = new StringBuffer();
 			query.append("/plugin/extension[@point=\"");
 			query.append(extension.getExtensionPoint().getId());
-			query.append("\"]/");
+			query.append("\"][");
+			query.append(extension.getExtensionIndex());
+			query.append("]/");
+			
 			query.append(ref);
 			XPath xpath;
 			try {

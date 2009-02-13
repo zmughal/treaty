@@ -65,5 +65,19 @@ public class EclipseExtension extends EclipseConnector {
 			.append(')')
 			.toString();
 	}
+	// get the index of this extension amongst the extensions for the same extension point
+	public int getExtensionIndex() {
+		int i = 1; // this is used for generating xpath queries to query plugin.xml, so we start with 1
+		for (EclipseExtension x:((EclipsePlugin)this.getOwner()).getExtensions()) {
+			if (x==this) {
+				return i;
+			}
+			else if (x.getExtensionPoint()==this.getExtensionPoint()) {
+				i = i+1;
+			}
+		}
+		throw new IllegalStateException("cannot find extension");
+		
+	}
 
 }
