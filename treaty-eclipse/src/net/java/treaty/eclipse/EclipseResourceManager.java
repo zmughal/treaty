@@ -41,6 +41,10 @@ public class EclipseResourceManager implements ResourceManager {
 			// prepend xpath expression to select plugin node
 			// example (serviceprovider/@class is the actual resource reference):
 			// /plugin/extension[@point="net.java.treaty.eclipse.example.clock.dateformatter"]/serviceprovider/@class
+			
+			// NOTE !!: we use the index in the xpath queries, this index orgininates from the EclipseRegistry
+			// and we assume that the order of the extensions is the same as in plugin.xml!!
+			
 			StringBuffer query = new StringBuffer();
 			query.append("/plugin/extension[@point=\"");
 			query.append(extension.getExtensionPoint().getId());
