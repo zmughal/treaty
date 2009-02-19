@@ -1,11 +1,16 @@
 org.eclipse.ui.handlers
 
--	16/21 contracts verified successfully
+-	87/91 contracts verified successfully
 
--	1/21 contracts succeeds - false positive (from contract definition it is not clear
-	that there should be XOR not OR logic between @class and class/@class implementation,
-	so the verification succeeds even for classes that can not be loaded.) 
+-	1/91 not verified
+	verification skipped after previous extension in the same plugin failed verification
 
--	4/21 contracts fail
+-	3/91 contracts fail
 	- reason: failed functional test – net.java.treaty.eclipse.system.tests.org.eclipse.core.commands.IHandlerTests
-	(test checks whether throws ExecutionException if the parameter for execute method is null)
+	(test checks whether class throws ExecutionException if the parameter for execute method is null, which is prohibited)
+	
+NOTE
+contracts succeeds - false positive (from contract definition it is not clear
+if there should be XOR not OR logic between @class and class/@class implementation,
+in this contract OR was used assuming that both classes can be used simultaneously
+so the verification can succeed even when neither of the classes can be loaded) 

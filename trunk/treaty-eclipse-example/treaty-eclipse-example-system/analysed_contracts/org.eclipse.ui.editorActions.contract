@@ -4,45 +4,34 @@
 <!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
 	<supplier>
+		<context>editorContribution/action</context>
 		<resource id="EditorContributionId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>editorContribution/@id</ref>
+			<ref>../@id</ref>
 		</resource>
 		<resource id="EditorContributionTargetId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>editorContribution/@targetID</ref>
+			<ref>../@targetID</ref>
 		</resource>
 		<resource id="MenuId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/editorContribution/menu/@id</ref>
+			<ref>../menu/@id</ref>
 		</resource>
 		<resource id="MenuLabel">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/editorContribution/menu/@label</ref>
+			<ref>../menu/@label</ref>
 		</resource>
 		<resource id="ActionId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/editorContribution/action/@id</ref>
+			<ref>@id</ref>
 		</resource>
 		<resource id="ActionLabel">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/editorContribution/action/@label</ref>
-		</resource>
-		<resource id="ActionStyle">
-			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/editorContribution/action/@style</ref>
-		</resource>
-		<resource id="ActionState">
-			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/editorContribution/action/@state</ref>
+			<ref>@label</ref>
 		</resource>
 		<resource id="ActionClass">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
-			<ref>/editorContribution/action/@class</ref>
-		</resource>
-		<resource id="ActionEnablesFor">
-			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/editorContribution/action/@enablesFor</ref>
+			<ref>@class</ref>
 		</resource>
 	</supplier>
 	<!-- resources defined either here or in other plugins this plugin depends on-->
@@ -64,25 +53,7 @@
 				<and>	
 					<mustExist resource="ActionId"/>	
 					<mustExist resource="ActionLabel"/>
-					<or>
-						<not>
-							<mustExist resource="ActionStyle"/>
-						</not>
-						<property resource="ActionStyle" operator="IN" value="push,radio,toggle"/>
-					</or>
-					<xor>
-						<property resource="ActionStyle" operator="IN" value="radio,toggle"/>
-						<not>
-							<mustExist resource="ActionState"/>
-						</not>
-					</xor>
 					<relationship resource1="ActionClass" resource2="EditorActionDelegate" type="http://www.treaty.org/java#implements"/>
-					<or>
-						<not>
-							<mustExist resource="ActionEnablesFor"/>
-						</not>
-						<property resource="ActionEnablesFor" operator="matches" value="(\d)*|\?|\*|\!|\+|((\d)*\+)|(multiple)"/>
-					</or>
 				</and>
 			</or>
 		</and>

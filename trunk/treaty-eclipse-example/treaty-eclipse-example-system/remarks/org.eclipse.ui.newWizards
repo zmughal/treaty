@@ -1,0 +1,20 @@
+org.eclipse.ui.newWizards.contract analysis
+
+-	109/113 contracts verified successfully
+
+-	1/113 contract failed
+	-	org.eclipse.jst.j2ee.jca.ui
+		in the plugin.xml is defined attribute wizard/class/@class which is not allowed
+		according to the contract definition (see Help System Main / Platform Plugin Developer Guide / Reference
+		/ Extension Point Reference/org.eclipse.ui.newWizard. it should have been wizard/@class)
+		
+-	3/113 contracts do not get verified because the contract definition uses context element wizard
+	and the 3 plugins below do not have this element defined so don't get verified
+	- org.eclipse.mylyn.task.ui
+	- org.eclipse.ecf.uo
+	- org.eclipse.jst.ws.ui
+		
+NOTE
+OR logic is used in this contract assuming that at least one of the extension element has to be defined for
+each extension. This however allows for the contract to succeed even though the class does not implement the
+required interface (false positive) 

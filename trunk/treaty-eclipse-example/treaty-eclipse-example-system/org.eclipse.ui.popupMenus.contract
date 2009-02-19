@@ -130,7 +130,7 @@
 				</not>
 				<or>
 					<relationship resource1="ViewActionClass" resource2="ExecutableExtension" type="http://www.treaty.org/java#implements"/>
-					<relationship resource1="ObjectActionClass" resource2="ObjectActionDelegate" type="http://www.treaty.org/java#implements"/>
+					<relationship resource1="ViewActionClass" resource2="ViewActionDelegate" type="http://www.treaty.org/java#implements"/>
 					<relationship resource1="ViewActionClass" resource2="EditorActionDelegate" type="http://www.treaty.org/java#implements"/>
 				</or>
 			</or>						

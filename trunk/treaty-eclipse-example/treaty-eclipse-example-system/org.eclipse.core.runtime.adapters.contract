@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.core.runtime.adapters-->
+<!-- this formalises the contract in the help page for this extension point -->
+<!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<context>factory</context>
+		<resource id="Class">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>@class</ref>
+		</resource>
+		<resource id="AdaptableType">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>@adaptableType</ref>
+		</resource>
+		<resource id="AdapaterType">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>adapter/@type</ref>
+		</resource>
+	</supplier>
+	<!-- resources defined either here or in other plugins this plugin depends on-->
+	<external>		
+		<resource id="AdapterFactory">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.core.runtime.IAdapterFactory</name>
+		</resource>		
+	</external>
+	<constraints>
+		<and>
+			<mustExist resource="AdaptableType"/>
+			<relationship resource1="Class" resource2="AdapterFactory" type="http://www.treaty.org/java#implements"/>
+			<mustExist resource="AdapaterType"/>
+		</and>
+	</constraints>
+</contract>

@@ -4,6 +4,7 @@
 <!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
 	<supplier>
+		<!-- <context>view</context> -->
 		<resource id="CategoryName">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>category/@name</ref>
@@ -30,6 +31,8 @@
 	</external>
 	<constraints>
 		<or>
+			<property resource="Location" operator="IN" value="right,left,top,bottom"/>
+			<mustExist resource="CategoryName"/>
 			<and>
 				<relationship resource1="Part" resource2="ViewPart" type="http://www.treaty.org/java#implements"/>
 				<or>
@@ -42,8 +45,6 @@
 					</and>
 				</or>
 			</and>
-			<property resource="Location" operator="IN" value="right,left,top,bottom"/>
-			<mustExist resource="CategoryName"/>
 		</or>
 	</constraints>
 </contract>

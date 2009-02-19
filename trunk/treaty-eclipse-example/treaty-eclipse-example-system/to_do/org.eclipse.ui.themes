@@ -21,3 +21,6 @@ CHECK whether colorDefinition/@value attribute can be verified:
 	Only one of defaultsTo, value or colorFactory may be defined. If value is specified,
 	additional value definitions may be specified on a per platform/windowing system basis via the colorValue
 	element.
+
+not verified
+DONE

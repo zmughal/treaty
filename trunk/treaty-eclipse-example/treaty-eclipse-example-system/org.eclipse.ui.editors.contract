@@ -12,7 +12,7 @@
 		</resource>
 		<resource id="Command">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>@style</ref>
+			<ref>/@command</ref>
 		</resource>
 		<resource id="Launcher">
 			<type>http://www.treaty.org/java#InstantiableClass</type>

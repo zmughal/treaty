@@ -1,0 +1,25 @@
+org.eclipse.core.runtime.appllications.contract analysis
+
+-	36/43 contracts verified successfully
+
+-	7/43 contracts failed
+	-	org.eclipse.pde.junit.runtime
+		(3 extensions)
+		there is no source code available to verify whether class does or doesn't implement
+		the interface
+		
+	-	org.eclipse.birt.report.engine
+		public class org.eclipse.birt.report.engine.plugin.ReportExecutor
+		implements org.eclipse.core.runtime.IPlatformRunnable which is deprecated
+		and should have been replaced by org.eclipse.equinox.app.IApplication
+		
+	-	org.eclipse.emf.codegen.jmerge.JMerger$PlatformRunnable
+		public static class org.eclipse.emf.codegen.jmerge.JMerger$PlatformRunnable
+		extends org.eclipse.emf.codegen.jmerge.PropertyMerger
+		implements org.eclipse.core.runtime.IPlatformRunnable
+		NOTE this class is anotated @java.lang.Deprecated
+		
+	-	org.eclipse.update.core
+		(2 extensions)
+		there is no source code available to verify whether class does or doesn't implement
+		the interface

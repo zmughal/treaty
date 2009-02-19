@@ -10,11 +10,11 @@
 		</resource>
 		<resource id="ThemeElementCategoryId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/themeElementCategory/@id</ref>
+			<ref>themeElementCategory/@id</ref>
 		</resource>
 		<resource id="ThemeElementCategoryClass">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
-			<ref>/themeElementCategory/@class</ref>
+			<ref>themeElementCategory/@class</ref>
 		</resource>
 		<resource id="ColorDefinitionId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>

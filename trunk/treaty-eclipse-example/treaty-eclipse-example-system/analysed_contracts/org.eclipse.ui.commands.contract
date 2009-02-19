@@ -2,14 +2,6 @@
 <!-- contract for org.eclipse.ui.commands.contract-->
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
 	<supplier>
-		<resource id="CommandId">
-			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>command/@id</ref>
-		</resource>
-		<resource id="CommandName">
-			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>command/@name</ref>
-		</resource>
 		<resource id="CategoryId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>category/@id</ref>
@@ -18,13 +10,17 @@
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>category/@name</ref>
 		</resource>
+		<resource id="CommandId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>command/@id</ref>
+		</resource>
+		<resource id="CommandName">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>command/@name</ref>
+		</resource>
 		<resource id="CommandParameterValues">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
 			<ref>command/commandParameter/@values</ref>
-		</resource>
-		<resource id="CommandParameterTypeId">
-			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>commandParameterType/@id</ref>
 		</resource>
 		<resource id="CommandParameterValuesClass">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
@@ -33,7 +29,24 @@
 		<resource id="DefaultHandlerClass">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
 			<ref>command/defaultHandler/@class</ref>
-		</resource>		
+		</resource>
+		<resource id="CommandStateClass">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>command/state/@class</ref>
+		</resource>
+		<resource id="CommandStateClassClass">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>command/state/class/@class</ref>
+		</resource>
+		<resource id="CommandParameterTypeId">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>commandParameterType/@id</ref>
+		</resource>
+		<resource id="CommandParameterTypeConverter">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>commandParameterType/@converter</ref>
+		</resource>	
+		<!-- keyConfiguration is a deprecated element-->
 		<resource id="KeyConfigurationId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>keyConfiguration/@id</ref>
@@ -41,7 +54,8 @@
 		<resource id="KeyConfigurationName">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>keyConfiguration/@name</ref>
-		</resource>
+		</resource>	
+		<!-- context is a deprecated element-->
 		<resource id="ContextId">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>context/@id</ref>
@@ -49,7 +63,8 @@
 		<resource id="ContextName">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>context/@name</ref>
-		</resource>
+		</resource>	
+		<!-- scope is a deprecated element-->
 		<resource id="ScopeName">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
 			<ref>scope/@name</ref>
@@ -67,25 +82,37 @@
 		<resource id="Handler">
 			<type>http://www.treaty.org/java#AbstractType</type>
 			<name>org.eclipse.core.commands.IHandler</name>
+		</resource>
+		<resource id="ExecutableExtension">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.core.commands.IExacutableExtension</name>
 		</resource>	
+		<resource id="ParameterValueConverter">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.core.commands.AbstractParameterValueConverter</name>
+		</resource>
+		<resource id="State">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.core.commands.State</name>
+		</resource>
 	</external>
 	<constraints>
 		<or>
 			<and>
+				<mustExist resource="CategoryId"/>
+				<mustExist resource="CategoryName"/>
+			</and>			
+			<and>
 				<mustExist resource="CommandId"/>
 				<mustExist resource="CommandName"/>
 			</and>
-			<and>
-				<mustExist resource="CategoryId"/>
-				<mustExist resource="CategoryName"/>
-			</and>
+			
 			<and>
 				<not>
 					<mustExist resource="CommandParameterValues"/>
 				</not>
 				<relationship resource1="CommandParameterValues" resource2="ParameterValues" type="http://www.treaty.org/java#implements"/>
 			</and>
-			<mustExist resource="CommandParameterTypeId"/>
 			<and>
 				<not>
 					<mustExist resource="CommandParameterValuesClass"/>
@@ -98,6 +125,19 @@
 				</not>
 				<relationship resource1="DefaultHandlerClass" resource2="Handler" type="http://www.treaty.org/java#implements"/>
 			</and>
+			<and>
+				<not>
+					<mustExist resource="CommandStateClass"/>
+				</not>
+				<relationship resource1="CommandStateClass" resource2="State" type="http://www.treaty.org/java#implements"/>
+			</and>
+			<and>
+				<not>
+					<mustExist resource="CommandStateClassClass"/>
+				</not>
+				<relationship resource1="CommandStateClassClass" resource2="State" type="http://www.treaty.org/java#implements"/>
+			</and>			
+			<mustExist resource="CommandParameterTypeId"/>
 			<and>
 				<mustExist resource="KeyConfigurationName"/>
 				<mustExist resource="KeyConfigurationId"/>

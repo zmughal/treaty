@@ -5,9 +5,9 @@ contract fails on Library mustExist for all verified plugins
 Library is defined in the contract as type:	<type>http://www.w3.org/2001/XMLSchema#string</type>
 typical CDATA for Library: ant_task/director-ant.jar
 mustExist returns fail
+DONE
 
-contract fails on class must implemetn for all verified plugins
-in the contract definition: class - the fully qualified name of a Java class implementing the task.
-							Generally this class must be a subclass of org.apache.tools.ant.Task. which
-							is an abstract public class (see http://www.docjar.org/docs/api/org/apache/tools/ant/Task.html)
-not sure how to verify that the class is a subclass. using relationship java#implements does not work.							
+FIXME
+neither of the classes gets loaded, there's no error message indicating why
+possible problem: - not having the right plugin specified in dependencies
+				  - this plugin specifies a jar file library						

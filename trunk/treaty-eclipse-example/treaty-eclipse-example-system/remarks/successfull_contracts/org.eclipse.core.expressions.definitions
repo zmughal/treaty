@@ -1,0 +1,5 @@
+org.eclipse.core.expressions.definitions.contract analysis
+
+-	21/21 contracts verified successfully
+
+very simple contract, doesn't implement any classes

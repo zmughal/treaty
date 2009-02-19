@@ -1,15 +1,14 @@
 org.eclipse.ui.preferencePages
 
--	102/105 contracts verified successfullu
+-	271/282 extension contracts verified successfully
 
--	2/105 contracts not verified
-	- org.eclipse.search
-	- org.eclipse.cdt.ui
+-	9/282 contracts not verified
+	ignored after one of the extension verifications in a composite contract has failed
+
+-	2/282 contract verifications failed
+	-	plugin: org.eclipse.ui.ide, class: org.eclipse.ui.ExtensionFactory:fileAssociationsPreferencePage            
+		reason: class does not implement the required interface
 	
-	reason: Cannot parse plugin.xml
-	Caused by: org.jdom.IllegalDataException: The data 
-		"- Template extension for the editor " is not legal for
-		a JDOM comment: Comment data cannot start with a hyphen..
-
--	1/105 contract fails
-	reason: not an instanciable java type - invalid activator
+	-	plugin: org.eclipse.ecf.example.collab, class: org.eclipse.ecf.internal.example.collab.ui.ClientPreferencePage
+		reason: class not loaded - not an instantiable java type
+		

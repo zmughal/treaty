@@ -1,0 +1,11 @@
+org.eclipse.ui.views to_do
+
+FIXME
+the exporcted csv verification results file does not display properly 
+because the property operator="IN" the values are separated by a comma
+
+FIXME 
+when using context 2 contracts do not get verified because the context is 
+for one of 3 possible extension elements and these 2 contracts do not have the 
+context element defined
+
