@@ -1,8 +1,0 @@
-org.eclipse.ui.editors.contract
-
--	61/62 contracts verified successfully
-
--	1/62 contracts not verified
-	- org.eclipse.cdt.ui
-	reason: Cannot parse plugin.xml Caused by: org.jdom.IllegalDataException:
-	The data " " is not legal for a JDOM comment: Comment data cannot start with a hyphen.. 

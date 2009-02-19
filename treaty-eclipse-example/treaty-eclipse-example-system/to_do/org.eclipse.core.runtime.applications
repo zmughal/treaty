@@ -1,5 +1,0 @@
-org.eclipse.core.runtime.applications
-
-download package org.eclipse.equinox.app and add this
-to the plugin.xml dependencies to be able to verify the class
-implementation. the class verification is commented out for now.

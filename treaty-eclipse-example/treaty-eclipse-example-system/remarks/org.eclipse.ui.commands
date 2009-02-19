@@ -1,0 +1,9 @@
+org.eclipse.ui.commands.contract analysis
+
+-	73/73 contracts verified successfully
+
+NOTE
+due to OR logic being used in this contract assuming that at least one of the 8
+possible extension elements has to be defined (5 of those elements are now deprecated)
+for each extension, it is possible to get a successful verification even thought some 
+classes don't implement interfaces etc... False Positive

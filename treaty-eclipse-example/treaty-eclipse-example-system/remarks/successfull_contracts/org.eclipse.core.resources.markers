@@ -1,0 +1,7 @@
+org.eclipse.core.resources.markers.contract analysis
+
+-	98/98 contracts verified successfully
+
+NOTE
+OR logic is used in this contract assuming that at least on of the 3 possible extension elements
+has to be defined for each extension

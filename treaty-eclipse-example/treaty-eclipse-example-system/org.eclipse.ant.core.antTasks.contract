@@ -4,25 +4,26 @@
 <!-- see Help System Main / Platform Plugin Developer Guide / Reference / Extension Point Reference -->
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
 	<supplier>
+		<context>antTask</context>
 		<resource id="Name">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>antTask/@name</ref>
+			<ref>@name</ref>
 		</resource>		
 		<resource id="TaskClass">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
-			<ref>antTask/@class</ref>
+			<ref>@class</ref>
 		</resource>
 		<resource id="Library">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>antTask/@library</ref>
+			<ref>@library</ref>
 		</resource>
 		<resource id="Headless">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>antTask/@headless</ref>
+			<ref>@headless</ref>
 		</resource>
 		<resource id="Runtime">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>antTask/@eclipseRuntime</ref>
+			<ref>@eclipseRuntime</ref>
 		</resource>		
 	</supplier>
 	<!-- resources defined either here or in other plugins this plugin depends on-->

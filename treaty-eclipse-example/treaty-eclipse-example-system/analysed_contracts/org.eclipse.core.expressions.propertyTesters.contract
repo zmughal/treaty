@@ -2,25 +2,26 @@
 <!-- contract for org.eclipse.core.expressions.propertyTesters.contract-->
 <contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
 	<supplier>
+		<context>propertyTester</context>
 		<resource id="PropertyTesterID">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/propertyTester/@id</ref>
+			<ref>@id</ref>
 		</resource>
 		<resource id="PropertyTesterClass">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
-			<ref>/propertyTester/@class</ref>
+			<ref>@class</ref>
 		</resource>
 		<resource id="PropertyTesterType">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/propertyTester/@type</ref>
+			<ref>@type</ref>
 		</resource>
 		<resource id="PropertyTesterNamespace">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/propertyTester/@namespace</ref>
+			<ref>@namespace</ref>
 		</resource>
 		<resource id="PropertyTesterProperties">
 			<type>http://www.w3.org/2001/XMLSchema#string</type>
-			<ref>/propertyTester/@properties</ref>
+			<ref>@properties</ref>
 		</resource>
 	</supplier>
 	<external>

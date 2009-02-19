@@ -7,11 +7,11 @@
 			<!-- not that the xpath expression starts with a / - this will result in looking for -->
 			<!-- nodes using this expression: /plugin/extension[@point="org.eclipse.help.contexts"]//contexts/@file -->
 			<!-- and this will look for nested contexts/@file nodes (the "//" !!)-->
-			<ref>/contexts/@file</ref>
+			<ref>contexts/@file</ref>
 		</resource>
 		<resource id="Provider">
 			<type>http://www.treaty.org/java#InstantiableClass</type>
-			<ref>/contextProvider/@class</ref>
+			<ref>contextProvider/@class</ref>
 		</resource>
 	</supplier>
 	<external>
