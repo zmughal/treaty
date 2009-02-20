@@ -45,7 +45,7 @@ public class CSVExporter extends Exporter {
 	
 	@Override
 	public String getName() {
-		return "export to CSV (spreadsheet)";
+		return "export verification results to CSV (spreadsheet)";
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class CSVExporter extends Exporter {
 			
 		}
 		catch (Exception x) {
-			x.printStackTrace();
+			net.java.treaty.eclipse.Logger.error("Error exporting", x);
 		}
 	}
 	
