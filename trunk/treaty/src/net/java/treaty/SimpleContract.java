@@ -36,6 +36,9 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 	// contexts - they define how instantiation is done - this is mainly useful for supplier resources -
 	// these are the resources that are usually instantiated
 	private String consumerContext = null;
+	// owner
+	private Contract definition = null;
+
 	// constants used to internally
 	private static enum Role {
 		SUPPLIER,CONSUMER,EXTERNAL
@@ -243,14 +246,17 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 				contract.addCondition(c.replaceResources(contract.supplierResources));
 			}
 		}
+		Contract result = null;
 		if (contracts.size()==1) {
-			return contracts.get(0);
+			result = contracts.get(0);
 		}
 		else {
 			Contract[] parts = new Contract[contracts.size()];
 			contracts.toArray(parts);
-			return new AggregatedContract(parts);
+			result = new AggregatedContract(parts);
 		}
+		result.setDefinition(this);
+		return result;
 
 	}
 	
@@ -376,5 +382,12 @@ public class SimpleContract extends PropertySupport implements ConditionContext,
 		}
 	}
 	
+	public Contract getDefinition() {
+		return definition;
+	}
+	public void setDefinition(Contract def) {
+		assert(isInstantiated() || def==null);
+		this.definition = def;
+	}
 	
 }

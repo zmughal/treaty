@@ -17,9 +17,16 @@ package net.java.treaty;
 
 public interface Contract extends Constraint {
 	
-	public abstract Connector getConsumer();
+	Connector getConsumer();
 
-	public abstract Connector getSupplier();
+	Connector getSupplier();
+	
+	/**
+	 * The definition is the contract definition that has been used 
+	 * to instantiate this contract. It is null iff this contract s not instantiated.
+	 */
+	Contract getDefinition();
+	void setDefinition(Contract c);
 
 	/**
 	 * Instantiate this contract with a supplier.
@@ -29,7 +36,7 @@ public interface Contract extends Constraint {
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	public abstract Contract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException;
+	Contract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException;
 
 	/**
 	 * Instantiate this contract with a consumer.
@@ -39,10 +46,10 @@ public interface Contract extends Constraint {
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	public abstract Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException;	
+	Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException;	
 	/**
 	 * Convert the contract to an equivalent, more compact form.
 	 * @return a contract
 	 */
-	public Contract pack();
+	Contract pack();
 }

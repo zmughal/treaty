@@ -21,13 +21,23 @@ import java.util.Collection;
 public class AggregatedContract extends PropertySupport implements Contract{
 	
 	private Contract[] parts = null;
-	
+	private Contract definition = null;
+
+
+
 
 	public AggregatedContract(Contract... parts) {
 		super();
 		this.parts = parts;
 	}
 
+	public Contract getDefinition() {
+		return definition;
+	}
+
+	public void setDefinition(Contract def) {
+		this.definition = def;
+	}
 
 	public void accept(ContractVisitor visitor) {
 		boolean f = visitor.visit(this);
