@@ -52,7 +52,7 @@ public class EclipseResourceManager implements ResourceManager {
 				xpath = XPath.newInstance(query.toString());
 				List<Element> nodes = xpath.selectNodes(doc);
 				if (nodes.size()==0) {
-					Logger.info("No resource references found in plugin.xml for " + ref + " - check xpath");
+					// Logger.info("No resource references found in plugin.xml for " + ref + " - check xpath");
 					return null;
 				}
 				Object node = nodes.get(0);
@@ -74,7 +74,7 @@ public class EclipseResourceManager implements ResourceManager {
 				xpath = XPath.newInstance(ref);
 				List<Element> nodes = xpath.selectNodes(eContext.getContextNode());
 				if (nodes.size()==0) {
-					Logger.info("No resource references found in plugin.xml for " + ref + " in context " + eContext.getContextNode() + " - check xpath");
+					// Logger.info("No resource references found in plugin.xml for " + ref + " in context " + eContext.getContextNode() + " - check xpath");
 					return null;
 				}
 				Object node = nodes.get(0);
