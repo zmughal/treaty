@@ -43,10 +43,7 @@ public class AggregatedContract extends PropertySupport implements Contract{
 		boolean f = visitor.visit(this);
 		if (f) {
 			for (Contract p:parts) {
-				if (visitor.visit(p)) {
-					p.accept(visitor);
-					visitor.endVisit(p);
-				}
+				p.accept(visitor);
 			}
 		}
 		visitor.endVisit(this);
@@ -61,7 +58,9 @@ public class AggregatedContract extends PropertySupport implements Contract{
 		for (int i=0;i<parts.length;i++) {
 			boundParts[i] = parts[i].bindSupplier(connector,loader);
 		}
-		return new AggregatedContract(boundParts).pack();
+		Contract result = new AggregatedContract(boundParts).pack();
+		result.setDefinition(this);
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -72,7 +71,9 @@ public class AggregatedContract extends PropertySupport implements Contract{
 		for (int i=0;i<parts.length;i++) {
 			boundParts[i] = parts[i].bindConsumer(connector,loader);
 		}
-		return new AggregatedContract(boundParts).pack();
+		Contract result = new AggregatedContract(boundParts).pack();
+		result.setDefinition(this);
+		return result;
 	}
 
 	/**
