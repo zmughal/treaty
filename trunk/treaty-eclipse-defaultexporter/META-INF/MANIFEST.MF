@@ -12,3 +12,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
  lib/velocity-1.6.1.jar,
  lib/velocity-1.6.1-dep.jar
+Bundle-Vendor: Jens Dietrich
