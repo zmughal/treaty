@@ -26,6 +26,7 @@ import net.java.treaty.Negation;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
+import net.java.treaty.SimpleContract;
 import net.java.treaty.XDisjunction;
 
 
@@ -90,13 +91,22 @@ public class MetricsTool {
 			@Override
 			public void endVisit(Contract contract) {
 				this.depth = this.depth-1;
+				if (hasImplicitConjunction(contract)) {
+					this.depth = this.depth-1;
+				}
 				super.endVisit(contract);
 			}
 			@Override
 			public boolean visit(Contract contract) {
 				this.depth = this.depth+1;
+				if (hasImplicitConjunction(contract)) {
+					this.depth = this.depth+1;
+				}
 				this.maxdepth = Math.max(this.maxdepth,this.depth);
 				return super.visit(contract);
+			}
+			private boolean hasImplicitConjunction(Contract contract) {
+				return contract instanceof SimpleContract && ((SimpleContract)contract).getConstraints().size()>1;
 			}
 			
 		};
