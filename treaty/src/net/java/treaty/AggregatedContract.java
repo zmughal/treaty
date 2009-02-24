@@ -86,7 +86,10 @@ public class AggregatedContract extends PropertySupport implements Contract{
 	public boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy) {
 		boolean result = true;
 		for (Contract part:parts) {
-			result = result&&part.check(report, verifier,policy);
+			// TODO - now we hard coded & instead of && - this is slower
+			// but gives us more info
+			// this should be configurable
+			result = result&part.check(report, verifier,policy);
 		}
 		return result;
 	}
