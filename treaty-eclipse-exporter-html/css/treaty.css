@@ -1,0 +1,37 @@
+table.TREE_SUCCESS {
+	background-color: #90ee90;
+	border-width: thin thin thin thin;
+	border-spacing: 2px;
+	border-style: none none none solid;
+	border-color: black;
+}
+
+table.TREE_FAILED {
+	background-color: #ffc0cb;
+	border-width: thin thin thin thin;
+	border-spacing: 2px;
+	border-style: none none none solid;
+	border-color: black;
+}
+
+table.PLAIN {
+	background-color: #bfbfbf;
+	border-width: thin thin thin thin;
+	border-spacing: 2px 20px 20px 2px;
+	border-style: solid;
+	border-color: black;
+}
+
+table.PLAIN td {
+	border-width: thin;
+	padding: 1px;
+	border-style: solid solid none none;
+	border-color: black;
+}
+table.PLAIN th {
+	border-width: thin;
+	padding: 1px;
+	border-style: solid solid none none;
+	border-color: black;
+}
+
