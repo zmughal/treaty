@@ -1,9 +1,41 @@
+body {
+ background: White;
+ color: #483d8b;
+}
+h1 {
+ margin-left: 5px;
+ font-size: 20px;
+ color: #333333;
+ font: small-caps;
+ font-variant: small-caps;
+}
+h2 {
+ background-color: #dcdcdc;
+ font-size: 18px;
+ background-attachment: fixed;
+ padding-left: 10px;
+ padding-bottom: 5px;
+ padding-top: 5px;
+ border-width: bold;
+ border-spacing: 2px;
+ border-style: solid none solid none;
+ border-color: black;
+}
+h3 {
+ font-size: 16px;
+}
+a {
+ color: #333333;
+ text-decoration: none;
+ font-weight: bold;
+}
 table.TREE_SUCCESS {
 	background-color: #90ee90;
 	border-width: thin thin thin thin;
 	border-spacing: 2px;
 	border-style: none none none solid;
 	border-color: black;
+	font-size: smaller;
 }
 
 table.TREE_FAILED {
@@ -12,6 +44,7 @@ table.TREE_FAILED {
 	border-spacing: 2px;
 	border-style: none none none solid;
 	border-color: black;
+	font-size: smaller;
 }
 
 table.PLAIN {
@@ -34,4 +67,12 @@ table.PLAIN th {
 	border-style: solid solid none none;
 	border-color: black;
 }
-
+tr.CONSUMER {
+	font-style: italic;
+	font-size: smaller;
+}
+tr.SUPPLIER {
+	font-weight: bold;
+	background-color: #dfdfdf;
+	font-size: smaller;
+}

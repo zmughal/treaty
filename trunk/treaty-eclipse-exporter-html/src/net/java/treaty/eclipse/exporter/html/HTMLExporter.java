@@ -35,7 +35,7 @@ public class HTMLExporter extends Exporter {
 	private int exceptionCounter = 1; 
 	
 	enum Style {
-		PLAIN,TREE,TREE_FAILED,TREE_SUCCESS
+		PLAIN,TREE,TREE_FAILED,TREE_SUCCESS,CONSUMER,SUPPLIER
 	}
 	
 	@Override
@@ -65,13 +65,16 @@ public class HTMLExporter extends Exporter {
 				}
 				instances.add(c);
 			}
-
+			// index
 			createIndexPage(folder,contractsByXP);
 			
 			// pages
 			for (String xp:contractsByXP.keySet()) {
 				createResultsPage(folder,xp,contractsByXP.get(xp));
 			}
+			
+			// style
+			
 		}
 		catch (Exception x) {
 			net.java.treaty.eclipse.Logger.error("Error exporting", x);
@@ -102,12 +105,12 @@ public class HTMLExporter extends Exporter {
 			printTableHeader(out,"id","type","owner","name","reference");
 			List<Resource> resources = collectConsumerResources(c);
 			for (Resource r:resources) {
-				printTableRow(out,r.getId(),r.getType().toString(),xp,r.getName(),"n/a");
+				printTableRow(out,Style.CONSUMER,r.getId(),r.getType().toString(),xp,r.getName(),"n/a");
 			}
 			resources = collectSupplierResources(c);
 			resources.addAll(collectExternalResources(c));
 			for (Resource r:resources) {
-				printTableRow(out,r.getId(),r.getType().toString(),getOwner(r),r.getName(),r.getRef());
+				printTableRow(out,Style.SUPPLIER,r.getId(),r.getType().toString(),getOwner(r),r.getName(),r.getRef());
 			}
 			printTableFooter(out);
 			
@@ -484,7 +487,15 @@ public class HTMLExporter extends Exporter {
 	}
 	
 	private void printTableRow(PrintStream out, Style style, Object... entries) {
-		out.print("<tr>");
+		out.print("<tr");
+		if (style==null) {
+			out.print(">");
+		}
+		else {
+			out.print(" class=\"");
+			out.print(style);
+			out.print("\">");
+		}
 		for (Object l:entries) {
 			out.print("<td>");
 			out.print(l);
