@@ -11,7 +11,6 @@
 package net.java.treaty.eclipse.exporter.html;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -23,7 +22,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
-
 import net.java.treaty.*;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.Exporter;
@@ -149,13 +147,16 @@ public class HTMLExporter extends Exporter {
 	private void createResultPage(PrintStream out,File folder,String xp,SimpleContract c, int noOfInstances,int instanceNo, int noOfParts, int partNo) {
 		String instLabel = "Contract instance "+(instanceNo+1)+"/"+noOfInstances;
 		String supplLabel = "supplier: " +getInstanceLabel(c);
-		String anch = instanceNo==1?("instance"+instanceNo):null;
-		if (noOfParts==0) {
+		String anch = partNo==0?("instance"+instanceNo):null;
+		if (noOfParts==1) {
 			printSubHeader(out,instLabel+", "+supplLabel,anch);
 		}
 		else {
 			String partLabel = "part: "+(partNo+1)+"/"+noOfParts;
-			printSubHeader(out,instLabel+", "+supplLabel+", "+partLabel,anch);			
+			if (partNo==0)
+				printSubHeader(out,instLabel+", "+supplLabel+", "+partLabel,anch);	
+			else
+				printSubHeader(out,instLabel+", "+supplLabel+", "+partLabel);	
 		}
 		printSubSubHeader(out,"Resources");	
 		printTableHeader(out,"id","type","owner","name","reference");
@@ -469,7 +470,29 @@ public class HTMLExporter extends Exporter {
 			if (con==null) return "?";
 			else return con.getOwner().getId();
 		}
-		return "aggregated contract";
+		else if (c instanceof AggregatedContract){
+			final Set<String> parts = new HashSet<String>();
+			ContractVisitor visitor = new AbstractContractVisitor() {
+				@Override
+				public boolean visit(Contract contract) {
+					if (contract instanceof AggregatedContract) {
+						return true;
+					}
+					else {
+						parts.add(getInstanceLabel(contract));
+						return false;
+					}
+				}				
+			};
+			c.accept(visitor);
+			StringBuffer b = new StringBuffer();
+			for (String p:parts) {
+				if (b.length()>0) b.append(", ");
+				b.append(p);				
+			}
+			return b.toString();
+		}
+		return "unknown contract type "+c.getClass();
 	}
 	private void printSubHeader(PrintStream out, String string) {
 		this.printSubHeader(out, string,null);
