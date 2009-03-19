@@ -108,7 +108,7 @@ public class HTMLExporter extends Exporter {
 			Contract c = contracts.get(i);
 			String x = getInstanceLabel(c);
 			String result = ""+c.getProperty(Constants.VERIFICATION_RESULT);
-			printTableRow(out,createiLink(x,"instance"+i),result);
+			printTableRow(out,createiLink(x,"instance"+(i+1)),result);
 		}
 		printTableFooter(out);
 		
@@ -147,8 +147,8 @@ public class HTMLExporter extends Exporter {
 	private void createResultPage(PrintStream out,File folder,String xp,SimpleContract c, int noOfInstances,int instanceNo, int noOfParts, int partNo) {
 		String instLabel = "Contract instance "+(instanceNo+1)+"/"+noOfInstances;
 		String supplLabel = "supplier: " +getInstanceLabel(c);
-		String anch = partNo==0?("instance"+instanceNo):null;
-		if (noOfParts==1) {
+		String anch = partNo==0?("instance"+(instanceNo+1)):null;
+		if (noOfParts==0) {
 			printSubHeader(out,instLabel+", "+supplLabel,anch);
 		}
 		else {
@@ -164,8 +164,11 @@ public class HTMLExporter extends Exporter {
 		for (Resource r:resources) {
 			printTableRow(out,Style.CONSUMER,r.getId(),r.getType().toString(),xp,r.getName(),"n/a");
 		}
+		resources = collectExternalResources(c);
+		for (Resource r:resources) {
+			printTableRow(out,Style.CONSUMER,r.getId(),r.getType().toString(),this.getOwner(r),r.getName(),"n/a");
+		}
 		resources = collectSupplierResources(c);
-		resources.addAll(collectExternalResources(c));
 		for (Resource r:resources) {
 			printTableRow(out,Style.SUPPLIER,r.getId(),r.getType().toString(),getOwner(r),r.getName(),r.getRef());
 		}
