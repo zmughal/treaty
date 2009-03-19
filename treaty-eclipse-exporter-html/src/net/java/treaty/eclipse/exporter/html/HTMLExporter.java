@@ -11,10 +11,13 @@
 package net.java.treaty.eclipse.exporter.html;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -74,6 +77,7 @@ public class HTMLExporter extends Exporter {
 			}
 			
 			// style
+			copyCSS(folder);
 			
 		}
 		catch (Exception x) {
@@ -81,6 +85,19 @@ public class HTMLExporter extends Exporter {
 		}
 	}
 	
+	private void copyCSS(File folder) throws IOException {
+		  InputStream in = HTMLExporter.class.getResourceAsStream("/css/treaty.css");
+	      File f2 = new File(folder.getAbsoluteFile()+"/treaty.css");
+	      OutputStream out = new FileOutputStream(f2);
+	      byte[] buf = new byte[1024];
+	      int len;
+	      while ((len = in.read(buf)) > 0){
+	        out.write(buf, 0, len);
+	      }
+	      in.close();
+	      out.close();		
+	}
+
 	private void createResultsPage(File folder, String xp, List<Contract> contracts) throws FileNotFoundException {
 		File file = new File(folder.getAbsolutePath()+"/"+getFileName(xp));
 		PrintStream out = new PrintStream(new FileOutputStream(file));
@@ -100,31 +117,65 @@ public class HTMLExporter extends Exporter {
 		// details
 		for (int i=0;i<contracts.size();i++) {
 			Contract c = contracts.get(i);
-			printSubHeader(out,"Contract instance "+(i+1)+"/"+contracts.size()+", supplier: " +getInstanceLabel(c), "instance"+i );
-			printSubSubHeader(out,"Resources");	
-			printTableHeader(out,"id","type","owner","name","reference");
-			List<Resource> resources = collectConsumerResources(c);
-			for (Resource r:resources) {
-				printTableRow(out,Style.CONSUMER,r.getId(),r.getType().toString(),xp,r.getName(),"n/a");
-			}
-			resources = collectSupplierResources(c);
-			resources.addAll(collectExternalResources(c));
-			for (Resource r:resources) {
-				printTableRow(out,Style.SUPPLIER,r.getId(),r.getType().toString(),getOwner(r),r.getName(),r.getRef());
-			}
-			printTableFooter(out);
-			
-			VerificationResult result = (VerificationResult)c.getProperty(Constants.VERIFICATION_RESULT);
-			String r = result==null?"unknown":result.toString();
-			printSubSubHeader(out,"Verification Result: " + r);
-			
-			printContractTree(out,c,folder);
+			createResultPage(out,folder,xp,c,contracts.size(),i);
 		}
 		printHtmlFooter(out);
 		out.close();		
 	}
-
-
+	private void createResultPage(PrintStream out,File folder,String xp,Contract c, int noOfInstances,int instanceNo) {
+		if (c instanceof SimpleContract) {
+			SimpleContract sc = (SimpleContract)c;
+			this.createResultPage(out, folder, xp, sc, noOfInstances, instanceNo, 0,0);
+		}
+		else if (c instanceof AggregatedContract) {
+			AggregatedContract ac = (AggregatedContract)c;
+			final List<SimpleContract> parts = new ArrayList<SimpleContract>(); 
+			ContractVisitor visitor = new AbstractContractVisitor() {
+				@Override
+				public boolean visit(Contract contract) {
+					if (contract instanceof SimpleContract) {
+						parts.add((SimpleContract)contract);
+						return false;
+					}
+					else return true;
+				}
+			};
+			ac.accept(visitor);
+			for (int i=0;i<parts.size();i++) {
+				this.createResultPage(out, folder, xp, parts.get(i), noOfInstances, instanceNo, parts.size(),i);
+			}
+		}
+	}
+	private void createResultPage(PrintStream out,File folder,String xp,SimpleContract c, int noOfInstances,int instanceNo, int noOfParts, int partNo) {
+		String instLabel = "Contract instance "+(instanceNo+1)+"/"+noOfInstances;
+		String supplLabel = "supplier: " +getInstanceLabel(c);
+		String anch = instanceNo==1?("instance"+instanceNo):null;
+		if (noOfParts==0) {
+			printSubHeader(out,instLabel+", "+supplLabel,anch);
+		}
+		else {
+			String partLabel = "part: "+(partNo+1)+"/"+noOfParts;
+			printSubHeader(out,instLabel+", "+supplLabel+", "+partLabel,anch);			
+		}
+		printSubSubHeader(out,"Resources");	
+		printTableHeader(out,"id","type","owner","name","reference");
+		List<Resource> resources = collectConsumerResources(c);
+		for (Resource r:resources) {
+			printTableRow(out,Style.CONSUMER,r.getId(),r.getType().toString(),xp,r.getName(),"n/a");
+		}
+		resources = collectSupplierResources(c);
+		resources.addAll(collectExternalResources(c));
+		for (Resource r:resources) {
+			printTableRow(out,Style.SUPPLIER,r.getId(),r.getType().toString(),getOwner(r),r.getName(),r.getRef());
+		}
+		printTableFooter(out);
+		
+		VerificationResult result = (VerificationResult)c.getProperty(Constants.VERIFICATION_RESULT);
+		String r = result==null?"unknown":result.toString();
+		printSubSubHeader(out,"Verification Result: " + r);
+		
+		printContractTree(out,c,folder);
+	}
 
 	private void printContractTree(final PrintStream out, final Contract c, final File folder) {
 		ContractVisitor visitor = new ContractVisitor() {
