@@ -145,6 +145,7 @@ public class Resource extends PropertySupport implements Visitable, Annotatable 
 		r.setType(this.getType());
 		r.setRef(this.getRef());
 		r.setOwner(connector);
+		r.setContext(context);
 		String name = mgr.resolve(getType(),getRef(),connector,context);
 		if (name==null) {
 			r.setProvided(false);
