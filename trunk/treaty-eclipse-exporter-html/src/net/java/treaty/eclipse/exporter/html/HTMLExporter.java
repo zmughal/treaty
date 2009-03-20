@@ -24,6 +24,7 @@ import java.io.Writer;
 import java.util.*;
 import net.java.treaty.*;
 import net.java.treaty.eclipse.Constants;
+import net.java.treaty.eclipse.EclipseInstantiationContext;
 import net.java.treaty.eclipse.Exporter;
 
 /**
@@ -170,7 +171,11 @@ public class HTMLExporter extends Exporter {
 		}
 		resources = collectSupplierResources(c);
 		for (Resource r:resources) {
-			printTableRow(out,Style.SUPPLIER,r.getId(),r.getType().toString(),getOwner(r),r.getName(),r.getRef());
+			String ref = r.getRef();
+			if (r.getContext()!=null && r.getContext() instanceof EclipseInstantiationContext) {
+				ref= ""+((EclipseInstantiationContext)r.getContext()).getPath()+"/"+ref;
+			}
+			printTableRow(out,Style.SUPPLIER,r.getId(),r.getType().toString(),getOwner(r),r.getName(),ref);
 		}
 		printTableFooter(out);
 		
