@@ -12,10 +12,20 @@ import net.java.treaty.InstantiationContext;
  */
 public class EclipseInstantiationContext implements InstantiationContext {
 	private Element contextNode = null;
+	private String path = null;
 
-	public EclipseInstantiationContext(Element contextNode) {
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public EclipseInstantiationContext(Element contextNode,String path) {
 		super();
 		this.contextNode = contextNode;
+		this.path = path;
 	}
 
 	public Element getContextNode() {
@@ -27,14 +37,7 @@ public class EclipseInstantiationContext implements InstantiationContext {
 	}
 	
 	public String toString() {
-		return super.toString()+'('+getPath(contextNode)+')';
+		return super.toString()+'('+path+')';
 	}
 
-	private String getPath(Element n) {
-		if (n==null) {
-			return "";
-		}
-		Element p = n.getParentElement();
-		return this.getPath(p)+'/'+n.getName();
-	}
 }

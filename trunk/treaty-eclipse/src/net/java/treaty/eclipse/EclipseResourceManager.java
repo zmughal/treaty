@@ -112,8 +112,11 @@ public class EclipseResourceManager implements ResourceManager {
 			XPath xpath = XPath.newInstance(query.toString());
 			List<Element> nodes = xpath.selectNodes(doc);
 			List<InstantiationContext> contexts = new ArrayList<InstantiationContext>();
+			int counter = 1;
 			for (Element node: nodes) {
-				contexts.add(new EclipseInstantiationContext(node));
+				String fullXpath = query.toString()+'['+counter+']';
+				contexts.add(new EclipseInstantiationContext(node,fullXpath));
+				counter = counter+1;
 			}
 			return contexts;
 		} catch (JDOMException e) {
