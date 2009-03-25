@@ -53,7 +53,11 @@ public class PropertyCondition extends AbstractCondition {
 		this.value = value;
 	}
 	public void accept(ContractVisitor visitor) {
-		visitor.visit(this)	;	
+		boolean f = visitor.visit(this);
+		if (f) {
+			this.getResource().accept(visitor);
+		}
+		visitor.endVisit(this);
 	}
 	
 	public  AbstractCondition replaceResources(Map<String,Resource> resources) {
