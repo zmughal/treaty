@@ -51,7 +51,7 @@ public class HTMLExporter extends Exporter {
 			exceptionCounter=1; // reset counter!
 			
 			// group contract instances by contract def
-			Map<String,List<Contract>> contractsByXP = new HashMap<String,List<Contract>>(); 
+			Map<String,List<Contract>> contractsByXP = new TreeMap<String,List<Contract>>(); 
 			//Map<String,List<String>> atomicConditions = new HashMap<String,List<String>>();
 			//Map<String,List<String>> variableNames = new HashMap<String,List<String>>();
 			
@@ -198,8 +198,9 @@ public class HTMLExporter extends Exporter {
 			}
 			@Override
 			public void endVisit(Contract contract) {
+				
 				if (generateNode(contract)) {
-					printEndTreeNode(out);
+					printEndTreeNode(out,contract);
 				}
 			}
 
@@ -215,36 +216,39 @@ public class HTMLExporter extends Exporter {
 
 			@Override
 			public void endVisit(Conjunction condition) {
-				printEndTreeNode(out);
+				printEndTreeNode(out,condition);
 			}
 
 			@Override
 			public void endVisit(Disjunction condition) {
-				printEndTreeNode(out);
+				printEndTreeNode(out,condition);
 			}
 
 			@Override
 			public void endVisit(XDisjunction condition) {
-				printEndTreeNode(out);
+				printEndTreeNode(out,condition);
 			}
 
 			@Override
 			public void endVisit(Negation condition) {
-				printEndTreeNode(out);
+				printEndTreeNode(out,condition);
 			}
 
 			@Override
 			public void endVisit(RelationshipCondition relationshipCondition) {
+				//out.println("*** ending condition "+relationshipCondition);
 				printTableFooter(out);
 			}
 
 			@Override
 			public void endVisit(PropertyCondition condition) {
+				//out.println("*** ending condition "+condition);
 				printTableFooter(out);
 			}
 
 			@Override
 			public void endVisit(ExistsCondition condition) {
+				//out.println("*** ending condition "+condition);
 				printTableFooter(out);
 			}
 
@@ -263,7 +267,7 @@ public class HTMLExporter extends Exporter {
 			@Override
 			public boolean visit(Contract contract) {
 				if (generateNode(contract)) {
-					printStartTreeNode(out,getStyle(contract),"and");
+					printStartTreeNode(out,getStyle(contract),"and",contract);
 				}
 				return true;
 			}
@@ -275,25 +279,25 @@ public class HTMLExporter extends Exporter {
 
 			@Override
 			public boolean visit(Conjunction condition) {
-				printStartTreeNode(out,getStyle(condition),"and");
+				printStartTreeNode(out,getStyle(condition),"and",condition);
 				return true;
 			}
 
 			@Override
 			public boolean visit(Disjunction condition) {
-				printStartTreeNode(out,getStyle(condition),"or");
+				printStartTreeNode(out,getStyle(condition),"or",condition);
 				return true;
 			}
 
 			@Override
 			public boolean visit(XDisjunction condition) {
-				printStartTreeNode(out,getStyle(condition),"xor");
+				printStartTreeNode(out,getStyle(condition),"xor",condition);
 				return true;
 			}
 
 			@Override
 			public boolean visit(Negation condition) {
-				printStartTreeNode(out,getStyle(condition),"not");
+				printStartTreeNode(out,getStyle(condition),"not",condition);
 				return true;
 			}
 
@@ -355,18 +359,20 @@ public class HTMLExporter extends Exporter {
 			public boolean visit(PropertyCondition p) {
 				printTableHeader(out,getStyle(p));
 				String errorRef = createErrorRef(p);
+				String property = p.getProperty();
+				property = property==null?"":"."+property;
 				if (errorRef==null) {
 					printTableRow(out,
-							p.getResource().getId(),".",
-							p.getProperty(),
-							p.getOperator(),
+							p.getResource().getId(),
+							property,
+							p.getOperator().getName(),
 							p.getValue()
 						);
 				}
 				else {
 					printTableRow(out,
-							p.getResource().getId(),".",
-							p.getProperty(),
+							p.getResource().getId(),
+							property,
 							p.getOperator(),
 							p.getValue(),
 							errorRef
@@ -557,7 +563,15 @@ public class HTMLExporter extends Exporter {
 		printHtmlHeader(out,"Verification results");
 		printTableHeader(out,"extension point","contract instances","verification failed");
 		for (String xp:extensionPoints) {
-			printTableRow(out,createLink(xp,getFileName(xp)),42,42);
+			List<Contract> instances = contractsByXP.get(xp);
+			int instanceCount = instances.size();
+			int failedCount = 0;
+			for (Contract instance:instances) {
+				if (instance.getProperty(Constants.VERIFICATION_RESULT) == VerificationResult.FAILURE) {
+					failedCount = failedCount+1;
+				}
+			}
+			printTableRow(out,createLink(xp,getFileName(xp)),instanceCount,failedCount);
 		}
 		printTableFooter(out);
 		printHtmlFooter(out);
@@ -609,7 +623,10 @@ public class HTMLExporter extends Exporter {
 		}
 	}
 
-	private void printStartTreeNode(PrintStream out, Style style, String label) {
+	private void printStartTreeNode(PrintStream out, Style style, String label,Object node) {
+		// debug
+		//out.println("--- start " + node + " ---");
+		
 		out.print("<table  cellspacing=\"0\" width=\"100%\" class=\"");
 		out.print(style);
 		out.println("\">");
@@ -618,9 +635,11 @@ public class HTMLExporter extends Exporter {
 		out.println("</td><td>");
 	}
 
-	private void printEndTreeNode(PrintStream out) {
+	private void printEndTreeNode(PrintStream out,Object node) {
 		out.println("</td></tr>");
 		out.println("</table>");
+		// debug
+		//out.println("--- end " + node + " ---");
 	}
 	
 	private void printHtmlFooter(PrintStream out) {
