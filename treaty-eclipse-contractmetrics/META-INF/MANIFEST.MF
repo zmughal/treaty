@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: support for contract metrics
+Bundle-Name: exporter for gathering contract metrics
 Bundle-SymbolicName: net.java.treaty.eclipse.contractmetrics; singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: net.java.treaty.eclipse.contractmetrics.Activator
