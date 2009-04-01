@@ -1,0 +1,6 @@
+plugin,extension point,is aggregated contract,partNo,verification result #foreach( $c in $conditions),$c #end #foreach( $v in $variables),$v #end
+
+#foreach( $c in $contracts )
+    $c.pluginId,$c.extensionPointId,$c.aggregated,$c.partNo,$c.result #foreach( $r in $c.conditionResults),$r #end #foreach( $b in $c.bindings),$b #end
+           
+#end
