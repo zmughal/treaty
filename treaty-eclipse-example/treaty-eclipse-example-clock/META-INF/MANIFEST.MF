@@ -6,10 +6,10 @@ Bundle-Version: 1.0.13
 Bundle-Activator: net.java.treaty.eclipse.example.clock.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.junit4;visibility:=reexport
+ org.eclipse.core.runtime
 Eclipse-LazyStart: true
 Export-Package: net.java.treaty.eclipse.example.clock
 Bundle-ClassPath: .,
  lib/jdom.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.junit;version="4.0.0"

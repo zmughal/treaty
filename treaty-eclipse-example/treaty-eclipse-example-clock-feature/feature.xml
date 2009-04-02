@@ -2,17 +2,11 @@
 <feature
       id="net.java.treaty.example.clock"
       label="Treaty Clock Example"
-      version="1.0.14"
+      version="1.0.15"
       provider-name="Jens Dietrich, Massey University">
 
    <description url="Treaty Contract Framework">
-      This plugin adds a desktop clock view to Eclipse that has a date
-(and time) format extension point. Date formats are provided
-by other plugins either by implementing a DateFormatter interface or by
-providing an XML format string. The contract contains several
-conditions, including (Java and XML) interface conditions as
-well as semantic and quality of service conditions expressed
-with JUnit test cases.
+      This plugin adds a desktop clock view to Eclipse that has a date (and time) format extension point. Date formats are provided by other plugins either by implementing a DateFormatter interface or by providing an XML format string. The contract contains several conditions, including (Java and XML) interface conditions as well as semantic and quality of service conditions expressed with JUnit test cases.
    </description>
 
    <copyright>
