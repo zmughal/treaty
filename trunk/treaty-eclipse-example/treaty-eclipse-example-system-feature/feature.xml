@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.java.treaty.eclipse.system"
-      label="Contracts for standard Eclipse extension points"
-      version="1.0.2"
-      provider-name="Jens Dietrich, Massey University">
+      label="Contract examples for some standard Eclipse extension points"
+      version="1.1.2"
+      provider-name="Jens Dietrich, Lucia Stewart">
 
    <description url="http://www.example.com/description">
-      This feature adds contracts to some standard Eclipse extension points
+      This feature adds contracts to some standard Eclipse extension points. Please check the repository for a larger set.
    </description>
 
    <copyright>
@@ -29,9 +29,9 @@ permissions and limitations under the License.
    </url>
 
    <plugin
-         id="net.java.treaty.eclipse.system"
-         download-size="50"
-         install-size="50"
+         id="net.java.treaty.eclipse.system_selected"
+         download-size="0"
+         install-size="0"
          version="0.0.0"
          unpack="false"/>
 
