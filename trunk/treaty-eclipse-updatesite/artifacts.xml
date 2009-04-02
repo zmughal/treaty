@@ -3,7 +3,7 @@
 <repository name='file:/home/jens/development/treaty/workspace2/treaty-eclipse-updatesite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1238644088858'/>
+    <property name='p2.timestamp' value='1238644789633'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
@@ -107,17 +107,17 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='net.java.treaty.example.clock' version='1.0.15'>
-      <properties size='2'>
-        <property name='artifact.size' value='1343'/>
-        <property name='download.size' value='1343'/>
-      </properties>
-    </artifact>
     <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.example.clock.longdateformatter' version='1.0.1'>
       <properties size='3'>
         <property name='artifact.size' value='3130'/>
         <property name='download.size' value='3130'/>
         <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='net.java.treaty.example.clock' version='1.0.15'>
+      <properties size='2'>
+        <property name='artifact.size' value='1343'/>
+        <property name='download.size' value='1343'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse' version='1.0.18'>
@@ -153,17 +153,17 @@
         <property name='download.size' value='1348'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.system' version='1.0.0'>
-      <properties size='3'>
-        <property name='artifact.size' value='3105'/>
-        <property name='download.size' value='3105'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
     <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.example.clock.lazydateformatter' version='1.0.1'>
       <properties size='3'>
         <property name='artifact.size' value='3194'/>
         <property name='download.size' value='3194'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.system' version='1.0.0'>
+      <properties size='3'>
+        <property name='artifact.size' value='3105'/>
+        <property name='download.size' value='3105'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
@@ -385,17 +385,17 @@
         <property name='download.size' value='1340'/>
       </properties>
     </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='net.java.treaty.eclipse' version='1.2.0'>
+      <properties size='2'>
+        <property name='artifact.size' value='1368'/>
+        <property name='download.size' value='1368'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.vocabulary.xml' version='1.1.0'>
       <properties size='3'>
         <property name='artifact.size' value='907718'/>
         <property name='download.size' value='907718'/>
         <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='net.java.treaty.eclipse' version='1.2.0'>
-      <properties size='2'>
-        <property name='artifact.size' value='1368'/>
-        <property name='download.size' value='1368'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.vocabulary.xml' version='1.0.0'>
