@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_vWSvsEH8Ed6k2IiQxqsQZg" name="net">
+  <packagedElement xmi:type="uml:Package" xmi:id="_1lKFsEH8Ed6k2IiQxqsQZg" name="java">
+    <packagedElement xmi:type="uml:Package" xmi:id="_4mkBMEH8Ed6k2IiQxqsQZg" name="treaty">
+      <packagedElement xmi:type="uml:Package" xmi:id="_6DQBoEH8Ed6k2IiQxqsQZg" name="eclipse">
+        <packagedElement xmi:type="uml:Package" xmi:id="_7QTqoEH8Ed6k2IiQxqsQZg" name="vocabulary">
+          <packagedElement xmi:type="uml:Package" xmi:id="_8z_D4EH8Ed6k2IiQxqsQZg" name="ocl">
+            <packagedElement xmi:type="uml:Package" xmi:id="_9tthMEH8Ed6k2IiQxqsQZg" name="test">
+              <packagedElement xmi:type="uml:Package" xmi:id="_-JC0sFNHEd60UL9oGCjDpw" name="base">
+                <packagedElement xmi:type="uml:Package" xmi:id="_-kTyAEH8Ed6k2IiQxqsQZg" name="model">
+                  <packagedElement xmi:type="uml:Interface" xmi:id="_UMcGIEH_Ed6k2IiQxqsQZg" name="TestInterface">
+                    <ownedAttribute xmi:id="_YWN-IEIvEd6GU8doE8JU2w" name="name" type="_8I4mgEH-Ed6k2IiQxqsQZg"/>
+                    <ownedAttribute xmi:id="_CavQ8ELBEd6vLvV7a6mnWQ" name="simpleName" type="_8I4mgEH-Ed6k2IiQxqsQZg"/>
+                    <ownedOperation xmi:id="_EU0_IEH9Ed6k2IiQxqsQZg" name="getName">
+                      <ownedParameter xmi:id="_GJdlgEH9Ed6k2IiQxqsQZg" type="_8I4mgEH-Ed6k2IiQxqsQZg" direction="return"/>
+                    </ownedOperation>
+                  </packagedElement>
+                </packagedElement>
+              </packagedElement>
+            </packagedElement>
+          </packagedElement>
+        </packagedElement>
+      </packagedElement>
+    </packagedElement>
+  </packagedElement>
+  <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_8I4mgEH-Ed6k2IiQxqsQZg" name="String"/>
+</uml:Model>
