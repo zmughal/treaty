@@ -1,0 +1,87 @@
+package net::java::treaty::eclipse::vocabulary::ocl::test::dynamic::model
+
+
+-- An operation without arguments that should return true.
+context TestInterface::methodWithoutArguments(): Boolean
+post isMethodWithoutArgumentResultTrue:
+  result = true
+
+
+-- An operation with one argument that should return its argument.
+context TestInterface::
+  methodWithOneArgument(arg1: java::lang::Object): java::lang::Object
+pre isArg1Defined:
+  not arg1.oclIsUndefined()
+post isResultCorrect:
+  result = arg1
+
+
+-- An operation with two arguments that should return their concatenation.
+context TestInterface::
+  methodWithTwoArguments(string1: String, string2: String): String
+pre arebothArgumentsDefined: 
+  not string1.oclIsUndefined() 
+  and
+  not string2.oclIsUndefined()
+post isResultConcatenated:
+  result = string1.concat(string2)
+
+
+-- An operation without result that should increment the attribute1.
+context TestInterface::methodWithoutResult()
+post wasAttribute1Incrementend: 
+  self.getAttribute1() = self.getAttribute1@pre() + 1
+
+
+-- An operation with multiple results.
+context TestInterface::methodWithMultipleResults(): Integer
+post resultContainsValue1: 
+  result->includesAll(Set{1, 2, 3, 4, 5})
+
+
+-- An operation which recursively calls itself.
+context TestInterface::methodWithRecursion(arg1: Integer): Integer
+pre arg1MustBePositive: 
+  arg1 >= 0
+post resultEqualsInput:
+  result = arg1
+  
+
+-- A body expression.
+context TestInterface::getAttribute1plus1()
+body: self.getAttribute1() + 1
+
+-- A constraint that uses the body expression.
+context TestInterface::methodToTestBodyExpression()
+post: self.getAttribute1plus1() = self.getAttribute1() + 1
+
+
+-- A definition of a new attribute and a new method.
+context TestInterface
+def: definedAttribute: Integer = 17
+def: getDefinedAttribute(): Integer = self.definedAttribute
+
+-- A constraint that uses the derive expression.
+context TestInterface::methodToTestDefExpression()
+post: self.getDefinedAttribute() = self.definedAttribute
+
+
+-- A derive expression.
+context TestInterface::STATIC_ATTRIBUTE
+derive: 42
+
+-- A constraint that uses the derive expression.
+context TestInterface::methodToTestDeriveExpression()
+post: self.STATIC_ATTRIBUTE = 42
+
+
+-- A constraint that uses a let expression.
+context TestInterface::methodToTestLetExpression()
+post: 
+  let 
+    senseOfLife: Integer = 42
+  in 
+    senseOfLife > 40
+
+
+endpackage

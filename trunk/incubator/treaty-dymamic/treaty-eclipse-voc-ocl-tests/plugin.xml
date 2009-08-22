@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="propertytester.PropertyTester1"
+            id="treaty-eclipse-voc-ocl-tests.propertyTester1"
+            namespace="treaty-eclipse-voc-ocl-tests.propertyTester1"
+            properties="treaty-eclipse-voc-ocl-tests.propertyTester1"
+            type="propertytester.PropertyTester1">
+      </propertyTester>
+   </extension>
+
+</plugin>
