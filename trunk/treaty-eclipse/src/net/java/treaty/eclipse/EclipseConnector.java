@@ -24,68 +24,139 @@ import net.java.treaty.ContractReader;
 
 /**
  * Abstract superclass for extensions and extension points.
+ * 
  * @author Jens Dietrich
  */
 
-public abstract class EclipseConnector extends PropertySupport implements Connector {
-	
-	public static String getContractLocation(Connector c) {
-		return "/META-INF/"+c.getId()+".contract";
-	}
+public abstract class EclipseConnector extends PropertySupport implements
+		Connector {
 
-	private EclipsePlugin owner = null;
+	/** The {@link Contract} of this {@link EclipseConnector}. */
 	protected Contract contract = null;
 
+	/** The {@link EclipsePlugin} that owns this {@link EclipseConnector}. */
+	private EclipsePlugin owner = null;
+
+	/**
+	 * <p>
+	 * Adds a new {@link Contract} to this {@link EclipseConnector}.
+	 * </p>
+	 * 
+	 * @param url
+	 *          The location of the {@link Contract} as a {@link URL}.
+	 * @param contractOwner
+	 *          The owner of the {@link Contract}. If the owner is this
+	 *          {@link EclipseConnector} the argument could be <code>null</code>.
+	 * 
+	 * @return The newly added {@link Contract}. TODO Proposal of Claas: This
+	 *         method should get a Contract and not the URL and the Owner as
+	 *         arguments. This would improve removal of Contracts without
+	 *         returning the newly created {@link Contract} here.
+	 */
+	public void addContract(URL url, EclipseConnector contractOwner) {
+
+		SimpleContract newContract;
+		newContract = null;
+
+		/* Check if the owner of this connector has been set. */
+		if (this.owner != null) {
+
+			/* Check if the given URL is not null. */
+			if (url != null) {
+
+				ContractReader reader;
+
+				Logger.info("Loading contract from " + url);
+				reader = new ContractReader(new EclipseResourceManager());
+
+				/* Try to read the contract. */
+				try {
+					newContract = reader.read(url.openStream());
+					newContract.setLocation(url);
+
+					/* If the owner of the contract is not null, set the owner. */
+					if (contractOwner != null) {
+						newContract.setOwner(contractOwner);
+					}
+
+					this.configureNewContract(newContract);
+				}
+
+				catch (TreatyException e) {
+					Logger.error("Exception loading contract from " + url, e);
+				}
+
+				catch (IOException e) {
+					Logger.error("Exception loading contract from " + url, e);
+				}
+			}
+			// no else (URL is null).
+		}
+		// no else (no owner of this connector).
+
+		/* If no contract has been set yet, the new contract is the root contract. */
+		if (this.contract == null) {
+			this.contract = newContract;
+		}
+
+		/* Else aggregate the contract. */
+		else {
+			Logger.info("Aggregating contracts " + url + " and " + this.contract);
+
+			this.contract = new AggregatedContract(this.contract, newContract);
+			this.contract = this.contract.pack();
+		}
+	}
+
+	/**
+	 * <p>
+	 * Removes a given {@link Contract} from this {@link EclipseConnector}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} that shall be removed.
+	 */
+	public void removeContract(Contract contract) {
+
+		/* If no contract has been set, return false. */
+		if (this.contract == null) {
+			Logger.info("Could not remove Contract. Was already null.");
+		}
+
+		/* Else try to remove the contract. */
+		else {
+			this.contract = this.contract.subtractContract(contract);
+		}
+	}
+
+	public static String getContractLocation(Connector c) {
+
+		return "/META-INF/" + c.getId() + ".contract";
+	}
+
 	public Component getOwner() {
+
 		return owner;
 	}
 
 	public void setOwner(EclipsePlugin owner) {
+
 		this.owner = owner;
 	}
 
 	public EclipseConnector(EclipsePlugin owner) {
+
 		super();
 		this.owner = owner;
 	}
 
 	public Contract getContract() {
+
 		return contract;
-	}
-	
-	public void addContract (URL url,EclipseConnector contractOwner) {
-		SimpleContract newContract = null; 
-		if (owner!=null) {
-			if (url!=null) {
-				Logger.info("Loading contract from " + url);
-				ContractReader reader = new ContractReader(new EclipseResourceManager());
-				try {
-					newContract = reader.read(url.openStream());
-					newContract.setLocation(url);
-					if (contractOwner!=null) {
-						newContract.setOwner(contractOwner);
-					}
-					configureNewContract(newContract);
-				} catch (TreatyException e) {
-					Logger.error("Exception loading contract from " + url,e);
-				} catch (IOException e) {
-					Logger.error("Exception loading contract from " + url,e);
-				}	
-			}
-		}
-		if (contract==null) {
-			contract = newContract;
-		}
-		else {
-			// contract aggregation
-			Logger.info("Aggregating contracts " + url + " and " + this.contract);
-			this.contract = new AggregatedContract(this.contract,newContract);
-			
-		}
 	}
 
 	protected void configureNewContract(SimpleContract newContract) {
+
 		// by default nothing to do here
 	}
-
 }

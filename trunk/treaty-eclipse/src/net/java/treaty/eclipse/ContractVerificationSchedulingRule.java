@@ -16,52 +16,81 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 /**
  * Helper class used to synchronise verification jobs.
+ * 
  * @author Jens Dietrich
  */
+class ContractVerificationSchedulingRule implements ISchedulingRule {
 
-
-class  ContractVerificationSchedulingRule implements ISchedulingRule {
+	/** The {@link Contract} of this {@link ContractVerificationSchedulingRule}. */
 	private Contract contract = null;
+
+	/**
+	 * Creates a new {@link ContractVerificationSchedulingRule}.
+	 * 
+	 * @param contract
+	 *          The {@link Contract} of this
+	 *          {@link ContractVerificationSchedulingRule}.
+	 */
 	public ContractVerificationSchedulingRule(Contract contract) {
+
 		super();
 		this.contract = contract;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.core.runtime.jobs.ISchedulingRule#contains(org.eclipse.core
+	 * .runtime.jobs.ISchedulingRule)
+	 */
 	public boolean contains(ISchedulingRule rule) {
+
 		return this.equals(rule);
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.core.runtime.jobs.ISchedulingRule#isConflicting(org.eclipse
+	 * .core.runtime.jobs.ISchedulingRule)
+	 */
 	public boolean isConflicting(ISchedulingRule rule) {
+
 		return this.equals(rule);
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
+
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((contract == null) ? 0 : contract.hashCode());
+		result = prime * result + ((contract == null) ? 0 : contract.hashCode());
 		return result;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
+
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ContractVerificationSchedulingRule other = (ContractVerificationSchedulingRule) obj;
+		ContractVerificationSchedulingRule other =
+				(ContractVerificationSchedulingRule) obj;
 		if (contract == null) {
 			if (other.contract != null)
 				return false;
-		} else if (!contract.equals(other.contract))
+		}
+		else if (!contract.equals(other.contract))
 			return false;
 		return true;
 	}
-	
-	
 }
