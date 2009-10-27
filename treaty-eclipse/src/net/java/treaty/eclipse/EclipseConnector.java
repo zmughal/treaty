@@ -21,6 +21,7 @@ import net.java.treaty.PropertySupport;
 import net.java.treaty.SimpleContract;
 import net.java.treaty.TreatyException;
 import net.java.treaty.ContractReader;
+import net.java.treaty.xml.XMLContractReader;
 
 /**
  * Abstract superclass for extensions and extension points.
@@ -67,7 +68,7 @@ public abstract class EclipseConnector extends PropertySupport implements
 				ContractReader reader;
 
 				Logger.info("Loading contract from " + url);
-				reader = new ContractReader(new EclipseResourceManager());
+				reader = new XMLContractReader(new EclipseResourceManager());
 
 				/* Try to read the contract. */
 				try {
