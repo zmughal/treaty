@@ -10,141 +10,236 @@
 
 package net.java.treaty;
 
-import java.util.Collection;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Contracts that are composed from sub contracts.
+ * 
  * @author Jens Dietrich
  */
 
-public class AggregatedContract extends PropertySupport implements Contract{
-	
-	private Contract[] parts = null;
+public class AggregatedContract extends PropertySupport implements Contract {
+
+	/** All {@link Contract}s contained in this {@link AggregatedContract}. */
+	private List<Contract> parts = null;
+
 	private Contract definition = null;
 
-
-
-
-	public AggregatedContract(Contract... parts) {
-		super();
-		this.parts = parts;
-	}
-
-	public Contract getDefinition() {
-		return definition;
-	}
-
-	public void setDefinition(Contract def) {
-		this.definition = def;
-	}
-
-	public void accept(ContractVisitor visitor) {
-		boolean f = visitor.visit(this);
-		if (f) {
-			for (Contract p:parts) {
-				p.accept(visitor);
-			}
-		}
-		visitor.endVisit(this);
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager) 
+	/**
+	 * <p>
+	 * Creates a new {@link AggregatedContract}.
+	 * </p>
+	 * 
+	 * @param parts
+	 *          The {@link Contract}s that are part of this
+	 *          {@link AggregatedContract}.
 	 */
-	public Contract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException {
-		Contract[] boundParts = new Contract[parts.length];
-		for (int i=0;i<parts.length;i++) {
-			boundParts[i] = parts[i].bindSupplier(connector,loader);
+	public AggregatedContract(Contract... parts) {
+
+		super();
+
+		this.parts = Arrays.asList(parts);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager)
+	 */
+	public Contract bindConsumer(Connector connector, ResourceManager loader)
+			throws TreatyException {
+
+		Contract result;
+		List<Contract> boundParts;
+
+		boundParts = new ArrayList<Contract>();
+
+		for (Contract part : this.parts) {
+			boundParts.add(part.bindConsumer(connector, loader));
 		}
-		Contract result = new AggregatedContract(boundParts).pack();
+
+		result = new AggregatedContract(boundParts.toArray(new Contract[0])).pack();
 		result.setDefinition(this);
+
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager) 
+	/*
+	 * (non-Javadoc)
+	 * @see nz.ac.massey.treaty.Contract#bindConsumer(Connector,ResourceManager)
 	 */
-	public Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException{
-		Contract[] boundParts = new Contract[parts.length];
-		for (int i=0;i<parts.length;i++) {
-			boundParts[i] = parts[i].bindConsumer(connector,loader);
+	public Contract bindSupplier(Connector connector, ResourceManager loader)
+			throws TreatyException {
+
+		Contract result;
+		List<Contract> boundParts = new ArrayList<Contract>();
+
+		for (Contract part : this.parts) {
+			boundParts.add(part.bindSupplier(connector, loader));
 		}
-		Contract result = new AggregatedContract(boundParts).pack();
+
+		result = new AggregatedContract(boundParts.toArray(new Contract[0])).pack();
 		result.setDefinition(this);
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Contract#pack()
+	 */
+	public Contract pack() {
+
+		Contract result;
+
+		if (this.parts.size() == 1) {
+			result = this.parts.get(0).pack();
+		}
+
+		else {
+
+			List<Contract> newParts;
+			newParts = new ArrayList<Contract>();
+
+			for (Contract part : this.parts) {
+				newParts.add(part.pack());
+			}
+
+			result = new AggregatedContract(newParts.toArray(new Contract[0]));
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Contract#subtractContract(net.java.treaty.Contract)
+	 */
+	public Contract subtractContract(Contract contract) {
+
+		Contract result;
+		List<Contract> newParts;
+
+		newParts = new ArrayList<Contract>(this.parts);
+
+		/*
+		 * Iterate through the parts and search for a contract similar to the given
+		 * contract.
+		 */
+		for (int index = 0; index < newParts.size(); index++) {
+
+			if (newParts.get(index).equals(contract)) {
+				newParts.remove(index);
+				break;
+			}
+		}
+
+		if (newParts.size() == 0) {
+			result = null;
+		}
+
+		else {
+			result = new AggregatedContract(newParts.toArray(new Contract[0])).pack();
+		}
+
 		return result;
 	}
 
 	/**
+	 * <p>
+	 * Returns the parts of this {@link AggregatedContract}.
+	 * </p>
+	 * 
+	 * @return The parts of this {@link AggregatedContract}.
+	 */
+	public Contract[] getParts() {
+
+		return parts.toArray(new Contract[0]);
+	}
+
+	public Contract getDefinition() {
+
+		return definition;
+	}
+
+	public void setDefinition(Contract def) {
+
+		this.definition = def;
+	}
+
+	public void accept(ContractVisitor visitor) {
+
+		boolean f = visitor.visit(this);
+		if (f) {
+			for (Contract p : parts) {
+				p.accept(visitor);
+			}
+		}
+		visitor.endVisit(this);
+
+	}
+
+	/**
 	 * Check this contract using a verifier. Add the results to the report.
+	 * 
 	 * @param report
 	 * @param verifier
 	 * @param policy
 	 * @return
 	 */
-	public boolean check(VerificationReport report,Verifier verifier,VerificationPolicy policy) {
+	public boolean check(VerificationReport report, Verifier verifier,
+			VerificationPolicy policy) {
+
 		boolean result = true;
-		for (Contract part:parts) {
+		for (Contract part : parts) {
 			// TODO - now we hard coded & instead of && - this is slower
 			// but gives us more info
 			// this should be configurable
-			result = result&part.check(report, verifier,policy);
+			result = result & part.check(report, verifier, policy);
 		}
 		return result;
 	}
 
-
 	public Connector getConsumer() {
+
 		Connector c = null;
-		for (Contract p:parts) {
-			if (c!=null) {
-				if (c!=p.getConsumer()) throw new IllegalStateException("All parts of a contract must have the same consumer");
+		for (Contract p : parts) {
+			if (c != null) {
+				if (c != p.getConsumer())
+					throw new IllegalStateException(
+							"All parts of a contract must have the same consumer");
 			}
 			else {
-				c=p.getConsumer();
+				c = p.getConsumer();
 			}
 		}
 		return c;
 	}
 
-	public Connector getSupplier(){
+	public Connector getSupplier() {
+
 		Connector c = null;
-		for (Contract p:parts) {
-			if (c!=null) {
-				if (c!=p.getSupplier()) throw new IllegalStateException("All parts of a contract must have the same supplier");
+		for (Contract p : parts) {
+			if (c != null) {
+				if (c != p.getSupplier())
+					throw new IllegalStateException(
+							"All parts of a contract must have the same supplier");
 			}
 			else {
-				c=p.getSupplier();
+				c = p.getSupplier();
 			}
 		}
 		return c;
 	}
 
-	public Contract[] getParts() {
-		return parts;
-	}
-	
 	public boolean isInstantiated() {
-		for (Contract part:parts) {
+
+		for (Contract part : parts) {
 			if (!part.isInstantiated()) {
 				return false;
 			}
 		}
 		return true;
-	}
-	/**
-	 * Convert the contract to an equivalent, more compact form.
-	 * @return a contract
-	 */
-	public Contract pack() {
-		if (parts.length==1) {
-			return parts[0].pack();
-		}
-		Contract[] newParts = new Contract[parts.length];
-		for (int i=0;i<parts.length;i++) {
-			newParts[i]=parts[i].pack();
-		}
-		return new AggregatedContract(newParts);
 	}
 }

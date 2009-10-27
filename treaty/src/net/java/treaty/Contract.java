@@ -11,45 +11,75 @@
 package net.java.treaty;
 
 /**
- * Contract interface.  
+ * Contract interface.
+ * 
  * @author Jens Dietrich
  */
 
 public interface Contract extends Constraint {
-	
+
 	Connector getConsumer();
 
 	Connector getSupplier();
-	
+
 	/**
-	 * The definition is the contract definition that has been used 
-	 * to instantiate this contract. It is null iff this contract s not instantiated.
+	 * The definition is the contract definition that has been used to instantiate
+	 * this contract. It is null iff this contract s not instantiated.
 	 */
 	Contract getDefinition();
+
+	/**
+	 * <p>
+	 * Tries to subtract a given {@link Contract} from this {@link Contract}. The
+	 * given {@link Contract} can be only subtracted, if the given
+	 * {@link Contract} and this {@link Contract} are the same, or the given
+	 * {@link Contract} is a part of this {@link Contract} (for composite
+	 * structures).
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} that shall be subtracted.
+	 * @return The resulting {@link Contract} or <code>null</code>, if no
+	 *         {@link Contract} remains.
+	 */
+	Contract subtractContract(Contract contract);
+
 	void setDefinition(Contract c);
 
 	/**
-	 * Instantiate this contract with a supplier.
-	 * A new contract will be returned that has no supplier variables. 
-	 * @param connector the supplier
-	 * @param loader the loader
+	 * Instantiate this contract with a supplier. A new contract will be returned
+	 * that has no supplier variables.
+	 * 
+	 * @param connector
+	 *          the supplier
+	 * @param loader
+	 *          the loader
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	Contract bindSupplier(Connector connector,ResourceManager loader) throws TreatyException;
+	Contract bindSupplier(Connector connector, ResourceManager loader)
+			throws TreatyException;
 
 	/**
-	 * Instantiate this contract with a consumer.
-	 * A new contract will be returned that has no consumer variables. 
-	 * @param connector the consumer
-	 * @param loader the loader
+	 * Instantiate this contract with a consumer. A new contract will be returned
+	 * that has no consumer variables.
+	 * 
+	 * @param connector
+	 *          the consumer
+	 * @param loader
+	 *          the loader
 	 * @return a new contract
 	 * @throws InvalidContractException
 	 */
-	Contract bindConsumer(Connector connector,ResourceManager loader) throws TreatyException;	
+	Contract bindConsumer(Connector connector, ResourceManager loader)
+			throws TreatyException;
+
 	/**
-	 * Convert the contract to an equivalent, more compact form.
-	 * @return a contract
+	 * <p>
+	 * Converts the {@link Contract} into an equivalent, more compact form.
+	 * </p>
+	 * 
+	 * @return An equivalent {@link Contract} in a probably more compact form.
 	 */
 	Contract pack();
 }
