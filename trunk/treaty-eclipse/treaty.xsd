@@ -3,6 +3,7 @@
 	<xs:element name="contract">
 		<xs:complexType>	
 			<xs:sequence maxOccurs="unbounded" minOccurs="0">
+				<xs:element ref="trigger" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="consumer" type="resource_owner" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="supplier" type="resource_owner" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="external" type="resource_owner" minOccurs="0" maxOccurs="1"/>
@@ -40,6 +41,8 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:element name="trigger" type="xs:anyURI"></xs:element>
+
 	<xs:element name="and">
 		<xs:complexType>
 			<xs:sequence maxOccurs="unbounded">
@@ -124,4 +127,5 @@
 			<xs:attribute name="resource" type="xs:IDREF" use="required"/>
 		</xs:complexType>
 	</xs:element>
+
 </xs:schema>
