@@ -10,6 +10,7 @@
 
 package net.java.treaty;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -258,6 +259,34 @@ public class AbstractContractVisitor implements ContractVisitor {
 	 */
 	public boolean visitExternalResources(Collection<Resource> resources) {
 
+		return true;
+	}
+
+	@Override
+	public void endVisitOnFailureAction(URI uri) {
+	}
+
+	@Override
+	public void endVisitOnSuccessAction(URI uri) {
+	}
+
+	@Override
+	public void endVisitTrigger(URI uri) {
+		
+	}
+
+	@Override
+	public boolean visitOnFailureAction(URI uri) {
+		return true;
+	}
+
+	@Override
+	public boolean visitOnSuccessAction(URI uri) {
+		return true;
+	}
+
+	@Override
+	public boolean visitTrigger(URI uri) {
 		return true;
 	}
 }

@@ -11,6 +11,7 @@
 package net.java.treaty;
 
 import java.io.PrintStream;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -195,6 +196,33 @@ public class ContractPrinter implements ContractVisitor {
 
 	public void endVisitConditions(Collection<AbstractCondition> conditions) {
 		dos();
+	}
+	@Override
+	public void endVisitOnFailureAction(URI uri) {
+		
+	}
+	@Override
+	public void endVisitOnSuccessAction(URI uri) {
+		
+	}
+	@Override
+	public void endVisitTrigger(URI uri) {
+		
+	}
+	@Override
+	public boolean visitOnFailureAction(URI uri) {
+		out.println(uri);
+		return false;
+	}
+	@Override
+	public boolean visitOnSuccessAction(URI uri) {
+		out.println(uri);
+		return false;
+	}
+	@Override
+	public boolean visitTrigger(URI uri) {
+		out.println(uri);
+		return false;
 	}
 
 

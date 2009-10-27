@@ -11,6 +11,7 @@
 
 package net.java.treaty;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,6 +22,9 @@ import java.util.List;
 
 public interface ContractVisitor {
 	public boolean visit(Contract contract);
+	public boolean visitTrigger(URI uri);
+	public boolean visitOnFailureAction(URI uri);
+	public boolean visitOnSuccessAction(URI uri);
 	public boolean visit(Resource resource);
 	public boolean visitExtensionResources(Collection<Resource> resources);
 	public boolean visitExtensionPointResources(Collection<Resource> resources);
@@ -47,4 +51,7 @@ public interface ContractVisitor {
 	public void endVisit(PropertyCondition condition);
 	public void endVisitConditions(Collection<AbstractCondition> conditions);
 	public void endVisit(ExistsCondition condition);
+	public void endVisitTrigger(URI uri);
+	public void endVisitOnFailureAction(URI uri);
+	public void endVisitOnSuccessAction(URI uri);
 }
