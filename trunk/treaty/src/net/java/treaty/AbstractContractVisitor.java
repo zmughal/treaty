@@ -15,125 +15,249 @@ import java.util.List;
 
 /**
  * Useful superclass for implementing contract visitors.
+ * 
  * @author Jens Dietrich
  */
-
 public class AbstractContractVisitor implements ContractVisitor {
 
-	@Override
-	public void endVisit(Contract contract) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Contract)
+	 */
+	public void endVisit(Contract contract) {
 
-	@Override
-	public void endVisit(Resource resource) {}
+	}
 
-	@Override
-	public void endVisit(Conjunction condition) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Resource)
+	 */
+	public void endVisit(Resource resource) {
 
-	@Override
-	public void endVisit(Disjunction condition) {}
+	}
 
-	@Override
-	public void endVisit(XDisjunction condition) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Conjunction)
+	 */
+	public void endVisit(Conjunction condition) {
 
-	@Override
-	public void endVisit(Negation condition) {}
+	}
 
-	@Override
-	public void endVisit(RelationshipCondition relationshipCondition) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Disjunction)
+	 */
+	public void endVisit(Disjunction condition) {
 
-	@Override
-	public void endVisit(PropertyCondition condition) {}
+	}
 
-	@Override
-	public void endVisit(ExistsCondition condition) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.XDisjunction)
+	 */
+	public void endVisit(XDisjunction condition) {
 
-	@Override
-	public void endVisitConditions(Collection<AbstractCondition> conditions) {}
+	}
 
-	@Override
-	public void endVisitExtensionPointResources(Collection<Resource> resources) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Negation)
+	 */
+	public void endVisit(Negation condition) {
 
-	@Override
-	public void endVisitExtensionResources(Collection<Resource> resources) {}
+	}
 
-	@Override
-	public void endVisitExternalResources(Collection<Resource> resources) {}
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.RelationshipCondition
+	 * )
+	 */
+	public void endVisit(RelationshipCondition relationshipCondition) {
 
-	@Override
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.PropertyCondition)
+	 */
+	public void endVisit(PropertyCondition condition) {
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.ExistsCondition)
+	 */
+	public void endVisit(ExistsCondition condition) {
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitConditions(java.util.Collection)
+	 */
+	public void endVisitConditions(Collection<AbstractCondition> conditions) {
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitExtensionPointResources(java.util
+	 * .Collection)
+	 */
+	public void endVisitExtensionPointResources(Collection<Resource> resources) {
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitExtensionResources(java.util.Collection
+	 * )
+	 */
+	public void endVisitExtensionResources(Collection<Resource> resources) {
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitExternalResources(java.util.Collection
+	 * )
+	 */
+	public void endVisitExternalResources(Collection<Resource> resources) {
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Contract)
+	 */
 	public boolean visit(Contract contract) {
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Resource)
+	 */
 	public boolean visit(Resource resource) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Conjunction)
+	 */
 	public boolean visit(Conjunction condition) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Disjunction)
+	 */
 	public boolean visit(Disjunction condition) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.XDisjunction)
+	 */
 	public boolean visit(XDisjunction condition) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Negation)
+	 */
 	public boolean visit(Negation condition) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visit(net.java.treaty.RelationshipCondition
+	 * )
+	 */
 	public boolean visit(RelationshipCondition relationshipCondition) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visit(net.java.treaty.PropertyCondition)
+	 */
 	public boolean visit(PropertyCondition condition) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.ExistsCondition)
+	 */
 	public boolean visit(ExistsCondition condition) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visitConditions(java.util.List)
+	 */
 	public boolean visitConditions(List<AbstractCondition> name) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visitExtensionPointResources(java.util.
+	 * Collection)
+	 */
 	public boolean visitExtensionPointResources(Collection<Resource> resources) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visitExtensionResources(java.util.Collection
+	 * )
+	 */
 	public boolean visitExtensionResources(Collection<Resource> resources) {
-		
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visitExternalResources(java.util.Collection
+	 * )
+	 */
 	public boolean visitExternalResources(Collection<Resource> resources) {
-		
+
 		return true;
 	}
-
 }
