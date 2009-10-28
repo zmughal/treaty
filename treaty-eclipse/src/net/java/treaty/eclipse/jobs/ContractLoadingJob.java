@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import net.java.treaty.Contract;
@@ -36,176 +37,193 @@ import org.osgi.framework.Bundle;
 
 /**
  * Job to scan for and load contracts.
+ * 
  * @author Jens Dietrich
  */
 
 public class ContractLoadingJob extends Job {
-	
+
 	private boolean isInitialScan = true;
-	
-	public ContractLoadingJob(String name,boolean isInitialScan) {
+
+	public ContractLoadingJob(String name, boolean isInitialScan) {
+
 		super(name);
 		this.isInitialScan = isInitialScan;
 	}
-	
-	
+
 	private Collection<EclipsePlugin> plugins = new Vector<EclipsePlugin>();
-	
+
 	public Collection<EclipsePlugin> getPlugins() {
+
 		return plugins;
 	}
 
+	protected IStatus run(IProgressMonitor monitor) {
 
+		monitor.beginTask("Analysing contracts", 11000); // about 10% befoe
+		// instantiation
 
-    protected IStatus run(IProgressMonitor monitor) {
-    	monitor.beginTask("Analysing contracts",11000); // about 10% befoe instantiation 
-    	
-    	monitor.subTask("Analysing plugins");
-		Map<String,EclipsePlugin> plugins = new HashMap<String,EclipsePlugin>();
-		Map<String,EclipseExtensionPoint> extensionPoints = new HashMap<String,EclipseExtensionPoint>();
-		Map<String,EclipseExtension> extensions = new HashMap<String,EclipseExtension>();
-				
-		IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
+		monitor.subTask("Analysing plugins");
+		Map<String, EclipsePlugin> plugins = new HashMap<String, EclipsePlugin>();
+		Map<String, EclipseExtensionPoint> extensionPoints =
+				new HashMap<String, EclipseExtensionPoint>();
+		Map<String, EclipseExtension> extensions =
+				new HashMap<String, EclipseExtension>();
+
+		IExtensionRegistry registry =
+				org.eclipse.core.runtime.Platform.getExtensionRegistry();
 		IExtensionPoint[] xpoints = registry.getExtensionPoints();
-		for (IExtensionPoint xpoint:xpoints) {
+		for (IExtensionPoint xpoint : xpoints) {
 			IContributor c = xpoint.getContributor();
 			Bundle b = org.eclipse.core.runtime.Platform.getBundle(c.getName());
-			plugins.put(b.getSymbolicName(),new EclipsePlugin(b));
+			plugins.put(b.getSymbolicName(), new EclipsePlugin(b));
 			// also register the plugins with extension points
-			
+
 			// tmp starts
-			//if (xpoint.getExtensions().length>10)
-			// 	 System.out.println(""+xpoint.getUniqueIdentifier()+" has "+xpoint.getExtensions().length+" extensions");
-			// tmp ends 
-			
-			for (IExtension x:xpoint.getExtensions()) {
+			// if (xpoint.getExtensions().length>10)
+			// System.out.println(""+xpoint.getUniqueIdentifier()+" has "+xpoint.getExtensions().length+" extensions");
+			// tmp ends
+
+			for (IExtension x : xpoint.getExtensions()) {
 				c = x.getContributor();
 				b = org.eclipse.core.runtime.Platform.getBundle(c.getName());
-				plugins.put(b.getSymbolicName(),new EclipsePlugin(b));				
+				plugins.put(b.getSymbolicName(), new EclipsePlugin(b));
 			}
 		}
 		monitor.worked(200);
-		if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
-		
+		if (!isInitialScan && monitor.isCanceled())
+			return Status.CANCEL_STATUS;
+
 		monitor.subTask("Searching for contracts in extension points");
-		for (IExtensionPoint xpoint:xpoints) {
+		for (IExtensionPoint xpoint : xpoints) {
 			IContributor c = xpoint.getContributor();
 			Bundle b = org.eclipse.core.runtime.Platform.getBundle(c.getName());
 			EclipsePlugin tplugin = plugins.get(b.getSymbolicName());
-			EclipseExtensionPoint txp = new EclipseExtensionPoint(tplugin,xpoint);
+			EclipseExtensionPoint txp = new EclipseExtensionPoint(tplugin, xpoint);
 			extensionPoints.put(xpoint.getUniqueIdentifier(), txp);
-			String contractName = "/META-INF/"+txp.getId()+".contract";
+			String contractName = "/META-INF/" + txp.getId() + ".contract";
 			URL contractURL = tplugin.getResource(contractName);
-			if (contractURL!=null) {
-				txp.addContract(contractURL,null);
+			if (contractURL != null) {
+				txp.createContract(contractURL, null);
 			}
-			for (IExtension x:xpoint.getExtensions()) {
+			for (IExtension x : xpoint.getExtensions()) {
 				c = x.getContributor();
 				b = org.eclipse.core.runtime.Platform.getBundle(c.getName());
 				tplugin = plugins.get(b.getSymbolicName());
-				EclipseExtension tx = new EclipseExtension(tplugin,x);
+				EclipseExtension tx = new EclipseExtension(tplugin, x);
 				txp.addExtension(tx);
-				extensions.put(tx.getId(),tx);
-			}					
-		}	
+				extensions.put(tx.getId(), tx);
+			}
+		}
 		monitor.worked(500);
-		if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
-		
+		if (!isInitialScan && monitor.isCanceled())
+			return Status.CANCEL_STATUS;
+
 		monitor.subTask("Searching for external contracts");
 		// look external contracts supplied by third parties
-		IExtensionPoint contractXP = registry.getExtensionPoint("net.java.treaty.eclipse.contract");
-		for (IExtension contractExtension:contractXP.getExtensions()) {
+		IExtensionPoint contractXP =
+				registry.getExtensionPoint("net.java.treaty.eclipse.contract");
+		for (IExtension contractExtension : contractXP.getExtensions()) {
 			String pluginId = contractExtension.getContributor().getName();
 			try {
-				IConfigurationElement[] attributes = contractExtension.getConfigurationElements();
-				for (int j=0;j<attributes.length;j++) {
+				IConfigurationElement[] attributes =
+						contractExtension.getConfigurationElements();
+				for (int j = 0; j < attributes.length; j++) {
 					IConfigurationElement p = attributes[j];
-					String loc = p.getAttribute("location");	
+					String loc = p.getAttribute("location");
 					Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(pluginId);
-					if (bundle!=null && loc!=null) {
+					if (bundle != null && loc != null) {
 						URL url = bundle.getEntry(loc);
-						if (url==null) {
-							Logger.warn("No contract found for location "+url);
+						if (url == null) {
+							Logger.warn("No contract found for location " + url);
 						}
 						else {
 							// check naming pattern
-							String xpName = loc.substring(0,loc.length()-".contract".length());
+							String xpName =
+									loc.substring(0, loc.length() - ".contract".length());
 							EclipseExtensionPoint xp = extensionPoints.get(xpName);
-							if (xp==null) {
-								Logger.warn("No extension point found for contract "+loc + " defined in " + bundle.getSymbolicName());
+							if (xp == null) {
+								Logger.warn("No extension point found for contract " + loc
+										+ " defined in " + bundle.getSymbolicName());
 							}
 							else {
-								EclipseExtension x = extensions.get(contractExtension.getUniqueIdentifier());
-								xp.addContract(url,x);
+								EclipseExtension x =
+										extensions.get(contractExtension.getUniqueIdentifier());
+								xp.createContract(url, x);
 							}
 						}
 					}
 				}
-			}
-			catch (Exception e) {
-				Logger.error("Error loading vocabulary from "+pluginId,e);
+			} catch (Exception e) {
+				Logger.error("Error loading vocabulary from " + pluginId, e);
 			}
 		}
 		monitor.worked(250);
-		if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
-		
+		if (!isInitialScan && monitor.isCanceled())
+			return Status.CANCEL_STATUS;
+
 		// filter contracts
 		monitor.subTask("Filtering contracts");
 		Collection<EclipsePlugin> l = new ArrayList<EclipsePlugin>();
-		for (EclipsePlugin p:plugins.values()) {
+		for (EclipsePlugin p : plugins.values()) {
 			if (p.hasContracts()) {
 				l.add(p);
 			}
 		}
 		monitor.worked(50);
-		if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
-		
+		if (!isInitialScan && monitor.isCanceled())
+			return Status.CANCEL_STATUS;
+
 		// instantiate contracts
 		// compute steps
 		int counter = 0;
-		for (EclipsePlugin p:l) {
-			for (EclipseExtensionPoint xp:p.getExtensionPoints()) {
+		for (EclipsePlugin p : l) {
+			for (EclipseExtensionPoint xp : p.getExtensionPoints()) {
 				if (xp.hasContracts()) {
-					for (EclipseExtension x:xp.getExtensions()) {
-						counter = counter+1;
+					for (EclipseExtension x : xp.getExtensions()) {
+						counter = counter + 1;
 					}
 				}
 			}
 		}
 		monitor.subTask("Instantiating contracts");
 		EclipseResourceManager eclipseMgr = new EclipseResourceManager();
-		int increment = 10000/counter;
-		for (EclipsePlugin p:l) {
-			for (EclipseExtensionPoint xp:p.getExtensionPoints()) {
+		int increment = 10000 / counter;
+		for (EclipsePlugin p : l) {
+			for (EclipseExtensionPoint xp : p.getExtensionPoints()) {
 				String xpn = xp.getId();
 				if (xp.hasContracts()) {
-					Contract c = xp.getContract();
-					for (EclipseExtension x:xp.getExtensions()) {
-						if (!isInitialScan&&monitor.isCanceled()) return Status.CANCEL_STATUS;
-						String xn = x.getOwner().getId();
-						monitor.subTask("Instantiating contracts for extension point "+xpn + " in " + xn);
-						try {
-							Contract instantiatedContract = c.bindSupplier(x,eclipseMgr);
-							x.setContract(instantiatedContract);
-							monitor.worked(increment);
-						}
-						catch (Exception e) {
-							Logger.error("Error instantiating contract "+c+" for extension "+x.getId(), e);
+					for (Contract c : xp.getContracts()) {
+
+						for (EclipseExtension x : xp.getExtensions()) {
+							if (!isInitialScan && monitor.isCanceled())
+								return Status.CANCEL_STATUS;
+							String xn = x.getOwner().getId();
+							monitor.subTask("Instantiating contracts for extension point "
+									+ xpn + " in " + xn);
+							try {
+								List<Contract> instantiatedContracts =
+										c.bindSupplier(x, eclipseMgr);
+								for (Contract instantiatedContract : instantiatedContracts) {
+									x.addContract(instantiatedContract);
+								}
+								monitor.worked(increment);
+							} catch (Exception e) {
+								Logger.error("Error instantiating contract " + c
+										+ " for extension " + x.getId(), e);
+							}
 						}
 					}
+					// end for.
 				}
 			}
-			
+
 		}
-		
-		
-		
-       	
+
 		ContractRepository rep = new ContractRepository(l);
 		rep.install();
-		
-       	
-       	monitor.done();
-    	return Status.OK_STATUS;	        	 
-     }
+
+		monitor.done();
+		return Status.OK_STATUS;
+	}
 }
