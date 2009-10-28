@@ -10,9 +10,11 @@
 
 package net.java.treaty.eclipse;
 
-import org.eclipse.core.runtime.IExtension;
 import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
+import net.java.treaty.eclipse.contractregistry.ContractRegistry;
+
+import org.eclipse.core.runtime.IExtension;
 
 /**
  * <p>
@@ -58,6 +60,68 @@ public class EclipseExtension extends EclipseConnector {
 		this.setOwner(owner);
 	}
 
+	public ConnectorType getType() {
+
+		return ConnectorType.SUPPLIER;
+	}
+
+	public String getId() {
+
+		return this.extension.getUniqueIdentifier();
+	}
+
+	/**
+	 * <p>
+	 * Returns the index of this {@link EclipseExtension} amongst the
+	 * {@link EclipseExtension}s for the same {@link EclipseExtensionPoint}. This
+	 * is used for generating XPath queries to query the plugin.xml
+	 * </p>
+	 * 
+	 * @return The index of this {@link EclipseExtension} amongst the
+	 *         {@link EclipseExtension}s for the same
+	 *         {@link EclipseExtensionPoint}.
+	 */
+	public int getExtensionIndex() {
+
+		/* XQuery semantics, so we start with 1. */
+		int index = 1;
+
+		for (EclipseExtension eclipseExtension : ((EclipsePlugin) this.getOwner())
+				.getExtensions()) {
+
+			/* If the current extension is this one, return the index */
+			if (eclipseExtension == this) {
+				return index;
+			}
+
+			/*
+			 * If the current extension has the same extension point, increment the
+			 * index.
+			 */
+			else if (eclipseExtension.getExtensionPoint() == this.getExtensionPoint()) {
+				index = index + 1;
+			}
+			// no else.
+		}
+
+		/* If the extension has not been found, fail. */
+		throw new IllegalStateException("cannot find extension");
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link EclipseExtensionPoint} this {@link EclipseExtension}
+	 * belongs to.
+	 * </p>
+	 * 
+	 * @return The {@link EclipseExtensionPoint} this {@link EclipseExtension}
+	 *         belongs to.
+	 */
+	public EclipseExtensionPoint getExtensionPoint() {
+
+		return extensionPoint;
+	}
+
 	/**
 	 * <p>
 	 * Returns the wrapped {@link IExtension} of this {@link EclipseExtension}.
@@ -71,31 +135,25 @@ public class EclipseExtension extends EclipseConnector {
 		return this.extension;
 	}
 
-	public ConnectorType getType() {
-
-		return ConnectorType.SUPPLIER;
-	}
-
-	public String getId() {
-
-		return this.extension.getUniqueIdentifier();
-	}
-
-	public EclipseExtensionPoint getExtensionPoint() {
-
-		return extensionPoint;
-	}
-
+	/**
+	 * <p>
+	 * Sets the {@link EclipseExtensionPoint} this {@link EclipseExtension}
+	 * belongs to.
+	 * </p>
+	 * 
+	 * @param extensionPoint
+	 *          The {@link EclipseExtensionPoint} this {@link EclipseExtension}
+	 *          belongs to.
+	 */
 	public void setExtensionPoint(EclipseExtensionPoint extensionPoint) {
 
 		this.extensionPoint = extensionPoint;
 	}
 
-	public void setContract(Contract c) {
-
-		this.contract = c;
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 
@@ -107,22 +165,20 @@ public class EclipseExtension extends EclipseConnector {
 				.append(",defined in ").append(this.getOwner()).append(')').toString();
 	}
 
-	// get the index of this extension amongst the extensions for the same
-	// extension point
-	public int getExtensionIndex() {
-
-		int i = 1; // this is used for generating xpath queries to query plugin.xml,
-		// so we start with 1
-		for (EclipseExtension x : ((EclipsePlugin) this.getOwner()).getExtensions()) {
-			if (x == this) {
-				return i;
-			}
-			else if (x.getExtensionPoint() == this.getExtensionPoint()) {
-				i = i + 1;
-			}
-		}
-		throw new IllegalStateException("cannot find extension");
+	/**
+	 * <p>
+	 * Adds a given {@link Contract} to this {@link EclipseExtension}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} that shall be added.
+	 * 
+	 * @deprecated This method does not add a {@link Contract} to this
+	 *             {@link EclipseExtension} anymore because all {@link Contract}s
+	 *             are stored by the {@link ContractRegistry} now.
+	 */
+	@Deprecated
+	public void addContract(Contract contract) {
 
 	}
-
 }

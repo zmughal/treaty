@@ -10,51 +10,70 @@
 
 package net.java.treaty.eclipse;
 
+import net.java.treaty.eclipse.contractregistry.BundleEventContractListener;
+
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
 /**
+ * <p>
  * The activator class controls the plug-in life cycle.
+ * </p>
+ * 
+ * @author Claas Wilke
  */
 public class Activator extends Plugin {
 
-	// The plug-in ID
-	public static final String PLUGIN_ID = "net.java.treaty.eclipse";
+	/** The plug-in ID. */
+	public static final String PLUGIN_ID =
+			"net.java.treaty.eclipse.contractregistry";
 
-	// The shared instance
+	/** The shared instance. */
 	private static Activator plugin;
-	
+
 	/**
-	 * The constructor
+	 * <p>
+	 * The constructor.
+	 * </p>
 	 */
 	public Activator() {
+
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+	 * @see
+	 * org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
+
 		super.start(context);
 		plugin = this;
+
+		context.addBundleListener(BundleEventContractListener.getInstance());
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+
 		plugin = null;
 		super.stop(context);
+
+		context.removeBundleListener(BundleEventContractListener.getInstance());
 	}
 
 	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
+	 * <p>
+	 * Returns the shared instance.
+	 * </p>
+	 * 
+	 * @return The shared instance.
 	 */
 	public static Activator getDefault() {
+
 		return plugin;
 	}
-
 }
