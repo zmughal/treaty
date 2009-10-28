@@ -25,7 +25,7 @@ public interface ContractReader  {
 	 * @return
 	 * @throws TreatyException
 	 */
-	public SimpleContract read (InputStream in) throws TreatyException;
+	public Contract read (InputStream in) throws TreatyException;
 		public ResourceManager getLoader() ;
 	
 
