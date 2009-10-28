@@ -13,37 +13,45 @@ package net.java.treaty;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * Represents a contract between connectors (and therefore between
- * components). Used to represent both, contract templates and instantiated contracts. 
- * This can be queried with isInstantiated().
+ * Represents a contract between connectors (and therefore between components).
+ * Used to represent both, contract templates and instantiated contracts. This
+ * can be queried with isInstantiated().
  * 
  * @author Jens Dietrich
  */
 
-public class Contract extends PropertySupport implements
-		ConditionContext, Visitable {
+public class Contract extends PropertySupport implements ConditionContext,
+		Visitable {
 
-	private java.util.Map<String, Resource> supplierResources =	new java.util.LinkedHashMap<String, Resource>();
-	private java.util.Map<String, Resource> consumerResources =	new java.util.LinkedHashMap<String, Resource>();
-	
+	private java.util.Map<String, Resource> supplierResources =
+			new java.util.LinkedHashMap<String, Resource>();
+	private java.util.Map<String, Resource> consumerResources =
+			new java.util.LinkedHashMap<String, Resource>();
+
 	// these are other "external" resources, e.g. provided by additional contract
 	// plugins
-	private java.util.Map<String, Resource> externalResources =	new java.util.LinkedHashMap<String, Resource>();
-	private java.util.List<AbstractCondition> constraints =	new java.util.ArrayList<AbstractCondition>();
+	private java.util.Map<String, Resource> externalResources =
+			new java.util.LinkedHashMap<String, Resource>();
+	private java.util.List<AbstractCondition> constraints =
+			new java.util.ArrayList<AbstractCondition>();
 	// active elements
 	// events and actions are represented as URIs - framework implementations
 	// have to provide the semantics for them
-	
-	// events triggering verification, such as life cycle events (installed, activated, updated, ..)
+
+	// events triggering verification, such as life cycle events (installed,
+	// activated, updated, ..)
 	private java.util.List<URI> triggers = new java.util.ArrayList<URI>();
 
 	// actions that will be executed depending on the outcome of verification
-	private java.util.List<URI> onVerificationFailsActions = new java.util.ArrayList<URI>();
-	private java.util.List<URI> onVerificationSucceedsActions = new java.util.ArrayList<URI>();
-	
+	private java.util.List<URI> onVerificationFailsActions =
+			new java.util.ArrayList<URI>();
+	private java.util.List<URI> onVerificationSucceedsActions =
+			new java.util.ArrayList<URI>();
+
 	private Connector consumer = null;
 	private Connector supplier = null;
 	// the owner is used if a third party owns the contract
@@ -73,9 +81,8 @@ public class Contract extends PropertySupport implements
 
 	/**
 	 * <p>
-	 * Creates a new {@link Contract} for a given consumer (as a
-	 * {@link Connector}) and a given {@link URL} as the {@link Contract}'s
-	 * location.
+	 * Creates a new {@link Contract} for a given consumer (as a {@link Connector}
+	 * ) and a given {@link URL} as the {@link Contract}'s location.
 	 * </p>
 	 * 
 	 * @param consumer
@@ -219,19 +226,23 @@ public class Contract extends PropertySupport implements
 		r.setOwner(this.consumer);
 		this.consumerResources.put(r.getId(), r);
 	}
-	
+
 	public void addTrigger(URI uri) throws InvalidContractException {
+
 		this.triggers.add(uri);
 	}
-	
-	public void addOnVerificationFailsAction(URI uri) throws InvalidContractException {
+
+	public void addOnVerificationFailsAction(URI uri)
+			throws InvalidContractException {
+
 		this.onVerificationFailsActions.add(uri);
 	}
-	
-	public void addOnVerificationSucceedsAction(URI uri) throws InvalidContractException {
+
+	public void addOnVerificationSucceedsAction(URI uri)
+			throws InvalidContractException {
+
 		this.onVerificationSucceedsActions.add(uri);
 	}
-	
 
 	public void addExternalResource(Resource r) throws InvalidContractException {
 
@@ -291,7 +302,9 @@ public class Contract extends PropertySupport implements
 
 	/**
 	 * Accept a contract visitor.
-	 * @param visitor a visitor
+	 * 
+	 * @param visitor
+	 *          a visitor
 	 */
 	public void accept(ContractVisitor visitor) {
 
@@ -328,17 +341,28 @@ public class Contract extends PropertySupport implements
 	}
 
 	/**
-	 * Instantiate the contract for a supplier.
-	 * @param supplier the supplier
-	 * @param loader the resource loader used
+	 * FIXME Claas: Propose to return a {@link LinkedHashSet} instead of a
+	 * {@link List}.
+	 * 
+	 * <p>
+	 * Instantiate the {@link Contract} for a supplier.
+	 * </p>
+	 * 
+	 * @param supplier
+	 *          the supplier
+	 * @param loader
+	 *          the resource loader used
 	 * @return a list of contracts. >1 if multiple instantiation contexts exist
-	 * post condition: all contracts returned are instantiated
+	 *         post condition: all contracts returned are instantiated
 	 */
-	public List<Contract> bindSupplier(Connector supplier, ResourceManager loader)	throws TreatyException {
+	public List<Contract> bindSupplier(Connector supplier, ResourceManager loader)
+			throws TreatyException {
+
 		return bind(supplier, loader, Role.SUPPLIER);
 	}
 
-	private List<Contract> bind(Connector connector, ResourceManager loader, Role role) throws TreatyException {
+	private List<Contract> bind(Connector connector, ResourceManager loader,
+			Role role) throws TreatyException {
 
 		String contextDef = null;
 		if (role == Role.CONSUMER)
@@ -348,9 +372,13 @@ public class Contract extends PropertySupport implements
 		else if (role == Role.EXTERNAL)
 			contextDef = this.getExternalContext();
 
-		List<InstantiationContext> contexts = loader.getInstantiationContexts(connector, contextDef);
-		List<Contract> contracts = new ArrayList<Contract>(contexts.size()); // list, one per context
-		
+		List<InstantiationContext> contexts =
+				loader.getInstantiationContexts(connector, contextDef);
+		List<Contract> contracts = new ArrayList<Contract>(contexts.size()); // list,
+		// one
+		// per
+		// context
+
 		// built instantiated contracts
 		for (InstantiationContext context : contexts) {
 			Contract contract = new Contract();
@@ -391,7 +419,7 @@ public class Contract extends PropertySupport implements
 			for (AbstractCondition c : this.constraints) {
 				contract.addCondition(c.replaceResources(contract.supplierResources));
 			}
-			
+
 			assert contract.isInstantiated();
 		}
 		return contracts;
@@ -400,12 +428,17 @@ public class Contract extends PropertySupport implements
 
 	/**
 	 * Instantiate the contract for a consumer.
-	 * @param consumer the consumer
-	 * @param loader the resource loader used
+	 * 
+	 * @param consumer
+	 *          the consumer
+	 * @param loader
+	 *          the resource loader used
 	 * @return a list of contracts. >1 if multiple instantiation contexts exist
-	 * post condition: all contracts returned are instantiated
+	 *         post condition: all contracts returned are instantiated
 	 */
-	public List<Contract> bindConsumer(Connector consumer, ResourceManager loader) throws TreatyException {
+	public List<Contract> bindConsumer(Connector consumer, ResourceManager loader)
+			throws TreatyException {
+
 		return bind(consumer, loader, Role.CONSUMER);
 	}
 
@@ -554,30 +587,36 @@ public class Contract extends PropertySupport implements
 		assert (isInstantiated() || def == null);
 		this.definition = def;
 	}
-	
+
 	public void setTriggers(java.util.List<URI> triggers) {
+
 		this.triggers = triggers;
 	}
 
 	public void setOnVerificationFailsActions(
 			java.util.List<URI> onVerificationFailsActions) {
+
 		this.onVerificationFailsActions = onVerificationFailsActions;
 	}
 
 	public void setOnVerificationSucceedsActions(
 			java.util.List<URI> onVerificationSucceedsActions) {
+
 		this.onVerificationSucceedsActions = onVerificationSucceedsActions;
 	}
 
 	public java.util.List<URI> getTriggers() {
+
 		return triggers;
 	}
 
 	public java.util.List<URI> getOnVerificationFailsActions() {
+
 		return onVerificationFailsActions;
 	}
 
 	public java.util.List<URI> getOnVerificationSucceedsActions() {
+
 		return onVerificationSucceedsActions;
 	}
 }
