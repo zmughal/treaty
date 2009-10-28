@@ -266,23 +266,6 @@ public class ContractRegistry extends Observable {
 				result.addAll(this.boundExternalContracts.get(extensionPoint));
 			}
 			// no else.
-
-			/*
-			 * Probably add contracts defined by EclipseExtensions bound to this
-			 * EclipseExtensionPoint.
-			 */
-			for (EclipseExtension eclipseExtension : eclipseExtensionPoint
-					.getExtensions()) {
-
-				IExtension extension;
-				extension = eclipseExtension.getWrappedExtension();
-
-				if (this.contractedExtensions.containsKey(extension)) {
-					result.addAll(this.contractedExtensions.get(extension));
-				}
-				// no else.
-			}
-			// end for.
 		}
 
 		/* Else check if the given connector is an EclipseExtension. */
