@@ -15,7 +15,6 @@ import java.util.Set;
 
 import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
-import net.java.treaty.SimpleContract;
 
 import org.eclipse.core.runtime.IExtensionPoint;
 
@@ -133,7 +132,7 @@ public class EclipseExtensionPoint extends EclipseConnector {
 
 		boolean result;
 
-		if (this.getContract() != null) {
+		if (this.getContracts() != null && this.getContracts().size() > 0) {
 			result = true;
 		}
 
@@ -144,7 +143,8 @@ public class EclipseExtensionPoint extends EclipseConnector {
 
 			for (EclipseExtension extension : this.getExtensions()) {
 
-				if (extension.getContract() != null) {
+				if (extension.getContracts() != null
+						&& extension.getContracts().size() > 0) {
 					result = true;
 					break;
 				}
@@ -178,7 +178,7 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	 */
 	@Override
 	public String toString() {
-	
+
 		return new StringBuffer().append(this.getClass().getName()).append('(')
 				.append(
 						this.extensionPoint == null ? "?" : this.extensionPoint
@@ -190,12 +190,12 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	 * (non-Javadoc)
 	 * @see
 	 * net.java.treaty.eclipse.EclipseConnector#configureNewContract(net.java.
-	 * treaty.SimpleContract)
+	 * treaty.Contract)
 	 */
-	protected void configureNewContract(SimpleContract newContract) {
+	protected void configureNewContract(Contract newContract) {
 
 		super.configureNewContract(newContract);
-		
+
 		newContract.setConsumer(this);
 	}
 }

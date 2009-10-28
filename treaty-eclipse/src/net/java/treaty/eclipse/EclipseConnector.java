@@ -12,122 +12,106 @@ package net.java.treaty.eclipse;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedHashSet;
 
-import net.java.treaty.AggregatedContract;
 import net.java.treaty.Component;
 import net.java.treaty.Connector;
 import net.java.treaty.Contract;
-import net.java.treaty.PropertySupport;
-import net.java.treaty.SimpleContract;
-import net.java.treaty.TreatyException;
 import net.java.treaty.ContractReader;
+import net.java.treaty.PropertySupport;
+import net.java.treaty.TreatyException;
+import net.java.treaty.eclipse.contractregistry.ContractRegistry;
 import net.java.treaty.xml.XMLContractReader;
 
 /**
+ * <p>
  * Abstract superclass for extensions and extension points.
+ * </p>
  * 
  * @author Jens Dietrich
  */
-
 public abstract class EclipseConnector extends PropertySupport implements
 		Connector {
-
-	/** The {@link Contract} of this {@link EclipseConnector}. */
-	protected Contract contract = null;
 
 	/** The {@link EclipsePlugin} that owns this {@link EclipseConnector}. */
 	private EclipsePlugin owner = null;
 
 	/**
+	 * FIXME Claas: Probably extract this method into its own class.
+	 * 
 	 * <p>
-	 * Adds a new {@link Contract} to this {@link EclipseConnector}.
+	 * Creates a new {@link Contract} for a given {@link URL}
 	 * </p>
 	 * 
-	 * @param url
-	 *          The location of the {@link Contract} as a {@link URL}.
+	 * @param location
+	 *          The {@link URL} of this {@link SimpleContract}.
 	 * @param contractOwner
-	 *          The owner of the {@link Contract}. If the owner is this
-	 *          {@link EclipseConnector} the argument could be <code>null</code>.
+	 *          The Owner (an {@link EclipseConnector}) of the created
+	 *          {@link Contract}.
+	 * @param
 	 * 
-	 * @return The newly added {@link Contract}. TODO Proposal of Claas: This
-	 *         method should get a Contract and not the URL and the Owner as
-	 *         arguments. This would improve removal of Contracts without
-	 *         returning the newly created {@link Contract} here.
+	 * @return The created {@link Contract} or <code>null</code> if the given
+	 *         {@link URL} cannot be loaded.
+	 * 
 	 */
-	public void addContract(URL url, EclipseConnector contractOwner) {
+	public static Contract createContract(URL location,
+			EclipseConnector contractOwner) {
 
-		SimpleContract newContract;
-		newContract = null;
+		Contract result;
+		result = null;
 
-		/* Check if the owner of this connector has been set. */
-		if (this.owner != null) {
+		/* Check if the given URL is not null. */
+		if (location != null) {
 
-			/* Check if the given URL is not null. */
-			if (url != null) {
+			ContractReader reader;
 
-				ContractReader reader;
+			Logger.info("Loading contract from " + location);
+			reader = new XMLContractReader(new EclipseResourceManager());
 
-				Logger.info("Loading contract from " + url);
-				reader = new XMLContractReader(new EclipseResourceManager());
+			/* Try to read the contract. */
+			try {
+				result = reader.read(location.openStream());
+				result.setLocation(location);
 
-				/* Try to read the contract. */
-				try {
-					newContract = reader.read(url.openStream());
-					newContract.setLocation(url);
+				/* If the owner of the contract is not null, set the owner. */
+				if (contractOwner != null) {
+					result.setOwner(contractOwner);
 
-					/* If the owner of the contract is not null, set the owner. */
-					if (contractOwner != null) {
-						newContract.setOwner(contractOwner);
-					}
-
-					this.configureNewContract(newContract);
+					contractOwner.configureNewContract(result);
 				}
-
-				catch (TreatyException e) {
-					Logger.error("Exception loading contract from " + url, e);
-				}
-
-				catch (IOException e) {
-					Logger.error("Exception loading contract from " + url, e);
-				}
+				// no else.
 			}
-			// no else (URL is null).
-		}
-		// no else (no owner of this connector).
 
-		/* If no contract has been set yet, the new contract is the root contract. */
-		if (this.contract == null) {
-			this.contract = newContract;
-		}
+			catch (TreatyException e) {
+				Logger.error("Exception loading contract from " + location, e);
+			}
 
-		/* Else aggregate the contract. */
-		else {
-			Logger.info("Aggregating contracts " + url + " and " + this.contract);
-
-			this.contract = new AggregatedContract(this.contract, newContract);
-			this.contract = this.contract.pack();
+			catch (IOException e) {
+				Logger.error("Exception loading contract from " + location, e);
+			}
 		}
+		// no else (URL is null).
+
+		return result;
+	}
+
+	protected void configureNewContract(Contract newContract) {
+
+		// by default nothing to do here
 	}
 
 	/**
 	 * <p>
-	 * Removes a given {@link Contract} from this {@link EclipseConnector}.
+	 * Returns a {@link LinkedHashSet} containing all {@link Contract}s defined on
+	 * this {@link EclipseConnector}.
 	 * </p>
 	 * 
-	 * @param contract
-	 *          The {@link Contract} that shall be removed.
+	 * @return A {@link LinkedHashSet} containing all {@link Contract}s defined on
+	 *         this {@link EclipseConnector}.
 	 */
-	public void removeContract(Contract contract) {
+	public LinkedHashSet<Contract> getContracts() {
 
-		/* If no contract has been set, return false. */
-		if (this.contract == null) {
-			Logger.info("Could not remove Contract. Was already null.");
-		}
-
-		/* Else try to remove the contract. */
-		else {
-			this.contract = this.contract.subtractContract(contract);
-		}
+		return ContractRegistry.getInstance().getOwnedContracts(this);
 	}
 
 	public static String getContractLocation(Connector c) {
@@ -149,15 +133,5 @@ public abstract class EclipseConnector extends PropertySupport implements
 
 		super();
 		this.owner = owner;
-	}
-
-	public Contract getContract() {
-
-		return contract;
-	}
-
-	protected void configureNewContract(SimpleContract newContract) {
-
-		// by default nothing to do here
 	}
 }
