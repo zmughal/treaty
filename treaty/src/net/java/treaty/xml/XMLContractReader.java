@@ -42,7 +42,7 @@ public class XMLContractReader implements ContractReader  {
 	 * @return
 	 * @throws TreatyException
 	 */
-	public SimpleContract read (InputStream in) throws TreatyException {
+	public Contract read (InputStream in) throws TreatyException {
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		try {
@@ -60,8 +60,8 @@ public class XMLContractReader implements ContractReader  {
 		// xpath.addNamespace(SWRLX);
 		return xpath;
 	} 
-	private SimpleContract read(Document doc) throws TreatyException,JDOMException {
-		SimpleContract contract = new SimpleContract();
+	private Contract read(Document doc) throws TreatyException,JDOMException {
+		Contract contract = new Contract();
 		
 		// read extension resources
 		List<Resource> resources = readResources(doc,"/contract/supplier/resource");
@@ -136,7 +136,7 @@ public class XMLContractReader implements ContractReader  {
 		}
 		return null;
 	}
-	private void readConditions(Element node, ConditionContext context, SimpleContract contract) throws JDOMException, InvalidContractException, URISyntaxException {
+	private void readConditions(Element node, ConditionContext context, Contract contract) throws JDOMException, InvalidContractException, URISyntaxException {
 		
 		List<Element> nodes = node.getChildren();
 		for (Element e:nodes) {
