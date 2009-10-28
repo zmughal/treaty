@@ -37,24 +37,16 @@ public class ContractPrinter implements ContractVisitor {
 		this.out = out;
 	}
 
-	public void print(SimpleContract contract) {
+	public void print(Contract contract) {
 
 		contract.accept(this);
 	}
 
 	public boolean visit(Contract contract) {
 
-		if (contract instanceof AggregatedContract) {
-			out.println("AN AGGREGATED CONTRACT {");
-		}
-		else if (contract instanceof SimpleContract) {
-			out.println("A CONTRACT {");
-			out.print("url=");
-			out.print(((SimpleContract) contract).getLocation());
-		}
-		else {
-			out.println("A CONTRACT {");
-		}
+		out.println("A CONTRACT {");
+		out.print("url=");
+		out.print(contract.getLocation());
 		ios();
 		return true;
 	}
