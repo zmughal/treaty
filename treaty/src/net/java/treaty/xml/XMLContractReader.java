@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import net.java.treaty.*;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -99,9 +100,34 @@ public class XMLContractReader implements ContractReader  {
 			throw new InvalidContractException(e);
 		}
 		
+		// read triggers
+		List<URI> uris = readURIs(doc,"/contract/trigger");
+		contract.setTriggers(uris);
+		
+		// read actions
+		uris = readURIs(doc,"/contract/onSuccess");
+		contract.setOnVerificationSucceedsActions(uris);	
+		
+		uris = readURIs(doc,"/contract/onFailure");
+		contract.setOnVerificationFailsActions(uris);
+		
 		return contract;
 	}
 
+	private List<URI> readURIs(Document doc, String xpath) throws InvalidContractException, JDOMException {
+		XPath xp =  createXPath(xpath);
+		List<Element> nodes = xp.selectNodes(doc);
+		List<URI> uris = new ArrayList<URI>();
+		for (Element node:nodes) {
+			String uriAsString = node.getTextTrim();
+			try {
+				uris.add(new URI(uriAsString));
+			} catch (URISyntaxException e) {
+				throw new InvalidContractException("Invalid URI " + uriAsString);
+			}
+		}
+		return uris;
+	}
 	private String readContext(Document doc, String xpath) throws JDOMException {
 		XPath xp =  createXPath(xpath);
 		Element node = (Element)xp.selectSingleNode(doc);
