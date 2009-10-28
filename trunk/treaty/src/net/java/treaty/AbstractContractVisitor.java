@@ -262,31 +262,54 @@ public class AbstractContractVisitor implements ContractVisitor {
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisitOnFailureAction(java.net.URI)
+	 */
 	public void endVisitOnFailureAction(URI uri) {
+
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisitOnSuccessAction(java.net.URI)
+	 */
 	public void endVisitOnSuccessAction(URI uri) {
+
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisitTrigger(java.net.URI)
+	 */
 	public void endVisitTrigger(URI uri) {
-		
+
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visitOnFailureAction(java.net.URI)
+	 */
 	public boolean visitOnFailureAction(URI uri) {
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visitOnSuccessAction(java.net.URI)
+	 */
 	public boolean visitOnSuccessAction(URI uri) {
+
 		return true;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visitTrigger(java.net.URI)
+	 */
 	public boolean visitTrigger(URI uri) {
+
 		return true;
 	}
 }

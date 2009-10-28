@@ -18,8 +18,12 @@ import java.util.List;
  * Contracts that are composed from sub contracts.
  * 
  * @author Jens Dietrich
+ * 
+ * @deprecated After discussion on Oct., 27th 2009, AggregatedContracts
+ *             shouldn't be used anymore. Connectors now have a Collection of
+ *             Contracts instead of one single (probably complex) contract.
  */
-
+@Deprecated
 public class AggregatedContract extends PropertySupport implements Contract {
 
 	/** All {@link Contract}s contained in this {@link AggregatedContract}. */

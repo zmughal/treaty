@@ -28,22 +28,6 @@ public interface Contract extends Constraint {
 	 */
 	Contract getDefinition();
 
-	/**
-	 * <p>
-	 * Tries to subtract a given {@link Contract} from this {@link Contract}. The
-	 * given {@link Contract} can be only subtracted, if the given
-	 * {@link Contract} and this {@link Contract} are the same, or the given
-	 * {@link Contract} is a part of this {@link Contract} (for composite
-	 * structures).
-	 * </p>
-	 * 
-	 * @param contract
-	 *          The {@link Contract} that shall be subtracted.
-	 * @return The resulting {@link Contract} or <code>null</code>, if no
-	 *         {@link Contract} remains.
-	 */
-	Contract subtractContract(Contract contract);
-
 	void setDefinition(Contract c);
 
 	/**
