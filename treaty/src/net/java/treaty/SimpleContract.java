@@ -31,19 +31,24 @@ public class SimpleContract extends PropertySupport implements
 			new java.util.LinkedHashMap<String, Resource>();
 	// these are other "external" resources, e.g. provided by additional contract
 	// plugins
-	private java.util.Map<String, Resource> externalResources =	new java.util.LinkedHashMap<String, Resource>();
-	private java.util.List<AbstractCondition> constraints =	new java.util.ArrayList<AbstractCondition>();
+	private java.util.Map<String, Resource> externalResources =
+			new java.util.LinkedHashMap<String, Resource>();
+	private java.util.List<AbstractCondition> constraints =
+			new java.util.ArrayList<AbstractCondition>();
 	// active elements
 	// events and actions are represented as URIs - framework implementations
 	// have to provide the semantics for them
-	
-	// events triggering verification, such as life cycle events (installed, activated, updated, ..)
+
+	// events triggering verification, such as life cycle events (installed,
+	// activated, updated, ..)
 	private java.util.List<URI> triggers = new java.util.ArrayList<URI>();
 
 	// actions that will be executed depending on the outcome of verification
-	private java.util.List<URI> onVerificationFailsActions = new java.util.ArrayList<URI>();
-	private java.util.List<URI> onVerificationSucceedsActions = new java.util.ArrayList<URI>();
-	
+	private java.util.List<URI> onVerificationFailsActions =
+			new java.util.ArrayList<URI>();
+	private java.util.List<URI> onVerificationSucceedsActions =
+			new java.util.ArrayList<URI>();
+
 	private Connector consumer = null;
 	private Connector supplier = null;
 	// the owner is used if a third party owns the contract
@@ -94,31 +99,6 @@ public class SimpleContract extends PropertySupport implements
 		assert (consumer.getType() == ConnectorType.SUPPLIER);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.Contract#subtractContract(net.java.treaty.Contract)
-	 */
-	public Contract subtractContract(Contract contract) {
-
-		Contract result;
-
-		/*
-		 * Subtract the contract if its the same or the unbound form of this
-		 * contract.
-		 */
-		if (this.equals(contract)
-				|| (this.definition != null && this.definition.equals(contract))) {
-			result = null;
-		}
-
-		/* Else do not subtract the contract. */
-		else {
-			result = this;
-		}
-
-		return result;
-	}
-
 	/**
 	 * <p>
 	 * Sets the owner of this {@link Contract}. Each {@link Contract} is owned by
@@ -126,7 +106,7 @@ public class SimpleContract extends PropertySupport implements
 	 * </p>
 	 * 
 	 * @param owner
-	 *          The owner of this {@link Contract}.
+	 *          The owner of the this {@link Contract}.
 	 */
 	public void setOwner(Connector owner) {
 
@@ -219,19 +199,23 @@ public class SimpleContract extends PropertySupport implements
 		r.setOwner(this.consumer);
 		this.consumerResources.put(r.getId(), r);
 	}
-	
+
 	public void addTrigger(URI uri) throws InvalidContractException {
+
 		this.triggers.add(uri);
 	}
-	
-	public void addOnVerificationFailsAction(URI uri) throws InvalidContractException {
+
+	public void addOnVerificationFailsAction(URI uri)
+			throws InvalidContractException {
+
 		this.onVerificationFailsActions.add(uri);
 	}
-	
-	public void addOnVerificationSucceedsAction(URI uri) throws InvalidContractException {
+
+	public void addOnVerificationSucceedsAction(URI uri)
+			throws InvalidContractException {
+
 		this.onVerificationSucceedsActions.add(uri);
 	}
-	
 
 	public void addExternalResource(Resource r) throws InvalidContractException {
 
@@ -566,30 +550,36 @@ public class SimpleContract extends PropertySupport implements
 		assert (isInstantiated() || def == null);
 		this.definition = def;
 	}
-	
+
 	public void setTriggers(java.util.List<URI> triggers) {
+
 		this.triggers = triggers;
 	}
 
 	public void setOnVerificationFailsActions(
 			java.util.List<URI> onVerificationFailsActions) {
+
 		this.onVerificationFailsActions = onVerificationFailsActions;
 	}
 
 	public void setOnVerificationSucceedsActions(
 			java.util.List<URI> onVerificationSucceedsActions) {
+
 		this.onVerificationSucceedsActions = onVerificationSucceedsActions;
 	}
 
 	public java.util.List<URI> getTriggers() {
+
 		return triggers;
 	}
 
 	public java.util.List<URI> getOnVerificationFailsActions() {
+
 		return onVerificationFailsActions;
 	}
 
 	public java.util.List<URI> getOnVerificationSucceedsActions() {
+
 		return onVerificationSucceedsActions;
 	}
 }
