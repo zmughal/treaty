@@ -1,6 +1,7 @@
 package net.java.treaty.eclipse.contractregistry;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -12,12 +13,16 @@ import java.util.Set;
 
 import net.java.treaty.Contract;
 import net.java.treaty.TreatyException;
+import net.java.treaty.VerificationReport;
+import net.java.treaty.eclipse.ContractVerificationSchedulingRule;
 import net.java.treaty.eclipse.EclipseConnector;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.EclipseResourceManager;
 import net.java.treaty.eclipse.Logger;
+import net.java.treaty.eclipse.jobs.VerificationJob;
+import net.java.treaty.eclipse.jobs.VerificationJobListener;
 import net.java.treaty.event.LifeCycleEvent;
 
 import org.eclipse.core.runtime.ContributorFactoryOSGi;
@@ -26,6 +31,9 @@ import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.MultiRule;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 
@@ -1509,5 +1517,48 @@ public class ContractRegistry extends Observable {
 		this.unboundExternalContracts.clear();
 
 		EclipseAdapterFactory.getInstance().clearCache();
+	}
+
+	/**
+	 * <p>
+	 * Verifes a Collection of given {@link Contract}s for a given
+	 * {@link VerificationReport}, {@link VerificationJobListener} and
+	 * {@link IJobChangeListener}.
+	 * </p>
+	 * 
+	 * @param contracts
+	 *          The {@link Contract}s that shall be verified.
+	 * @param verificationReport
+	 *          The {@link VerificationReport} used to store the results.
+	 * @param verificationJobListener
+	 *          A {@link VerificationJobListener} that can be used to observe the
+	 *          progress.
+	 * @param jobChangeListener
+	 *          An {@link IJobChangeListener} that can be used to obersve the
+	 *          progress.
+	 */
+	public void verify(Collection<Contract> contracts,
+			VerificationReport verificationReport,
+			VerificationJobListener verificationJobListener,
+			IJobChangeListener jobChangeListener) {
+
+		VerificationJob job;
+		job =
+				new VerificationJob("Treaty component verification", contracts,
+						verificationReport);
+
+		job.addVerificationJobListener(verificationJobListener);
+		job.addJobChangeListener(jobChangeListener);
+
+		ISchedulingRule combinedRule;
+		combinedRule = null;
+
+		for (Contract contract : contracts) {
+			MultiRule.combine(new ContractVerificationSchedulingRule(contract),
+					combinedRule);
+		}
+
+		job.setRule(combinedRule);
+		job.schedule();
 	}
 }
