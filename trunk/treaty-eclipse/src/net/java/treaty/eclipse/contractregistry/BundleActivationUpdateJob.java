@@ -1,3 +1,13 @@
+/*
+ * Copyright (C) 2008 Jens Dietrich
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License 
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and limitations under the License. 
+ */
+
 package net.java.treaty.eclipse.contractregistry;
 
 import java.net.URL;
@@ -194,8 +204,7 @@ public class BundleActivationUpdateJob extends Job {
 
 			contractName =
 					INTERNAL_CONTRACT_LOCATION_PREFIX
-							+ extensionPoint.getUniqueIdentifier()
-							+ CONTRACT_LOCATION_SUFFIX;
+							+ extensionPoint.getUniqueIdentifier() + CONTRACT_LOCATION_SUFFIX;
 			contractURL = eclipsePlugin.getResource(contractName);
 
 			/* If a contract has been found, add it to the extension point. */
@@ -220,7 +229,7 @@ public class BundleActivationUpdateJob extends Job {
 				 * point.
 				 */
 				for (Contract externalContract : ContractRegistry.getInstance()
-						.getUnboundExternalContracts().get(
+						.getUnboundExternalContractsOfExtensionPoint(
 								extensionPoint.getUniqueIdentifier())) {
 
 					this.addExternalContractToExtensionPoint(extensionPoint,
@@ -491,7 +500,7 @@ public class BundleActivationUpdateJob extends Job {
 		 * For contracted extension points also adapt their extensions (if any
 		 * extension has been found already).
 		 */
-		this.addOrUpdateContractedExtensionsOfExtensionPoint(extensionPoint);
+		this.addOrUpdateContractedExtensionsOfExtensionPoint(eclipseExtensionPoint);
 	}
 
 	/**
@@ -500,43 +509,43 @@ public class BundleActivationUpdateJob extends Job {
 	 * {@link IExtensionPoint}.
 	 * </p>
 	 * 
-	 * @param contractedExtensionPoint
+	 * @param extensionPoint
 	 *          The {@link IExtensionPoint} to that an external {@link Contract}
 	 *          shall be bound.
-	 * @param externalContract
+	 * @param contract
 	 *          The {@link Contract} that shall be bound to the
 	 *          {@link IExtensionPoint}.
 	 */
 	private void addExternalContractToExtensionPoint(
-			IExtensionPoint contractedExtensionPoint, Contract externalContract) {
+			IExtensionPoint extensionPoint, Contract contract) {
 
 		EclipseExtensionPoint eclipseExtensionPoint;
 		eclipseExtensionPoint =
-				EclipseAdapterFactory.getInstance().createExtensionPoint(
-						contractedExtensionPoint);
+				EclipseAdapterFactory.getInstance()
+						.createExtensionPoint(extensionPoint);
 
 		/* Add the external contract to the extension point in the registry. */
-		externalContract.setConsumer(eclipseExtensionPoint);
-		ContractRegistry.getInstance().addContractToExtensionPoint(
-				contractedExtensionPoint, externalContract);
+		contract.setConsumer(eclipseExtensionPoint);
+		ContractRegistry.getInstance().addContractToExtensionPoint(extensionPoint,
+				contract);
 
 		/*
 		 * For contracted extension points also adapt their extensions (if any
 		 * extension has been found already).
 		 */
-		this
-				.addOrUpdateContractedExtensionsOfExtensionPoint(contractedExtensionPoint);
+		this.addOrUpdateContractedExtensionsOfExtensionPoint(eclipseExtensionPoint);
 
 		/* Add the newly bound external contract to the registry. */
-		ContractRegistry.getInstance().addBoundExternalContract(
-				contractedExtensionPoint, externalContract);
+		ContractRegistry.getInstance().addBoundExternalContract(extensionPoint,
+				contract);
 	}
 
 	/**
 	 * <p>
-	 * A helper method that iterates over the {@link IExtension}s of a given
-	 * {@link IExtensionPoint} and checks if the {@link IExtensionPoint}'s
-	 * {@link Contract} should be instantiated for them.
+	 * A helper method that iterates over the {@link EclipseExtension}s of a given
+	 * {@link EclipseExtensionPoint} and checks if the
+	 * {@link EclipseExtensionPoint}'s {@link Contract} should be instantiated for
+	 * them.
 	 * </p>
 	 * 
 	 * @param extensionPoint
@@ -544,14 +553,14 @@ public class BundleActivationUpdateJob extends Job {
 	 *          checked.
 	 */
 	private void addOrUpdateContractedExtensionsOfExtensionPoint(
-			IExtensionPoint extensionPoint) {
+			EclipseExtensionPoint eclipseExtensionPoint) {
 
-		EclipseExtensionPoint eclipseExtensionPoint;
-		eclipseExtensionPoint =
-				EclipseAdapterFactory.getInstance()
-						.createExtensionPoint(extensionPoint);
-
-		for (IExtension extension : extensionPoint.getExtensions()) {
+		/*
+		 * Do not iterate on the eclipse extensions! They are added in this for loop
+		 * and are not available yet.
+		 */
+		for (IExtension extension : eclipseExtensionPoint
+				.getWrappedExtensionPoint().getExtensions()) {
 
 			/* Check if the extension's bundle is already active. */
 			if (org.eclipse.core.runtime.Platform.getBundle(

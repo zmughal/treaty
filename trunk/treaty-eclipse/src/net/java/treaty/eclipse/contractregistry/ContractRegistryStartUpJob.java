@@ -14,8 +14,6 @@ import java.util.LinkedHashSet;
 
 import javax.management.monitor.Monitor;
 
-import net.java.treaty.Contract;
-
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -39,11 +37,7 @@ import org.osgi.framework.BundleEvent;
  * {@link ContractRegistry}.
  * </p>
  * 
- * @author Jens Dietrich (first version)
- * @author Claas Wilke (refactoring and reimplementation)
- * 
- * @Deprecated This class is deprecated. The {@link ContractRegistry} now
- *             manages the {@link Contract} loading itself.
+ * @author Claas Wilke
  */
 public class ContractRegistryStartUpJob extends Job {
 
@@ -96,7 +90,7 @@ public class ContractRegistryStartUpJob extends Job {
 				ContractRegistry.getInstance().update(bundleEvent);
 			}
 			// no else.
-			
+
 			checkedBundles++;
 			monitor.worked(totalWork / bundles.size() * checkedBundles);
 		}
