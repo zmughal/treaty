@@ -204,15 +204,16 @@ public class BundleActivationUpdateJob extends Job {
 				this.addContractToExtensionPoint(extensionPoint, contractURL);
 
 				/* Register the plug-in as contracted. */
-				ContractRegistry.getInstance().addContractedBunlde(this.myBundle);
+				ContractRegistry.getInstance().addContractedBundle(this.myBundle);
 			}
 			// no else (extension point not contracted by own plug-in).
 
 			/*
 			 * Check as well, if an external contract that is not bound yet exists.
 			 */
-			if (ContractRegistry.getInstance().getUnboundExternalContracts()
-					.containsKey(extensionPoint.getUniqueIdentifier())) {
+			if (ContractRegistry.getInstance()
+					.hasExtensionPointUnboundExternalContracts(
+							extensionPoint.getUniqueIdentifier())) {
 
 				/*
 				 * Iterate through all external contracts and add them to the extension
@@ -228,10 +229,10 @@ public class BundleActivationUpdateJob extends Job {
 				// end for (iteration on found external contracts).
 
 				/* Store the extension point's plug-in as contracted. */
-				ContractRegistry.getInstance().addContractedBunlde(this.myBundle);
+				ContractRegistry.getInstance().addContractedBundle(this.myBundle);
 
 				/* Remove the external contract from the unbound contracts. */
-				ContractRegistry.getInstance().removeUnboundExternalContracts(
+				ContractRegistry.getInstance().removeAllUnboundExternalContracts(
 						extensionPoint.getUniqueIdentifier());
 			}
 			// no else (no external contract found).
@@ -290,8 +291,8 @@ public class BundleActivationUpdateJob extends Job {
 			 * Check if the extension's extension point is contracted (includes that
 			 * the extension point's plug-in is active.
 			 */
-			if (ContractRegistry.getInstance().getContractedExtensionPoints()
-					.containsKey(extensionPoint)) {
+			if (ContractRegistry.getInstance().hasExtensionPointContracts(
+					extensionPoint)) {
 
 				EclipseExtensionPoint eclipseExtensionPoint;
 				EclipseExtension eclipseExtension;
@@ -438,7 +439,7 @@ public class BundleActivationUpdateJob extends Job {
 								contractedEclipsePlugin =
 										(EclipsePlugin) contractedEclipseExtensionPoint.getOwner();
 
-								ContractRegistry.getInstance().addContractedBunlde(
+								ContractRegistry.getInstance().addContractedBundle(
 										contractedEclipsePlugin.getBundle());
 							}
 							// end else (bound or unbound external contract).
@@ -610,13 +611,11 @@ public class BundleActivationUpdateJob extends Job {
 		eclipseExtensionPoint = eclipseExtension.getExtensionPoint();
 
 		/* Check if a contract has defined on the given extension point at all. */
-		if (ContractRegistry.getInstance().getContractedExtensionPoints()
-				.containsKey(eclipseExtensionPoint.getWrappedExtensionPoint())) {
+		if (ContractRegistry.getInstance().hasExtensionPointContracts(
+				eclipseExtensionPoint.getWrappedExtensionPoint())) {
 
 			/* Reinitialize all contracts of the extension point. */
-			for (Contract contract : ContractRegistry.getInstance()
-					.getContractedExtensionPoints().get(
-							eclipseExtensionPoint.getWrappedExtensionPoint())) {
+			for (Contract contract : eclipseExtensionPoint.getContracts()) {
 
 				LinkedHashSet<Contract> instantiatedContracts;
 				instantiatedContracts = new LinkedHashSet<Contract>();

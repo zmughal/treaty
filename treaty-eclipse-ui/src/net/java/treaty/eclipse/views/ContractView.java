@@ -240,19 +240,19 @@ public class ContractView extends ViewPart {
 	 */
 	private class ViewContentProvider implements IStructuredContentProvider,
 			ITreeContentProvider {
-	
+
 		/** The root {@link TreeParent} of the view. */
 		private TreeParent invisibleRoot;
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 		 */
 		public void dispose() {
-	
+
 			/* Remains empty. */
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -260,25 +260,25 @@ public class ContractView extends ViewPart {
 		 * Object)
 		 */
 		public Object[] getChildren(Object parent) {
-	
+
 			Object[] result;
-	
+
 			/* Check if the given parent is a TreeParent. */
 			if (parent instanceof TreeParent) {
-	
+
 				/* Delegate operation. */
 				result = ((TreeParent) parent).getChildren();
 			}
-	
+
 			/* Else return an empty array. */
 			else {
 				result = new Object[0];
 			}
 			// end else.
-	
+
 			return result;
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -286,29 +286,29 @@ public class ContractView extends ViewPart {
 		 * .lang.Object)
 		 */
 		public Object[] getElements(Object parent) {
-	
+
 			Object[] result;
-	
+
 			/* If the parent is the view, return the root object's children. */
 			if (parent.equals(getViewSite())) {
-	
+
 				/* Probably initialize the root object. */
 				if (this.invisibleRoot == null) {
 					initialize();
 				}
 				// no else.
-	
+
 				result = this.getChildren(invisibleRoot);
 			}
-	
+
 			/* Else return the children of the given parent. */
 			else {
 				result = getChildren(parent);
 			}
-	
+
 			return result;
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -316,19 +316,19 @@ public class ContractView extends ViewPart {
 		 * )
 		 */
 		public Object getParent(Object child) {
-	
+
 			Object result;
 			result = null;
-	
+
 			/* For TreeObjects return their parents. */
 			if (child instanceof TreeObject) {
 				result = ((TreeObject) child).getParent();
 			}
 			// no else.
-	
+
 			return result;
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -336,18 +336,18 @@ public class ContractView extends ViewPart {
 		 * Object)
 		 */
 		public boolean hasChildren(Object parent) {
-	
+
 			boolean result;
 			result = false;
-	
+
 			if (parent instanceof TreeParent) {
 				result = ((TreeParent) parent).hasChildren();
 			}
 			// no else.
-	
+
 			return result;
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -355,22 +355,22 @@ public class ContractView extends ViewPart {
 		 * .viewers.Viewer, java.lang.Object, java.lang.Object)
 		 */
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-	
+
 			/* Remains empty. */
 		}
-	
+
 		/**
 		 * <p>
 		 * Initializes this {@link ViewContentProvider}.
 		 * </p>
 		 */
 		private void initialize() {
-	
+
 			/* Create an empty root object. */
 			this.invisibleRoot = new TreeParent("");
 			this.addPluginNodes(this.invisibleRoot);
 		}
-	
+
 		/**
 		 * <p>
 		 * A helper method that adds nodes for all {@link EclipsePlugin}s (and
@@ -381,16 +381,16 @@ public class ContractView extends ViewPart {
 		 *          The {@link TreeParent} to which the nodes shall be added.
 		 */
 		private void addPluginNodes(TreeParent parent) {
-	
+
 			for (EclipsePlugin plugin : plugins) {
 				TreeParent node;
 				node = new TreeParent(plugin);
-	
+
 				parent.addChild(node);
 				this.addExtensionPointNodes(node, plugin);
 			}
 		}
-	
+
 		/**
 		 * <p>
 		 * A helper method that adds nodes for all {@link EclipseExtensionPoint}s
@@ -405,14 +405,14 @@ public class ContractView extends ViewPart {
 		 *          shall be added.
 		 */
 		private void addExtensionPointNodes(TreeParent parent, EclipsePlugin plugin) {
-	
+
 			for (EclipseExtensionPoint eclipseExtensionPoint : plugin
 					.getExtensionPoints()) {
-	
+
 				if (eclipseExtensionPoint.hasContracts()) {
 					TreeParent node;
 					node = new TreeParent(eclipseExtensionPoint);
-	
+
 					parent.addChild(node);
 					this.addDefinedContractNodes(node, eclipseExtensionPoint);
 				}
@@ -420,7 +420,7 @@ public class ContractView extends ViewPart {
 			}
 			// end for.
 		}
-	
+
 		/**
 		 * <p>
 		 * A helper method that adds nodes for all defined {@link Contracts}s (and
@@ -436,21 +436,21 @@ public class ContractView extends ViewPart {
 		 */
 		private void addDefinedContractNodes(TreeParent parent,
 				EclipseExtensionPoint eclipseExtensionPoint) {
-	
+
 			/* Iterate through all contracts of the extension point. */
 			for (Contract contract : eclipseExtensionPoint.getContracts()) {
-	
+
 				TreeParent node;
 				node = new TreeParent(contract);
-	
+
 				/* Add the contract node. */
 				parent.addChild(node);
 				this.addContractContentNodes(node, contract);
-	
+
 				/* Add a node for instantiating extensions. */
 				node = new TreeParent(LABEL_INSTANCES);
 				parent.addChild(node);
-	
+
 				/* Add children nodes for all extensions that instantiate the contract. */
 				for (EclipseExtension eclipseExtensions : eclipseExtensionPoint
 						.getExtensions()) {
@@ -462,7 +462,7 @@ public class ContractView extends ViewPart {
 			}
 			// end for (contracts).
 		}
-	
+
 		/**
 		 * <p>
 		 * A helper method that adds nodes for all {@link Contract}s (and
@@ -478,22 +478,22 @@ public class ContractView extends ViewPart {
 		 */
 		private void addContractedExtensionNodes(TreeParent parent,
 				EclipseExtension eclipseExtesnsion) {
-	
+
 			TreeParent node;
 			node = new TreeParent(eclipseExtesnsion);
-	
+
 			parent.addChild(node);
-	
+
 			for (Contract contract : eclipseExtesnsion.getContracts()) {
 				TreeParent node2;
 				node2 = new TreeParent(contract);
-	
+
 				node.addChild(node2);
 				this.addInstantiatedContractNodes(node2, contract);
 			}
 			// end for.
 		}
-	
+
 		/**
 		 * <p>
 		 * A helper method that adds nodes for a {@link Contract}s instantiated by
@@ -507,14 +507,14 @@ public class ContractView extends ViewPart {
 		 */
 		private void addInstantiatedContractNodes(TreeParent parent,
 				Contract contract) {
-	
+
 			TreeParent node;
 			node = new TreeParent(contract);
-	
+
 			parent.addChild(node);
 			this.addContractContentNodes(node, contract);
 		}
-	
+
 		/**
 		 * <p>
 		 * A helper method that adds nodes for all content (and recursively for
@@ -528,76 +528,76 @@ public class ContractView extends ViewPart {
 		 *          The {@link Contracts} whose content shall be added.
 		 */
 		private void addContractContentNodes(TreeParent parent, Contract contract) {
-	
+
 			Map<Resource, OwnerType> ownerTypes;
 			ownerTypes = new HashMap<Resource, OwnerType>();
-	
+
 			for (Resource r : contract.getConsumerResources()) {
 				ownerTypes.put(r, OwnerType.extensionpoint);
 			}
-	
+
 			for (Resource r : contract.getSupplierResources()) {
 				ownerTypes.put(r, OwnerType.extension);
 			}
-	
+
 			for (Resource r : contract.getExternalResources()) {
 				ownerTypes.put(r, OwnerType.thirdparty);
 			}
-	
+
 			TreeParent contractRootNode = null;
-	
+
 			/* Probably add extension point resources. */
 			if (contract.getConsumerResources().size() > 0) {
-	
+
 				contractRootNode =
 						new TreeParent(getResourceLabel("extension point resources",
 								contract.getConsumer()));
 				parent.addChild(contractRootNode);
-	
+
 				for (Resource r : contract.getConsumerResources()) {
 					this.addResourceNode(contractRootNode, r, ownerTypes);
 				}
 			}
 			// no else.
-	
+
 			/* Probably add extension resources. */
 			if (contract.getSupplierResources().size() > 0) {
 				contractRootNode =
 						new TreeParent(getResourceLabel("extension resources", contract
 								.getSupplier()));
 				parent.addChild(contractRootNode);
-	
+
 				for (Resource r : contract.getSupplierResources()) {
 					this.addResourceNode(contractRootNode, r, ownerTypes);
 				}
 			}
 			// no else.
-	
+
 			/* Probably add external resources. */
 			if (contract.getExternalResources().size() > 0) {
-	
+
 				contractRootNode =
 						new TreeParent(getResourceLabel("third party resources", contract
 								.getOwner()));
 				parent.addChild(contractRootNode);
-	
+
 				for (Resource r : contract.getExternalResources()) {
 					this.addResourceNode(contractRootNode, r, ownerTypes);
 				}
 			}
 			// no else.
-	
+
 			/* Add nodes for the contracts conditions. */
 			for (AbstractCondition c : contract.getConstraints()) {
-	
+
 				/* The top level conjunction is displayed as set. */
 				if (c instanceof Conjunction) {
-	
+
 					for (AbstractCondition c2 : ((Conjunction) c).getParts()) {
 						this.addConditionNodes(parent, c2, ownerTypes);
 					}
 				}
-	
+
 				else {
 					this.addConditionNodes(parent, c, ownerTypes);
 				}
@@ -605,7 +605,7 @@ public class ContractView extends ViewPart {
 			}
 			// end for.
 		}
-	
+
 		/**
 		 * <p>
 		 * A helper method that add a node for a given {@link Resource}.
@@ -621,13 +621,13 @@ public class ContractView extends ViewPart {
 		 */
 		private void addResourceNode(TreeParent parent, Resource resource,
 				Map<Resource, OwnerType> ownerTypes) {
-	
+
 			TreeParent node = new TreeParent(resource);
 			parent.addChild(node);
-	
+
 			this.addConditionPartNodes(node, resource, ownerTypes);
 		}
-	
+
 		/**
 		 * <p>
 		 * A helper method that adds nodes for a given {@link Map} of resources and
@@ -643,89 +643,89 @@ public class ContractView extends ViewPart {
 		 */
 		private void addConditionNodes(TreeParent parent,
 				AbstractCondition condition, Map<Resource, OwnerType> ownerTypes) {
-	
+
 			if (condition instanceof RelationshipCondition) {
-	
+
 				RelationshipCondition relationshipCondition;
 				relationshipCondition = (RelationshipCondition) condition;
-	
+
 				TreeParent node;
 				node = new TreeParent(relationshipCondition);
-	
+
 				parent.addChild(node);
-	
+
 				this.addResourceNode(node, relationshipCondition.getResource1(),
 						ownerTypes);
 				node.addChild(new TreeObject(new KeyValueNode("relationship",
 						relationshipCondition.getRelationship().toString())));
-	
+
 				this.addResourceNode(node, relationshipCondition.getResource2(),
 						ownerTypes);
 			}
-	
+
 			else if (condition instanceof PropertyCondition) {
-	
+
 				PropertyCondition propertyCondition;
 				propertyCondition = (PropertyCondition) condition;
-	
+
 				TreeParent node;
 				node = new TreeParent(propertyCondition);
-	
+
 				parent.addChild(node);
 				this.addResourceNode(node, propertyCondition.getResource(), ownerTypes);
-	
+
 				if (propertyCondition.getProperty() != null) {
 					node.addChild(new TreeObject(new KeyValueNode("property",
 							propertyCondition.getProperty().toString())));
 				}
 				// no else.
-	
+
 				node.addChild(new TreeObject(new KeyValueNode("op", propertyCondition
 						.getOperator().getName())));
 				node.addChild(new TreeObject(new KeyValueNode("value", ""
 						+ propertyCondition.getValue())));
 			}
-	
+
 			else if (condition instanceof ExistsCondition) {
-	
+
 				ExistsCondition existsCondition;
 				existsCondition = (ExistsCondition) condition;
-	
+
 				TreeParent node;
 				node = new TreeParent(existsCondition);
-	
+
 				parent.addChild(node);
 				this.addResourceNode(node, existsCondition.getResource(), ownerTypes);
 			}
-	
+
 			else if (condition instanceof ComplexCondition) {
-	
+
 				ComplexCondition complexCondition;
 				complexCondition = (ComplexCondition) condition;
-	
+
 				TreeParent node;
 				node = new TreeParent(complexCondition);
-	
+
 				parent.addChild(node);
-	
+
 				for (AbstractCondition part : complexCondition.getParts()) {
 					this.addConditionNodes(node, part, ownerTypes);
 				}
 			}
-	
+
 			else if (condition instanceof Negation) {
 				Negation negation;
 				negation = (Negation) condition;
-	
+
 				TreeParent node;
 				node = new TreeParent(negation);
-	
+
 				parent.addChild(node);
 				this
 						.addConditionNodes(node, negation.getNegatedCondition(), ownerTypes);
 			}
 		}
-	
+
 		/**
 		 * <p>
 		 * A helper method that adds nodes to a given {@link TreeParent} for a given
@@ -740,7 +740,7 @@ public class ContractView extends ViewPart {
 		 */
 		private void addConditionPartNodes(TreeParent parent, Resource resource,
 				Map<Resource, OwnerType> ownerTypes) {
-	
+
 			parent.addChild(new TreeObject(new KeyValueNode("id", resource.getId())));
 			parent.addChild(new TreeObject(new KeyValueNode("type", resource
 					.getType().toString())));
@@ -748,22 +748,22 @@ public class ContractView extends ViewPart {
 					.getName())));
 			parent.addChild(new TreeObject(new KeyValueNode("reference", resource
 					.getRef())));
-	
+
 			// parent.addChild(new TreeObject(new
 			// KeyValueNode("value",""+r.getValue())));
-	
+
 			OwnerType otype;
 			otype = ownerTypes.get(resource);
-	
+
 			if (otype != null) {
 				parent.addChild(new TreeObject(new KeyValueNode("provided by", otype
 						.toString())));
 			}
-	
+
 			// parent.addChild(new TreeObject(new
 			// KeyValueNode("value",""+r.getValue())));
 		}
-	
+
 		/**
 		 * <p>
 		 * Returns a new {@link String} that is append to a given {@link String} and
@@ -777,14 +777,14 @@ public class ContractView extends ViewPart {
 		 * @return The gerated descriptional {@link String}.
 		 */
 		private String getResourceLabel(String string, Connector connector) {
-	
+
 			StringBuffer buffer;
 			buffer = new StringBuffer(string);
-	
+
 			if (connector != null) {
 				Component component;
 				component = connector.getOwner();
-	
+
 				if (component != null) {
 					buffer.append(" (defined in ");
 					buffer.append(component.getId());
@@ -793,7 +793,7 @@ public class ContractView extends ViewPart {
 				// no else.
 			}
 			// no else.
-	
+
 			return buffer.toString();
 		}
 	}
@@ -1203,7 +1203,7 @@ public class ContractView extends ViewPart {
 
 		/* Load the contracted plug-ins. */
 		this.plugins =
-				ContractRegistry.getInstance().getContractedPlugins().values();
+				ContractRegistry.getInstance().getContractedEclipsePlugins();
 
 		/* Update the viewer. */
 		this.viewer.setContentProvider(new ViewContentProvider());
@@ -1726,7 +1726,7 @@ public class ContractView extends ViewPart {
 		if (disableActions) {
 			switchActions(false);
 		}
-		ContractRepository.getDefault().verify(contracts, verReport, vListener,
+		ContractRegistry.getInstance().verify(contracts, verReport, vListener,
 				jListener);
 
 	}

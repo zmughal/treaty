@@ -79,7 +79,7 @@ public class ContractRegistryStartUpJob extends Job {
 
 		/* Probably cancel the job. */
 		if (monitor.isCanceled()) {
-			ContractRegistry.getInstance().reset();
+			ContractRegistry.getInstance().clear();
 			return Status.CANCEL_STATUS;
 		}
 		// no else.

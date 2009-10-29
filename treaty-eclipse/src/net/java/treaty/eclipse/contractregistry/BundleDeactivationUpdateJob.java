@@ -159,8 +159,8 @@ public class BundleDeactivationUpdateJob extends Job {
 		for (IExtensionPoint extensionPoint : extensionRegistry
 				.getExtensionPoints(contributor)) {
 
-			if (ContractRegistry.getInstance().getContractedExtensionPoints()
-					.containsKey(extensionPoint)) {
+			if (ContractRegistry.getInstance().hasExtensionPointContracts(
+					extensionPoint)) {
 
 				EclipseExtensionPoint eclipseExtensionPoint;
 				eclipseExtensionPoint =
@@ -174,19 +174,19 @@ public class BundleDeactivationUpdateJob extends Job {
 				this.removeContractedExtensionsOfExtensionPoint(eclipseExtensionPoint);
 
 				/* Remove the contracted extension point. */
-				ContractRegistry.getInstance().removeContractedExtensionPoint(
+				ContractRegistry.getInstance().removeAllContractsFromExtensionPoint(
 						extensionPoint);
 			}
 			// no else.
 
 			/* Check if the extension point has external contracts. */
-			if (ContractRegistry.getInstance().getBoundExternalContracts()
-					.containsKey(extensionPoint)) {
+			if (ContractRegistry.getInstance().hasExtensionPointExternalContracts(
+					extensionPoint)) {
 
 				/* Un-bind the external contracts. */
 				ContractRegistry.getInstance().addUnboundExternalContracts(
 						extensionPoint.getUniqueIdentifier(),
-						ContractRegistry.getInstance().removeBoundExternalContracts(
+						ContractRegistry.getInstance().removeAllBoundExternalContracts(
 								extensionPoint));
 			}
 			// no else.
@@ -237,11 +237,11 @@ public class BundleDeactivationUpdateJob extends Job {
 		 */
 		for (IExtension extension : extensions) {
 
-			if (ContractRegistry.getInstance().getContractedExtensions().containsKey(
-					extension)) {
+			if (ContractRegistry.getInstance().hasExtensionContracts(extension)) {
 
 				/* Remove the contract from the extension. */
-				ContractRegistry.getInstance().removeContractedExtension(extension);
+				ContractRegistry.getInstance().removeAllContractsFromExtension(
+						extension);
 			}
 			// no else.
 
@@ -329,14 +329,13 @@ public class BundleDeactivationUpdateJob extends Job {
 				.getWrappedExtensionPoint().getExtensions()) {
 
 			/* Check if the extension is contracted. */
-			if (ContractRegistry.getInstance().getContractedExtensions().containsKey(
-					extension)) {
+			if (ContractRegistry.getInstance().hasExtensionContracts(extension)) {
 
 				EclipseExtension eclipseExtension;
 				eclipseExtension =
 						EclipseAdapterFactory.getInstance().createExtension(extension);
 
-				ContractRegistry.getInstance().removeContractedExtension(
+				ContractRegistry.getInstance().removeAllContractsFromExtension(
 						eclipseExtension.getWrappedExtension());
 
 				/* Also remove the extension from the extension point. */
@@ -376,7 +375,7 @@ public class BundleDeactivationUpdateJob extends Job {
 
 			/* Iterate through all contracts of the contracted extension point. */
 			for (Contract externalContract : ContractRegistry.getInstance()
-					.getBoundExternalContracts().get(contractedExtensionPoint)) {
+					.getExternalContractsOfExtensionPoint(contractedExtensionPoint)) {
 
 				if (externalContract.getOwner().equals(legislatorEclipseExtension)) {
 
@@ -389,7 +388,7 @@ public class BundleDeactivationUpdateJob extends Job {
 					for (EclipseExtension contractedEclipseExtension : contractedEclipseExtensionPoint
 							.getExtensions()) {
 
-						ContractRegistry.getInstance().removeContractedExtension(
+						ContractRegistry.getInstance().removeAllContractsFromExtension(
 								contractedEclipseExtension.getWrappedExtension());
 					}
 					// end for.
@@ -443,7 +442,8 @@ public class BundleDeactivationUpdateJob extends Job {
 				.getUnboundExternalContracts().keySet()) {
 
 			for (Contract externalContract : ContractRegistry.getInstance()
-					.getUnboundExternalContracts().get(contractedExtensionPointID)) {
+					.getUnboundExternalContractsOfExtensionPoint(
+							contractedExtensionPointID)) {
 
 				Set<Contract> removedContracts;
 				removedContracts = new HashSet<Contract>();
