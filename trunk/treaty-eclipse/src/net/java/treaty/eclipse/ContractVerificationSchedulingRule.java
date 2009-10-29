@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * 
  * @author Jens Dietrich
  */
-class ContractVerificationSchedulingRule implements ISchedulingRule {
+public class ContractVerificationSchedulingRule implements ISchedulingRule {
 
 	/** The {@link Contract} of this {@link ContractVerificationSchedulingRule}. */
 	private Contract contract = null;
