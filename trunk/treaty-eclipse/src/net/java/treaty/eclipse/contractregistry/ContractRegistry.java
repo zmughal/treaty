@@ -107,8 +107,6 @@ public class ContractRegistry extends Observable {
 
 	}
 
-	/* FIXME Claas: Implement init method to avoid lost events. */
-
 	/**
 	 * <p>
 	 * Returns the Singleton Instance of the {@link ContractRegistry}.
@@ -120,6 +118,13 @@ public class ContractRegistry extends Observable {
 
 		if (myInstance == null) {
 			myInstance = new ContractRegistry();
+
+			/* Do the initial startup. */
+			ContractRegistryStartUpJob contractRegistryStartUpJob;
+			contractRegistryStartUpJob =
+					new ContractRegistryStartUpJob("Initialt ContractRegistry Startup");
+
+			contractRegistryStartUpJob.schedule();
 		}
 		// no else.
 
@@ -1469,5 +1474,40 @@ public class ContractRegistry extends Observable {
 			this.setChanged();
 		}
 		// no else (contract already initialized).
+	}
+
+	/**
+	 * <p>
+	 * This method can be used to externally add a {@link Bundle} to the
+	 * {@link Set} of contracted {@link Bundle}s.
+	 * </p>
+	 * 
+	 * @param bundle
+	 *          The {@link Bundle} that shall be added.
+	 */
+	protected void addContractedBunlde(Bundle bundle) {
+
+		EclipsePlugin eclipsePlugin;
+		eclipsePlugin =
+				EclipseAdapterFactory.getInstance().createEclipsePlugin(bundle);
+
+		this.contractedPlugins.put(bundle, eclipsePlugin);
+	}
+
+	/**
+	 * <p>
+	 * Resets the {@link ContractRegistry} to an empty status.
+	 * </p>
+	 */
+	public void reset() {
+
+		this.contractedExtensionPoints.clear();
+		this.contractedExtensions.clear();
+		this.contractedPlugins.clear();
+
+		this.boundExternalContracts.clear();
+		this.unboundExternalContracts.clear();
+
+		EclipseAdapterFactory.getInstance().clearCache();
 	}
 }
