@@ -16,6 +16,7 @@ import java.util.List;
 
 import net.java.treaty.Contract;
 import net.java.treaty.VerificationReport;
+import net.java.treaty.eclipse.contractregistry.ContractRegistry;
 import net.java.treaty.eclipse.jobs.ContractLoadingJob;
 import net.java.treaty.eclipse.jobs.VerificationJob;
 import net.java.treaty.eclipse.jobs.VerificationJobListener;
@@ -29,6 +30,9 @@ import org.eclipse.core.runtime.jobs.MultiRule;
  * found in the workspace and has the API to run verification.
  * 
  * @author Jens Dietrich
+ * 
+ * @deprecated This Class is deprecated and has been Replaced by the
+ *             {@link ContractRegistry}.
  */
 public class ContractRepository {
 

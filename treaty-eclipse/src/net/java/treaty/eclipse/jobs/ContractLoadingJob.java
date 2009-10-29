@@ -24,6 +24,8 @@ import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.EclipseResourceManager;
 import net.java.treaty.eclipse.Logger;
+import net.java.treaty.eclipse.contractregistry.ContractRegistry;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
@@ -39,8 +41,11 @@ import org.osgi.framework.Bundle;
  * Job to scan for and load contracts.
  * 
  * @author Jens Dietrich
+ * 
+ * @Deprecated This class is deprecated. The {@link ContractRegistry} now
+ *             manages the {@link Contract} loading itself.
  */
-
+@Deprecated
 public class ContractLoadingJob extends Job {
 
 	private boolean isInitialScan = true;
