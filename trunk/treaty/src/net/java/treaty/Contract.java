@@ -13,7 +13,6 @@ package net.java.treaty;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -341,9 +340,6 @@ public class Contract extends PropertySupport implements ConditionContext,
 	}
 
 	/**
-	 * FIXME Claas: Propose to return a {@link LinkedHashSet} instead of a
-	 * {@link List}.
-	 * 
 	 * <p>
 	 * Instantiate the {@link Contract} for a supplier.
 	 * </p>
