@@ -1,13 +1,17 @@
 package net.java.treaty.eclipse.contractregistry;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
+import net.java.treaty.eclipse.EclipseResourceManager;
+import net.java.treaty.eclipse.Logger;
 
 import org.eclipse.core.runtime.ContributorFactoryOSGi;
 import org.eclipse.core.runtime.IContributor;
@@ -55,6 +59,12 @@ public class BundleDeactivationUpdateJob extends Job {
 	 */
 	private static final int WORK_BUNDLE_REMOVAL = 1000;
 
+	/**
+	 * The suffix of the file where {@link Contract}s are located inside the same
+	 * plug-in, whose {@link IExtensionPoint} they contract.
+	 */
+	private static final String CONTRACT_LOCATION_SUFFIX = ".contract";
+
 	/** The id of the {@link IExtensionPoint} used to provide external contracts. */
 	private static final String EXTERNAL_CONTRACT_ID =
 			"net.java.treaty.eclipse.contract";
@@ -97,14 +107,21 @@ public class BundleDeactivationUpdateJob extends Job {
 				+ WORK_CONTRACTED_EXTENSIONS + WORK_EXTERNAL_CONTRACTS
 				+ WORK_BUNDLE_REMOVAL);
 
-		/* Probably remove contracted extension points from the registry. */
-		this.tryToRemoveContractedExtensionPoints(monitor);
+		// FIXME Claas: Remove try after debugging.
+		try {
+			/* Probably remove contracted extension points from the registry. */
+			this.tryToRemoveContractedExtensionPoints(monitor);
 
-		/* Probably remove contracted extensions from the registry. */
-		this.tryToRemoveContractedExtensions(monitor);
+			/* Probably remove contracted extensions from the registry. */
+			this.tryToRemoveContractedExtensions(monitor);
 
-		/* Probably remove external contracts from the registry. */
-		this.tryToRemoveExternalContract(monitor);
+			/* Probably remove external contracts from the registry. */
+			this.tryToRemoveExternalContract(monitor);
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		/* Remove the contracted plug-in as well. */
 		monitor.subTask("Remove bundle.");
@@ -294,11 +311,8 @@ public class BundleDeactivationUpdateJob extends Job {
 			if (legislatorExtension.getExtensionPointUniqueIdentifier().equals(
 					EXTERNAL_CONTRACT_ID)) {
 
-				/* Probably remove bound external contracts. */
-				this.removeBoundExternalContractsOfExtension(legislatorExtension);
-
-				/* Also check if the extension provides unbound contracts. */
-				this.removeUnboundExternalContracts(legislatorExtension);
+				/* Probably remove external contracts. */
+				this.removeExternalContractsOfExtension(legislatorExtension);
 			}
 			// no else (extension does not represent external contract).
 
@@ -347,8 +361,6 @@ public class BundleDeactivationUpdateJob extends Job {
 	}
 
 	/**
-	 * FIXME Claas: Improve this method avoid so many for statements.
-	 * 
 	 * <p>
 	 * A helper method that removes all external {@link Contract}s from the
 	 * {@link ContractRegistry} that are defined by a given {@link IExtension}.
@@ -358,111 +370,63 @@ public class BundleDeactivationUpdateJob extends Job {
 	 *          The {@link IExtension} whose external {@link Contract}s shall be
 	 *          removed.
 	 */
-	private void removeBoundExternalContractsOfExtension(
+	private void removeExternalContractsOfExtension(
 			IExtension legislatorExtension) {
 
-		EclipseExtension legislatorEclipseExtension;
-		legislatorEclipseExtension =
-				EclipseAdapterFactory.getInstance()
-						.createExtension(legislatorExtension);
+		/* Iterate through all defined external contracts of the given extension. */
+		for (Contract externalContract : ContractRegistry.getInstance()
+				.getExternalContractsOfExtension(legislatorExtension)) {
 
-		/* Iterate through all defined external contracts. */
-		for (IExtensionPoint contractedExtensionPoint : ContractRegistry
-				.getInstance().getBoundExternalContracts().keySet()) {
+			/* Check if the contract is bound. */
+			if (externalContract.getConsumer() != null) {
+				EclipseExtensionPoint contractedEclipseExtensionPoint;
 
-			Set<Contract> removedContracts;
-			removedContracts = new HashSet<Contract>();
+				/* Get the consumer of the external contract. */
+				contractedEclipseExtensionPoint =
+						(EclipseExtensionPoint) externalContract.getConsumer();
 
-			/* Iterate through all contracts of the contracted extension point. */
-			for (Contract externalContract : ContractRegistry.getInstance()
-					.getExternalContractsOfExtensionPoint(contractedExtensionPoint)) {
+				/* Un-instantiate the contract for all its extensions. */
+				for (EclipseExtension contractedEclipseExtension : contractedEclipseExtensionPoint
+						.getExtensions()) {
 
-				if (externalContract.getOwner().equals(legislatorEclipseExtension)) {
-
-					EclipseExtensionPoint contractedEclipseExtensionPoint;
-					contractedEclipseExtensionPoint =
-							EclipseAdapterFactory.getInstance().createExtensionPoint(
-									contractedExtensionPoint);
-
-					/* Un-instantiate the contract for all its extensions. */
-					for (EclipseExtension contractedEclipseExtension : contractedEclipseExtensionPoint
-							.getExtensions()) {
-
-						ContractRegistry.getInstance().removeAllContractsFromExtension(
-								contractedEclipseExtension.getWrappedExtension());
-					}
-					// end for.
-
-					/* Remove the external contract from the extension. */
-					ContractRegistry.getInstance().removeContractFromExtensionPoint(
-							contractedExtensionPoint, externalContract);
-
-					/* Probably remove the contracted plug-in as well. */
-					EclipsePlugin contractedPlugin;
-
-					contractedPlugin =
-							(EclipsePlugin) contractedEclipseExtensionPoint.getOwner();
-
-					this.probablyRemovePluginFromRegistry(contractedPlugin);
-
-					removedContracts.add(externalContract);
-				}
-				// no else (external contract defined by other extension).
-
-				/* Probably remove the external contracts from the registry. */
-				for (Contract contract : removedContracts) {
-					ContractRegistry.getInstance().removeBoundExternalContract(
-							contractedExtensionPoint, contract);
+					this.updateOrInstantiateContracts(contractedEclipseExtension);
 				}
 				// end for.
+
+				/* Remove the external contract from the extension point. */
+				ContractRegistry.getInstance().removeContractFromExtensionPoint(
+						contractedEclipseExtensionPoint.getWrappedExtensionPoint(),
+						externalContract);
+
+				/* Probably remove the contracted plug-in as well. */
+				EclipsePlugin contractedPlugin;
+
+				contractedPlugin =
+						(EclipsePlugin) contractedEclipseExtensionPoint.getOwner();
+
+				this.probablyRemovePluginFromRegistry(contractedPlugin);
+
+				ContractRegistry.getInstance().removeBoundExternalContract(
+						contractedEclipseExtensionPoint.getWrappedExtensionPoint(),
+						externalContract);
 			}
-			// end for (iteration on external contracts).
-		}
-		// end for (iteration on contracted extensions).
-	}
 
-	/**
-	 * FIXME Claas: Improve this method avoid so many for statements.
-	 * <p>
-	 * A helper method that removes all unbound external {@link Contract}s of a
-	 * given {@link IExtension} from the {@link ContractRegistry}.
-	 * 
-	 * @param legislatorExtension
-	 *          The {@link IExtension} whose unbound external {@link Contract}s
-	 *          shall be removed.
-	 */
-	private void removeUnboundExternalContracts(IExtension legislatorExtension) {
+			/* Else remove the unbound contract. */
+			else {
+				String contractedExtensionPointID;
 
-		EclipseExtension legislatorEclipseExtension;
-		legislatorEclipseExtension =
-				EclipseAdapterFactory.getInstance()
-						.createExtension(legislatorExtension);
+				contractedExtensionPointID = externalContract.getLocation().toString();
+				contractedExtensionPointID =
+						contractedExtensionPointID.substring(contractedExtensionPointID
+								.lastIndexOf("/") + 1, contractedExtensionPointID
+								.lastIndexOf(CONTRACT_LOCATION_SUFFIX));
 
-		for (String contractedExtensionPointID : ContractRegistry.getInstance()
-				.getUnboundExternalContracts().keySet()) {
-
-			for (Contract externalContract : ContractRegistry.getInstance()
-					.getUnboundExternalContractsOfExtensionPoint(
-							contractedExtensionPointID)) {
-
-				Set<Contract> removedContracts;
-				removedContracts = new HashSet<Contract>();
-
-				if (externalContract.getOwner().equals(legislatorEclipseExtension)) {
-
-					removedContracts.add(externalContract);
-				}
-				// no else.
-
-				for (Contract contract : removedContracts) {
-					ContractRegistry.getInstance().removeUnboundExternalContract(
-							contractedExtensionPointID, contract);
-				}
-				// end for.
+				ContractRegistry.getInstance().removeUnboundExternalContract(
+						contractedExtensionPointID, externalContract);
 			}
-			// end for (iteration on external contracts).
+			// end else.
 		}
-		// end for (iteration on extension point ids).
+		// end for (iteration on external contracts).
 	}
 
 	/**
@@ -501,5 +465,63 @@ public class BundleDeactivationUpdateJob extends Job {
 			ContractRegistry.getInstance().removeContractedBundle(plugin.getBundle());
 		}
 		// no else.
+	}
+
+	/**
+	 * <p>
+	 * A helper method that instantiates or updates an
+	 * {@link EclipseExtensionPoint}'s {@link Contract}s for a given
+	 * {@link EclipseExtension}.
+	 * </p>
+	 * 
+	 * @param eclipseExtension
+	 *          The {@link EclipseExtension} for that the {@link Contract} shall
+	 *          be instantiated.
+	 */
+	private void updateOrInstantiateContracts(EclipseExtension eclipseExtension) {
+
+		EclipseResourceManager eclipseMgr;
+		eclipseMgr = new EclipseResourceManager();
+
+		EclipseExtensionPoint eclipseExtensionPoint;
+		eclipseExtensionPoint = eclipseExtension.getExtensionPoint();
+
+		/* Check if a contract has defined on the given extension point at all. */
+		if (ContractRegistry.getInstance().hasExtensionPointContracts(
+				eclipseExtensionPoint.getWrappedExtensionPoint())) {
+
+			/* Reinitialize all contracts of the extension point. */
+			for (Contract contract : eclipseExtensionPoint.getContracts()) {
+
+				LinkedHashSet<Contract> instantiatedContracts;
+				instantiatedContracts = new LinkedHashSet<Contract>();
+
+				/* Try to instantiate the given contract. */
+				try {
+					List<Contract> newInstantiatedContracts;
+
+					newInstantiatedContracts =
+							contract.bindSupplier(eclipseExtension, eclipseMgr);
+					instantiatedContracts.addAll(newInstantiatedContracts);
+
+					ContractRegistry.getInstance().setContractsOfExtension(
+							eclipseExtension.getWrappedExtension(), instantiatedContracts);
+				}
+
+				catch (TreatyException e) {
+					Logger.error("Error instantiating contract " + contract
+							+ " for extension " + eclipseExtension.getId(), e);
+				}
+				// end catch.
+			}
+			// end for (iteration on contracts).
+		}
+
+		/* Else remove all contracts from the extension. */
+		else {
+
+			ContractRegistry.getInstance().removeAllContractsFromExtension(
+					eclipseExtension.getWrappedExtension());
+		}
 	}
 }

@@ -66,6 +66,13 @@ public final class ContractRegistry extends Observable {
 			new HashMap<IExtensionPoint, LinkedHashSet<Contract>>();
 
 	/**
+	 * Contains all external {@link Contract}s in relation to the
+	 * {@link IExtension} that defines the external {@link Contract}.
+	 */
+	private Map<IExtension, LinkedHashSet<Contract>> externalContracts =
+			new HashMap<IExtension, LinkedHashSet<Contract>>();
+
+	/**
 	 * Contains all {@link IExtensionPoint}s (as their unique IDs) on that
 	 * external {@link Contract}s have been defined by other {@link EclipsePlugin}
 	 * s. The {@link EclipsePlugin} that defined a {@link Contract} can be
@@ -393,7 +400,7 @@ public final class ContractRegistry extends Observable {
 	 *          The {@link Contract} that shall be added.
 	 */
 	protected void addBoundExternalContract(
-			IExtensionPoint contractedExtensionPoint, Contract externalContract) {
+			IExtensionPoint contractedExtensionPoint, Contract contract) {
 
 		LinkedHashSet<Contract> boundContracts;
 
@@ -406,8 +413,11 @@ public final class ContractRegistry extends Observable {
 			boundContracts = new LinkedHashSet<Contract>();
 		}
 
-		boundContracts.add(externalContract);
+		boundContracts.add(contract);
 		this.boundExternalContracts.put(contractedExtensionPoint, boundContracts);
+
+		/* Add the contract to the list of all external contracts as well. */
+		this.addExternalContract(contract);
 
 		/* Update change status. */
 		this.setChanged();
@@ -490,10 +500,15 @@ public final class ContractRegistry extends Observable {
 			externalContractsOfExtension = new LinkedHashSet<Contract>();
 		}
 
+		/* Probably unbind the contract. */
+		contract.setConsumer(null);
 		externalContractsOfExtension.add(contract);
 
 		this.unboundExternalContracts.put(extensionPointID,
 				externalContractsOfExtension);
+
+		/* Add the contract to the list of all external contracts as well. */
+		this.addExternalContract(contract);
 
 		/* Update change status. */
 		this.setChanged();
@@ -525,13 +540,49 @@ public final class ContractRegistry extends Observable {
 			externalContractsOfExtension = new LinkedHashSet<Contract>();
 		}
 
+		/* Probably unbind the contracts. */
+		for (Contract contract : contracts) {
+			contract.setConsumer(null);
+		}
+
 		externalContractsOfExtension.addAll(contracts);
 
 		this.unboundExternalContracts.put(extensionPointID,
 				externalContractsOfExtension);
 
+		/* Add the contracts to the list of all external contracts as well. */
+		for (Contract contract : contracts) {
+			this.addExternalContract(contract);
+		}
+		// end for.
+
 		/* Update change status. */
 		this.setChanged();
+	}
+
+	/**
+	 * <p>
+	 * Returns all external {@link Contract}s defined by the given
+	 * {@link IExtension}.
+	 * </p>
+	 * 
+	 * @param extension
+	 *          The {@link IExtension} whose external {@link Contract}s shall be
+	 *          returned.
+	 * @return The external {@link Contract}s as a {@link LinkedHashSet}.
+	 */
+	protected LinkedHashSet<Contract> getExternalContractsOfExtension(
+			IExtension extension) {
+
+		LinkedHashSet<Contract> result;
+		result = new LinkedHashSet<Contract>();
+
+		if (this.externalContracts.containsKey(extension)) {
+			result.addAll(this.externalContracts.get(extension));
+		}
+		// no else.
+
+		return result;
 	}
 
 	/**
@@ -634,6 +685,11 @@ public final class ContractRegistry extends Observable {
 
 		result = this.boundExternalContracts.remove(extensionPoint);
 
+		/* Remove the contracts from the list of all external contracts as well. */
+		for (Contract contract : result) {
+			this.removeExternalContract(contract);
+		}
+
 		/* Update change status. */
 		this.setChanged();
 
@@ -690,7 +746,14 @@ public final class ContractRegistry extends Observable {
 	 */
 	protected void removeAllUnboundExternalContracts(String uniqueIdentifier) {
 
-		this.unboundExternalContracts.remove(uniqueIdentifier);
+		LinkedHashSet<Contract> contracts;
+
+		contracts = this.unboundExternalContracts.remove(uniqueIdentifier);
+
+		/* Remove the contracts from the list of all external contracts as well. */
+		for (Contract contract : contracts) {
+			this.removeExternalContract(contract);
+		}
 
 		/* Update change status. */
 		this.setChanged();
@@ -711,21 +774,28 @@ public final class ContractRegistry extends Observable {
 	protected void removeBoundExternalContract(IExtensionPoint extensionPoint,
 			Contract contract) {
 
-		LinkedHashSet<Contract> boundContracts;
-		boundContracts = this.boundExternalContracts.get(extensionPoint);
+		if (this.boundExternalContracts.containsKey(extensionPoint)) {
 
-		boundContracts.remove(contract);
+			LinkedHashSet<Contract> boundContracts;
+			boundContracts = this.boundExternalContracts.get(extensionPoint);
 
-		if (boundContracts.size() > 0) {
-			this.boundExternalContracts.put(extensionPoint, boundContracts);
+			boundContracts.remove(contract);
+
+			if (boundContracts.size() > 0) {
+				this.boundExternalContracts.put(extensionPoint, boundContracts);
+			}
+
+			else {
+				this.boundExternalContracts.remove(extensionPoint);
+			}
+
+			/* Remove the contract from the list of all external contracts as well. */
+			this.removeExternalContract(contract);
+
+			/* Update change status. */
+			this.setChanged();
 		}
-
-		else {
-			this.boundExternalContracts.remove(extensionPoint);
-		}
-
-		/* Update change status. */
-		this.setChanged();
+		// no else.
 	}
 
 	/**
@@ -761,19 +831,23 @@ public final class ContractRegistry extends Observable {
 		LinkedHashSet<Contract> definedContracts;
 
 		/* Remove the contract from the extension point. */
-		definedContracts = this.contractedExtensionPoints.get(extensionPoint);
-		definedContracts.remove(contract);
+		if (this.contractedExtensionPoints.containsKey(extensionPoint)) {
 
-		/* Probably remove the contracted extension point. */
-		if (definedContracts.size() == 0) {
-			this.contractedExtensionPoints.remove(extensionPoint);
-		}
+			definedContracts = this.contractedExtensionPoints.get(extensionPoint);
+			definedContracts.remove(contract);
 
-		/* Else only remove the contract from the registry. */
-		else {
-			this.contractedExtensionPoints.put(extensionPoint, definedContracts);
+			/* Probably remove the contracted extension point. */
+			if (definedContracts.size() == 0) {
+				this.contractedExtensionPoints.remove(extensionPoint);
+			}
+
+			/* Else only remove the contract from the registry. */
+			else {
+				this.contractedExtensionPoints.put(extensionPoint, definedContracts);
+			}
+			// end else.
 		}
-		// end else.
+		// no else.
 
 		/* Update change status. */
 		this.setChanged();
@@ -807,6 +881,9 @@ public final class ContractRegistry extends Observable {
 			this.unboundExternalContracts.remove(extensionPointID);
 		}
 
+		/* Remove the contract from the list of all external contracts as well. */
+		this.removeExternalContract(contract);
+
 		/* Update change status. */
 		this.setChanged();
 	}
@@ -829,6 +906,79 @@ public final class ContractRegistry extends Observable {
 
 		/* Update change status. */
 		this.setChanged();
+	}
+
+	/**
+	 * <p>
+	 * This method can be used to add a {@link Contract} to the list of external
+	 * {@link Contract}s.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} that shall be added.
+	 */
+	private void addExternalContract(Contract contract) {
+
+		LinkedHashSet<Contract> externalContractsOfExtension;
+		IExtension legislatorExtension;
+
+		legislatorExtension =
+				((EclipseExtension) contract.getOwner()).getWrappedExtension();
+
+		if (this.externalContracts.containsKey(legislatorExtension)) {
+			externalContractsOfExtension =
+					this.externalContracts.get(legislatorExtension);
+		}
+
+		else {
+			externalContractsOfExtension = new LinkedHashSet<Contract>();
+		}
+
+		externalContractsOfExtension.add(contract);
+
+		this.externalContracts.put(legislatorExtension,
+				externalContractsOfExtension);
+
+		/* Update change status. */
+		this.setChanged();
+	}
+
+	/**
+	 * <p>
+	 * This method can be used to remove a {@link Contract} from the list of
+	 * external {@link Contract}s.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} that shall be added.
+	 */
+	private void removeExternalContract(Contract contract) {
+
+		LinkedHashSet<Contract> externalContractsOfExtension;
+		IExtension legislatorExtension;
+
+		legislatorExtension =
+				((EclipseExtension) contract.getOwner()).getWrappedExtension();
+
+		if (this.externalContracts.containsKey(legislatorExtension)) {
+			externalContractsOfExtension =
+					this.externalContracts.get(legislatorExtension);
+
+			externalContractsOfExtension.remove(contract);
+
+			if (externalContractsOfExtension.size() == 0) {
+				this.externalContracts.remove(legislatorExtension);
+			}
+
+			else {
+				this.externalContracts.put(legislatorExtension,
+						externalContractsOfExtension);
+			}
+
+			/* Update change status. */
+			this.setChanged();
+		}
+		// no else.
 	}
 
 	/**
@@ -872,7 +1022,7 @@ public final class ContractRegistry extends Observable {
 
 	/**
 	 * <p>
-	 * Verifes a Collection of given {@link Contract}s for a given
+	 * Verifies a Collection of given {@link Contract}s for a given
 	 * {@link VerificationReport}, {@link VerificationJobListener} and
 	 * {@link IJobChangeListener}.
 	 * </p>

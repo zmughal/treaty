@@ -76,7 +76,7 @@ public class BundleActivationUpdateJob extends Job {
 	 * The suffix of the file where {@link Contract}s are located inside the same
 	 * plug-in, whose {@link IExtensionPoint} they contract.
 	 */
-	private static final String INTERNAL_CONTRACT_LOCATION_SUFFIX = ".contract";
+	private static final String CONTRACT_LOCATION_SUFFIX = ".contract";
 
 	/**
 	 * The {@link Bundle} to which this {@link BundleActivationUpdateJob} belongs
@@ -195,7 +195,7 @@ public class BundleActivationUpdateJob extends Job {
 			contractName =
 					INTERNAL_CONTRACT_LOCATION_PREFIX
 							+ extensionPoint.getUniqueIdentifier()
-							+ INTERNAL_CONTRACT_LOCATION_SUFFIX;
+							+ CONTRACT_LOCATION_SUFFIX;
 			contractURL = eclipsePlugin.getResource(contractName);
 
 			/* If a contract has been found, add it to the extension point. */
@@ -477,11 +477,13 @@ public class BundleActivationUpdateJob extends Job {
 		eclipseExtensionPoint =
 				EclipseAdapterFactory.getInstance()
 						.createExtensionPoint(extensionPoint);
+
 		newContract =
 				EclipseExtensionPoint
 						.createContract(contractURL, eclipseExtensionPoint);
 
 		/* Store the new contract in the registry. */
+		newContract.setConsumer(eclipseExtensionPoint);
 		ContractRegistry.getInstance().addContractToExtensionPoint(extensionPoint,
 				newContract);
 
@@ -508,7 +510,13 @@ public class BundleActivationUpdateJob extends Job {
 	private void addExternalContractToExtensionPoint(
 			IExtensionPoint contractedExtensionPoint, Contract externalContract) {
 
+		EclipseExtensionPoint eclipseExtensionPoint;
+		eclipseExtensionPoint =
+				EclipseAdapterFactory.getInstance().createExtensionPoint(
+						contractedExtensionPoint);
+
 		/* Add the external contract to the extension point in the registry. */
+		externalContract.setConsumer(eclipseExtensionPoint);
 		ContractRegistry.getInstance().addContractToExtensionPoint(
 				contractedExtensionPoint, externalContract);
 
