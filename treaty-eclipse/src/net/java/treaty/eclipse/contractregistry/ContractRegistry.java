@@ -1,3 +1,13 @@
+/*
+ * Copyright (C) 2008 Jens Dietrich
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License 
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and limitations under the License. 
+ */
+
 package net.java.treaty.eclipse.contractregistry;
 
 import java.util.Collection;
@@ -15,6 +25,7 @@ import net.java.treaty.eclipse.EclipseConnector;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
+import net.java.treaty.eclipse.EclipseVerifier;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.jobs.VerificationJob;
 import net.java.treaty.eclipse.jobs.VerificationJobListener;
@@ -196,7 +207,10 @@ public final class ContractRegistry extends Observable {
 
 		for (Contract contract : resultCandidates) {
 
-			/* FIXME Claas: Filter the contracts depending on their event types. */
+			/*
+			 * FIXME Claas: Filter the contracts depending on their event types when
+			 * event types are available.
+			 */
 			// /* Only add contracts of the right type to the result. */
 			// if (contract.getEventTypes().contains(lifeCycleEvent.getType())) {
 			// result.add(contract);
@@ -221,6 +235,23 @@ public final class ContractRegistry extends Observable {
 
 		result = new LinkedHashSet<EclipsePlugin>();
 		result.addAll(this.contractedPlugins.values());
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link IExtensionPoint}s on that contracts are defined.
+	 * </p>
+	 * 
+	 * @return The {@linkIExtensionPoint}s on that contracts are defined.
+	 */
+	public LinkedHashSet<IExtensionPoint> getContractedExtensionPoints() {
+
+		LinkedHashSet<IExtensionPoint> result;
+
+		result = new LinkedHashSet<IExtensionPoint>();
+		result.addAll(this.contractedExtensionPoints.keySet());
 
 		return result;
 	}
@@ -386,6 +417,53 @@ public final class ContractRegistry extends Observable {
 		}
 		}
 		// end switch.
+	}
+
+	/**
+	 * FIXME Claas: Should this method be part of the {@link ContractRegistry}? I
+	 * think it should be located in the {@link EclipseVerifier} or a similar
+	 * class.
+	 * 
+	 * <p>
+	 * Verifies a Collection of given {@link Contract}s for a given
+	 * {@link VerificationReport}, {@link VerificationJobListener} and
+	 * {@link IJobChangeListener}.
+	 * </p>
+	 * 
+	 * @param contracts
+	 *          The {@link Contract}s that shall be verified.
+	 * @param verificationReport
+	 *          The {@link VerificationReport} used to store the results.
+	 * @param verificationJobListener
+	 *          A {@link VerificationJobListener} that can be used to observe the
+	 *          progress.
+	 * @param jobChangeListener
+	 *          An {@link IJobChangeListener} that can be used to observe the
+	 *          progress.
+	 */
+	public void verify(Collection<Contract> contracts,
+			VerificationReport verificationReport,
+			VerificationJobListener verificationJobListener,
+			IJobChangeListener jobChangeListener) {
+
+		VerificationJob job;
+		job =
+				new VerificationJob("Treaty component verification", contracts,
+						verificationReport);
+
+		job.addVerificationJobListener(verificationJobListener);
+		job.addJobChangeListener(jobChangeListener);
+
+		ISchedulingRule combinedRule;
+		combinedRule = null;
+
+		for (Contract contract : contracts) {
+			MultiRule.combine(new ContractVerificationSchedulingRule(contract),
+					combinedRule);
+		}
+
+		job.setRule(combinedRule);
+		job.schedule();
 	}
 
 	/**
@@ -1018,104 +1096,5 @@ public final class ContractRegistry extends Observable {
 		default:
 			return "UNKNOWN";
 		}
-	}
-
-	/**
-	 * <p>
-	 * Verifies a Collection of given {@link Contract}s for a given
-	 * {@link VerificationReport}, {@link VerificationJobListener} and
-	 * {@link IJobChangeListener}.
-	 * </p>
-	 * 
-	 * @param contracts
-	 *          The {@link Contract}s that shall be verified.
-	 * @param verificationReport
-	 *          The {@link VerificationReport} used to store the results.
-	 * @param verificationJobListener
-	 *          A {@link VerificationJobListener} that can be used to observe the
-	 *          progress.
-	 * @param jobChangeListener
-	 *          An {@link IJobChangeListener} that can be used to observe the
-	 *          progress.
-	 */
-	public void verify(Collection<Contract> contracts,
-			VerificationReport verificationReport,
-			VerificationJobListener verificationJobListener,
-			IJobChangeListener jobChangeListener) {
-
-		VerificationJob job;
-		job =
-				new VerificationJob("Treaty component verification", contracts,
-						verificationReport);
-
-		job.addVerificationJobListener(verificationJobListener);
-		job.addJobChangeListener(jobChangeListener);
-
-		ISchedulingRule combinedRule;
-		combinedRule = null;
-
-		for (Contract contract : contracts) {
-			MultiRule.combine(new ContractVerificationSchedulingRule(contract),
-					combinedRule);
-		}
-
-		job.setRule(combinedRule);
-		job.schedule();
-	}
-
-	/**
-	 * FIXME Claas: Remove this method after Job refactoring.
-	 * 
-	 * <p>
-	 * Returns all {@link IExtensionPoint}s on that external {@link Contract}s
-	 * have been defined by other {@link EclipsePlugin}s. The
-	 * {@link EclipsePlugin} that defined a {@link Contract} can be accessed via
-	 * the {@link Contract#getOwner()} method.
-	 * </p>
-	 * 
-	 * @return All {@link IExtensionPoint}s on that external {@link Contract}s
-	 *         have been defined by other {@link EclipsePlugin}s. The
-	 *         {@link EclipsePlugin} that defined a {@link Contract} can be
-	 *         accessed via the {@link Contract#getOwner()} method.
-	 */
-	protected Map<IExtensionPoint, LinkedHashSet<Contract>> getBoundExternalContracts() {
-
-		return this.boundExternalContracts;
-	}
-
-	/**
-	 * FIXME Claas: Remove this method after Job refactoring.
-	 * 
-	 * <p>
-	 * Returns the {@link IExtensionPoint}s on which {@link Contract}s are
-	 * defined.
-	 * </p>
-	 * 
-	 * @return The {@link IExtensionPoint}s on which {@link Contract}s are
-	 *         defined.
-	 */
-	protected Map<IExtensionPoint, LinkedHashSet<Contract>> getContractedExtensionPoints() {
-
-		return this.contractedExtensionPoints;
-	}
-
-	/**
-	 * FIXME Claas: Remove this method after Job refactoring.
-	 * 
-	 * <p>
-	 * Returns all {@link IExtensionPoint}s (as their unique IDs) on that external
-	 * {@link Contract}s have been defined by other {@link EclipsePlugin}s. The
-	 * {@link EclipsePlugin} that defined a {@link Contract} can be accessed via
-	 * the {@link Contract#getOwner()} method.
-	 * </p>
-	 * 
-	 * @return All {@link IExtensionPoint}s (as their unique IDs) on that external
-	 *         {@link Contract}s have been defined by other {@link EclipsePlugin}
-	 *         s. The {@link EclipsePlugin} that defined a {@link Contract} can be
-	 *         accessed via the {@link Contract#getOwner()} method.
-	 */
-	protected Map<String, LinkedHashSet<Contract>> getUnboundExternalContracts() {
-
-		return this.unboundExternalContracts;
 	}
 }

@@ -1,3 +1,13 @@
+/*
+ * Copyright (C) 2008 Jens Dietrich
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License 
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and limitations under the License. 
+ */
+
 package net.java.treaty.eclipse.contractregistry;
 
 import java.util.LinkedHashSet;
@@ -370,8 +380,7 @@ public class BundleDeactivationUpdateJob extends Job {
 	 *          The {@link IExtension} whose external {@link Contract}s shall be
 	 *          removed.
 	 */
-	private void removeExternalContractsOfExtension(
-			IExtension legislatorExtension) {
+	private void removeExternalContractsOfExtension(IExtension legislatorExtension) {
 
 		/* Iterate through all defined external contracts of the given extension. */
 		for (Contract externalContract : ContractRegistry.getInstance()
@@ -379,6 +388,8 @@ public class BundleDeactivationUpdateJob extends Job {
 
 			/* Check if the contract is bound. */
 			if (externalContract.getConsumer() != null) {
+
+				EclipsePlugin contractedPlugin;
 				EclipseExtensionPoint contractedEclipseExtensionPoint;
 
 				/* Get the consumer of the external contract. */
@@ -399,8 +410,6 @@ public class BundleDeactivationUpdateJob extends Job {
 						externalContract);
 
 				/* Probably remove the contracted plug-in as well. */
-				EclipsePlugin contractedPlugin;
-
 				contractedPlugin =
 						(EclipsePlugin) contractedEclipseExtensionPoint.getOwner();
 
@@ -445,7 +454,7 @@ public class BundleDeactivationUpdateJob extends Job {
 
 		/* Check if the plug-in still has contracted extension points. */
 		for (IExtensionPoint extensionPoint : ContractRegistry.getInstance()
-				.getContractedExtensionPoints().keySet()) {
+				.getContractedExtensionPoints()) {
 
 			EclipseExtensionPoint eclipseExtensionPoint;
 			eclipseExtensionPoint =
@@ -523,5 +532,6 @@ public class BundleDeactivationUpdateJob extends Job {
 			ContractRegistry.getInstance().removeAllContractsFromExtension(
 					eclipseExtension.getWrappedExtension());
 		}
+		// end else.
 	}
 }

@@ -1,7 +1,18 @@
+/*
+ * Copyright (C) 2008 Jens Dietrich
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License 
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and limitations under the License. 
+ */
+
 package net.java.treaty.eclipse.contractregistry;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
@@ -20,7 +31,6 @@ import org.osgi.framework.Bundle;
  * </p>
  * 
  * @author Claas Wilke
- * 
  */
 public class EclipseAdapterFactory {
 
@@ -32,7 +42,7 @@ public class EclipseAdapterFactory {
 	 * {@link EclipseAdapterFactory}.
 	 */
 	private Map<Bundle, EclipsePlugin> myEclipsePlugins =
-			new HashMap<Bundle, EclipsePlugin>();
+			new WeakHashMap<Bundle, EclipsePlugin>();
 
 	/**
 	 * The already adapted {@link EclipseExtensionPoint}s of this
@@ -190,6 +200,11 @@ public class EclipseAdapterFactory {
 	/**
 	 * <p>
 	 * Clears the cache of this {@link EclipseAdapterFactory}.
+	 * </p>
+	 * 
+	 * <p>
+	 * <strong> Please note that clearing the cache at the wrong time can cause
+	 * problems like 'Object Schizophrenia'!</strong>
 	 * </p>
 	 */
 	public void clearCache() {
