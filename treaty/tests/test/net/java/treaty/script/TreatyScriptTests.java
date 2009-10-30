@@ -88,6 +88,30 @@ public class TreatyScriptTests {
 		assertEquals("The expected number of constraints wern't visited.", 0, constraintsRemaining.get());
 		
 	}
+	// script for the clock example
+	@Test
+	public void testClockScript() throws Exception {
+		Contract contract = TreatyScript.fromString(
+				"// example contract used in prototype\n" +
+				"@dc:author=jens\n" +
+				"@dc:date=30/10/09\n" +
+				"on event:osgi.activated\n" +
+				"on event:osgi.updated\n" +
+				"consumer-resource Interface type=http://www.treaty.org/junit#TestCase name=net.java.treaty.eclipse.example.clock.DateFormatterPerformanceTests\n" +
+				"consumer-resource QoSTests type=http://www.treaty.org/java#AbstractType name=net.java.treaty.eclipse.example.clock.DateFormatter\n" +
+				"consumer-resource FunctionalTests type=http://www.treaty.org/junit#TestCase name=net.java.treaty.eclipse.example.clock.DateFormatterFunctionalTests\n" +
+				"consumer-resource DateFormatDef type=http://www.treaty.org/xml#XMLSchema name=/dateformat.xsd\n" +
+				"supplier-resource Formatter type=http://www.treaty.org/java#InstantiableClass ref=serviceprovider/@class\n" +
+				"supplier-resource FormatString type=http://www.treaty.org/xml#XMLInstance ref=serviceprovider/@formatdef\n" +
+				"constraint (Formatter http://www.treaty.org/java#implements Interface and mustexist Formatter\n" +
+				"and Formatter http://www.treaty.org/junit#verifies FunctionalTests \n" +
+				"and Formatter http://www.treaty.org/junit#verifies QoSTests)\n" +
+				"xor FormatString http://www.treaty.org/xml#instantiates DateFormatDef)\n" +
+				"onfailure action:osgi.uninstall.$bundle\n" +
+				"onsuccess action:osgi.log.debug.$bundle\n"
+			);
+		assertTrue(true);
+	}
 	
 	private static Resource[] EmptyResourceArray = {};
 }
