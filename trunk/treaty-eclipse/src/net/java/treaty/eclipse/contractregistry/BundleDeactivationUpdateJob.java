@@ -10,6 +10,7 @@
 
 package net.java.treaty.eclipse.contractregistry;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,8 @@ import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.EclipseResourceManager;
 import net.java.treaty.eclipse.Logger;
 
-import org.eclipse.core.runtime.ContributorFactoryOSGi;
-import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -148,79 +146,52 @@ public class BundleDeactivationUpdateJob extends Job {
 
 	/**
 	 * <p>
-	 * A helper method that checks if a given {@link Bundle} contains contracted
-	 * {@link IExtensionPoint}s and removes them from the {@link ContractRegistry}
-	 * .
+	 * A helper method that checks if a given {@link Bundle} defines external
+	 * treaty {@link Contract}s on {@link IExtensionPoint}s and removes them from
+	 * the {@link Set} of bound and unbound external {@link Contract}s.
 	 * </p>
 	 * 
 	 * @param monitor
 	 *          The {@link IProgressMonitor} used to monitor this {@link Job}.
 	 */
-	private void tryToRemoveContractedExtensionPoints(IProgressMonitor monitor) {
+	private void tryToRemoveExternalContract(IProgressMonitor monitor) {
 
 		/* Update monitor status. */
-		monitor.subTask("Check for contracted ExtensionPoints.");
+		monitor.subTask("Check for external Contracts.");
 
-		IContributor contributor;
-		IExtensionPoint[] extensionPoints;
+		EclipsePlugin eclipsePlugin;
+		List<EclipseExtension> eclipseExtensions;
 
-		IExtensionRegistry extensionRegistry;
+		/* Get the eclipse plugin. */
+		eclipsePlugin =
+				EclipseAdapterFactory.getInstance().createEclipsePlugin(this.myBundle);
 
-		/* Get the contributor for the bundle. */
-		contributor = ContributorFactoryOSGi.createContributor(this.myBundle);
+		/* Get all extensions of the bundle. */
+		eclipseExtensions = eclipsePlugin.getExtensions();
 
-		/* Get the extension registry. */
-		extensionRegistry =
-				org.eclipse.core.runtime.Platform.getExtensionRegistry();
-
-		/* Get all extensions points of the bundle. */
-		extensionPoints = extensionRegistry.getExtensionPoints(contributor);
-
-		/* If not extension point has been given at all, mark this task as worked. */
-		if (extensionPoints.length == 0) {
-			monitor.worked(WORK_INTERNAL_CONTRACTS);
+		/* If no extension point has been given at all, mark this task as worked. */
+		if (eclipseExtensions.size() == 0) {
+			monitor.worked(WORK_EXTERNAL_CONTRACTS);
 		}
 		// no else.
 
-		/* Search for extension points that can now be removed again. */
-		for (IExtensionPoint extensionPoint : extensionRegistry
-				.getExtensionPoints(contributor)) {
+		/* Iterate on the extensions. */
+		for (EclipseExtension eclipseExtension : eclipseExtensions) {
 
-			if (ContractRegistry.getInstance().hasExtensionPointContracts(
-					extensionPoint)) {
+			/* Check if the extension provides external contracts. */
+			if (eclipseExtension.getExtensionPoint() != null
+					&& eclipseExtension.getExtensionPoint().getId().equals(
+							EXTERNAL_CONTRACT_ID)) {
 
-				EclipseExtensionPoint eclipseExtensionPoint;
-				eclipseExtensionPoint =
-						EclipseAdapterFactory.getInstance().createExtensionPoint(
-								extensionPoint);
-
-				/*
-				 * Remove the extension points extensions and also un-instantiate their
-				 * contracts.
-				 */
-				this.removeContractedExtensionsOfExtensionPoint(eclipseExtensionPoint);
-
-				/* Remove the contracted extension point. */
-				ContractRegistry.getInstance().removeAllContractsFromExtensionPoint(
-						extensionPoint);
+				/* Probably remove external contracts. */
+				this.removeExternalContractsOfExtension(eclipseExtension
+						.getWrappedExtension());
 			}
-			// no else.
+			// no else (extension does not represent external contract).
 
-			/* Check if the extension point has external contracts. */
-			if (ContractRegistry.getInstance().hasExtensionPointExternalContracts(
-					extensionPoint)) {
-
-				/* Un-bind the external contracts. */
-				ContractRegistry.getInstance().addUnboundExternalContracts(
-						extensionPoint.getUniqueIdentifier(),
-						ContractRegistry.getInstance().removeAllBoundExternalContracts(
-								extensionPoint));
-			}
-			// no else.
-
-			monitor.worked(WORK_INTERNAL_CONTRACTS / extensionPoints.length);
+			monitor.worked(WORK_EXTERNAL_CONTRACTS / eclipseExtensions.size());
 		}
-		// end for.
+		// end for (iteration on extensions).
 	}
 
 	/**
@@ -237,23 +208,18 @@ public class BundleDeactivationUpdateJob extends Job {
 		/* Update monitor status. */
 		monitor.subTask("Check for contracted Extensions.");
 
-		IContributor contributor;
+		EclipsePlugin eclipsePlugin;
+		List<EclipseExtension> eclipseExtensions;
 
-		IExtensionRegistry extensionRegistry;
-		IExtension[] extensions;
-
-		/* Get the contributor for the bundle. */
-		contributor = ContributorFactoryOSGi.createContributor(this.myBundle);
-
-		/* Get the extension registry. */
-		extensionRegistry =
-				org.eclipse.core.runtime.Platform.getExtensionRegistry();
+		/* Get the eclipse plugin. */
+		eclipsePlugin =
+				EclipseAdapterFactory.getInstance().createEclipsePlugin(this.myBundle);
 
 		/* Get all extensions of the bundle. */
-		extensions = extensionRegistry.getExtensions(contributor);
+		eclipseExtensions = eclipsePlugin.getExtensions();
 
 		/* If not extension point has been given at all, mark this task as worked. */
-		if (extensions.length == 0) {
+		if (eclipseExtensions.size() == 0) {
 			monitor.worked(WORK_CONTRACTED_EXTENSIONS);
 		}
 		// no else.
@@ -262,73 +228,85 @@ public class BundleDeactivationUpdateJob extends Job {
 		 * Iterate on extensions and search for extensions that can now be removed
 		 * again.
 		 */
-		for (IExtension extension : extensions) {
+		for (EclipseExtension eclipseExtension : eclipseExtensions) {
 
-			if (ContractRegistry.getInstance().hasExtensionContracts(extension)) {
+			if (eclipseExtension.getContracts().size() > 0) {
 
 				/* Remove the contract from the extension. */
 				ContractRegistry.getInstance().removeAllContractsFromExtension(
-						extension);
+						eclipseExtension.getWrappedExtension());
 			}
 			// no else.
 
-			monitor.worked(WORK_CONTRACTED_EXTENSIONS / extensions.length);
+			monitor.worked(WORK_CONTRACTED_EXTENSIONS / eclipseExtensions.size());
 		}
 		// end for.
 	}
 
 	/**
 	 * <p>
-	 * A helper method that checks if a given {@link Bundle} defines external
-	 * treaty {@link Contract}s on {@link IExtensionPoint}s and removes them from
-	 * the {@link Set} of bound and unbound external {@link Contract}s.
+	 * A helper method that checks if a given {@link Bundle} contains contracted
+	 * {@link IExtensionPoint}s and removes them from the {@link ContractRegistry}
+	 * .
 	 * </p>
 	 * 
 	 * @param monitor
 	 *          The {@link IProgressMonitor} used to monitor this {@link Job}.
 	 */
-	private void tryToRemoveExternalContract(IProgressMonitor monitor) {
+	private void tryToRemoveContractedExtensionPoints(IProgressMonitor monitor) {
 
 		/* Update monitor status. */
-		monitor.subTask("Check for external Contracts.");
+		monitor.subTask("Check for contracted ExtensionPoints.");
 
-		IContributor contributor;
+		EclipsePlugin eclipsePlugin;
+		List<EclipseExtensionPoint> eclipseExtensionPoints;
 
-		IExtensionRegistry extensionRegistry;
-		IExtension[] extensions;
+		/* Get the EclipsePlugin for the bundle. */
+		eclipsePlugin =
+				EclipseAdapterFactory.getInstance().createEclipsePlugin(this.myBundle);
 
-		/* Get the contributor for the bundle. */
-		contributor = ContributorFactoryOSGi.createContributor(this.myBundle);
-
-		/* Get the extension registry. */
-		extensionRegistry =
-				org.eclipse.core.runtime.Platform.getExtensionRegistry();
-
-		/* Get all extensions of the bundle. */
-		extensions = extensionRegistry.getExtensions(contributor);
+		/* Get all extensions points of the plug-in. */
+		eclipseExtensionPoints =
+				new ArrayList<EclipseExtensionPoint>(eclipsePlugin.getExtensionPoints());
 
 		/* If not extension point has been given at all, mark this task as worked. */
-		if (extensions.length == 0) {
-			monitor.worked(WORK_EXTERNAL_CONTRACTS);
+		if (eclipseExtensionPoints.size() == 0) {
+			monitor.worked(WORK_INTERNAL_CONTRACTS);
 		}
 		// no else.
 
-		/* Iterate on the extensions. */
-		for (IExtension legislatorExtension : extensionRegistry
-				.getExtensions(contributor)) {
+		/* Search for extension points that can now be removed again. */
+		for (EclipseExtensionPoint eclipseExtensionPoint : eclipseExtensionPoints) {
 
-			/* Check if the extension provides external contracts. */
-			if (legislatorExtension.getExtensionPointUniqueIdentifier().equals(
-					EXTERNAL_CONTRACT_ID)) {
+			if (eclipseExtensionPoint.getContracts().size() > 0) {
 
-				/* Probably remove external contracts. */
-				this.removeExternalContractsOfExtension(legislatorExtension);
+				/*
+				 * Remove the extension points extensions and also un-instantiate their
+				 * contracts.
+				 */
+				this.removeContractedExtensionsOfExtensionPoint(eclipseExtensionPoint);
+
+				/* Remove the contracted extension point. */
+				ContractRegistry.getInstance().removeAllContractsFromExtensionPoint(
+						eclipseExtensionPoint.getWrappedExtensionPoint());
 			}
-			// no else (extension does not represent external contract).
+			// no else.
 
-			monitor.worked(WORK_EXTERNAL_CONTRACTS / extensions.length);
+			/* Check if the extension point has external contracts. */
+			if (ContractRegistry.getInstance().hasExtensionPointExternalContracts(
+					eclipseExtensionPoint.getWrappedExtensionPoint())) {
+
+				/* Un-bind the external contracts. */
+				ContractRegistry.getInstance().addUnboundExternalContracts(
+						eclipseExtensionPoint.getId(),
+						ContractRegistry.getInstance().removeAllBoundExternalContracts(
+								eclipseExtensionPoint.getWrappedExtensionPoint()));
+			}
+			// no else.
+
+			monitor.worked(WORK_INTERNAL_CONTRACTS / eclipseExtensionPoints.size());
 		}
-		// end for (iteration on extensions).
+		// end for.
 	}
 
 	/**

@@ -125,23 +125,30 @@ public class BundleActivationUpdateJob extends Job {
 		monitor.beginTask("Update ContracRegistry.", WORK_INTERNAL_CONTRACTS
 				+ WORK_CONTRACTED_EXTENSIONS + WORK_EXTERNAL_CONTRACTS);
 
-		/*
-		 * First check if the bundle provides extension points that contract
-		 * themselves or belong to existing external contracts.
-		 */
-		this.tryToAddContractedExtensionPoints(monitor);
+		// FIXME Claas: Remove try after debugging.
+		try {
+			/*
+			 * First check if the bundle provides extension points that contract
+			 * themselves or belong to existing external contracts.
+			 */
+			this.tryToAddContractedExtensionPoints(monitor);
 
-		/*
-		 * Afterwards, check if the bundle provides extensions that can be bound to
-		 * already existing extension points and contracts.
-		 */
-		this.tryToAddContractedExtensions(monitor);
+			/*
+			 * Afterwards, check if the bundle provides extensions that can be bound
+			 * to already existing extension points and contracts.
+			 */
+			this.tryToAddContractedExtensions(monitor);
 
-		/*
-		 * Afterwards, check if the bundle provides external contracts (whether or
-		 * not they can be bound already to the contracted extension points).
-		 */
-		this.tryToAddExternalContracts(monitor);
+			/*
+			 * Afterwards, check if the bundle provides external contracts (whether or
+			 * not they can be bound already to the contracted extension points).
+			 */
+			this.tryToAddExternalContracts(monitor);
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		/* Probably inform listeners. */
 		ContractRegistry.getInstance().notifyObservers();

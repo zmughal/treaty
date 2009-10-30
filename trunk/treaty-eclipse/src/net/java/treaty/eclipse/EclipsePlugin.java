@@ -12,6 +12,7 @@ package net.java.treaty.eclipse;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import net.java.treaty.Component;
@@ -30,11 +31,12 @@ import org.osgi.framework.Bundle;
 public class EclipsePlugin extends PropertySupport implements Component {
 
 	/** The {@link EclipseExtensionPoint}s of this {@link EclipsePlugin}. */
-	private List<EclipseExtensionPoint> extensionPoints =
-			new ArrayList<EclipseExtensionPoint>();
+	private LinkedHashSet<EclipseExtensionPoint> extensionPoints =
+			new LinkedHashSet<EclipseExtensionPoint>();
 
 	/** The {@link EclipseExtension}s of this {@link EclipsePlugin}. */
-	private List<EclipseExtension> extensions = new ArrayList<EclipseExtension>();
+	private LinkedHashSet<EclipseExtension> extensions =
+			new LinkedHashSet<EclipseExtension>();
 
 	/** The {@link Bundle} wrapped by this {@link EclipsePlugin}. */
 	private Bundle bundle = null;
@@ -52,6 +54,56 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		super();
 
 		this.bundle = bundle;
+	}
+
+	/**
+	 * <p>
+	 * Adds a given {@link EclipseExtension} to this {@link EclipsePlugin}.
+	 * </p>
+	 * 
+	 * @param eclipseExtension
+	 *          The {@link EclipseExtension} that shall be added.
+	 */
+	public void addExtension(EclipseExtension eclipseExtension) {
+
+		this.extensions.add(eclipseExtension);
+	}
+
+	/**
+	 * <p>
+	 * Adds a given {@link EclipseExtensionPoint} to this {@link EclipsePlugin}.
+	 * </p>
+	 * 
+	 * @param eclipseExtensionPoint
+	 *          The {@link EclipseExtensionPoint} that shall be added.
+	 */
+	public void addExtensionPoint(EclipseExtensionPoint eclipseExtensionPoint) {
+
+		this.extensionPoints.add(eclipseExtensionPoint);
+	}
+
+	/**
+	 * <p>
+	 * Returns all {@link EclipseExtension}s of this {@link EclipsePlugin}.
+	 * </p>
+	 * 
+	 * @return All {@link EclipseExtension}s of this {@link EclipsePlugin}.
+	 */
+	public List<EclipseExtension> getExtensions() {
+
+		return new ArrayList<EclipseExtension>(this.extensions);
+	}
+
+	/**
+	 * <p>
+	 * Returns all {@link EclipseExtensionPoint}s of this {@link EclipsePlugin}.
+	 * </p>
+	 * 
+	 * @return All {@link EclipseExtensionPoint}s of this {@link EclipsePlugin}.
+	 */
+	public List<EclipseExtensionPoint> getExtensionPoints() {
+
+		return new ArrayList<EclipseExtensionPoint>(this.extensionPoints);
 	}
 
 	/**
@@ -91,14 +143,35 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		return result;
 	}
 
-	void addExtension(EclipseExtension x) {
+	/**
+	 * <p>
+	 * Removes a given {@link EclipseExtension} from this {@link EclipsePlugin}.
+	 * </p>
+	 * 
+	 * @param eclipseExtension
+	 *          The {@link EclipseExtension} that shall be removed.
+	 * @return <code>true</code> if the {@link EclipseExtension} has been removed.
+	 */
+	public boolean removeExtension(EclipseExtension eclipseExtension) {
 
-		this.extensions.add(x);
+		return this.extensions.remove(eclipseExtension);
 	}
 
-	void addExtensionPoint(EclipseExtensionPoint xp) {
+	/**
+	 * <p>
+	 * Removes a given {@link EclipseExtensionPoint} to this {@link EclipsePlugin}
+	 * .
+	 * </p>
+	 * 
+	 * @param eclipseExtensionPoint
+	 *          The {@link EclipseExtensionPoint} that shall be removed.
+	 * @return <code>true</code> if the {@link EclipseExtensionPoint} has been
+	 *         removed.
+	 */
+	public boolean removeExtensionPoint(
+			EclipseExtensionPoint eclipseExtensionPoint) {
 
-		this.extensionPoints.add(xp);
+		return this.extensionPoints.remove(eclipseExtensionPoint);
 	}
 
 	public String getId() {
@@ -128,16 +201,6 @@ public class EclipsePlugin extends PropertySupport implements Component {
 				return true;
 		}
 		return false;
-	}
-
-	public List<EclipseExtensionPoint> getExtensionPoints() {
-
-		return extensionPoints;
-	}
-
-	public List<EclipseExtension> getExtensions() {
-
-		return extensions;
 	}
 
 	public List<Connector> getConnectors() {
