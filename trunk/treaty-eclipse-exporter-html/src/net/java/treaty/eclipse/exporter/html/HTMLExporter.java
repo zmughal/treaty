@@ -21,6 +21,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URI;
 import java.util.*;
 import net.java.treaty.*;
 import net.java.treaty.eclipse.Constants;
@@ -28,7 +29,7 @@ import net.java.treaty.eclipse.EclipseInstantiationContext;
 import net.java.treaty.eclipse.Exporter;
 
 /**
- * Exports results into spreadsheets.
+ * Exports results to html pages.
  * @author Jens Dietrich
  */
 
@@ -122,30 +123,9 @@ public class HTMLExporter extends Exporter {
 		out.close();		
 	}
 	private void createResultPage(PrintStream out,File folder,String xp,Contract c, int noOfInstances,int instanceNo) {
-		if (c instanceof SimpleContract) {
-			SimpleContract sc = (SimpleContract)c;
-			this.createResultPage(out, folder, xp, sc, noOfInstances, instanceNo, 0,0);
-		}
-		else if (c instanceof AggregatedContract) {
-			AggregatedContract ac = (AggregatedContract)c;
-			final List<SimpleContract> parts = new ArrayList<SimpleContract>(); 
-			ContractVisitor visitor = new AbstractContractVisitor() {
-				@Override
-				public boolean visit(Contract contract) {
-					if (contract instanceof SimpleContract) {
-						parts.add((SimpleContract)contract);
-						return false;
-					}
-					else return true;
-				}
-			};
-			ac.accept(visitor);
-			for (int i=0;i<parts.size();i++) {
-				this.createResultPage(out, folder, xp, parts.get(i), noOfInstances, instanceNo, parts.size(),i);
-			}
-		}
+		createResultPage(out, folder, xp, c, noOfInstances, instanceNo, 0,0);
 	}
-	private void createResultPage(PrintStream out,File folder,String xp,SimpleContract c, int noOfInstances,int instanceNo, int noOfParts, int partNo) {
+	private void createResultPage(PrintStream out,File folder,String xp,Contract c, int noOfInstances,int instanceNo, int noOfParts, int partNo) {
 		String instLabel = "Contract instance "+(instanceNo+1)+"/"+noOfInstances;
 		String supplLabel = "supplier: " +getInstanceLabel(c);
 		String anch = partNo==0?("instance"+(instanceNo+1)):null;
@@ -161,16 +141,16 @@ public class HTMLExporter extends Exporter {
 		}
 		printSubSubHeader(out,"Resources");	
 		printTableHeader(out,"id","type","owner","name","reference");
-		List<Resource> resources = collectConsumerResources(c);
-		for (Resource r:resources) {
+
+		for (Resource r:c.getConsumerResources()) {
 			printTableRow(out,Style.CONSUMER,r.getId(),r.getType().toString(),xp,r.getName(),"n/a");
 		}
-		resources = collectExternalResources(c);
-		for (Resource r:resources) {
+
+		for (Resource r:c.getExternalResources()) {
 			printTableRow(out,Style.CONSUMER,r.getId(),r.getType().toString(),this.getOwner(r),r.getName(),"n/a");
 		}
-		resources = collectSupplierResources(c);
-		for (Resource r:resources) {
+	
+		for (Resource r:c.getSupplierResources()) {
 			String ref = r.getRef();
 			if (r.getContext()!=null && r.getContext() instanceof EclipseInstantiationContext) {
 				ref= ""+((EclipseInstantiationContext)r.getContext()).getPath()+"/"+ref;
@@ -205,11 +185,7 @@ public class HTMLExporter extends Exporter {
 			}
 
 			private boolean generateNode(Contract contract) {
-				if (contract instanceof SimpleContract) {
-					SimpleContract sc = (SimpleContract)contract;
-					return sc.getConstraints().size()>1;
-				}
-				return false;
+				return contract.getConstraints().size()>1;
 			}
 			@Override
 			public void endVisit(Resource resource) {}
@@ -418,6 +394,36 @@ public class HTMLExporter extends Exporter {
 			public boolean visitExternalResources(Collection<Resource> resources) {
 				return false;
 			}
+			@Override
+			public void endVisitOnFailureAction(URI uri) {
+				// TODO Auto-generated method stub
+				
+			}
+			@Override
+			public void endVisitOnSuccessAction(URI uri) {
+				// TODO Auto-generated method stub
+				
+			}
+			@Override
+			public void endVisitTrigger(URI uri) {
+				// TODO Auto-generated method stub
+				
+			}
+			@Override
+			public boolean visitOnFailureAction(URI uri) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			@Override
+			public boolean visitOnSuccessAction(URI uri) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			@Override
+			public boolean visitTrigger(URI uri) {
+				// TODO Auto-generated method stub
+				return false;
+			}
 			
 		};
 		c.accept(visitor);
@@ -433,80 +439,10 @@ public class HTMLExporter extends Exporter {
 		else return c.getOwner().getId();
 	}
 
-	private List<Resource> collectSupplierResources(Contract c) {
-		List<Resource> resources = new ArrayList<Resource>();
-		if (c instanceof AggregatedContract) {
-			AggregatedContract ac = (AggregatedContract)c;
-			for (Contract part:ac.getParts()) {
-				resources.addAll(this.collectSupplierResources(part));
-			}
-		}
-		else if (c instanceof SimpleContract) {
-			SimpleContract sc = (SimpleContract)c;
-			resources.addAll(sc.getSupplierResources());
-		}
-		return resources;
-	}
-	private List<Resource> collectConsumerResources(Contract c) {
-		List<Resource> resources = new ArrayList<Resource>();
-		if (c instanceof AggregatedContract) {
-			AggregatedContract ac = (AggregatedContract)c;
-			for (Contract part:ac.getParts()) {
-				resources.addAll(this.collectConsumerResources(part));
-			}
-		}
-		else if (c instanceof SimpleContract) {
-			SimpleContract sc = (SimpleContract)c;
-			resources.addAll(sc.getConsumerResources());
-		}
-		return resources;
-	}
-	
-	private List<Resource> collectExternalResources(Contract c) {
-		List<Resource> resources = new ArrayList<Resource>();
-		if (c instanceof AggregatedContract) {
-			AggregatedContract ac = (AggregatedContract)c;
-			for (Contract part:ac.getParts()) {
-				resources.addAll(this.collectExternalResources(part));
-			}
-		}
-		else if (c instanceof SimpleContract) {
-			SimpleContract sc = (SimpleContract)c;
-			resources.addAll(sc.getExternalResources());
-		}
-		return resources;
-	}
-
 	private String getInstanceLabel(Contract c) {
-		if (c instanceof SimpleContract) {
-			SimpleContract sc = (SimpleContract)c;
-			Connector con = sc.getSupplier();
-			if (con==null) return "?";
-			else return con.getOwner().getId();
-		}
-		else if (c instanceof AggregatedContract){
-			final Set<String> parts = new HashSet<String>();
-			ContractVisitor visitor = new AbstractContractVisitor() {
-				@Override
-				public boolean visit(Contract contract) {
-					if (contract instanceof AggregatedContract) {
-						return true;
-					}
-					else {
-						parts.add(getInstanceLabel(contract));
-						return false;
-					}
-				}				
-			};
-			c.accept(visitor);
-			StringBuffer b = new StringBuffer();
-			for (String p:parts) {
-				if (b.length()>0) b.append(", ");
-				b.append(p);				
-			}
-			return b.toString();
-		}
-		return "unknown contract type "+c.getClass();
+		Connector con = c.getSupplier();
+		if (con==null) return "?";
+		else return con.getOwner().getId();
 	}
 	private void printSubHeader(PrintStream out, String string) {
 		this.printSubHeader(out, string,null);
@@ -699,11 +635,6 @@ public class HTMLExporter extends Exporter {
 		return exceptions;
 	} 
 	private List<String> getAtomicConditions(Contract contract) {
-		// if contract is aggregated, we need to analyse only one part
-		// since all parts have the same structure
-		if (contract instanceof AggregatedContract && ((AggregatedContract)contract).getParts().length>0) {
-			contract = ((AggregatedContract)contract).getParts()[0];
-		}
 		
 		final List<String> list = new ArrayList<String> ();
 		ContractVisitor visitor = new AbstractContractVisitor() {
@@ -739,12 +670,6 @@ public class HTMLExporter extends Exporter {
 	} 
 	
 	private List<String> getVariables(Contract contract) {
-		
-		// if contract is aggregated, we need to analyse only one part
-		// since all parts have the same structure
-		if (contract instanceof AggregatedContract && ((AggregatedContract)contract).getParts().length>0) {
-			contract = ((AggregatedContract)contract).getParts()[0];
-		}
 		
 		final List<String> list = new ArrayList<String> ();
 		final Set<String> vars = new HashSet<String>();
