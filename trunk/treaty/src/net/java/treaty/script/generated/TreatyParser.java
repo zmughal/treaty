@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g 2009-10-30 20:34:35
+// $ANTLR 3.1.1 /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g 2009-10-30 23:06:19
 
 package net.java.treaty.script.generated;
 
@@ -19,39 +19,38 @@ import java.util.HashMap;
  */
 public class TreatyParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "Newline", "AnnotationKey", "AnnotationValue", "Trigger", "Identifier", "ClassNameAttribute", "ResourceTypeAttribute", "ResourceReferenceAttribute", "Or", "And", "Not", "LParen", "RParen", "String", "Equals", "Colon", "At", "Dot", "Whitespace", "ClassName", "Annotation", "NamespaceDelimiter", "IDLetter", "IDDigit", "BlockComment", "LineComment", "'consumer-resource'", "'supplier-resource'", "'constraint'", "'mustexist'", "'onfailure'", "'onsuccess'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "Newline", "AnnotationKey", "AnnotationValue", "Trigger", "Identifier", "NameAttribute", "ResourceTypeAttribute", "ResourceReferenceAttribute", "Or", "And", "Not", "LParen", "RParen", "String", "Equals", "Colon", "At", "Dot", "Whitespace", "Annotation", "NamespaceDelimiter", "IDLetter", "IDDigit", "BlockComment", "LineComment", "'consumer-resource'", "'supplier-resource'", "'constraint'", "'mustexist'", "'onfailure'", "'onsuccess'"
     };
     public static final int RParen=16;
+    public static final int T__29=29;
     public static final int At=20;
     public static final int LParen=15;
+    public static final int NameAttribute=9;
     public static final int Trigger=7;
-    public static final int LineComment=29;
+    public static final int LineComment=28;
     public static final int Newline=4;
     public static final int Colon=19;
     public static final int AnnotationValue=6;
-    public static final int IDLetter=26;
+    public static final int IDLetter=25;
     public static final int EOF=-1;
     public static final int AnnotationKey=5;
     public static final int Identifier=8;
-    public static final int ClassName=23;
-    public static final int BlockComment=28;
+    public static final int BlockComment=27;
     public static final int T__30=30;
     public static final int T__31=31;
     public static final int T__32=32;
     public static final int T__33=33;
     public static final int T__34=34;
-    public static final int ClassNameAttribute=9;
-    public static final int T__35=35;
     public static final int Not=14;
     public static final int Dot=21;
     public static final int String=17;
-    public static final int Annotation=24;
+    public static final int Annotation=23;
     public static final int Or=12;
-    public static final int IDDigit=27;
+    public static final int IDDigit=26;
     public static final int Whitespace=22;
     public static final int Equals=18;
     public static final int ResourceReferenceAttribute=11;
-    public static final int NamespaceDelimiter=25;
+    public static final int NamespaceDelimiter=24;
     public static final int ResourceTypeAttribute=10;
     public static final int And=13;
 
@@ -117,7 +116,7 @@ public class TreatyParser extends Parser {
                 int alt1=3;
                 int LA1_0 = input.LA(1);
 
-                if ( (LA1_0==AnnotationKey||LA1_0==Trigger||(LA1_0>=30 && LA1_0<=32)||(LA1_0>=34 && LA1_0<=35)) ) {
+                if ( (LA1_0==AnnotationKey||LA1_0==Trigger||(LA1_0>=29 && LA1_0<=31)||(LA1_0>=33 && LA1_0<=34)) ) {
                     alt1=1;
                 }
                 else if ( (LA1_0==Newline) ) {
@@ -204,27 +203,27 @@ public class TreatyParser extends Parser {
                 alt2=2;
                 }
                 break;
-            case 30:
+            case 29:
                 {
                 alt2=3;
                 }
                 break;
-            case 31:
+            case 30:
                 {
                 alt2=4;
                 }
                 break;
-            case 32:
+            case 31:
                 {
                 alt2=5;
                 }
                 break;
-            case 34:
+            case 33:
                 {
                 alt2=6;
                 }
                 break;
-            case 35:
+            case 34:
                 {
                 alt2=7;
                 }
@@ -437,35 +436,35 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "consumerResource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:114:1: consumerResource returns [Resource value] : 'consumer-resource' Identifier resourceTypeAttribute classNameAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:114:1: consumerResource returns [Resource value] : 'consumer-resource' Identifier resourceTypeAttribute nameAttribute ;
     public final Resource consumerResource() throws RecognitionException {
         Resource value = null;
 
         Token Identifier11=null;
         URI resourceTypeAttribute12 = null;
 
-        TreatyParser.classNameAttribute_return classNameAttribute13 = null;
+        TreatyParser.nameAttribute_return nameAttribute13 = null;
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:115:5: ( 'consumer-resource' Identifier resourceTypeAttribute classNameAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:115:9: 'consumer-resource' Identifier resourceTypeAttribute classNameAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:115:5: ( 'consumer-resource' Identifier resourceTypeAttribute nameAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:115:9: 'consumer-resource' Identifier resourceTypeAttribute nameAttribute
             {
-            match(input,30,FOLLOW_30_in_consumerResource337); if (state.failed) return value;
+            match(input,29,FOLLOW_29_in_consumerResource337); if (state.failed) return value;
             Identifier11=(Token)match(input,Identifier,FOLLOW_Identifier_in_consumerResource339); if (state.failed) return value;
             pushFollow(FOLLOW_resourceTypeAttribute_in_consumerResource341);
             resourceTypeAttribute12=resourceTypeAttribute();
 
             state._fsp--;
             if (state.failed) return value;
-            pushFollow(FOLLOW_classNameAttribute_in_consumerResource343);
-            classNameAttribute13=classNameAttribute();
+            pushFollow(FOLLOW_nameAttribute_in_consumerResource343);
+            nameAttribute13=nameAttribute();
 
             state._fsp--;
             if (state.failed) return value;
             if ( state.backtracking==0 ) {
 
-                          value = createConsumerResource((Identifier11!=null?Identifier11.getText():null), resourceTypeAttribute12, (classNameAttribute13!=null?input.toString(classNameAttribute13.start,classNameAttribute13.stop):null));
+                          value = createConsumerResource((Identifier11!=null?Identifier11.getText():null), resourceTypeAttribute12, (nameAttribute13!=null?input.toString(nameAttribute13.start,nameAttribute13.stop):null));
                       
             }
 
@@ -485,25 +484,25 @@ public class TreatyParser extends Parser {
     }
     // $ANTLR end "consumerResource"
 
-    public static class classNameAttribute_return extends ParserRuleReturnScope {
+    public static class nameAttribute_return extends ParserRuleReturnScope {
         public String value;
     };
 
-    // $ANTLR start "classNameAttribute"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:121:1: classNameAttribute returns [String value] : ClassNameAttribute ;
-    public final TreatyParser.classNameAttribute_return classNameAttribute() throws RecognitionException {
-        TreatyParser.classNameAttribute_return retval = new TreatyParser.classNameAttribute_return();
+    // $ANTLR start "nameAttribute"
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:121:1: nameAttribute returns [String value] : NameAttribute ;
+    public final TreatyParser.nameAttribute_return nameAttribute() throws RecognitionException {
+        TreatyParser.nameAttribute_return retval = new TreatyParser.nameAttribute_return();
         retval.start = input.LT(1);
 
-        Token ClassNameAttribute14=null;
+        Token NameAttribute14=null;
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:122:5: ( ClassNameAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:122:9: ClassNameAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:122:5: ( NameAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:122:9: NameAttribute
             {
-            ClassNameAttribute14=(Token)match(input,ClassNameAttribute,FOLLOW_ClassNameAttribute_in_classNameAttribute376); if (state.failed) return retval;
+            NameAttribute14=(Token)match(input,NameAttribute,FOLLOW_NameAttribute_in_nameAttribute376); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-               retval.value = (ClassNameAttribute14!=null?ClassNameAttribute14.getText():null); 
+               retval.value = (NameAttribute14!=null?NameAttribute14.getText():null); 
             }
 
             }
@@ -522,7 +521,7 @@ public class TreatyParser extends Parser {
         }
         return retval;
     }
-    // $ANTLR end "classNameAttribute"
+    // $ANTLR end "nameAttribute"
 
 
     // $ANTLR start "supplierResource"
@@ -540,7 +539,7 @@ public class TreatyParser extends Parser {
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:126:5: ( 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute )
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:126:9: 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute
             {
-            match(input,31,FOLLOW_31_in_supplierResource402); if (state.failed) return value;
+            match(input,30,FOLLOW_30_in_supplierResource402); if (state.failed) return value;
             Identifier15=(Token)match(input,Identifier,FOLLOW_Identifier_in_supplierResource404); if (state.failed) return value;
             pushFollow(FOLLOW_resourceTypeAttribute_in_supplierResource406);
             resourceTypeAttribute16=resourceTypeAttribute();
@@ -653,7 +652,7 @@ public class TreatyParser extends Parser {
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:141:5: ( 'constraint' orConstraint )
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:141:9: 'constraint' orConstraint
             {
-            match(input,32,FOLLOW_32_in_constraint496); if (state.failed) return value;
+            match(input,31,FOLLOW_31_in_constraint496); if (state.failed) return value;
             pushFollow(FOLLOW_orConstraint_in_constraint498);
             orConstraint20=orConstraint();
 
@@ -739,7 +738,7 @@ public class TreatyParser extends Parser {
                 }
                 }
                 break;
-            case 33:
+            case 32:
                 {
                 int LA4_3 = input.LA(2);
 
@@ -934,7 +933,7 @@ public class TreatyParser extends Parser {
                 }
                 }
                 break;
-            case 33:
+            case 32:
                 {
                 int LA6_3 = input.LA(2);
 
@@ -1103,7 +1102,7 @@ public class TreatyParser extends Parser {
                 alt7=2;
                 }
                 break;
-            case 33:
+            case 32:
                 {
                 alt7=3;
                 }
@@ -1212,7 +1211,7 @@ public class TreatyParser extends Parser {
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:5: ( 'mustexist' resource )
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:9: 'mustexist' resource
             {
-            match(input,33,FOLLOW_33_in_existsConstraint795); if (state.failed) return value;
+            match(input,32,FOLLOW_32_in_existsConstraint795); if (state.failed) return value;
             pushFollow(FOLLOW_resource_in_existsConstraint797);
             resource26=resource();
 
@@ -1383,7 +1382,7 @@ public class TreatyParser extends Parser {
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:191:5: ( 'onfailure' action )
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:191:9: 'onfailure' action
             {
-            match(input,34,FOLLOW_34_in_onFailure927); if (state.failed) return value;
+            match(input,33,FOLLOW_33_in_onFailure927); if (state.failed) return value;
             pushFollow(FOLLOW_action_in_onFailure929);
             action28=action();
 
@@ -1422,7 +1421,7 @@ public class TreatyParser extends Parser {
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:195:5: ( 'onsuccess' action )
             // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:195:9: 'onsuccess' action
             {
-            match(input,35,FOLLOW_35_in_onSuccess955); if (state.failed) return value;
+            match(input,34,FOLLOW_34_in_onSuccess955); if (state.failed) return value;
             pushFollow(FOLLOW_action_in_onSuccess957);
             action29=action();
 
@@ -1617,8 +1616,8 @@ public class TreatyParser extends Parser {
 
  
 
-    public static final BitSet FOLLOW_statment_in_contract70 = new BitSet(new long[]{0x0000000DC00000B0L});
-    public static final BitSet FOLLOW_Newline_in_contract74 = new BitSet(new long[]{0x0000000DC00000B0L});
+    public static final BitSet FOLLOW_statment_in_contract70 = new BitSet(new long[]{0x00000006E00000B0L});
+    public static final BitSet FOLLOW_Newline_in_contract74 = new BitSet(new long[]{0x00000006E00000B0L});
     public static final BitSet FOLLOW_EOF_in_contract78 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_annotation_in_statment101 = new BitSet(new long[]{0x0000000000000010L});
     public static final BitSet FOLLOW_trigger_in_statment124 = new BitSet(new long[]{0x0000000000000010L});
@@ -1631,51 +1630,51 @@ public class TreatyParser extends Parser {
     public static final BitSet FOLLOW_AnnotationKey_in_annotation276 = new BitSet(new long[]{0x0000000000000040L});
     public static final BitSet FOLLOW_AnnotationValue_in_annotation278 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_Trigger_in_trigger311 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_30_in_consumerResource337 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_29_in_consumerResource337 = new BitSet(new long[]{0x0000000000000100L});
     public static final BitSet FOLLOW_Identifier_in_consumerResource339 = new BitSet(new long[]{0x0000000000000400L});
     public static final BitSet FOLLOW_resourceTypeAttribute_in_consumerResource341 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_classNameAttribute_in_consumerResource343 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ClassNameAttribute_in_classNameAttribute376 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_31_in_supplierResource402 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_nameAttribute_in_consumerResource343 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NameAttribute_in_nameAttribute376 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_30_in_supplierResource402 = new BitSet(new long[]{0x0000000000000100L});
     public static final BitSet FOLLOW_Identifier_in_supplierResource404 = new BitSet(new long[]{0x0000000000000400L});
     public static final BitSet FOLLOW_resourceTypeAttribute_in_supplierResource406 = new BitSet(new long[]{0x0000000000000800L});
     public static final BitSet FOLLOW_resourceReferenceAttribute_in_supplierResource408 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_ResourceTypeAttribute_in_resourceTypeAttribute441 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_ResourceReferenceAttribute_in_resourceReferenceAttribute467 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_32_in_constraint496 = new BitSet(new long[]{0x000000020000C100L});
+    public static final BitSet FOLLOW_31_in_constraint496 = new BitSet(new long[]{0x000000010000C100L});
     public static final BitSet FOLLOW_orConstraint_in_constraint498 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_andConstraint_in_orConstraint541 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_Or_in_orConstraint546 = new BitSet(new long[]{0x000000020000C100L});
+    public static final BitSet FOLLOW_Or_in_orConstraint546 = new BitSet(new long[]{0x000000010000C100L});
     public static final BitSet FOLLOW_andConstraint_in_orConstraint550 = new BitSet(new long[]{0x0000000000001002L});
     public static final BitSet FOLLOW_andConstraint_in_orConstraint564 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_notConstraint_in_andConstraint631 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_And_in_andConstraint636 = new BitSet(new long[]{0x000000020000C100L});
+    public static final BitSet FOLLOW_And_in_andConstraint636 = new BitSet(new long[]{0x000000010000C100L});
     public static final BitSet FOLLOW_notConstraint_in_andConstraint640 = new BitSet(new long[]{0x0000000000002002L});
     public static final BitSet FOLLOW_notConstraint_in_andConstraint654 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_Not_in_notConstraint705 = new BitSet(new long[]{0x000000020000C100L});
+    public static final BitSet FOLLOW_Not_in_notConstraint705 = new BitSet(new long[]{0x000000010000C100L});
     public static final BitSet FOLLOW_notConstraint_in_notConstraint709 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LParen_in_notConstraint722 = new BitSet(new long[]{0x000000020000C100L});
+    public static final BitSet FOLLOW_LParen_in_notConstraint722 = new BitSet(new long[]{0x000000010000C100L});
     public static final BitSet FOLLOW_orConstraint_in_notConstraint724 = new BitSet(new long[]{0x0000000000010000L});
     public static final BitSet FOLLOW_RParen_in_notConstraint726 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_existsConstraint_in_notConstraint740 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_relationshipConstraint_in_notConstraint764 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_33_in_existsConstraint795 = new BitSet(new long[]{0x000000020000C100L});
+    public static final BitSet FOLLOW_32_in_existsConstraint795 = new BitSet(new long[]{0x000000010000C100L});
     public static final BitSet FOLLOW_resource_in_existsConstraint797 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_resource_in_relationshipConstraint832 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_relationshipType_in_relationshipConstraint834 = new BitSet(new long[]{0x000000020000C100L});
+    public static final BitSet FOLLOW_relationshipType_in_relationshipConstraint834 = new BitSet(new long[]{0x000000010000C100L});
     public static final BitSet FOLLOW_resource_in_relationshipConstraint838 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_String_in_relationshipType866 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_Identifier_in_resource891 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_34_in_onFailure927 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_33_in_onFailure927 = new BitSet(new long[]{0x0000000000020000L});
     public static final BitSet FOLLOW_action_in_onFailure929 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_35_in_onSuccess955 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_34_in_onSuccess955 = new BitSet(new long[]{0x0000000000020000L});
     public static final BitSet FOLLOW_action_in_onSuccess957 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_String_in_action979 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_andConstraint_in_synpred1_Treaty525 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_Or_in_synpred1_Treaty528 = new BitSet(new long[]{0x000000020000C100L});
+    public static final BitSet FOLLOW_Or_in_synpred1_Treaty528 = new BitSet(new long[]{0x000000010000C100L});
     public static final BitSet FOLLOW_andConstraint_in_synpred1_Treaty530 = new BitSet(new long[]{0x0000000000001002L});
     public static final BitSet FOLLOW_notConstraint_in_synpred2_Treaty615 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_And_in_synpred2_Treaty618 = new BitSet(new long[]{0x000000020000C100L});
+    public static final BitSet FOLLOW_And_in_synpred2_Treaty618 = new BitSet(new long[]{0x000000010000C100L});
     public static final BitSet FOLLOW_notConstraint_in_synpred2_Treaty620 = new BitSet(new long[]{0x0000000000002002L});
 
 }

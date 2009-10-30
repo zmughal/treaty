@@ -113,5 +113,19 @@ public class TreatyScriptTests {
 		assertTrue(true);
 	}
 	
+	@Test
+	public void testSpecialCharsInResourceName() throws Exception {
+		Contract contract = TreatyScript.fromString(
+			"consumer-resource DateFormatDef type=http://www.treaty.org/xml#XMLSchema name=/dateformat.xsd\n"
+		);
+		
+		// Consumer Resource
+		Resource[] consumerResources = contract.getConsumerResources().toArray(EmptyResourceArray);
+		
+		assertEquals("DateFormatDef", consumerResources[0].getId());
+		assertEquals(new URI("http://www.treaty.org/xml#XMLSchema"), consumerResources[0].getType());
+		assertEquals("/dateformat.xsd", consumerResources[0].getName());
+	}
+	
 	private static Resource[] EmptyResourceArray = {};
 }

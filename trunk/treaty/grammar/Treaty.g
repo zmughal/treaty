@@ -112,14 +112,14 @@ trigger returns [URI value]
     ;
 
 consumerResource returns [Resource value]
-    :   'consumer-resource' Identifier resourceTypeAttribute classNameAttribute
+    :   'consumer-resource' Identifier resourceTypeAttribute nameAttribute
         {
-            $value = createConsumerResource($Identifier.text, $resourceTypeAttribute.value, $classNameAttribute.text);
+            $value = createConsumerResource($Identifier.text, $resourceTypeAttribute.value, $nameAttribute.text);
         }
     ;
 
-classNameAttribute returns [String value]
-    :   ClassNameAttribute  { $value = $ClassNameAttribute.text; }
+nameAttribute returns [String value]
+    :   NameAttribute  { $value = $NameAttribute.text; }
     ;
 
 supplierResource returns [Resource value]
@@ -218,16 +218,11 @@ Trigger
         }
     ;
 
-ClassNameAttribute
-    :   'name' Equals ClassName
+NameAttribute
+    :   'name' Equals String
         {
-            emit(new CommonToken(ClassNameAttribute, $ClassName.text));
+            emit(new CommonToken(NameAttribute, $String.text));
         }
-    ;
-
-fragment
-ClassName
-    :   Identifier (Dot Identifier)*
     ;
 
 ResourceTypeAttribute
