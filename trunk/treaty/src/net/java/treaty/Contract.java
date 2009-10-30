@@ -60,8 +60,14 @@ public class Contract extends PropertySupport implements ConditionContext,
 	// for supplier resources -
 	// these are the resources that are usually instantiated
 	private String consumerContext = null;
-	// owner
+	// this is the definition of instantiated contracts
 	private Contract definition = null;
+	// flag indicating that contracts refer types and predicates that are unknown
+	// this is used when vocabularies are defined in a modular manner
+	// it is then possible that contracts are loaded, but the referenced variables
+	// are not available 
+	// if this flag is true, it is generally not possible to check/verify these contracts
+	private boolean shadow = false;
 
 	// constants used to internally
 	private static enum Role {
@@ -614,5 +620,13 @@ public class Contract extends PropertySupport implements ConditionContext,
 	public java.util.List<URI> getOnVerificationSucceedsActions() {
 
 		return onVerificationSucceedsActions;
+	}
+	
+	public boolean isShadow() {
+		return shadow;
+	}
+
+	public void setShadow(boolean isShadowContract) {
+		this.shadow = isShadowContract;
 	}
 }
