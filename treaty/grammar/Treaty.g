@@ -142,9 +142,14 @@ constraint returns [AbstractCondition value]
     ;
 
 orConstraint returns [AbstractCondition value, Disjunction disjunction]
-    :   (andConstraint (Or andConstraint)+) => { $disjunction = new Disjunction(); $value = $disjunction; } firstConstraint=andConstraint { $disjunction.addCondition($firstConstraint.value); } (Or nextConstraint=andConstraint { $disjunction.addCondition($nextConstraint.value); })+
-    |   andConstraint                          { $value = $andConstraint.value; }
+    :   (xorConstraint (Or xorConstraint)+) => { $disjunction = new Disjunction(); $value = $disjunction; } firstConstraint=xorConstraint { $disjunction.addCondition($firstConstraint.value); } (Or nextConstraint=xorConstraint { $disjunction.addCondition($nextConstraint.value); })+
+    |   xorConstraint                          { $value = $xorConstraint.value; }
     ;
+
+xorConstraint returns [AbstractCondition value, XDisjunction xDisjunction]
+	:   (andConstraint (XOr andConstraint)+) => { $xDisjunction = new XDisjunction(); $value = $xDisjunction; } firstConstraint=andConstraint { $xDisjunction.addCondition($firstConstraint.value); } (XOr nextConstraint=andConstraint { $xDisjunction.addCondition($nextConstraint.value); })+
+	|   andConstraint                           { $value = $andConstraint.value; }
+	;
 
 andConstraint returns [AbstractCondition value, Conjunction conjunction]
     :   (notConstraint (And notConstraint)+) => { $conjunction = new Conjunction(); $value = $conjunction; } firstConstraint=notConstraint { $conjunction.addCondition($firstConstraint.value); } (And nextConstraint=notConstraint { $conjunction.addCondition($nextConstraint.value); })+
@@ -167,7 +172,7 @@ existsConstraint returns [ExistsCondition value]
     ;
 
 relationshipConstraint returns [RelationshipCondition value]
-    :   leftResource=resource relationshipType rightResource=resource
+    :   leftResource=resource relationshipType=Uri rightResource=resource
         {
             $value = new RelationshipCondition();
             $value.setResource1($leftResource.value);
@@ -176,40 +181,50 @@ relationshipConstraint returns [RelationshipCondition value]
         }
     ;
 
-relationshipType
-    :  String
-    ;
-
 resource returns [Resource value]
     :   resourceId=Identifier  { contract.getResource($resourceId.text) != null }?
         {
             $value = contract.getResource($resourceId.text);
         }
     ;
+    catch [FailedPredicateException ex] {
+        throw new FailedPredicateException(input, "resource", $resourceId.text + "' has not been declared");
+    }
 
 onFailure returns [URI value]
-    :   'onfailure' action  { $value = new URI($action.text); }
+    :   'onfailure' action=Uri  { $value = new URI($action.text); }
     ;
 
 onSuccess returns [URI value]
-    :   'onsuccess' action  { $value = new URI($action.text); }
-    ;
-
-action
-    :   String
+    :   'onsuccess' action=Uri  { $value = new URI($action.text); }
     ;
 
 And         : 'and' ;
-Or          : 'or'  ;
 Not         : 'not' ;
+Or          : 'or'  ;
+XOr         : 'xor' ;
 
 LParen      : '(' { implicitLineJoiningLevel += 1; } ;
 RParen      : ')' { implicitLineJoiningLevel -= 1; } ;
 
-Equals      : '=' ;
-Colon       : ':' ;
-At          : '@' ;
-Dot         : '.' ; 
+Amper       : '&'  ;
+Apostrophe  : '\'' ;
+Asterisk    : '*'  ;	
+At          : '@'  ;
+Colon       : ':'  ;
+Comma       : ','  ;
+Dollar      : '$'  ;
+Dot         : '.'  ;
+Equals      : '='  ;
+Exclamation : '!'  ;
+Hash        : '#'  ;	
+Minus       : '-'  ;
+Percent     : '%'  ;
+Plus        : '+'  ;
+Question    : '?'  ;	
+Semi        : ';'  ;
+Slash       : '/'  ;
+Tilde       : '~'  ;
 
 Trigger
     :   'on' Whitespace String
@@ -237,6 +252,11 @@ ResourceReferenceAttribute
         {
             emit(new CommonToken(ResourceReferenceAttribute, $String.text));
         }
+    ;
+
+fragment
+String
+    :   ~(' '|'\t'|'\f'|'\n'|'\r')*
     ;
 
 Annotation
@@ -305,12 +325,64 @@ BlockComment
 @init { $channel=HIDDEN; }
     :   '/*' ( options { greedy=false; } : . )* '*/'
     ;
-    
+
+/** If a line comment is not on its own line, then we require some whitespace
+ *  between it and previous statement to prevent the lexer confusing urls with
+ *  line comments.
+ */
 LineComment
 @init { $channel=HIDDEN; }
-    :   '//' ~('\n')*
+    :   { getCharPositionInLine() == 0 }? => Whitespace? '//' ~('\n')*
+    |   { getCharPositionInLine() >= 0 }? => Whitespace '//' ~('\n')*
     ;
 
-String
-    :   ~(' '|'\t'|'\f'|'\n'|'\r')*
+/* URI character classes 
+ * Adapted from: http://www.antlr.org/grammar/1153976512034/ecmascriptA3.g
+ */
+Uri
+	:   UriCharacter+
+	;
+
+fragment
+UriCharacter
+    :   UriReserved
+	|   UriUnescaped
+	|   UriEscaped
+	;
+
+fragment
+UriReserved
+    :   Semi | Slash | Question | Colon | At | Amper | Equals | Plus | Dollar | Comma | Hash
+	;
+
+fragment
+UriUnescaped
+    :   UriAlpha
+	|   DecimalDigit
+	|   UriMark
+	;
+
+fragment
+UriAlpha
+    :   Identifier
+	;
+
+fragment
+UriMark
+    :   Minus | Dot | Exclamation | Tilde | Asterisk | Apostrophe
+	;
+
+fragment
+UriEscaped
+    :  Percent HexDigit HexDigit
     ;
+
+fragment
+HexDigit
+	:	('0'..'9'|'a'..'f'|'A'..'F')
+	;
+
+fragment
+DecimalDigit
+	:   ('0'..'9')
+	;

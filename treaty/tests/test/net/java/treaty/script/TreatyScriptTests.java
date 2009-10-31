@@ -103,10 +103,14 @@ public class TreatyScriptTests {
 				"consumer-resource DateFormatDef type=http://www.treaty.org/xml#XMLSchema name=/dateformat.xsd\n" +
 				"supplier-resource Formatter type=http://www.treaty.org/java#InstantiableClass ref=serviceprovider/@class\n" +
 				"supplier-resource FormatString type=http://www.treaty.org/xml#XMLInstance ref=serviceprovider/@formatdef\n" +
-				"constraint (Formatter http://www.treaty.org/java#implements Interface and mustexist Formatter\n" +
-				"and Formatter http://www.treaty.org/junit#verifies FunctionalTests \n" +
-				"and Formatter http://www.treaty.org/junit#verifies QoSTests)\n" +
-				"xor FormatString http://www.treaty.org/xml#instantiates DateFormatDef)\n" +
+				"constraint (\n" +
+				"    (\n" +
+				"        Formatter http://www.treaty.org/java#implements Interface and mustexist Formatter\n" +
+				"        and Formatter http://www.treaty.org/junit#verifies FunctionalTests \n" +
+				"        and Formatter http://www.treaty.org/junit#verifies QoSTests\n" +
+				"    )\n" +
+				"    xor FormatString http://www.treaty.org/xml#instantiates DateFormatDef\n" +
+				")\n" +
 				"onfailure action:osgi.uninstall.$bundle\n" +
 				"onsuccess action:osgi.log.debug.$bundle\n"
 			);
@@ -119,12 +123,34 @@ public class TreatyScriptTests {
 			"consumer-resource DateFormatDef type=http://www.treaty.org/xml#XMLSchema name=/dateformat.xsd\n"
 		);
 		
+		String s = "constraint ((Formatter http://www.treaty.org/java#implements Interface and mustexist Formatter\n" +
+		"and Formatter http://www.treaty.org/junit#verifies FunctionalTests \n" +
+		"and Formatter http://www.treaty.org/junit#verifies QoSTests)\n" +
+		"xor FormatString http://www.treaty.org/xml#instantiates DateFormatDef\n";
+		
 		// Consumer Resource
 		Resource[] consumerResources = contract.getConsumerResources().toArray(EmptyResourceArray);
 		
 		assertEquals("DateFormatDef", consumerResources[0].getId());
 		assertEquals(new URI("http://www.treaty.org/xml#XMLSchema"), consumerResources[0].getType());
 		assertEquals("/dateformat.xsd", consumerResources[0].getName());
+	}
+	
+
+	
+	@Test
+	public void testMultilineConstraints() throws Exception {
+		Contract contract = TreatyScript.fromString(
+			"consumer-resource Interface type=http://www.treaty.org/java#AbstractType name=net.java.treaty.eclipse.example.clock.DateFormatter\n" +
+			"supplier-resource Formatter type=http://www.treaty.org/java#InstantiableClass ref=serviceprovider/@class\n" +
+			"constraint (\n" +
+			"  Formatter http://www.treaty.org/java#implements Interface\n" +
+			"  and Formatter http://www.treaty.org/junit#verifies Interface\n" +
+			"  and Formatter http://www.treaty.org/junit#verifies Interface\n" +
+			")\n"
+		);
+		
+		Conjunction conjunction = (Conjunction)contract.getConstraints().get(0);
 	}
 	
 	private static Resource[] EmptyResourceArray = {};
