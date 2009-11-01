@@ -40,57 +40,34 @@ public class TreatyScriptTests {
 		assertEquals(new URI("event:osgi.updated"), contract.getTriggers().get(1));
 		
 		// Consumer Resource
-		Resource[] consumerResources = contract.getConsumerResources().toArray(EmptyResourceArray);
-		
-		assertEquals("Interface", consumerResources[0].getId());
-		assertEquals(new URI("http://www.treaty.org/java#AbstractType"), consumerResources[0].getType());
-		assertEquals("net.java.treaty.eclipse.example.clock.DateFormatter", consumerResources[0].getName());
+		Resource interfaceResource = findResource(contract.getConsumerResources(), "Interface");
+		assertNotNull(interfaceResource);
+		assertEquals(new URI("http://www.treaty.org/java#AbstractType"), interfaceResource.getType());
+		assertEquals("net.java.treaty.eclipse.example.clock.DateFormatter", interfaceResource.getName());
 		
 		// Supplier Resource
-		Resource[] supplierResources = contract.getSupplierResources().toArray(EmptyResourceArray);
-		
-		assertEquals("Formatter", supplierResources[0].getId());
-		assertEquals(new URI("http://www.treaty.org/java#InstantiableClass"), supplierResources[0].getType());
-		assertEquals("serviceprovider/@class", supplierResources[0].getRef());
+		Resource formatterResource = findResource(contract.getSupplierResources(), "Formatter");
+		assertNotNull(formatterResource);
+		assertEquals(new URI("http://www.treaty.org/java#InstantiableClass"), formatterResource.getType());
+		assertEquals("serviceprovider/@class", formatterResource.getRef());
 		
 		// Verification Actions
 		assertEquals(new URI("action:osgi.uninstall.$bundle"), contract.getOnVerificationFailsActions().get(0));
 		assertEquals(new URI("action:osgi.log.debug.$bundle"), contract.getOnVerificationSucceedsActions().get(0));
 		
 		// Constraints
-		final AtomicInteger constraintsRemaining = new AtomicInteger(2);
-		
 		Conjunction conjunction = (Conjunction)contract.getConstraints().get(0);
-		conjunction.accept(new ContractValidator() {
-			@Override
-			public boolean visit(ExistsCondition condition) {
-				assertEquals("Formatter", condition.getResource().getId());
-				
-				constraintsRemaining.decrementAndGet();
-				
-				return true;
-			}
-			
-			@Override
-			public boolean visit(RelationshipCondition relationshipCondition) {
-				assertEquals("Formatter", relationshipCondition.getResource1().getId());
-				assertEquals("Interface", relationshipCondition.getResource2().getId());
-				
-				try {
-					assertEquals(new URI("http://www.treaty.org/java#implements"), relationshipCondition.getRelationship());	
-				} catch (URISyntaxException e) {
-					return true;
-				}
-				
-				constraintsRemaining.decrementAndGet();
-				
-				return true;
-			}
-		});
+		assertEquals(2, conjunction.getParts().size());
 		
-		assertEquals("The expected number of constraints wern't visited.", 0, constraintsRemaining.get());
+		RelationshipCondition relationshipCondition = (RelationshipCondition)conjunction.getParts().get(0);
+		assertEquals("Formatter", relationshipCondition.getResource1().getId());
+		assertEquals("Interface", relationshipCondition.getResource2().getId());
+		assertEquals(new URI("http://www.treaty.org/java#implements"), relationshipCondition.getRelationship());
 		
+		ExistsCondition existsCondition = (ExistsCondition)conjunction.getParts().get(1);
+		assertEquals("Formatter", existsCondition.getResource().getId());
 	}
+	
 	// script for the clock example
 	@Test
 	public void testClockScript() throws Exception {
@@ -238,6 +215,7 @@ public class TreatyScriptTests {
 		assertEquals("toc",rel.getResource1().getId());
 		assertEquals("toc_dtd",rel.getResource2().getId());
 	}
+	
 	// constraint references Formatter2 that is never defined as a resource
 	@Test(expected=TreatyException.class)
 	public void testInconsistentResourceRefs1() throws Exception {
@@ -267,12 +245,6 @@ public class TreatyScriptTests {
 			);
 	}
 	
-	private Resource findResource(Collection<Resource> resources,String id) {
-		for (Resource r:resources) {
-			if (r.getId().equals(id)) return r;
-		}
-		return null;
-	}
 	@Test
 	public void testSpecialCharsInResourceName() throws Exception {
 		Contract contract = TreatyScript.fromString(
@@ -280,14 +252,11 @@ public class TreatyScriptTests {
 		);
 		
 		// Consumer Resource
-		Resource[] consumerResources = contract.getConsumerResources().toArray(EmptyResourceArray);
-		
-		assertEquals("DateFormatDef", consumerResources[0].getId());
-		assertEquals(new URI("http://www.treaty.org/xml#XMLSchema"), consumerResources[0].getType());
-		assertEquals("/dateformat.xsd", consumerResources[0].getName());
+		Resource dateFormatDefResource = findResource(contract.getConsumerResources(), "DateFormatDef");
+		assertNotNull(dateFormatDefResource);
+		assertEquals(new URI("http://www.treaty.org/xml#XMLSchema"), dateFormatDefResource.getType());
+		assertEquals("/dateformat.xsd", dateFormatDefResource.getName());
 	}
-	
-
 	
 	@Test
 	public void testMultilineConstraints() throws Exception {
@@ -302,5 +271,10 @@ public class TreatyScriptTests {
 		);
 	}
 	
-	private static Resource[] EmptyResourceArray = {};
+	private Resource findResource(Collection<Resource> resources,String id) {
+		for (Resource r:resources) {
+			if (r.getId().equals(id)) return r;
+		}
+		return null;
+	}
 }
