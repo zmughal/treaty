@@ -417,6 +417,8 @@ public final class ContractRegistry extends Observable {
 		}
 		}
 		// end switch.
+
+		this.notifyObservers();
 	}
 
 	/**
