@@ -18,100 +18,295 @@ import net.java.treaty.XDisjunction;
 
 public class ContractValidator implements ContractVisitor {
 
-	@Override
-	public void endVisit(Contract contract) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Contract)
+	 */
+	public void endVisit(Contract contract) {
 
-	@Override
-	public void endVisit(Resource resource) {}
+	}
 
-	@Override
-	public void endVisit(Conjunction condition) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Resource)
+	 */
+	public void endVisit(Resource resource) {
 
-	@Override
-	public void endVisit(Disjunction condition) {}
+	}
 
-	@Override
-	public void endVisit(XDisjunction condition) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Conjunction)
+	 */
+	public void endVisit(Conjunction condition) {
 
-	@Override
-	public void endVisit(Negation condition) {}
+	}
 
-	@Override
-	public void endVisit(RelationshipCondition relationshipCondition) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Disjunction)
+	 */
+	public void endVisit(Disjunction condition) {
 
-	@Override
-	public void endVisit(PropertyCondition condition) {}
+	}
 
-	@Override
-	public void endVisit(ExistsCondition condition) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.XDisjunction)
+	 */
+	public void endVisit(XDisjunction condition) {
 
-	@Override
-	public void endVisitConditions(Collection<AbstractCondition> conditions) {}
+	}
 
-	@Override
-	public void endVisitExtensionPointResources(Collection<Resource> resources) {}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Negation)
+	 */
+	public void endVisit(Negation condition) {
 
-	@Override
-	public void endVisitExtensionResources(Collection<Resource> resources) {}
+	}
 
-	@Override
-	public void endVisitExternalResources(Collection<Resource> resources) {}
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.RelationshipCondition
+	 * )
+	 */
+	public void endVisit(RelationshipCondition relationshipCondition) {
 
-	@Override
-	public void endVisitOnFailureAction(URI uri) {}
+	}
 
-	@Override
-	public void endVisitOnSuccessAction(URI uri) {}
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.PropertyCondition)
+	 */
+	public void endVisit(PropertyCondition condition) {
 
-	@Override
-	public void endVisitTrigger(URI uri) {}
+	}
 
-	@Override
-	public boolean visit(Contract contract) { return true; }
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.ExistsCondition)
+	 */
+	public void endVisit(ExistsCondition condition) {
 
-	@Override
-	public boolean visit(Resource resource) { return true; }
+	}
 
-	@Override
-	public boolean visit(Conjunction condition) { return true; }
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitConditions(java.util.Collection)
+	 */
+	public void endVisitConditions(Collection<AbstractCondition> conditions) {
 
-	@Override
-	public boolean visit(Disjunction condition) { return true; }
+	}
 
-	@Override
-	public boolean visit(XDisjunction condition) { return true; }
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitExtensionPointResources(java.util
+	 * .Collection)
+	 */
+	public void endVisitExtensionPointResources(Collection<Resource> resources) {
 
-	@Override
-	public boolean visit(Negation condition) { return true; }
+	}
 
-	@Override
-	public boolean visit(RelationshipCondition relationshipCondition) { return true; }
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitExtensionResources(java.util.Collection
+	 * )
+	 */
+	public void endVisitExtensionResources(Collection<Resource> resources) {
 
-	@Override
-	public boolean visit(PropertyCondition condition) { return true; }
+	}
 
-	@Override
-	public boolean visit(ExistsCondition condition) { return true; }
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitExternalResources(java.util.Collection
+	 * )
+	 */
+	public void endVisitExternalResources(Collection<Resource> resources) {
 
-	@Override
-	public boolean visitConditions(List<AbstractCondition> conditions) { return true; }
+	}
 
-	@Override
-	public boolean visitExtensionPointResources(Collection<Resource> resources) { return true; }
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisitOnFailureAction(java.net.URI)
+	 */
+	public void endVisitOnFailureAction(URI uri) {
 
-	@Override
-	public boolean visitExtensionResources(Collection<Resource> resources) { return true; }
+	}
 
-	@Override
-	public boolean visitExternalResources(Collection<Resource> resources) { return true; }
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisitOnSuccessAction(java.net.URI)
+	 */
+	public void endVisitOnSuccessAction(URI uri) {
 
-	@Override
-	public boolean visitOnFailureAction(URI uri) { return true; }
+	}
 
-	@Override
-	public boolean visitOnSuccessAction(URI uri) { return true; }
-	
-	@Override
-	public boolean visitTrigger(URI uri) { return true; }
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisitTrigger(java.net.URI)
+	 */
+	public void endVisitTrigger(URI uri) {
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Contract)
+	 */
+	public boolean visit(Contract contract) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Resource)
+	 */
+	public boolean visit(Resource resource) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Conjunction)
+	 */
+	public boolean visit(Conjunction condition) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Disjunction)
+	 */
+	public boolean visit(Disjunction condition) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.XDisjunction)
+	 */
+	public boolean visit(XDisjunction condition) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Negation)
+	 */
+	public boolean visit(Negation condition) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visit(net.java.treaty.RelationshipCondition
+	 * )
+	 */
+	public boolean visit(RelationshipCondition relationshipCondition) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visit(net.java.treaty.PropertyCondition)
+	 */
+	public boolean visit(PropertyCondition condition) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.ExistsCondition)
+	 */
+	public boolean visit(ExistsCondition condition) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visitConditions(java.util.List)
+	 */
+	public boolean visitConditions(List<AbstractCondition> conditions) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visitExtensionPointResources(java.util.
+	 * Collection)
+	 */
+	public boolean visitExtensionPointResources(Collection<Resource> resources) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visitExtensionResources(java.util.Collection
+	 * )
+	 */
+	public boolean visitExtensionResources(Collection<Resource> resources) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visitExternalResources(java.util.Collection
+	 * )
+	 */
+	public boolean visitExternalResources(Collection<Resource> resources) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visitOnFailureAction(java.net.URI)
+	 */
+	public boolean visitOnFailureAction(URI uri) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visitOnSuccessAction(java.net.URI)
+	 */
+	public boolean visitOnSuccessAction(URI uri) {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visitTrigger(java.net.URI)
+	 */
+	public boolean visitTrigger(URI uri) {
+
+		return true;
+	}
 }
