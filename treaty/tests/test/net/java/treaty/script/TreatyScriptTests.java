@@ -13,6 +13,7 @@ import net.java.treaty.Contract;
 import net.java.treaty.ExistsCondition;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
+import net.java.treaty.TreatyException;
 import net.java.treaty.XDisjunction;
 import net.java.treaty.script.TreatyScript;
 
@@ -206,6 +207,64 @@ public class TreatyScriptTests {
 		assertEquals(new URI("http://www.treaty.org/xml#instantiates"),rel4.getRelationship());
 		
 		  
+	}
+
+	@Test
+	public void testScriptWithExternalResources() throws Exception {
+		Contract contract = TreatyScript.fromString(
+			"external-resource toc_dtd type=http://www.treaty.org/xml#DTD name=contract_resources/org.eclipse.help.toc/toc.dtd\n" +
+			"supplier-resource toc type=http://www.treaty.org/xml#XMLInstance ref=/toc/@file\n" +
+			"constraint toc http://www.treaty.org/xml#instantiatesDTD toc_dtd"
+		);
+		
+		assertEquals(0,contract.getTriggers().size());
+		assertEquals(0,contract.getOnVerificationFailsActions().size());
+		assertEquals(0,contract.getOnVerificationSucceedsActions().size());
+		
+		assertEquals(1,contract.getExternalResources().size());
+		assertEquals(1,contract.getSupplierResources().size());
+		assertEquals(0,contract.getConsumerResources().size());
+		
+		Resource r = contract.getExternalResources().iterator().next();
+		assertEquals("toc_dtd",r.getId());
+		assertEquals(new URI("http://www.treaty.org/xml#DTD "),r.getType());
+		assertEquals("contract_resources/org.eclipse.help.toc/toc.dtd",r.getName());
+		
+		assertEquals(1,contract.getConstraints().size());
+		assertTrue(contract.getConstraints().get(0) instanceof RelationshipCondition);
+		
+		RelationshipCondition rel = (RelationshipCondition)contract.getConstraints().get(0);
+		assertEquals(new URI("http://www.treaty.org/xml#instantiatesDTD"),rel.getRelationship());
+		assertEquals("toc",rel.getResource1().getId());
+		assertEquals("toc_dtd",rel.getResource2().getId());
+	}
+	// constraint references Formatter2 that is never defined as a resource
+	@Test(expected=TreatyException.class)
+	public void testInconsistentResourceRefs1() throws Exception {
+		Contract contract = TreatyScript.fromString(
+				"// example contract used in prototype\n" +
+				"@dc:author=jens\n" +
+				"@dc:date=30/10/09\n" +
+				"on event:osgi.activated\n" +
+				"on event:osgi.updated\n" +
+				"consumer-resource Interface type=http://www.treaty.org/java#AbstractType name=net.java.treaty.eclipse.example.clock.DateFormatter\n" +
+				"consumer-resource QoSTests type=http://www.treaty.org/junit#TestCase name=net.java.treaty.eclipse.example.clock.DateFormatterPerformanceTests\n" +
+				"consumer-resource FunctionalTests type=http://www.treaty.org/junit#TestCase name=net.java.treaty.eclipse.example.clock.DateFormatterFunctionalTests\n" +
+				"consumer-resource DateFormatDef type=http://www.treaty.org/xml#XMLSchema name=/dateformat.xsd\n" +
+				"supplier-resource Formatter type=http://www.treaty.org/java#InstantiableClass ref=serviceprovider/@class\n" +
+				"supplier-resource FormatString type=http://www.treaty.org/xml#XMLInstance ref=serviceprovider/@formatdef\n" +
+				"constraint (\n" +
+				"    (\n" +
+				"        Formatter http://www.treaty.org/java#implements Interface and mustexist Formatter\n" +
+				"        and Formatter http://www.treaty.org/junit#verifies FunctionalTests \n" +
+				"        and Formatter2 http://www.treaty.org/junit#verifies QoSTests\n" +
+				"    )\n" +
+				"    xor FormatString http://www.treaty.org/xml#instantiates DateFormatDef\n" +
+				")\n" +
+				"onfailure action:osgi.uninstall.$bundle\n" +
+				"onfailure action:osgi.log.debug.$bundle\n" +
+				"onsuccess action:osgi.log.debug.$bundle\n"
+			);
 	}
 	
 	private Resource findResource(Collection<Resource> resources,String id) {
