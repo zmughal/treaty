@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g 2009-10-31 13:11:30
+// $ANTLR 3.1.1 /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g 2009-11-02 11:40:06
 
 package net.java.treaty.script.generated;
 
@@ -19,9 +19,8 @@ import java.util.HashMap;
  */
 public class TreatyParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "Newline", "AnnotationKey", "AnnotationValue", "Trigger", "Identifier", "NameAttribute", "ResourceTypeAttribute", "ResourceReferenceAttribute", "Or", "XOr", "And", "Not", "LParen", "RParen", "Uri", "Amper", "Apostrophe", "Asterisk", "At", "Colon", "Comma", "Dollar", "Dot", "Equals", "Exclamation", "Hash", "Minus", "Percent", "Plus", "Question", "Semi", "Slash", "Tilde", "Whitespace", "String", "Annotation", "NamespaceDelimiter", "IDLetter", "IDDigit", "BlockComment", "LineComment", "UriCharacter", "UriReserved", "UriUnescaped", "UriEscaped", "UriAlpha", "DecimalDigit", "UriMark", "HexDigit", "'consumer-resource'", "'supplier-resource'", "'constraint'", "'mustexist'", "'onfailure'", "'onsuccess'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "Newline", "AnnotationKey", "AnnotationValue", "Trigger", "Identifier", "ResourceNameAttribute", "ResourceTypeAttribute", "ResourceReferenceAttribute", "Or", "XOr", "And", "Not", "LParen", "RParen", "Uri", "Amper", "Apostrophe", "Asterisk", "At", "Colon", "Comma", "Dollar", "Dot", "Equals", "Exclamation", "Hash", "Minus", "Percent", "Plus", "Question", "Semi", "Slash", "Tilde", "Whitespace", "String", "Annotation", "NamespaceDelimiter", "IDLetter", "IDDigit", "BlockComment", "LineComment", "UriCharacter", "UriReserved", "UriUnescaped", "UriEscaped", "UriAlpha", "DecimalDigit", "UriMark", "HexDigit", "'consumer-resource'", "'supplier-resource'", "'external-resource'", "'constraint'", "'mustexist'", "'onfailure'", "'onsuccess'"
     };
-    public static final int NameAttribute=9;
     public static final int Hash=29;
     public static final int LineComment=44;
     public static final int Newline=4;
@@ -38,12 +37,14 @@ public class TreatyParser extends Parser {
     public static final int BlockComment=43;
     public static final int T__55=55;
     public static final int T__56=56;
-    public static final int XOr=13;
     public static final int T__57=57;
+    public static final int XOr=13;
     public static final int T__58=58;
     public static final int UriCharacter=45;
     public static final int T__53=53;
     public static final int T__54=54;
+    public static final int T__59=59;
+    public static final int ResourceNameAttribute=9;
     public static final int UriUnescaped=47;
     public static final int String=38;
     public static final int Or=12;
@@ -97,18 +98,18 @@ public class TreatyParser extends Parser {
 
     private Contract contract;
 
-    private Resource createConsumerResource(String id, URI resourceType, String className) {
+    private Resource createNamedResource(String id, URI resourceType, String name) {
         Resource resource = createResource(id, resourceType);
         
-        resource.setName(className);
+        resource.setName(name);
         
         return resource;
     }
 
-    private Resource createSupplierResource(String id, URI resourceType, String resourceReference) {
+    private Resource createReferenceResource(String id, URI resourceType, String reference) {
         Resource resource = createResource(id, resourceType);
         
-        resource.setRef(resourceReference);
+        resource.setRef(reference);
         
         return resource;
     }
@@ -125,22 +126,22 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "contract"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:86:1: contract returns [Contract value] : ( statment | Newline )* EOF ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:90:1: contract returns [Contract value] : ( statment | Newline )* EOF ;
     public final Contract contract() throws RecognitionException {
         Contract value = null;
 
          contract = new Contract(); value = contract; 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:88:5: ( ( statment | Newline )* EOF )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:88:9: ( statment | Newline )* EOF
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:92:5: ( ( statment | Newline )* EOF )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:92:9: ( statment | Newline )* EOF
             {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:88:9: ( statment | Newline )*
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:92:9: ( statment | Newline )*
             loop1:
             do {
                 int alt1=3;
                 int LA1_0 = input.LA(1);
 
-                if ( (LA1_0==AnnotationKey||LA1_0==Trigger||(LA1_0>=53 && LA1_0<=55)||(LA1_0>=57 && LA1_0<=58)) ) {
+                if ( (LA1_0==AnnotationKey||LA1_0==Trigger||(LA1_0>=53 && LA1_0<=56)||(LA1_0>=58 && LA1_0<=59)) ) {
                     alt1=1;
                 }
                 else if ( (LA1_0==Newline) ) {
@@ -150,7 +151,7 @@ public class TreatyParser extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:88:10: statment
+            	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:92:10: statment
             	    {
             	    pushFollow(FOLLOW_statment_in_contract70);
             	    statment();
@@ -161,7 +162,7 @@ public class TreatyParser extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:88:21: Newline
+            	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:92:21: Newline
             	    {
             	    match(input,Newline,FOLLOW_Newline_in_contract74); if (state.failed) return value;
 
@@ -193,7 +194,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "statment"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:91:1: statment : ( annotation | trigger | consumerResource | supplierResource | constraint | onFailure | onSuccess ) Newline ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:95:1: statment : ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess ) Newline ;
     public final void statment() throws RecognitionException {
         TreatyParser.annotation_return annotation1 = null;
 
@@ -203,19 +204,21 @@ public class TreatyParser extends Parser {
 
         Resource supplierResource4 = null;
 
-        AbstractCondition constraint5 = null;
+        Resource externalResource5 = null;
 
-        URI onFailure6 = null;
+        AbstractCondition constraint6 = null;
 
-        URI onSuccess7 = null;
+        URI onFailure7 = null;
+
+        URI onSuccess8 = null;
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:92:5: ( ( annotation | trigger | consumerResource | supplierResource | constraint | onFailure | onSuccess ) Newline )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:92:9: ( annotation | trigger | consumerResource | supplierResource | constraint | onFailure | onSuccess ) Newline
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:96:5: ( ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess ) Newline )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:96:9: ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess ) Newline
             {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:92:9: ( annotation | trigger | consumerResource | supplierResource | constraint | onFailure | onSuccess )
-            int alt2=7;
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:96:9: ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess )
+            int alt2=8;
             switch ( input.LA(1) ) {
             case AnnotationKey:
                 {
@@ -242,7 +245,7 @@ public class TreatyParser extends Parser {
                 alt2=5;
                 }
                 break;
-            case 57:
+            case 56:
                 {
                 alt2=6;
                 }
@@ -250,6 +253,11 @@ public class TreatyParser extends Parser {
             case 58:
                 {
                 alt2=7;
+                }
+                break;
+            case 59:
+                {
+                alt2=8;
                 }
                 break;
             default:
@@ -262,7 +270,7 @@ public class TreatyParser extends Parser {
 
             switch (alt2) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:92:13: annotation
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:96:13: annotation
                     {
                     pushFollow(FOLLOW_annotation_in_statment101);
                     annotation1=annotation();
@@ -276,7 +284,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:93:13: trigger
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:97:13: trigger
                     {
                     pushFollow(FOLLOW_trigger_in_statment124);
                     trigger2=trigger();
@@ -290,7 +298,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:94:13: consumerResource
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:98:13: consumerResource
                     {
                     pushFollow(FOLLOW_consumerResource_in_statment150);
                     consumerResource3=consumerResource();
@@ -304,7 +312,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:95:13: supplierResource
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:99:13: supplierResource
                     {
                     pushFollow(FOLLOW_supplierResource_in_statment167);
                     supplierResource4=supplierResource();
@@ -318,43 +326,57 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:96:13: constraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:100:13: externalResource
                     {
-                    pushFollow(FOLLOW_constraint_in_statment184);
-                    constraint5=constraint();
+                    pushFollow(FOLLOW_externalResource_in_statment184);
+                    externalResource5=externalResource();
 
                     state._fsp--;
                     if (state.failed) return ;
                     if ( state.backtracking==0 ) {
-                       contract.addCondition(constraint5); 
+                       contract.addExternalResource(externalResource5); 
                     }
 
                     }
                     break;
                 case 6 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:97:13: onFailure
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:101:13: constraint
                     {
-                    pushFollow(FOLLOW_onFailure_in_statment207);
-                    onFailure6=onFailure();
+                    pushFollow(FOLLOW_constraint_in_statment201);
+                    constraint6=constraint();
 
                     state._fsp--;
                     if (state.failed) return ;
                     if ( state.backtracking==0 ) {
-                       contract.addOnVerificationFailsAction(onFailure6); 
+                       contract.addCondition(constraint6); 
                     }
 
                     }
                     break;
                 case 7 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:98:13: onSuccess
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:102:13: onFailure
                     {
-                    pushFollow(FOLLOW_onSuccess_in_statment231);
-                    onSuccess7=onSuccess();
+                    pushFollow(FOLLOW_onFailure_in_statment224);
+                    onFailure7=onFailure();
 
                     state._fsp--;
                     if (state.failed) return ;
                     if ( state.backtracking==0 ) {
-                       contract.addOnVerificationSucceedsAction(onSuccess7); 
+                       contract.addOnVerificationFailsAction(onFailure7); 
+                    }
+
+                    }
+                    break;
+                case 8 :
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:103:13: onSuccess
+                    {
+                    pushFollow(FOLLOW_onSuccess_in_statment248);
+                    onSuccess8=onSuccess();
+
+                    state._fsp--;
+                    if (state.failed) return ;
+                    if ( state.backtracking==0 ) {
+                       contract.addOnVerificationSucceedsAction(onSuccess8); 
                     }
 
                     }
@@ -362,7 +384,7 @@ public class TreatyParser extends Parser {
 
             }
 
-            match(input,Newline,FOLLOW_Newline_in_statment253); if (state.failed) return ;
+            match(input,Newline,FOLLOW_Newline_in_statment270); if (state.failed) return ;
 
             }
 
@@ -386,24 +408,24 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "annotation"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:102:1: annotation returns [String key, String value] : AnnotationKey AnnotationValue ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:107:1: annotation returns [String key, String value] : AnnotationKey AnnotationValue ;
     public final TreatyParser.annotation_return annotation() throws RecognitionException {
         TreatyParser.annotation_return retval = new TreatyParser.annotation_return();
         retval.start = input.LT(1);
 
-        Token AnnotationKey8=null;
-        Token AnnotationValue9=null;
+        Token AnnotationKey9=null;
+        Token AnnotationValue10=null;
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:103:5: ( AnnotationKey AnnotationValue )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:103:9: AnnotationKey AnnotationValue
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:108:5: ( AnnotationKey AnnotationValue )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:108:9: AnnotationKey AnnotationValue
             {
-            AnnotationKey8=(Token)match(input,AnnotationKey,FOLLOW_AnnotationKey_in_annotation276); if (state.failed) return retval;
-            AnnotationValue9=(Token)match(input,AnnotationValue,FOLLOW_AnnotationValue_in_annotation278); if (state.failed) return retval;
+            AnnotationKey9=(Token)match(input,AnnotationKey,FOLLOW_AnnotationKey_in_annotation293); if (state.failed) return retval;
+            AnnotationValue10=(Token)match(input,AnnotationValue,FOLLOW_AnnotationValue_in_annotation295); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
 
-                          retval.key = (AnnotationKey8!=null?AnnotationKey8.getText():null);
-                          retval.value = (AnnotationValue9!=null?AnnotationValue9.getText():null);
+                          retval.key = (AnnotationKey9!=null?AnnotationKey9.getText():null);
+                          retval.value = (AnnotationValue10!=null?AnnotationValue10.getText():null);
                       
             }
 
@@ -427,19 +449,19 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "trigger"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:110:1: trigger returns [URI value] : Trigger ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:115:1: trigger returns [URI value] : Trigger ;
     public final URI trigger() throws RecognitionException {
         URI value = null;
 
-        Token Trigger10=null;
+        Token Trigger11=null;
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:111:5: ( Trigger )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:111:9: Trigger
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:116:5: ( Trigger )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:116:9: Trigger
             {
-            Trigger10=(Token)match(input,Trigger,FOLLOW_Trigger_in_trigger311); if (state.failed) return value;
+            Trigger11=(Token)match(input,Trigger,FOLLOW_Trigger_in_trigger328); if (state.failed) return value;
             if ( state.backtracking==0 ) {
-               value = new URI((Trigger10!=null?Trigger10.getText():null)); 
+               value = new URI((Trigger11!=null?Trigger11.getText():null)); 
             }
 
             }
@@ -460,35 +482,35 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "consumerResource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:114:1: consumerResource returns [Resource value] : 'consumer-resource' Identifier resourceTypeAttribute nameAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:119:1: consumerResource returns [Resource value] : 'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute ;
     public final Resource consumerResource() throws RecognitionException {
         Resource value = null;
 
-        Token Identifier11=null;
-        URI resourceTypeAttribute12 = null;
+        Token Identifier12=null;
+        URI resourceTypeAttribute13 = null;
 
-        TreatyParser.nameAttribute_return nameAttribute13 = null;
+        TreatyParser.resourceNameAttribute_return resourceNameAttribute14 = null;
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:115:5: ( 'consumer-resource' Identifier resourceTypeAttribute nameAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:115:9: 'consumer-resource' Identifier resourceTypeAttribute nameAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:120:5: ( 'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:120:9: 'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute
             {
-            match(input,53,FOLLOW_53_in_consumerResource337); if (state.failed) return value;
-            Identifier11=(Token)match(input,Identifier,FOLLOW_Identifier_in_consumerResource339); if (state.failed) return value;
-            pushFollow(FOLLOW_resourceTypeAttribute_in_consumerResource341);
-            resourceTypeAttribute12=resourceTypeAttribute();
+            match(input,53,FOLLOW_53_in_consumerResource354); if (state.failed) return value;
+            Identifier12=(Token)match(input,Identifier,FOLLOW_Identifier_in_consumerResource356); if (state.failed) return value;
+            pushFollow(FOLLOW_resourceTypeAttribute_in_consumerResource358);
+            resourceTypeAttribute13=resourceTypeAttribute();
 
             state._fsp--;
             if (state.failed) return value;
-            pushFollow(FOLLOW_nameAttribute_in_consumerResource343);
-            nameAttribute13=nameAttribute();
+            pushFollow(FOLLOW_resourceNameAttribute_in_consumerResource360);
+            resourceNameAttribute14=resourceNameAttribute();
 
             state._fsp--;
             if (state.failed) return value;
             if ( state.backtracking==0 ) {
 
-                          value = createConsumerResource((Identifier11!=null?Identifier11.getText():null), resourceTypeAttribute12, (nameAttribute13!=null?input.toString(nameAttribute13.start,nameAttribute13.stop):null));
+                          value = createNamedResource((Identifier12!=null?Identifier12.getText():null), resourceTypeAttribute13, (resourceNameAttribute14!=null?input.toString(resourceNameAttribute14.start,resourceNameAttribute14.stop):null));
                       
             }
 
@@ -508,48 +530,9 @@ public class TreatyParser extends Parser {
     }
     // $ANTLR end "consumerResource"
 
-    public static class nameAttribute_return extends ParserRuleReturnScope {
-        public String value;
-    };
-
-    // $ANTLR start "nameAttribute"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:121:1: nameAttribute returns [String value] : NameAttribute ;
-    public final TreatyParser.nameAttribute_return nameAttribute() throws RecognitionException {
-        TreatyParser.nameAttribute_return retval = new TreatyParser.nameAttribute_return();
-        retval.start = input.LT(1);
-
-        Token NameAttribute14=null;
-
-        try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:122:5: ( NameAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:122:9: NameAttribute
-            {
-            NameAttribute14=(Token)match(input,NameAttribute,FOLLOW_NameAttribute_in_nameAttribute376); if (state.failed) return retval;
-            if ( state.backtracking==0 ) {
-               retval.value = (NameAttribute14!=null?NameAttribute14.getText():null); 
-            }
-
-            }
-
-            retval.stop = input.LT(-1);
-
-        }
-
-            catch (RecognitionException e) {
-                reportError(e);
-                throw e;
-            } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
-            }
-        finally {
-        }
-        return retval;
-    }
-    // $ANTLR end "nameAttribute"
-
 
     // $ANTLR start "supplierResource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:125:1: supplierResource returns [Resource value] : 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:126:1: supplierResource returns [Resource value] : 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute ;
     public final Resource supplierResource() throws RecognitionException {
         Resource value = null;
 
@@ -560,24 +543,24 @@ public class TreatyParser extends Parser {
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:126:5: ( 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:126:9: 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:127:5: ( 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:127:9: 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute
             {
-            match(input,54,FOLLOW_54_in_supplierResource402); if (state.failed) return value;
-            Identifier15=(Token)match(input,Identifier,FOLLOW_Identifier_in_supplierResource404); if (state.failed) return value;
-            pushFollow(FOLLOW_resourceTypeAttribute_in_supplierResource406);
+            match(input,54,FOLLOW_54_in_supplierResource393); if (state.failed) return value;
+            Identifier15=(Token)match(input,Identifier,FOLLOW_Identifier_in_supplierResource395); if (state.failed) return value;
+            pushFollow(FOLLOW_resourceTypeAttribute_in_supplierResource397);
             resourceTypeAttribute16=resourceTypeAttribute();
 
             state._fsp--;
             if (state.failed) return value;
-            pushFollow(FOLLOW_resourceReferenceAttribute_in_supplierResource408);
+            pushFollow(FOLLOW_resourceReferenceAttribute_in_supplierResource399);
             resourceReferenceAttribute17=resourceReferenceAttribute();
 
             state._fsp--;
             if (state.failed) return value;
             if ( state.backtracking==0 ) {
 
-                          value = createSupplierResource((Identifier15!=null?Identifier15.getText():null), resourceTypeAttribute16, resourceReferenceAttribute17);
+                          value = createReferenceResource((Identifier15!=null?Identifier15.getText():null), resourceTypeAttribute16, resourceReferenceAttribute17);
                       
             }
 
@@ -598,20 +581,109 @@ public class TreatyParser extends Parser {
     // $ANTLR end "supplierResource"
 
 
+    // $ANTLR start "externalResource"
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:133:1: externalResource returns [Resource value] : 'external-resource' Identifier resourceTypeAttribute resourceNameAttribute ;
+    public final Resource externalResource() throws RecognitionException {
+        Resource value = null;
+
+        Token Identifier18=null;
+        URI resourceTypeAttribute19 = null;
+
+        TreatyParser.resourceNameAttribute_return resourceNameAttribute20 = null;
+
+
+        try {
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:134:5: ( 'external-resource' Identifier resourceTypeAttribute resourceNameAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:134:9: 'external-resource' Identifier resourceTypeAttribute resourceNameAttribute
+            {
+            match(input,55,FOLLOW_55_in_externalResource436); if (state.failed) return value;
+            Identifier18=(Token)match(input,Identifier,FOLLOW_Identifier_in_externalResource438); if (state.failed) return value;
+            pushFollow(FOLLOW_resourceTypeAttribute_in_externalResource440);
+            resourceTypeAttribute19=resourceTypeAttribute();
+
+            state._fsp--;
+            if (state.failed) return value;
+            pushFollow(FOLLOW_resourceNameAttribute_in_externalResource442);
+            resourceNameAttribute20=resourceNameAttribute();
+
+            state._fsp--;
+            if (state.failed) return value;
+            if ( state.backtracking==0 ) {
+
+                          value = createNamedResource((Identifier18!=null?Identifier18.getText():null), resourceTypeAttribute19, (resourceNameAttribute20!=null?input.toString(resourceNameAttribute20.start,resourceNameAttribute20.stop):null));
+                      
+            }
+
+            }
+
+        }
+
+            catch (RecognitionException e) {
+                reportError(e);
+                throw e;
+            } catch (Exception e) {
+                throw new TreatyRecognitionException(this.input, e);
+            }
+        finally {
+        }
+        return value;
+    }
+    // $ANTLR end "externalResource"
+
+    public static class resourceNameAttribute_return extends ParserRuleReturnScope {
+        public String value;
+    };
+
+    // $ANTLR start "resourceNameAttribute"
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:140:1: resourceNameAttribute returns [String value] : ResourceNameAttribute ;
+    public final TreatyParser.resourceNameAttribute_return resourceNameAttribute() throws RecognitionException {
+        TreatyParser.resourceNameAttribute_return retval = new TreatyParser.resourceNameAttribute_return();
+        retval.start = input.LT(1);
+
+        Token ResourceNameAttribute21=null;
+
+        try {
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:141:5: ( ResourceNameAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:141:9: ResourceNameAttribute
+            {
+            ResourceNameAttribute21=(Token)match(input,ResourceNameAttribute,FOLLOW_ResourceNameAttribute_in_resourceNameAttribute475); if (state.failed) return retval;
+            if ( state.backtracking==0 ) {
+               retval.value = (ResourceNameAttribute21!=null?ResourceNameAttribute21.getText():null); 
+            }
+
+            }
+
+            retval.stop = input.LT(-1);
+
+        }
+
+            catch (RecognitionException e) {
+                reportError(e);
+                throw e;
+            } catch (Exception e) {
+                throw new TreatyRecognitionException(this.input, e);
+            }
+        finally {
+        }
+        return retval;
+    }
+    // $ANTLR end "resourceNameAttribute"
+
+
     // $ANTLR start "resourceTypeAttribute"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:132:1: resourceTypeAttribute returns [URI value] : ResourceTypeAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:144:1: resourceTypeAttribute returns [URI value] : ResourceTypeAttribute ;
     public final URI resourceTypeAttribute() throws RecognitionException {
         URI value = null;
 
-        Token ResourceTypeAttribute18=null;
+        Token ResourceTypeAttribute22=null;
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:133:5: ( ResourceTypeAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:133:9: ResourceTypeAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:5: ( ResourceTypeAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:9: ResourceTypeAttribute
             {
-            ResourceTypeAttribute18=(Token)match(input,ResourceTypeAttribute,FOLLOW_ResourceTypeAttribute_in_resourceTypeAttribute441); if (state.failed) return value;
+            ResourceTypeAttribute22=(Token)match(input,ResourceTypeAttribute,FOLLOW_ResourceTypeAttribute_in_resourceTypeAttribute501); if (state.failed) return value;
             if ( state.backtracking==0 ) {
-               value = new URI((ResourceTypeAttribute18!=null?ResourceTypeAttribute18.getText():null)); 
+               value = new URI((ResourceTypeAttribute22!=null?ResourceTypeAttribute22.getText():null)); 
             }
 
             }
@@ -632,19 +704,19 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "resourceReferenceAttribute"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:136:1: resourceReferenceAttribute returns [String value] : ResourceReferenceAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:148:1: resourceReferenceAttribute returns [String value] : ResourceReferenceAttribute ;
     public final String resourceReferenceAttribute() throws RecognitionException {
         String value = null;
 
-        Token ResourceReferenceAttribute19=null;
+        Token ResourceReferenceAttribute23=null;
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:137:5: ( ResourceReferenceAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:137:9: ResourceReferenceAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:149:5: ( ResourceReferenceAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:149:9: ResourceReferenceAttribute
             {
-            ResourceReferenceAttribute19=(Token)match(input,ResourceReferenceAttribute,FOLLOW_ResourceReferenceAttribute_in_resourceReferenceAttribute467); if (state.failed) return value;
+            ResourceReferenceAttribute23=(Token)match(input,ResourceReferenceAttribute,FOLLOW_ResourceReferenceAttribute_in_resourceReferenceAttribute527); if (state.failed) return value;
             if ( state.backtracking==0 ) {
-               value = (ResourceReferenceAttribute19!=null?ResourceReferenceAttribute19.getText():null); 
+               value = (ResourceReferenceAttribute23!=null?ResourceReferenceAttribute23.getText():null); 
             }
 
             }
@@ -665,25 +737,25 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "constraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:140:1: constraint returns [AbstractCondition value] : 'constraint' orConstraint ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:152:1: constraint returns [AbstractCondition value] : 'constraint' orConstraint ;
     public final AbstractCondition constraint() throws RecognitionException {
         AbstractCondition value = null;
 
-        TreatyParser.orConstraint_return orConstraint20 = null;
+        TreatyParser.orConstraint_return orConstraint24 = null;
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:141:5: ( 'constraint' orConstraint )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:141:9: 'constraint' orConstraint
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:153:5: ( 'constraint' orConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:153:9: 'constraint' orConstraint
             {
-            match(input,55,FOLLOW_55_in_constraint496); if (state.failed) return value;
-            pushFollow(FOLLOW_orConstraint_in_constraint498);
-            orConstraint20=orConstraint();
+            match(input,56,FOLLOW_56_in_constraint556); if (state.failed) return value;
+            pushFollow(FOLLOW_orConstraint_in_constraint558);
+            orConstraint24=orConstraint();
 
             state._fsp--;
             if (state.failed) return value;
             if ( state.backtracking==0 ) {
-               value = (orConstraint20!=null?orConstraint20.value:null); 
+               value = (orConstraint24!=null?orConstraint24.value:null); 
             }
 
             }
@@ -708,7 +780,7 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "orConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:144:1: orConstraint returns [AbstractCondition value, Disjunction disjunction] : ( ( xorConstraint ( Or xorConstraint )+ )=>firstConstraint= xorConstraint ( Or nextConstraint= xorConstraint )+ | xorConstraint );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:156:1: orConstraint returns [AbstractCondition value, Disjunction disjunction] : ( ( xorConstraint ( Or xorConstraint )+ )=>firstConstraint= xorConstraint ( Or nextConstraint= xorConstraint )+ | xorConstraint );
     public final TreatyParser.orConstraint_return orConstraint() throws RecognitionException {
         TreatyParser.orConstraint_return retval = new TreatyParser.orConstraint_return();
         retval.start = input.LT(1);
@@ -717,11 +789,11 @@ public class TreatyParser extends Parser {
 
         TreatyParser.xorConstraint_return nextConstraint = null;
 
-        TreatyParser.xorConstraint_return xorConstraint21 = null;
+        TreatyParser.xorConstraint_return xorConstraint25 = null;
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:5: ( ( xorConstraint ( Or xorConstraint )+ )=>firstConstraint= xorConstraint ( Or nextConstraint= xorConstraint )+ | xorConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:157:5: ( ( xorConstraint ( Or xorConstraint )+ )=>firstConstraint= xorConstraint ( Or nextConstraint= xorConstraint )+ | xorConstraint )
             int alt4=2;
             switch ( input.LA(1) ) {
             case Not:
@@ -762,7 +834,7 @@ public class TreatyParser extends Parser {
                 }
                 }
                 break;
-            case 56:
+            case 57:
                 {
                 int LA4_3 = input.LA(2);
 
@@ -810,12 +882,12 @@ public class TreatyParser extends Parser {
 
             switch (alt4) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:9: ( xorConstraint ( Or xorConstraint )+ )=>firstConstraint= xorConstraint ( Or nextConstraint= xorConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:157:9: ( xorConstraint ( Or xorConstraint )+ )=>firstConstraint= xorConstraint ( Or nextConstraint= xorConstraint )+
                     {
                     if ( state.backtracking==0 ) {
                        retval.disjunction = new Disjunction(); retval.value = retval.disjunction; 
                     }
-                    pushFollow(FOLLOW_xorConstraint_in_orConstraint541);
+                    pushFollow(FOLLOW_xorConstraint_in_orConstraint601);
                     firstConstraint=xorConstraint();
 
                     state._fsp--;
@@ -823,7 +895,7 @@ public class TreatyParser extends Parser {
                     if ( state.backtracking==0 ) {
                        retval.disjunction.addCondition((firstConstraint!=null?firstConstraint.value:null)); 
                     }
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:194: ( Or nextConstraint= xorConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:157:194: ( Or nextConstraint= xorConstraint )+
                     int cnt3=0;
                     loop3:
                     do {
@@ -837,10 +909,10 @@ public class TreatyParser extends Parser {
 
                         switch (alt3) {
                     	case 1 :
-                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:195: Or nextConstraint= xorConstraint
+                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:157:195: Or nextConstraint= xorConstraint
                     	    {
-                    	    match(input,Or,FOLLOW_Or_in_orConstraint546); if (state.failed) return retval;
-                    	    pushFollow(FOLLOW_xorConstraint_in_orConstraint550);
+                    	    match(input,Or,FOLLOW_Or_in_orConstraint606); if (state.failed) return retval;
+                    	    pushFollow(FOLLOW_xorConstraint_in_orConstraint610);
                     	    nextConstraint=xorConstraint();
 
                     	    state._fsp--;
@@ -866,15 +938,15 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:146:9: xorConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:158:9: xorConstraint
                     {
-                    pushFollow(FOLLOW_xorConstraint_in_orConstraint564);
-                    xorConstraint21=xorConstraint();
+                    pushFollow(FOLLOW_xorConstraint_in_orConstraint624);
+                    xorConstraint25=xorConstraint();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                       retval.value = (xorConstraint21!=null?xorConstraint21.value:null); 
+                       retval.value = (xorConstraint25!=null?xorConstraint25.value:null); 
                     }
 
                     }
@@ -903,7 +975,7 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "xorConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:149:1: xorConstraint returns [AbstractCondition value, XDisjunction xDisjunction] : ( ( andConstraint ( XOr andConstraint )+ )=>firstConstraint= andConstraint ( XOr nextConstraint= andConstraint )+ | andConstraint );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:161:1: xorConstraint returns [AbstractCondition value, XDisjunction xDisjunction] : ( ( andConstraint ( XOr andConstraint )+ )=>firstConstraint= andConstraint ( XOr nextConstraint= andConstraint )+ | andConstraint );
     public final TreatyParser.xorConstraint_return xorConstraint() throws RecognitionException {
         TreatyParser.xorConstraint_return retval = new TreatyParser.xorConstraint_return();
         retval.start = input.LT(1);
@@ -912,11 +984,11 @@ public class TreatyParser extends Parser {
 
         TreatyParser.andConstraint_return nextConstraint = null;
 
-        TreatyParser.andConstraint_return andConstraint22 = null;
+        TreatyParser.andConstraint_return andConstraint26 = null;
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:150:2: ( ( andConstraint ( XOr andConstraint )+ )=>firstConstraint= andConstraint ( XOr nextConstraint= andConstraint )+ | andConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:5: ( ( andConstraint ( XOr andConstraint )+ )=>firstConstraint= andConstraint ( XOr nextConstraint= andConstraint )+ | andConstraint )
             int alt6=2;
             switch ( input.LA(1) ) {
             case Not:
@@ -957,7 +1029,7 @@ public class TreatyParser extends Parser {
                 }
                 }
                 break;
-            case 56:
+            case 57:
                 {
                 int LA6_3 = input.LA(2);
 
@@ -1005,12 +1077,12 @@ public class TreatyParser extends Parser {
 
             switch (alt6) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:150:6: ( andConstraint ( XOr andConstraint )+ )=>firstConstraint= andConstraint ( XOr nextConstraint= andConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:9: ( andConstraint ( XOr andConstraint )+ )=>firstConstraint= andConstraint ( XOr nextConstraint= andConstraint )+
                     {
                     if ( state.backtracking==0 ) {
                        retval.xDisjunction = new XDisjunction(); retval.value = retval.xDisjunction; 
                     }
-                    pushFollow(FOLLOW_andConstraint_in_xorConstraint628);
+                    pushFollow(FOLLOW_andConstraint_in_xorConstraint691);
                     firstConstraint=andConstraint();
 
                     state._fsp--;
@@ -1018,7 +1090,7 @@ public class TreatyParser extends Parser {
                     if ( state.backtracking==0 ) {
                        retval.xDisjunction.addCondition((firstConstraint!=null?firstConstraint.value:null)); 
                     }
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:150:196: ( XOr nextConstraint= andConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:199: ( XOr nextConstraint= andConstraint )+
                     int cnt5=0;
                     loop5:
                     do {
@@ -1032,10 +1104,10 @@ public class TreatyParser extends Parser {
 
                         switch (alt5) {
                     	case 1 :
-                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:150:197: XOr nextConstraint= andConstraint
+                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:200: XOr nextConstraint= andConstraint
                     	    {
-                    	    match(input,XOr,FOLLOW_XOr_in_xorConstraint633); if (state.failed) return retval;
-                    	    pushFollow(FOLLOW_andConstraint_in_xorConstraint637);
+                    	    match(input,XOr,FOLLOW_XOr_in_xorConstraint696); if (state.failed) return retval;
+                    	    pushFollow(FOLLOW_andConstraint_in_xorConstraint700);
                     	    nextConstraint=andConstraint();
 
                     	    state._fsp--;
@@ -1061,15 +1133,15 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:151:6: andConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:163:9: andConstraint
                     {
-                    pushFollow(FOLLOW_andConstraint_in_xorConstraint648);
-                    andConstraint22=andConstraint();
+                    pushFollow(FOLLOW_andConstraint_in_xorConstraint714);
+                    andConstraint26=andConstraint();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                       retval.value = (andConstraint22!=null?andConstraint22.value:null); 
+                       retval.value = (andConstraint26!=null?andConstraint26.value:null); 
                     }
 
                     }
@@ -1098,7 +1170,7 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "andConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:154:1: andConstraint returns [AbstractCondition value, Conjunction conjunction] : ( ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+ | notConstraint );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:166:1: andConstraint returns [AbstractCondition value, Conjunction conjunction] : ( ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+ | notConstraint );
     public final TreatyParser.andConstraint_return andConstraint() throws RecognitionException {
         TreatyParser.andConstraint_return retval = new TreatyParser.andConstraint_return();
         retval.start = input.LT(1);
@@ -1107,11 +1179,11 @@ public class TreatyParser extends Parser {
 
         TreatyParser.notConstraint_return nextConstraint = null;
 
-        TreatyParser.notConstraint_return notConstraint23 = null;
+        TreatyParser.notConstraint_return notConstraint27 = null;
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:155:5: ( ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+ | notConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:5: ( ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+ | notConstraint )
             int alt8=2;
             switch ( input.LA(1) ) {
             case Not:
@@ -1152,7 +1224,7 @@ public class TreatyParser extends Parser {
                 }
                 }
                 break;
-            case 56:
+            case 57:
                 {
                 int LA8_3 = input.LA(2);
 
@@ -1200,12 +1272,12 @@ public class TreatyParser extends Parser {
 
             switch (alt8) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:155:9: ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:9: ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+
                     {
                     if ( state.backtracking==0 ) {
                        retval.conjunction = new Conjunction(); retval.value = retval.conjunction; 
                     }
-                    pushFollow(FOLLOW_notConstraint_in_andConstraint713);
+                    pushFollow(FOLLOW_notConstraint_in_andConstraint782);
                     firstConstraint=notConstraint();
 
                     state._fsp--;
@@ -1213,7 +1285,7 @@ public class TreatyParser extends Parser {
                     if ( state.backtracking==0 ) {
                        retval.conjunction.addCondition((firstConstraint!=null?firstConstraint.value:null)); 
                     }
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:155:195: ( And nextConstraint= notConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:195: ( And nextConstraint= notConstraint )+
                     int cnt7=0;
                     loop7:
                     do {
@@ -1227,10 +1299,10 @@ public class TreatyParser extends Parser {
 
                         switch (alt7) {
                     	case 1 :
-                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:155:196: And nextConstraint= notConstraint
+                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:196: And nextConstraint= notConstraint
                     	    {
-                    	    match(input,And,FOLLOW_And_in_andConstraint718); if (state.failed) return retval;
-                    	    pushFollow(FOLLOW_notConstraint_in_andConstraint722);
+                    	    match(input,And,FOLLOW_And_in_andConstraint787); if (state.failed) return retval;
+                    	    pushFollow(FOLLOW_notConstraint_in_andConstraint791);
                     	    nextConstraint=notConstraint();
 
                     	    state._fsp--;
@@ -1256,15 +1328,15 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:156:9: notConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:168:9: notConstraint
                     {
-                    pushFollow(FOLLOW_notConstraint_in_andConstraint736);
-                    notConstraint23=notConstraint();
+                    pushFollow(FOLLOW_notConstraint_in_andConstraint805);
+                    notConstraint27=notConstraint();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                       retval.value = (notConstraint23!=null?notConstraint23.value:null); 
+                       retval.value = (notConstraint27!=null?notConstraint27.value:null); 
                     }
 
                     }
@@ -1293,22 +1365,22 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "notConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:159:1: notConstraint returns [AbstractCondition value, Negation negation] : ( Not condition= notConstraint | LParen orConstraint RParen | existsConstraint | relationshipConstraint );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:171:1: notConstraint returns [AbstractCondition value, Negation negation] : ( Not condition= notConstraint | LParen orConstraint RParen | existsConstraint | relationshipConstraint );
     public final TreatyParser.notConstraint_return notConstraint() throws RecognitionException {
         TreatyParser.notConstraint_return retval = new TreatyParser.notConstraint_return();
         retval.start = input.LT(1);
 
         TreatyParser.notConstraint_return condition = null;
 
-        TreatyParser.orConstraint_return orConstraint24 = null;
+        TreatyParser.orConstraint_return orConstraint28 = null;
 
-        ExistsCondition existsConstraint25 = null;
+        ExistsCondition existsConstraint29 = null;
 
-        RelationshipCondition relationshipConstraint26 = null;
+        RelationshipCondition relationshipConstraint30 = null;
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:160:5: ( Not condition= notConstraint | LParen orConstraint RParen | existsConstraint | relationshipConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:172:5: ( Not condition= notConstraint | LParen orConstraint RParen | existsConstraint | relationshipConstraint )
             int alt9=4;
             switch ( input.LA(1) ) {
             case Not:
@@ -1321,7 +1393,7 @@ public class TreatyParser extends Parser {
                 alt9=2;
                 }
                 break;
-            case 56:
+            case 57:
                 {
                 alt9=3;
                 }
@@ -1341,10 +1413,10 @@ public class TreatyParser extends Parser {
 
             switch (alt9) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:160:9: Not condition= notConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:172:9: Not condition= notConstraint
                     {
-                    match(input,Not,FOLLOW_Not_in_notConstraint787); if (state.failed) return retval;
-                    pushFollow(FOLLOW_notConstraint_in_notConstraint791);
+                    match(input,Not,FOLLOW_Not_in_notConstraint856); if (state.failed) return retval;
+                    pushFollow(FOLLOW_notConstraint_in_notConstraint860);
                     condition=notConstraint();
 
                     state._fsp--;
@@ -1356,45 +1428,45 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:161:9: LParen orConstraint RParen
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:173:9: LParen orConstraint RParen
                     {
-                    match(input,LParen,FOLLOW_LParen_in_notConstraint804); if (state.failed) return retval;
-                    pushFollow(FOLLOW_orConstraint_in_notConstraint806);
-                    orConstraint24=orConstraint();
+                    match(input,LParen,FOLLOW_LParen_in_notConstraint873); if (state.failed) return retval;
+                    pushFollow(FOLLOW_orConstraint_in_notConstraint875);
+                    orConstraint28=orConstraint();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    match(input,RParen,FOLLOW_RParen_in_notConstraint808); if (state.failed) return retval;
+                    match(input,RParen,FOLLOW_RParen_in_notConstraint877); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                       retval.value = (orConstraint24!=null?orConstraint24.value:null); 
+                       retval.value = (orConstraint28!=null?orConstraint28.value:null); 
                     }
 
                     }
                     break;
                 case 3 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:9: existsConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:174:9: existsConstraint
                     {
-                    pushFollow(FOLLOW_existsConstraint_in_notConstraint822);
-                    existsConstraint25=existsConstraint();
+                    pushFollow(FOLLOW_existsConstraint_in_notConstraint891);
+                    existsConstraint29=existsConstraint();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                       retval.value = existsConstraint25; 
+                       retval.value = existsConstraint29; 
                     }
 
                     }
                     break;
                 case 4 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:163:9: relationshipConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:175:9: relationshipConstraint
                     {
-                    pushFollow(FOLLOW_relationshipConstraint_in_notConstraint846);
-                    relationshipConstraint26=relationshipConstraint();
+                    pushFollow(FOLLOW_relationshipConstraint_in_notConstraint915);
+                    relationshipConstraint30=relationshipConstraint();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                       retval.value = relationshipConstraint26; 
+                       retval.value = relationshipConstraint30; 
                     }
 
                     }
@@ -1419,27 +1491,27 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "existsConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:166:1: existsConstraint returns [ExistsCondition value] : 'mustexist' resource ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:178:1: existsConstraint returns [ExistsCondition value] : 'mustexist' resource ;
     public final ExistsCondition existsConstraint() throws RecognitionException {
         ExistsCondition value = null;
 
-        Resource resource27 = null;
+        Resource resource31 = null;
 
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:5: ( 'mustexist' resource )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:9: 'mustexist' resource
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:179:5: ( 'mustexist' resource )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:179:9: 'mustexist' resource
             {
-            match(input,56,FOLLOW_56_in_existsConstraint877); if (state.failed) return value;
-            pushFollow(FOLLOW_resource_in_existsConstraint879);
-            resource27=resource();
+            match(input,57,FOLLOW_57_in_existsConstraint946); if (state.failed) return value;
+            pushFollow(FOLLOW_resource_in_existsConstraint948);
+            resource31=resource();
 
             state._fsp--;
             if (state.failed) return value;
             if ( state.backtracking==0 ) {
 
                           value = new ExistsCondition();
-                          value.setResource(resource27);
+                          value.setResource(resource31);
                       
             }
 
@@ -1461,32 +1533,27 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "relationshipConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:174:1: relationshipConstraint returns [RelationshipCondition value] : leftResource= resource relationshipType rightResource= resource ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:186:1: relationshipConstraint returns [RelationshipCondition value] : leftResource= resource relationshipType= Uri rightResource= resource ;
     public final RelationshipCondition relationshipConstraint() throws RecognitionException {
         RelationshipCondition value = null;
 
+        Token relationshipType=null;
         Resource leftResource = null;
 
         Resource rightResource = null;
 
-        TreatyParser.relationshipType_return relationshipType28 = null;
-
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:175:5: (leftResource= resource relationshipType rightResource= resource )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:175:9: leftResource= resource relationshipType rightResource= resource
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:187:5: (leftResource= resource relationshipType= Uri rightResource= resource )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:187:9: leftResource= resource relationshipType= Uri rightResource= resource
             {
-            pushFollow(FOLLOW_resource_in_relationshipConstraint914);
+            pushFollow(FOLLOW_resource_in_relationshipConstraint983);
             leftResource=resource();
 
             state._fsp--;
             if (state.failed) return value;
-            pushFollow(FOLLOW_relationshipType_in_relationshipConstraint916);
-            relationshipType28=relationshipType();
-
-            state._fsp--;
-            if (state.failed) return value;
-            pushFollow(FOLLOW_resource_in_relationshipConstraint920);
+            relationshipType=(Token)match(input,Uri,FOLLOW_Uri_in_relationshipConstraint987); if (state.failed) return value;
+            pushFollow(FOLLOW_resource_in_relationshipConstraint991);
             rightResource=resource();
 
             state._fsp--;
@@ -1496,7 +1563,7 @@ public class TreatyParser extends Parser {
                           value = new RelationshipCondition();
                           value.setResource1(leftResource);
                           value.setResource2(rightResource);
-                          value.setRelationship(new URI((relationshipType28!=null?input.toString(relationshipType28.start,relationshipType28.stop):null)));
+                          value.setRelationship(new URI((relationshipType!=null?relationshipType.getText():null)));
                       
             }
 
@@ -1516,52 +1583,19 @@ public class TreatyParser extends Parser {
     }
     // $ANTLR end "relationshipConstraint"
 
-    public static class relationshipType_return extends ParserRuleReturnScope {
-    };
-
-    // $ANTLR start "relationshipType"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:184:1: relationshipType : Uri ;
-    public final TreatyParser.relationshipType_return relationshipType() throws RecognitionException {
-        TreatyParser.relationshipType_return retval = new TreatyParser.relationshipType_return();
-        retval.start = input.LT(1);
-
-        try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:185:5: ( Uri )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:185:8: Uri
-            {
-            match(input,Uri,FOLLOW_Uri_in_relationshipType948); if (state.failed) return retval;
-
-            }
-
-            retval.stop = input.LT(-1);
-
-        }
-
-            catch (RecognitionException e) {
-                reportError(e);
-                throw e;
-            } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
-            }
-        finally {
-        }
-        return retval;
-    }
-    // $ANTLR end "relationshipType"
-
 
     // $ANTLR start "resource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:188:1: resource returns [Resource value] : resourceId= Identifier {...}?;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:196:1: resource returns [Resource value] : resourceId= Identifier {...}?;
     public final Resource resource() throws RecognitionException {
         Resource value = null;
 
         Token resourceId=null;
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:189:5: (resourceId= Identifier {...}?)
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:189:9: resourceId= Identifier {...}?
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:197:5: (resourceId= Identifier {...}?)
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:197:9: resourceId= Identifier {...}?
             {
-            resourceId=(Token)match(input,Identifier,FOLLOW_Identifier_in_resource973); if (state.failed) return value;
+            resourceId=(Token)match(input,Identifier,FOLLOW_Identifier_in_resource1026); if (state.failed) return value;
             if ( !(( contract.getResource((resourceId!=null?resourceId.getText():null)) != null )) ) {
                 if (state.backtracking>0) {state.failed=true; return value;}
                 throw new FailedPredicateException(input, "resource", " contract.getResource($resourceId.text) != null ");
@@ -1588,25 +1622,20 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "onFailure"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:198:1: onFailure returns [URI value] : 'onfailure' action ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:206:1: onFailure returns [URI value] : 'onfailure' action= Uri ;
     public final URI onFailure() throws RecognitionException {
         URI value = null;
 
-        TreatyParser.action_return action29 = null;
-
+        Token action=null;
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:199:5: ( 'onfailure' action )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:199:9: 'onfailure' action
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:207:5: ( 'onfailure' action= Uri )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:207:9: 'onfailure' action= Uri
             {
-            match(input,57,FOLLOW_57_in_onFailure1019); if (state.failed) return value;
-            pushFollow(FOLLOW_action_in_onFailure1021);
-            action29=action();
-
-            state._fsp--;
-            if (state.failed) return value;
+            match(input,58,FOLLOW_58_in_onFailure1072); if (state.failed) return value;
+            action=(Token)match(input,Uri,FOLLOW_Uri_in_onFailure1076); if (state.failed) return value;
             if ( state.backtracking==0 ) {
-               value = new URI((action29!=null?input.toString(action29.start,action29.stop):null)); 
+               value = new URI((action!=null?action.getText():null)); 
             }
 
             }
@@ -1627,25 +1656,20 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "onSuccess"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:202:1: onSuccess returns [URI value] : 'onsuccess' action ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:210:1: onSuccess returns [URI value] : 'onsuccess' action= Uri ;
     public final URI onSuccess() throws RecognitionException {
         URI value = null;
 
-        TreatyParser.action_return action30 = null;
-
+        Token action=null;
 
         try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:203:5: ( 'onsuccess' action )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:203:9: 'onsuccess' action
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:211:5: ( 'onsuccess' action= Uri )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:211:9: 'onsuccess' action= Uri
             {
-            match(input,58,FOLLOW_58_in_onSuccess1047); if (state.failed) return value;
-            pushFollow(FOLLOW_action_in_onSuccess1049);
-            action30=action();
-
-            state._fsp--;
-            if (state.failed) return value;
+            match(input,59,FOLLOW_59_in_onSuccess1102); if (state.failed) return value;
+            action=(Token)match(input,Uri,FOLLOW_Uri_in_onSuccess1106); if (state.failed) return value;
             if ( state.backtracking==0 ) {
-               value = new URI((action30!=null?input.toString(action30.start,action30.stop):null)); 
+               value = new URI((action!=null?action.getText():null)); 
             }
 
             }
@@ -1664,50 +1688,17 @@ public class TreatyParser extends Parser {
     }
     // $ANTLR end "onSuccess"
 
-    public static class action_return extends ParserRuleReturnScope {
-    };
-
-    // $ANTLR start "action"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:206:1: action : Uri ;
-    public final TreatyParser.action_return action() throws RecognitionException {
-        TreatyParser.action_return retval = new TreatyParser.action_return();
-        retval.start = input.LT(1);
-
-        try {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:207:5: ( Uri )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:207:9: Uri
-            {
-            match(input,Uri,FOLLOW_Uri_in_action1071); if (state.failed) return retval;
-
-            }
-
-            retval.stop = input.LT(-1);
-
-        }
-
-            catch (RecognitionException e) {
-                reportError(e);
-                throw e;
-            } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
-            }
-        finally {
-        }
-        return retval;
-    }
-    // $ANTLR end "action"
-
     // $ANTLR start synpred1_Treaty
     public final void synpred1_Treaty_fragment() throws RecognitionException {   
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:9: ( xorConstraint ( Or xorConstraint )+ )
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:10: xorConstraint ( Or xorConstraint )+
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:157:9: ( xorConstraint ( Or xorConstraint )+ )
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:157:10: xorConstraint ( Or xorConstraint )+
         {
-        pushFollow(FOLLOW_xorConstraint_in_synpred1_Treaty525);
+        pushFollow(FOLLOW_xorConstraint_in_synpred1_Treaty585);
         xorConstraint();
 
         state._fsp--;
         if (state.failed) return ;
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:24: ( Or xorConstraint )+
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:157:24: ( Or xorConstraint )+
         int cnt10=0;
         loop10:
         do {
@@ -1721,10 +1712,10 @@ public class TreatyParser extends Parser {
 
             switch (alt10) {
         	case 1 :
-        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:145:25: Or xorConstraint
+        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:157:25: Or xorConstraint
         	    {
-        	    match(input,Or,FOLLOW_Or_in_synpred1_Treaty528); if (state.failed) return ;
-        	    pushFollow(FOLLOW_xorConstraint_in_synpred1_Treaty530);
+        	    match(input,Or,FOLLOW_Or_in_synpred1_Treaty588); if (state.failed) return ;
+        	    pushFollow(FOLLOW_xorConstraint_in_synpred1_Treaty590);
         	    xorConstraint();
 
         	    state._fsp--;
@@ -1750,15 +1741,15 @@ public class TreatyParser extends Parser {
 
     // $ANTLR start synpred2_Treaty
     public final void synpred2_Treaty_fragment() throws RecognitionException {   
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:150:6: ( andConstraint ( XOr andConstraint )+ )
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:150:7: andConstraint ( XOr andConstraint )+
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:9: ( andConstraint ( XOr andConstraint )+ )
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:10: andConstraint ( XOr andConstraint )+
         {
-        pushFollow(FOLLOW_andConstraint_in_synpred2_Treaty612);
+        pushFollow(FOLLOW_andConstraint_in_synpred2_Treaty675);
         andConstraint();
 
         state._fsp--;
         if (state.failed) return ;
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:150:21: ( XOr andConstraint )+
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:24: ( XOr andConstraint )+
         int cnt11=0;
         loop11:
         do {
@@ -1772,10 +1763,10 @@ public class TreatyParser extends Parser {
 
             switch (alt11) {
         	case 1 :
-        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:150:22: XOr andConstraint
+        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:25: XOr andConstraint
         	    {
-        	    match(input,XOr,FOLLOW_XOr_in_synpred2_Treaty615); if (state.failed) return ;
-        	    pushFollow(FOLLOW_andConstraint_in_synpred2_Treaty617);
+        	    match(input,XOr,FOLLOW_XOr_in_synpred2_Treaty678); if (state.failed) return ;
+        	    pushFollow(FOLLOW_andConstraint_in_synpred2_Treaty680);
         	    andConstraint();
 
         	    state._fsp--;
@@ -1801,15 +1792,15 @@ public class TreatyParser extends Parser {
 
     // $ANTLR start synpred3_Treaty
     public final void synpred3_Treaty_fragment() throws RecognitionException {   
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:155:9: ( notConstraint ( And notConstraint )+ )
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:155:10: notConstraint ( And notConstraint )+
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:9: ( notConstraint ( And notConstraint )+ )
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:10: notConstraint ( And notConstraint )+
         {
-        pushFollow(FOLLOW_notConstraint_in_synpred3_Treaty697);
+        pushFollow(FOLLOW_notConstraint_in_synpred3_Treaty766);
         notConstraint();
 
         state._fsp--;
         if (state.failed) return ;
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:155:24: ( And notConstraint )+
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:24: ( And notConstraint )+
         int cnt12=0;
         loop12:
         do {
@@ -1823,10 +1814,10 @@ public class TreatyParser extends Parser {
 
             switch (alt12) {
         	case 1 :
-        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:155:25: And notConstraint
+        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:25: And notConstraint
         	    {
-        	    match(input,And,FOLLOW_And_in_synpred3_Treaty700); if (state.failed) return ;
-        	    pushFollow(FOLLOW_notConstraint_in_synpred3_Treaty702);
+        	    match(input,And,FOLLOW_And_in_synpred3_Treaty769); if (state.failed) return ;
+        	    pushFollow(FOLLOW_notConstraint_in_synpred3_Treaty771);
         	    notConstraint();
 
         	    state._fsp--;
@@ -1898,72 +1889,75 @@ public class TreatyParser extends Parser {
 
  
 
-    public static final BitSet FOLLOW_statment_in_contract70 = new BitSet(new long[]{0x06E00000000000B0L});
-    public static final BitSet FOLLOW_Newline_in_contract74 = new BitSet(new long[]{0x06E00000000000B0L});
+    public static final BitSet FOLLOW_statment_in_contract70 = new BitSet(new long[]{0x0DE00000000000B0L});
+    public static final BitSet FOLLOW_Newline_in_contract74 = new BitSet(new long[]{0x0DE00000000000B0L});
     public static final BitSet FOLLOW_EOF_in_contract78 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_annotation_in_statment101 = new BitSet(new long[]{0x0000000000000010L});
     public static final BitSet FOLLOW_trigger_in_statment124 = new BitSet(new long[]{0x0000000000000010L});
     public static final BitSet FOLLOW_consumerResource_in_statment150 = new BitSet(new long[]{0x0000000000000010L});
     public static final BitSet FOLLOW_supplierResource_in_statment167 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_constraint_in_statment184 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_onFailure_in_statment207 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_onSuccess_in_statment231 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_Newline_in_statment253 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AnnotationKey_in_annotation276 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_AnnotationValue_in_annotation278 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_Trigger_in_trigger311 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_53_in_consumerResource337 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_Identifier_in_consumerResource339 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_resourceTypeAttribute_in_consumerResource341 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_nameAttribute_in_consumerResource343 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NameAttribute_in_nameAttribute376 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_54_in_supplierResource402 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_Identifier_in_supplierResource404 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_resourceTypeAttribute_in_supplierResource406 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_resourceReferenceAttribute_in_supplierResource408 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ResourceTypeAttribute_in_resourceTypeAttribute441 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ResourceReferenceAttribute_in_resourceReferenceAttribute467 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_55_in_constraint496 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_orConstraint_in_constraint498 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_xorConstraint_in_orConstraint541 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_Or_in_orConstraint546 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_xorConstraint_in_orConstraint550 = new BitSet(new long[]{0x0000000000001002L});
-    public static final BitSet FOLLOW_xorConstraint_in_orConstraint564 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_andConstraint_in_xorConstraint628 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_XOr_in_xorConstraint633 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_andConstraint_in_xorConstraint637 = new BitSet(new long[]{0x0000000000002002L});
-    public static final BitSet FOLLOW_andConstraint_in_xorConstraint648 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_notConstraint_in_andConstraint713 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_And_in_andConstraint718 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_notConstraint_in_andConstraint722 = new BitSet(new long[]{0x0000000000004002L});
-    public static final BitSet FOLLOW_notConstraint_in_andConstraint736 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_Not_in_notConstraint787 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_notConstraint_in_notConstraint791 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LParen_in_notConstraint804 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_orConstraint_in_notConstraint806 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_RParen_in_notConstraint808 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_existsConstraint_in_notConstraint822 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_relationshipConstraint_in_notConstraint846 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_56_in_existsConstraint877 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_resource_in_existsConstraint879 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_resource_in_relationshipConstraint914 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_relationshipType_in_relationshipConstraint916 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_resource_in_relationshipConstraint920 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_Uri_in_relationshipType948 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_Identifier_in_resource973 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_57_in_onFailure1019 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_action_in_onFailure1021 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_58_in_onSuccess1047 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_action_in_onSuccess1049 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_Uri_in_action1071 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_xorConstraint_in_synpred1_Treaty525 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_Or_in_synpred1_Treaty528 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_xorConstraint_in_synpred1_Treaty530 = new BitSet(new long[]{0x0000000000001002L});
-    public static final BitSet FOLLOW_andConstraint_in_synpred2_Treaty612 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_XOr_in_synpred2_Treaty615 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_andConstraint_in_synpred2_Treaty617 = new BitSet(new long[]{0x0000000000002002L});
-    public static final BitSet FOLLOW_notConstraint_in_synpred3_Treaty697 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_And_in_synpred3_Treaty700 = new BitSet(new long[]{0x0100000000018100L});
-    public static final BitSet FOLLOW_notConstraint_in_synpred3_Treaty702 = new BitSet(new long[]{0x0000000000004002L});
+    public static final BitSet FOLLOW_externalResource_in_statment184 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_constraint_in_statment201 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_onFailure_in_statment224 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_onSuccess_in_statment248 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_Newline_in_statment270 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AnnotationKey_in_annotation293 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_AnnotationValue_in_annotation295 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_Trigger_in_trigger328 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_53_in_consumerResource354 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_Identifier_in_consumerResource356 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_resourceTypeAttribute_in_consumerResource358 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_resourceNameAttribute_in_consumerResource360 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_54_in_supplierResource393 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_Identifier_in_supplierResource395 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_resourceTypeAttribute_in_supplierResource397 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_resourceReferenceAttribute_in_supplierResource399 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_55_in_externalResource436 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_Identifier_in_externalResource438 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_resourceTypeAttribute_in_externalResource440 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_resourceNameAttribute_in_externalResource442 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ResourceNameAttribute_in_resourceNameAttribute475 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ResourceTypeAttribute_in_resourceTypeAttribute501 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ResourceReferenceAttribute_in_resourceReferenceAttribute527 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_56_in_constraint556 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_orConstraint_in_constraint558 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_xorConstraint_in_orConstraint601 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_Or_in_orConstraint606 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_xorConstraint_in_orConstraint610 = new BitSet(new long[]{0x0000000000001002L});
+    public static final BitSet FOLLOW_xorConstraint_in_orConstraint624 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_andConstraint_in_xorConstraint691 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_XOr_in_xorConstraint696 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_andConstraint_in_xorConstraint700 = new BitSet(new long[]{0x0000000000002002L});
+    public static final BitSet FOLLOW_andConstraint_in_xorConstraint714 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_notConstraint_in_andConstraint782 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_And_in_andConstraint787 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_notConstraint_in_andConstraint791 = new BitSet(new long[]{0x0000000000004002L});
+    public static final BitSet FOLLOW_notConstraint_in_andConstraint805 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_Not_in_notConstraint856 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_notConstraint_in_notConstraint860 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LParen_in_notConstraint873 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_orConstraint_in_notConstraint875 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_RParen_in_notConstraint877 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_existsConstraint_in_notConstraint891 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_relationshipConstraint_in_notConstraint915 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_57_in_existsConstraint946 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_resource_in_existsConstraint948 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_resource_in_relationshipConstraint983 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_Uri_in_relationshipConstraint987 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_resource_in_relationshipConstraint991 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_Identifier_in_resource1026 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_58_in_onFailure1072 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_Uri_in_onFailure1076 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_59_in_onSuccess1102 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_Uri_in_onSuccess1106 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_xorConstraint_in_synpred1_Treaty585 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_Or_in_synpred1_Treaty588 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_xorConstraint_in_synpred1_Treaty590 = new BitSet(new long[]{0x0000000000001002L});
+    public static final BitSet FOLLOW_andConstraint_in_synpred2_Treaty675 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_XOr_in_synpred2_Treaty678 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_andConstraint_in_synpred2_Treaty680 = new BitSet(new long[]{0x0000000000002002L});
+    public static final BitSet FOLLOW_notConstraint_in_synpred3_Treaty766 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_And_in_synpred3_Treaty769 = new BitSet(new long[]{0x0200000000018100L});
+    public static final BitSet FOLLOW_notConstraint_in_synpred3_Treaty771 = new BitSet(new long[]{0x0000000000004002L});
 
 }

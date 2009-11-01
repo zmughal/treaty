@@ -13,10 +13,12 @@ import net.java.treaty.script.TreatyRecognitionException;
 }
 
 @lexer::members {
-private int implicitLineJoiningLevel = 0;
+static private Token NEWLINE_TOKEN = new CommonToken(Newline, "\n");
 
 // Workaround until getText(), and setText() work as expected within lexer fragments
 private String lastAnnotationValue = null;
+
+private int implicitLineJoiningLevel = 0;
 
 private List<Token> tokens = new LinkedList<Token>();
 
@@ -28,8 +30,10 @@ public void emit(Token token) {
 public Token nextToken() {
     super.nextToken();
     
+    // eliminate some edge cases by always ending on a new line
     if (tokens.size() == 0) {
-        return Token.EOF_TOKEN;
+        tokens.add(NEWLINE_TOKEN);
+        tokens.add(Token.EOF_TOKEN);
     }
     
     return tokens.remove(0);
@@ -48,18 +52,18 @@ import net.java.treaty.script.TreatyRecognitionException;
 @parser::members {
 private Contract contract;
 
-private Resource createConsumerResource(String id, URI resourceType, String className) {
+private Resource createNamedResource(String id, URI resourceType, String name) {
     Resource resource = createResource(id, resourceType);
     
-    resource.setName(className);
+    resource.setName(name);
     
     return resource;
 }
 
-private Resource createSupplierResource(String id, URI resourceType, String resourceReference) {
+private Resource createReferenceResource(String id, URI resourceType, String reference) {
     Resource resource = createResource(id, resourceType);
     
-    resource.setRef(resourceReference);
+    resource.setRef(reference);
     
     return resource;
 }
@@ -93,6 +97,7 @@ statment
         |   trigger           { contract.addTrigger($trigger.value); }
         |   consumerResource  { contract.addConsumerResource($consumerResource.value); }
         |   supplierResource  { contract.addSupplierResource($supplierResource.value); }
+        |   externalResource  { contract.addExternalResource($externalResource.value); }
         |   constraint        { contract.addCondition($constraint.value); }
         |   onFailure         { contract.addOnVerificationFailsAction($onFailure.value); }
         |   onSuccess         { contract.addOnVerificationSucceedsAction($onSuccess.value); }
@@ -112,21 +117,28 @@ trigger returns [URI value]
     ;
 
 consumerResource returns [Resource value]
-    :   'consumer-resource' Identifier resourceTypeAttribute nameAttribute
+    :   'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute
         {
-            $value = createConsumerResource($Identifier.text, $resourceTypeAttribute.value, $nameAttribute.text);
+            $value = createNamedResource($Identifier.text, $resourceTypeAttribute.value, $resourceNameAttribute.text);
         }
-    ;
-
-nameAttribute returns [String value]
-    :   NameAttribute  { $value = $NameAttribute.text; }
     ;
 
 supplierResource returns [Resource value]
     :   'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute
         {
-            $value = createSupplierResource($Identifier.text, $resourceTypeAttribute.value, $resourceReferenceAttribute.value);
+            $value = createReferenceResource($Identifier.text, $resourceTypeAttribute.value, $resourceReferenceAttribute.value);
         }
+    ;
+    
+externalResource returns [Resource value]
+    :   'external-resource' Identifier resourceTypeAttribute resourceNameAttribute
+        {
+            $value = createNamedResource($Identifier.text, $resourceTypeAttribute.value, $resourceNameAttribute.text);
+        }
+    ;
+
+resourceNameAttribute returns [String value]
+    :   ResourceNameAttribute  { $value = $ResourceNameAttribute.text; }
     ;
 
 resourceTypeAttribute returns [URI value]
@@ -147,9 +159,9 @@ orConstraint returns [AbstractCondition value, Disjunction disjunction]
     ;
 
 xorConstraint returns [AbstractCondition value, XDisjunction xDisjunction]
-	:   (andConstraint (XOr andConstraint)+) => { $xDisjunction = new XDisjunction(); $value = $xDisjunction; } firstConstraint=andConstraint { $xDisjunction.addCondition($firstConstraint.value); } (XOr nextConstraint=andConstraint { $xDisjunction.addCondition($nextConstraint.value); })+
-	|   andConstraint                           { $value = $andConstraint.value; }
-	;
+    :   (andConstraint (XOr andConstraint)+) => { $xDisjunction = new XDisjunction(); $value = $xDisjunction; } firstConstraint=andConstraint { $xDisjunction.addCondition($firstConstraint.value); } (XOr nextConstraint=andConstraint { $xDisjunction.addCondition($nextConstraint.value); })+
+    |   andConstraint                           { $value = $andConstraint.value; }
+    ;
 
 andConstraint returns [AbstractCondition value, Conjunction conjunction]
     :   (notConstraint (And notConstraint)+) => { $conjunction = new Conjunction(); $value = $conjunction; } firstConstraint=notConstraint { $conjunction.addCondition($firstConstraint.value); } (And nextConstraint=notConstraint { $conjunction.addCondition($nextConstraint.value); })+
@@ -209,7 +221,7 @@ RParen      : ')' { implicitLineJoiningLevel -= 1; } ;
 
 Amper       : '&'  ;
 Apostrophe  : '\'' ;
-Asterisk    : '*'  ;	
+Asterisk    : '*'  ;    
 At          : '@'  ;
 Colon       : ':'  ;
 Comma       : ','  ;
@@ -217,11 +229,11 @@ Dollar      : '$'  ;
 Dot         : '.'  ;
 Equals      : '='  ;
 Exclamation : '!'  ;
-Hash        : '#'  ;	
+Hash        : '#'  ;    
 Minus       : '-'  ;
 Percent     : '%'  ;
 Plus        : '+'  ;
-Question    : '?'  ;	
+Question    : '?'  ;    
 Semi        : ';'  ;
 Slash       : '/'  ;
 Tilde       : '~'  ;
@@ -233,10 +245,10 @@ Trigger
         }
     ;
 
-NameAttribute
+ResourceNameAttribute
     :   'name' Equals String
         {
-            emit(new CommonToken(NameAttribute, $String.text));
+            emit(new CommonToken(ResourceNameAttribute, $String.text));
         }
     ;
 
@@ -264,7 +276,7 @@ Annotation
         {
             emit(new CommonToken(AnnotationKey, $key.text));
             emit(new CommonToken(AnnotationValue, lastAnnotationValue));
-            emit(new CommonToken(Newline, "\n"));
+            emit(NEWLINE_TOKEN);
         }
     ;
 
@@ -340,37 +352,37 @@ LineComment
  * Adapted from: http://www.antlr.org/grammar/1153976512034/ecmascriptA3.g
  */
 Uri
-	:   UriCharacter+
-	;
+    :   UriCharacter+
+    ;
 
 fragment
 UriCharacter
     :   UriReserved
-	|   UriUnescaped
-	|   UriEscaped
-	;
+    |   UriUnescaped
+    |   UriEscaped
+    ;
 
 fragment
 UriReserved
     :   Semi | Slash | Question | Colon | At | Amper | Equals | Plus | Dollar | Comma | Hash
-	;
+    ;
 
 fragment
 UriUnescaped
     :   UriAlpha
-	|   DecimalDigit
-	|   UriMark
-	;
+    |   DecimalDigit
+    |   UriMark
+    ;
 
 fragment
 UriAlpha
     :   Identifier
-	;
+    ;
 
 fragment
 UriMark
     :   Minus | Dot | Exclamation | Tilde | Asterisk | Apostrophe
-	;
+    ;
 
 fragment
 UriEscaped
@@ -379,10 +391,10 @@ UriEscaped
 
 fragment
 HexDigit
-	:	('0'..'9'|'a'..'f'|'A'..'F')
-	;
+    :   ('0'..'9'|'a'..'f'|'A'..'F')
+    ;
 
 fragment
 DecimalDigit
-	:   ('0'..'9')
-	;
+    :   ('0'..'9')
+    ;

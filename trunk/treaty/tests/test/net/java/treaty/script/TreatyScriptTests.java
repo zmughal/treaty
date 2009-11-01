@@ -106,7 +106,7 @@ public class TreatyScriptTests {
 				"consumer-resource DateFormatDef type=http://www.treaty.org/xml#XMLSchema name=/dateformat.xsd\n" +
 				"supplier-resource Formatter type=http://www.treaty.org/java#InstantiableClass ref=serviceprovider/@class\n" +
 				"supplier-resource FormatString type=http://www.treaty.org/xml#XMLInstance ref=serviceprovider/@formatdef\n" +
-				// "external-resource DateFormatDef2 type=http://www.treaty.org/xml#XMLSchema name=/dateformat.xsd\n" +
+				"external-resource DateFormatDef2 type=http://www.treaty.org/xml#XMLSchema name=/dateformat.xsd\n" +
 				"constraint (\n" +
 				"    (\n" +
 				"        Formatter http://www.treaty.org/java#implements Interface and mustexist Formatter\n" +
@@ -214,7 +214,7 @@ public class TreatyScriptTests {
 		Contract contract = TreatyScript.fromString(
 			"external-resource toc_dtd type=http://www.treaty.org/xml#DTD name=contract_resources/org.eclipse.help.toc/toc.dtd\n" +
 			"supplier-resource toc type=http://www.treaty.org/xml#XMLInstance ref=/toc/@file\n" +
-			"constraint toc http://www.treaty.org/xml#instantiatesDTD toc_dtd"
+			"constraint toc http://www.treaty.org/xml#instantiatesDTD toc_dtd\n"
 		);
 		
 		assertEquals(0,contract.getTriggers().size());
@@ -227,7 +227,7 @@ public class TreatyScriptTests {
 		
 		Resource r = contract.getExternalResources().iterator().next();
 		assertEquals("toc_dtd",r.getId());
-		assertEquals(new URI("http://www.treaty.org/xml#DTD "),r.getType());
+		assertEquals(new URI("http://www.treaty.org/xml#DTD"),r.getType());
 		assertEquals("contract_resources/org.eclipse.help.toc/toc.dtd",r.getName());
 		
 		assertEquals(1,contract.getConstraints().size());
@@ -279,11 +279,6 @@ public class TreatyScriptTests {
 			"consumer-resource DateFormatDef type=http://www.treaty.org/xml#XMLSchema name=/dateformat.xsd\n"
 		);
 		
-		String s = "constraint ((Formatter http://www.treaty.org/java#implements Interface and mustexist Formatter\n" +
-		"and Formatter http://www.treaty.org/junit#verifies FunctionalTests \n" +
-		"and Formatter http://www.treaty.org/junit#verifies QoSTests)\n" +
-		"xor FormatString http://www.treaty.org/xml#instantiates DateFormatDef\n";
-		
 		// Consumer Resource
 		Resource[] consumerResources = contract.getConsumerResources().toArray(EmptyResourceArray);
 		
@@ -305,8 +300,6 @@ public class TreatyScriptTests {
 			"  and Formatter http://www.treaty.org/junit#verifies Interface\n" +
 			")\n"
 		);
-		
-		Conjunction conjunction = (Conjunction)contract.getConstraints().get(0);
 	}
 	
 	private static Resource[] EmptyResourceArray = {};
