@@ -150,9 +150,6 @@ public class BundleActivationUpdateJob extends Job {
 			e.printStackTrace();
 		}
 
-		/* Probably inform listeners. */
-		ContractRegistry.getInstance().notifyObservers();
-
 		monitor.done();
 
 		return Status.OK_STATUS;

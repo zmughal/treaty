@@ -136,9 +136,6 @@ public class BundleDeactivationUpdateJob extends Job {
 		ContractRegistry.getInstance().removeContractedBundle(this.myBundle);
 		monitor.worked(WORK_BUNDLE_REMOVAL);
 
-		/* Probably inform listeners. */
-		ContractRegistry.getInstance().notifyObservers();
-
 		monitor.done();
 
 		return Status.OK_STATUS;

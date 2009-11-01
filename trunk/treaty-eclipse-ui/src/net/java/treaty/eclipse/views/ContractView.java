@@ -9,6 +9,9 @@
 
 package net.java.treaty.eclipse.views;
 
+import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;
+import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -17,35 +20,73 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.java.treaty.*;
-import net.java.treaty.eclipse.*;
+import java.util.Observable;
+import java.util.Observer;
+
+import net.java.treaty.AbstractCondition;
+import net.java.treaty.Annotatable;
+import net.java.treaty.ComplexCondition;
+import net.java.treaty.Component;
+import net.java.treaty.Conjunction;
+import net.java.treaty.Connector;
+import net.java.treaty.ConnectorType;
+import net.java.treaty.Contract;
+import net.java.treaty.ExistsCondition;
+import net.java.treaty.Negation;
+import net.java.treaty.PropertyCondition;
+import net.java.treaty.PropertySupport;
+import net.java.treaty.RelationshipCondition;
+import net.java.treaty.Resource;
+import net.java.treaty.VerificationReport;
+import net.java.treaty.VerificationResult;
+import net.java.treaty.eclipse.Constants;
+import net.java.treaty.eclipse.ContractRepository;
+import net.java.treaty.eclipse.EclipseExtension;
+import net.java.treaty.eclipse.EclipseExtensionPoint;
+import net.java.treaty.eclipse.EclipsePlugin;
+import net.java.treaty.eclipse.Exporter;
+import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.contractregistry.ContractRegistry;
 import net.java.treaty.eclipse.jobs.VerificationJob;
 import net.java.treaty.eclipse.jobs.VerificationJobListener;
 import net.java.treaty.eclipse.ui.Activator;
-import net.java.treaty.VerificationResult;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.part.*;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.*;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.SWT;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
-import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
-import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.DrillDownAdapter;
+import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * <p>
@@ -54,7 +95,7 @@ import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;
  * 
  * @author Jens Dietrich
  */
-public class ContractView extends ViewPart {
+public class ContractView extends ViewPart implements Observer {
 
 	/**
 	 * <p>
@@ -814,50 +855,6 @@ public class ContractView extends ViewPart {
 	// strings
 	private static final String LABEL_INSTANCES = "contract instances";
 
-	/**
-	 * @deprecated Claas: Recommend to remove this method.
-	 */
-	@Deprecated
-	private void initModel() {
-
-		IJobChangeListener listener = new IJobChangeListener() {
-
-			@Override
-			public void aboutToRun(IJobChangeEvent event) {
-
-			}
-
-			@Override
-			public void awake(IJobChangeEvent event) {
-
-			}
-
-			@Override
-			public void done(IJobChangeEvent event) {
-
-				plugins = ContractRepository.getDefault().getPluginsWithContracts();
-			}
-
-			@Override
-			public void running(IJobChangeEvent event) {
-
-			}
-
-			@Override
-			public void scheduled(IJobChangeEvent event) {
-
-			}
-
-			@Override
-			public void sleeping(IJobChangeEvent event) {
-
-			}
-
-		};
-		ContractRepository.reset(listener);
-
-	}
-
 	enum OwnerType {
 		extension, extensionpoint, thirdparty
 	}
@@ -1193,17 +1190,40 @@ public class ContractView extends ViewPart {
 		this.viewer.getControl().setFocus();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 */
+	@Override
+	public void update(Observable observable, Object arg1) {
+
+		if (observable instanceof ContractRegistry) {
+
+			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+
+				/*
+				 * (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				public void run() {
+
+					actionReloadContracts();
+				}
+			});
+		}
+		// no else.
+	}
+
 	/**
 	 * <p>
 	 * Updates the GUI by requesting the {@link ContractRegistry} for a new
 	 * version of the current {@link Contract} model.
 	 * </p>
 	 */
-	private void actionReloadContracts(boolean isInitialRun) {
+	private void actionReloadContracts() {
 
 		/* Load the contracted plug-ins. */
-		this.plugins =
-				ContractRegistry.getInstance().getContractedEclipsePlugins();
+		this.plugins = ContractRegistry.getInstance().getContractedEclipsePlugins();
 
 		/* Update the viewer. */
 		this.viewer.setContentProvider(new ViewContentProvider());
@@ -1300,7 +1320,9 @@ public class ContractView extends ViewPart {
 		hookContextMenu();
 		contributeToActionBars();
 
-		actionReloadContracts(true); // background initialisation
+		actionReloadContracts(); // background initialization
+
+		ContractRegistry.getInstance().addObserver(this);
 	}
 
 	private Object getSelectedObject() {
@@ -1423,7 +1445,7 @@ public class ContractView extends ViewPart {
 
 			public void run() {
 
-				actionReloadContracts(false);
+				actionReloadContracts();
 			}
 		};
 		actRefresh.setText("reset");
