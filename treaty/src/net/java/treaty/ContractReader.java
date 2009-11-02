@@ -21,11 +21,12 @@ public interface ContractReader  {
 	
 	/**
 	 * Read a contract from an input stream.
-	 * @param in
+	 * @param in an input stream
+	 * @param voc a vocabulary
 	 * @return
 	 * @throws TreatyException
 	 */
-	public Contract read (InputStream in) throws TreatyException;
+	public Contract read (InputStream in,Vocabulary voc) throws TreatyException;
 		public ResourceManager getLoader() ;
 	
 
