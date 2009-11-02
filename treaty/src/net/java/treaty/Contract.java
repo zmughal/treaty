@@ -69,11 +69,6 @@ public class Contract extends PropertySupport implements ConditionContext,
 	// if this flag is true, it is generally not possible to check/verify these contracts
 	private boolean shadow = false;
 
-	// constants used to internally
-	private static enum Role {
-		SUPPLIER, CONSUMER, EXTERNAL
-	}
-
 	/**
 	 * <p>
 	 * Creates a new {@link Contract}.
@@ -371,7 +366,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 			contextDef = this.getConsumerContext();
 		else if (role == Role.SUPPLIER)
 			contextDef = this.getSupplierContext();
-		else if (role == Role.EXTERNAL)
+		else if (role == Role.LEGISLATOR)
 			contextDef = this.getExternalContext();
 
 		List<InstantiationContext> contexts =
@@ -399,7 +394,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 			else {
 				contract.consumerResources.putAll(this.consumerResources);
 			}
-			if (role == Role.EXTERNAL) {
+			if (role == Role.LEGISLATOR) {
 				for (Resource r : this.externalResources.values()) {
 					Resource instance = r.instantiate(connector, context, loader);
 					contract.addExternalResource(instance);
@@ -629,4 +624,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 	public void setShadow(boolean isShadowContract) {
 		this.shadow = isShadowContract;
 	}
+	
+	
+	
 }
