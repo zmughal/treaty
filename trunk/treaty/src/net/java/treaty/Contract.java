@@ -310,18 +310,17 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 		boolean f = visitor.visit(this);
 		if (f) {
-			if (visitor.visitExtensionPointResources(this.consumerResources.values())) {
+			if (visitor.visitConsumerResources(this.consumerResources.values())) {
 				for (Resource r : this.consumerResources.values()) {
 					r.accept(visitor);
 				}
-				visitor
-						.endVisitExtensionPointResources(this.consumerResources.values());
+				visitor.endVisitConsumerResources(this.consumerResources.values());
 			}
-			if (visitor.visitExtensionResources(this.supplierResources.values())) {
+			if (visitor.visitSupplierResources(this.supplierResources.values())) {
 				for (Resource r : this.supplierResources.values()) {
 					r.accept(visitor);
 				}
-				visitor.endVisitExtensionResources(this.supplierResources.values());
+				visitor.endVisitSupplierResources(this.supplierResources.values());
 			}
 			if (visitor.visitExternalResources(this.supplierResources.values())) {
 				for (Resource r : this.externalResources.values()) {

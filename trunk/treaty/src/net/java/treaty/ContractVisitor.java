@@ -26,8 +26,8 @@ public interface ContractVisitor {
 	public boolean visitOnFailureAction(URI uri);
 	public boolean visitOnSuccessAction(URI uri);
 	public boolean visit(Resource resource);
-	public boolean visitExtensionResources(Collection<Resource> resources);
-	public boolean visitExtensionPointResources(Collection<Resource> resources);
+	public boolean visitSupplierResources(Collection<Resource> resources);
+	public boolean visitConsumerResources(Collection<Resource> resources);
 	public boolean visitExternalResources(Collection<Resource> resources);
 	public boolean visitConditions(List<AbstractCondition> name);
 	public boolean visit(Conjunction condition);
@@ -40,8 +40,8 @@ public interface ContractVisitor {
 	
 	public void endVisit(Contract contract);
 	public void endVisit(Resource resource);
-	public void endVisitExtensionResources(Collection<Resource> resources);
-	public void endVisitExtensionPointResources(Collection<Resource> resources);
+	public void endVisitSupplierResources(Collection<Resource> resources);
+	public void endVisitConsumerResources(Collection<Resource> resources);
 	public void endVisitExternalResources(Collection<Resource> resources);
 	public void endVisit(Conjunction condition);
 	public void endVisit(Disjunction condition);
