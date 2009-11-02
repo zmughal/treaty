@@ -112,7 +112,7 @@ public class AbstractContractVisitor implements ContractVisitor {
 	 * net.java.treaty.ContractVisitor#endVisitExtensionPointResources(java.util
 	 * .Collection)
 	 */
-	public void endVisitExtensionPointResources(Collection<Resource> resources) {
+	public void endVisitConsumerResources(Collection<Resource> resources) {
 
 	}
 
@@ -122,7 +122,7 @@ public class AbstractContractVisitor implements ContractVisitor {
 	 * net.java.treaty.ContractVisitor#endVisitExtensionResources(java.util.Collection
 	 * )
 	 */
-	public void endVisitExtensionResources(Collection<Resource> resources) {
+	public void endVisitSupplierResources(Collection<Resource> resources) {
 
 	}
 
@@ -235,7 +235,7 @@ public class AbstractContractVisitor implements ContractVisitor {
 	 * net.java.treaty.ContractVisitor#visitExtensionPointResources(java.util.
 	 * Collection)
 	 */
-	public boolean visitExtensionPointResources(Collection<Resource> resources) {
+	public boolean visitConsumerResources(Collection<Resource> resources) {
 
 		return true;
 	}
@@ -246,7 +246,7 @@ public class AbstractContractVisitor implements ContractVisitor {
 	 * net.java.treaty.ContractVisitor#visitExtensionResources(java.util.Collection
 	 * )
 	 */
-	public boolean visitExtensionResources(Collection<Resource> resources) {
+	public boolean visitSupplierResources(Collection<Resource> resources) {
 
 		return true;
 	}

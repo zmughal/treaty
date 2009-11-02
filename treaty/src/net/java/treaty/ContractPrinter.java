@@ -78,14 +78,14 @@ public class ContractPrinter implements ContractVisitor {
 		return true;
 	}
 
-	public boolean visitExtensionResources(Collection<Resource> resources) {
+	public boolean visitSupplierResources(Collection<Resource> resources) {
 
 		out.println("extension resources:");
 		ios();
 		return true;
 	}
 
-	public boolean visitExtensionPointResources(Collection<Resource> resources) {
+	public boolean visitConsumerResources(Collection<Resource> resources) {
 
 		out.println("extension point resources:");
 		ios();
@@ -174,7 +174,7 @@ public class ContractPrinter implements ContractVisitor {
 
 	}
 
-	public void endVisitExtensionResources(Collection<Resource> resources) {
+	public void endVisitSupplierResources(Collection<Resource> resources) {
 
 		dos();
 	}
@@ -184,7 +184,7 @@ public class ContractPrinter implements ContractVisitor {
 		dos();
 	}
 
-	public void endVisitExtensionPointResources(Collection<Resource> resources) {
+	public void endVisitConsumerResources(Collection<Resource> resources) {
 
 		dos();
 	}
