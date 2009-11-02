@@ -38,11 +38,9 @@ public class XMLContractReader implements ContractReader  {
 	} 
 	/**
 	 * Read a contract from an input stream.
-	 * @param in
-	 * @return
-	 * @throws TreatyException
+	 * TODO: check contract read against vocabulary
 	 */
-	public Contract read (InputStream in) throws TreatyException {
+	public Contract read (InputStream in,Vocabulary voc) throws TreatyException {
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		try {
