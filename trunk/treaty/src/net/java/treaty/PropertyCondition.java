@@ -10,6 +10,7 @@
 
 package net.java.treaty;
 
+import java.net.URI;
 import java.util.Map;
 
 
@@ -22,23 +23,16 @@ import java.util.Map;
 public class PropertyCondition extends AbstractCondition {
 
 	private Resource resource = null;
-	private String property = null;
-	private Operator operator = null;
-	private String value = null;
+	private URI operator = null;
+	private Object value = null;
 	public PropertyCondition() {
 		super();
 	}
-	public Operator getOperator() {
+	public URI getOperator() {
 		return operator;
 	}
-	public void setOperator(Operator operator) {
+	public void setOperator(URI operator) {
 		this.operator = operator;
-	}
-	public String getProperty() {
-		return property;
-	}
-	public void setProperty(String property) {
-		this.property = property;
 	}
 	public Resource getResource() {
 		return resource;
@@ -46,10 +40,10 @@ public class PropertyCondition extends AbstractCondition {
 	public void setResource(Resource resource) {
 		this.resource = resource;
 	}
-	public String getValue() {
+	public Object getValue() {
 		return value;
 	}
-	public void setValue(String value) {
+	public void setValue(Object value) {
 		this.value = value;
 	}
 	public void accept(ContractVisitor visitor) {
@@ -63,7 +57,6 @@ public class PropertyCondition extends AbstractCondition {
 	public  AbstractCondition replaceResources(Map<String,Resource> resources) {
 		PropertyCondition c = new PropertyCondition();
 		c.setOperator(this.getOperator());
-		c.setProperty(this.getProperty());
 		c.setValue(this.getValue());
 		
 		if (!this.getResource().isInstantiated())
@@ -99,14 +92,8 @@ public class PropertyCondition extends AbstractCondition {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("aPropertyCondition(");
-		if (this.property!=null) {
-			buf.append(this.property);
-		}
-		else {
-			buf.append("this");
-		}
 		buf.append(' ')
-			.append(this.operator.getName())
+			.append(this.operator.toString())
 			.append(' ')
 			.append(this.value);
 		return buf.toString();
