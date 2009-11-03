@@ -55,8 +55,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		/* Add the contract. */
 		try {
@@ -120,8 +122,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		/* Add the contract. */
 		try {
@@ -185,8 +189,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		/* Add the contract. */
 		try {
@@ -222,8 +228,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		/* Add the contract. */
 		try {
@@ -287,8 +295,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		/* Add the contract. */
 		try {
@@ -328,8 +338,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		/* Add the legislator contract and the consumer contract. */
 		try {
@@ -409,8 +421,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		/* Add the legislator contract and the supplier contract. */
 		try {
@@ -495,8 +509,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		/*
 		 * Add the legislator contract, the consumer contract and the supplier
@@ -604,8 +620,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		/*
 		 * Add the legislator contract, the consumer contract and the supplier
@@ -720,8 +738,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		LifeCycleEvent consumerUpdate;
 		consumerUpdate = new LifeCycleEvent(consumerComponentMock, null);
@@ -824,8 +844,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		LifeCycleEvent consumer1Update;
 		consumer1Update = new LifeCycleEvent(consumer1ComponentMock, null);
@@ -936,8 +958,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		LifeCycleEvent legislator1Update;
 		legislator1Update = new LifeCycleEvent(legislator1ComponentMock, null);
@@ -1080,8 +1104,10 @@ public class ContractRegistryTests {
 		Contract contract;
 		contract = new Contract();
 
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry();
+		contractRegistry = new ContractRegistry(resourceManagerMock);
 
 		LifeCycleEvent legislator1Update;
 		legislator1Update = new LifeCycleEvent(legislator1ComponentMock, null);
