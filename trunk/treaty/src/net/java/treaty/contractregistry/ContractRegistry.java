@@ -116,8 +116,44 @@ public class ContractRegistry {
 	 */
 	public Set<Contract> getAffectedContracts(LifeCycleEvent lifeCycleEvent) {
 
-		// TODO
-		return null;
+		Set<Contract> result;
+		result = new LinkedHashSet<Contract>();
+
+		/* Iterate on all connectors of the given component. */
+		for (Connector connector : lifeCycleEvent.getComponent().getConnectors()) {
+
+			switch (connector.getType()) {
+
+			case CONSUMER:
+
+				if (this.myConsumerContracts.containsKey(connector)) {
+
+					for (Contract contract : this.myConsumerContracts.get(connector)) {
+
+						result.addAll(this.getInstantiatedContracts(contract));
+					}
+					// end for.
+				}
+				// no else.
+
+			case SUPPLIER:
+
+				if (this.mySupplierContracts.containsKey(connector)) {
+
+					for (Contract contract : this.mySupplierContracts.get(connector)) {
+
+						result.addAll(this.getInstantiatedContracts(contract));
+					}
+					// end for.
+				}
+				// no else.
+
+				break;
+			}
+			// end switch.
+		}
+
+		return result;
 	}
 
 	/**
@@ -525,6 +561,43 @@ public class ContractRegistry {
 		this.contractedConnectors.put(contract, contractedConnectors);
 
 		this.setChanged();
+	}
+
+	/**
+	 * <p>
+	 * A helper method that returns all {@link Contract}s that are instances of a
+	 * given {@link Contract} or the {@link Contract} itself if he is
+	 * instantiated.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose instantiated {@link Contract}s shall be
+	 *          returned.
+	 * @return All instantiated {@link Contract}s of the given {@link Contract}.
+	 */
+	private Set<Contract> getInstantiatedContracts(Contract contract) {
+
+		Set<Contract> result;
+		result = new LinkedHashSet<Contract>();
+
+		/* Check if the contract itself is completely instantiated. */
+		if (!contract.isShadow() && contract.getConsumer() != null
+				&& contract.getSupplier() != null) {
+			result.add(contract);
+		}
+
+		/* Else probably add instances of the abstract contract. */
+		else if (this.instantiatedContracts.containsKey(contract)) {
+
+			for (Contract instantiatedContract : this.instantiatedContracts
+					.get(contract)) {
+				result.addAll(this.getInstantiatedContracts(instantiatedContract));
+			}
+			// end for.
+		}
+		// no else.
+
+		return result;
 	}
 
 	/**

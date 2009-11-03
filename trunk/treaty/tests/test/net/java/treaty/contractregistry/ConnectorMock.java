@@ -31,7 +31,7 @@ public class ConnectorMock implements Connector {
 	private String myID;
 
 	/** The {@link Component} of this {@link ConnectorMock}. */
-	private Component myOwner;
+	private ComponentMock myOwner;
 
 	/** The {@link ConnectorType} of this {@link ConnectorMock}. */
 	private ConnectorType myType;
@@ -48,11 +48,13 @@ public class ConnectorMock implements Connector {
 	 * @param type
 	 *          The {@link ConnectorType} of the {@link ConnectorMock}.
 	 */
-	public ConnectorMock(String id, Component owner, ConnectorType type) {
+	public ConnectorMock(String id, ComponentMock owner, ConnectorType type) {
 
 		this.myID = id;
 		this.myOwner = owner;
 		this.myType = type;
+		
+		this.myOwner.addConnector(this);
 	}
 
 	/*
