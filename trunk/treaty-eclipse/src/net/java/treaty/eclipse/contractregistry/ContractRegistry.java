@@ -164,17 +164,12 @@ public final class ContractRegistry extends Observable {
 		LinkedHashSet<Contract> result;
 		LinkedHashSet<Contract> resultCandidates;
 
-		Bundle bundle;
 		EclipsePlugin eclipsePlugin;
 
 		resultCandidates = new LinkedHashSet<Contract>();
 
 		/* Get the bundle and the EclipsePlugin. */
-		bundle =
-				org.eclipse.core.runtime.Platform.getBundle(lifeCycleEvent
-						.getComponentID());
-		eclipsePlugin =
-				EclipseAdapterFactory.getInstance().createEclipsePlugin(bundle);
+		eclipsePlugin = (EclipsePlugin) lifeCycleEvent.getComponent();
 
 		/*
 		 * Collect contracts of the extensions of all extension points of this
