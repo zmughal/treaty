@@ -26,17 +26,17 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * Get the types in the vocabulary.
 	 * @return a collection of types
 	 */
-	Collection<URI> getTypes();
+	Collection<URI> getTypes() throws TreatyException;
 	/**
 	 * Get the relationships (aka object properties) in the vocabulary.
 	 * @return a collection of relationships
 	 */
-	Collection<URI> getRelationships();
+	Collection<URI> getRelationships() throws TreatyException;
 	/**
 	 * Get the properties (aka data properties) in the vocabulary.
 	 * @return a collection of types
 	 */
-	Collection<URI> getProperties();
+	Collection<URI> getProperties() throws TreatyException;
 	/**
 	 * Checks whether a property or relationship is defined for a certain type.
 	 * Note that inheritance should be supported here.
@@ -44,7 +44,7 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * @param domain
 	 * @return
 	 */
-	boolean checkDomain(URI relationshipOrProperty, URI domain);
+	boolean checkDomain(URI relationshipOrProperty, URI domain) throws TreatyException;
 	/**
 	 * Checks whether a relationship can link to a certain type,
 	 * or a property can be of this type.
@@ -54,43 +54,43 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * @param range
 	 * @return
 	 */
-	boolean checkRange(URI relationshipOrProperty, URI range);
+	boolean checkRange(URI relationshipOrProperty, URI range) throws TreatyException;
 	/**
 	 * Get the domain for a property.
 	 * @param relationshipOrProperty
 	 * @return
 	 */
-	URI getDomain(URI relationshipOrProperty);
+	URI getDomain(URI relationshipOrProperty) throws TreatyException;
 	/**
 	 * Get the range for a property.
 	 * @param relationshipOrProperty
 	 * @return
 	 */
-	URI getRange(URI relationshipOrProperty);
+	URI getRange(URI relationshipOrProperty) throws TreatyException;
 	/**
 	 * Get a collection of super types for a given type.
 	 * @param type
 	 * @return
 	 */
-	Collection<URI> getSupertypes(URI type);
+	Collection<URI> getSupertypes(URI type) throws TreatyException;
 	/**
 	 * Get a collection of sub types for a given type.
 	 * @param type
 	 * @return
 	 */
-	Collection<URI> getSubtypes(URI type);
+	Collection<URI> getSubtypes(URI type) throws TreatyException;
 	/**
 	 * Get a collection of super properties for a given relationship of property.
 	 * @param relationshipOrProperty
 	 * @return
 	 */
-	Collection<URI> getSuperProperties(URI relationshipOrProperty);
+	Collection<URI> getSuperProperties(URI relationshipOrProperty) throws TreatyException;
 	/**
 	 * Get a collection of sub properties for a given relationship of property.
 	 * @param relationshipOrProperty
 	 * @return
 	 */
-	Collection<URI> getSubProperties(URI relationshipOrProperty);
+	Collection<URI> getSubProperties(URI relationshipOrProperty) throws TreatyException;
 
 
 
