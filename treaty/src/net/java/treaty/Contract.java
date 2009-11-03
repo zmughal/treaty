@@ -65,8 +65,9 @@ public class Contract extends PropertySupport implements ConditionContext,
 	// flag indicating that contracts refer types and predicates that are unknown
 	// this is used when vocabularies are defined in a modular manner
 	// it is then possible that contracts are loaded, but the referenced variables
-	// are not available 
-	// if this flag is true, it is generally not possible to check/verify these contracts
+	// are not available
+	// if this flag is true, it is generally not possible to check/verify these
+	// contracts
 	private boolean shadow = false;
 
 	/**
@@ -352,13 +353,31 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 		// built instantiated contracts
 		for (InstantiationContext context : contexts) {
-			Contract contract = new Contract();
+			Contract contract;
+
+			contract = new Contract();
 			contracts.add(contract);
-			contract.setConsumer(this.getConsumer());
-			contract.setSupplier(connector);
+
+			/* Set supplier and consumer. */
+			if (role.equals(Role.CONSUMER)) {
+				contract.setConsumer(connector);
+				contract.setSupplier(this.getSupplier());
+			}
+
+			else if (role.equals(Role.SUPPLIER)) {
+				contract.setConsumer(this.getConsumer());
+				contract.setSupplier(connector);
+			}
+
+			else {
+				contract.setConsumer(this.getConsumer());
+				contract.setSupplier(this.getSupplier());
+			}
+
 			contract.setOwner(this.getOwner());
 			contract.setLocation(this.getLocation());
 			contract.setDefinition(this);
+
 			if (role == Role.CONSUMER) {
 				for (Resource r : this.consumerResources.values()) {
 					Resource instance = r.instantiate(connector, context, loader);
@@ -590,15 +609,15 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 		return onVerificationSucceedsActions;
 	}
-	
+
 	public boolean isShadow() {
+
 		return shadow;
 	}
 
 	public void setShadow(boolean isShadowContract) {
+
 		this.shadow = isShadowContract;
 	}
-	
-	
-	
+
 }
