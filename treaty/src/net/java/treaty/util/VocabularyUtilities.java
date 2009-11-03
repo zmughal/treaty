@@ -19,7 +19,7 @@ import net.java.treaty.ContractVisitor;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.TreatyException;
-import net.java.treaty.Vocabulary;
+import net.java.treaty.ContractVocabulary;
 /**
  * A set of vocabulary related utilities.
  * @author jens dietrich
@@ -32,7 +32,7 @@ public class VocabularyUtilities {
 	 * @param v
 	 * @return
 	 */
-	public static Collection<URI> findUndefinedTypes(Contract c,Vocabulary v) {
+	public static Collection<URI> findUndefinedTypes(Contract c,ContractVocabulary v) {
 		final Collection<URI> coll = new HashSet<URI>();
 		ContractVisitor visitor = new AbstractContractVisitor() {
 			@Override
@@ -53,7 +53,7 @@ public class VocabularyUtilities {
 	 * @param v
 	 * @return
 	 */
-	public static Collection<URI> findUndefinedRelationships(Contract c,Vocabulary v) {
+	public static Collection<URI> findUndefinedRelationships(Contract c,ContractVocabulary v) {
 		final Collection<URI> coll = new HashSet<URI>();
 		ContractVisitor visitor = new AbstractContractVisitor() {
 			@Override
@@ -75,7 +75,7 @@ public class VocabularyUtilities {
 	 * @param type2
 	 * @throws TreatyException
 	 */
-	public void checkTypeSafety(Vocabulary voc, URI relationship, URI type1, URI type2) throws TreatyException {
+	public void checkTypeSafety(ContractVocabulary voc, URI relationship, URI type1, URI type2) throws TreatyException {
 		URI domain = voc.getDomain(relationship);
 		URI range = voc.getDomain(relationship);
 		if (!(domain.equals(type1) || voc.getSupertypes(type1).contains(domain))) 
