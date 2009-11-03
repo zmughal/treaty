@@ -54,8 +54,7 @@ public abstract class EclipseConnector extends PropertySupport implements
 	 *         {@link URL} cannot be loaded.
 	 * 
 	 */
-	public static Contract createContract(URL location,
-			EclipseConnector contractOwner) {
+	public static Contract createContract(URL location,	EclipseConnector contractOwner) {
 
 		Contract result;
 		result = null;
@@ -70,7 +69,7 @@ public abstract class EclipseConnector extends PropertySupport implements
 
 			/* Try to read the contract. */
 			try {
-				result = reader.read(location.openStream());
+				result = reader.read(location.openStream(),VocabularyRegistry.INSTANCE);
 				result.setLocation(location);
 
 				/* If the owner of the contract is not null, set the owner. */

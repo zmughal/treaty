@@ -29,6 +29,7 @@ import org.semanticweb.owl.util.OWLOntologyMerger;
 /**
  * The contract vocabulary built from contributing plugins.
  * @author Jens Dietrich
+ * @deprecated use ContractVocabularyRegistry instead
  */
 public class Vocabulary {
 	private static Vocabulary defaultInstance = null;

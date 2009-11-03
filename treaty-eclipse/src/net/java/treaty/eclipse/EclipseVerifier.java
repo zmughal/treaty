@@ -58,11 +58,8 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 
 	
 	public void check(RelationshipCondition condition) throws VerificationException {
-		URI uri = condition.getRelationship();
 		try {
-			ContractVocabulary voc = this.findVocabularyForProperty(uri);
-			voc.check(condition); 
-			//System.out.println("checked ok: " + condition);
+			VocabularyRegistry.INSTANCE.check(condition);
 			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
 			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
 		}
@@ -76,18 +73,18 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 	}
 	
 	public void check(PropertyCondition condition) throws VerificationException {
-		
-			Operator operator = condition.getOperator();
-			String value = condition.getValue();
-			String property = condition.getProperty();
-			Object obj = null;
-			if (property==null) {
-				obj = condition.getResource().getValue(); 
-			}
-			if (!operator.compare(obj,value)) {
-				condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
-				throw new VerificationException("Verification failed, condition is not satisfied: "+condition);
-			}
+		try {
+			VocabularyRegistry.INSTANCE.check(condition);
+			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
+			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
+		}
+		catch (VerificationException x) {
+			
+			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
+			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
+			throw (VerificationException)x.fillInStackTrace();
+		}
+		return;
 
 	}
 	
@@ -145,33 +142,17 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		}
 		
 		try {
-			ContractVocabulary voc = this.findVocabularyForType(resource.getType());
-			voc.check(condition); 
-			//System.out.println("checked ok: " + condition);
+			VocabularyRegistry.INSTANCE.check(condition);
+			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
+			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
 		}
 		catch (VerificationException x) {
+			
 			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
 			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
 			throw (VerificationException)x.fillInStackTrace();
 		}
 		return;
-	}
-	
-	private ContractVocabulary findVocabularyForProperty(URI uri)  throws VerificationException {	
-		for (ContractVocabulary voc:vocContributions) {
-			if (voc.getContributedPredicates().contains(uri)) {
-				return voc;
-			}
-		}
-		throw new VerificationException("No vocabulary found to check condition with predicate " + uri);
-	}
-	private ContractVocabulary findVocabularyForType(URI uri)  throws VerificationException {	
-		for (ContractVocabulary voc:vocContributions) {
-			if (voc.getContributedTypes().contains(uri)) {
-				return voc;
-			}
-		}
-		throw new VerificationException("No vocabulary found to check condition with predicate " + uri);
 	}
 	
 	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException {
@@ -201,12 +182,7 @@ public class EclipseVerifier implements Verifier,ResourceLoader {
 		}
 		
 		// load plugin types
-		for (ContractVocabulary voc:vocContributions) {
-			if (voc.getContributedTypes().contains(type)) {
-				return voc.load(type,name,connector); // this may throw an exception
-			}
-		}
-		throw new ResourceLoaderException("No vocabulary found to load resource " + type);
+		return VocabularyRegistry.INSTANCE.load(type, name, connector);
 	}
 
 
