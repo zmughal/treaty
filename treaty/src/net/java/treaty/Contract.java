@@ -101,31 +101,6 @@ public class Contract extends PropertySupport implements ConditionContext,
 		assert (consumer.getType() == ConnectorType.SUPPLIER);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.Contract#subtractContract(net.java.treaty.Contract)
-	 */
-	public Contract subtractContract(Contract contract) {
-
-		Contract result;
-
-		/*
-		 * Subtract the contract if its the same or the unbound form of this
-		 * contract.
-		 */
-		if (this.equals(contract)
-				|| (this.definition != null && this.definition.equals(contract))) {
-			result = null;
-		}
-
-		/* Else do not subtract the contract. */
-		else {
-			result = this;
-		}
-
-		return result;
-	}
-
 	/**
 	 * <p>
 	 * Sets the owner of this {@link Contract}. Each {@link Contract} is owned by
