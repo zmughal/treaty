@@ -19,6 +19,7 @@ import java.util.Set;
 import net.java.treaty.Connector;
 import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
+import net.java.treaty.ResourceManager;
 import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
 import net.java.treaty.event.LifeCycleEvent;
@@ -89,6 +90,23 @@ public class ContractRegistry {
 	/** The {@link ContractRegistryListener}s of this {@link ContractRegistry}. */
 	private Set<ContractRegistryListener> myListeners =
 			new HashSet<ContractRegistryListener>();
+
+	/** The current {@link ResourceManager} of this {@link ContractRegistry}. */
+	private ResourceManager myResourceManager;
+
+	/**
+	 * <p>
+	 * Creates a new {@link ContractRegistry}.
+	 * </p>
+	 * 
+	 * @param resourceManager
+	 *          The {@link ResourceManager} the {@link ContractRegistry} should
+	 *          use to bind {@link Contract}s.
+	 */
+	public ContractRegistry(ResourceManager resourceManager) {
+
+		this.myResourceManager = resourceManager;
+	}
 
 	/**
 	 * <p>
@@ -226,6 +244,21 @@ public class ContractRegistry {
 			ContractRegistryListener contractRegistryListener) {
 
 		this.myListeners.remove(contractRegistryListener);
+	}
+
+	/**
+	 * <p>
+	 * Sets the {@link ResourceManager} the {@link ContractRegistry} should use to
+	 * bind {@link Contract}s.
+	 * </p>
+	 * 
+	 * @param resourceManager
+	 *          The {@link ResourceManager} the {@link ContractRegistry} should
+	 *          use to bind {@link Contract}s.
+	 */
+	public void setResourceManager(ResourceManager resourceManager) {
+
+		this.myResourceManager = resourceManager;
 	}
 
 	/**
@@ -409,15 +442,15 @@ public class ContractRegistry {
 
 			/* Probably bind the contract when it was defined externally. */
 			if (contract.getOwner() != null || contract.getSupplier() != null) {
-				/* FIXME Claas: When bind, when set? */
-				Contract boundContract;
-				boundContract = new Contract();
-				boundContract.setDefinition(contract);
-				boundContract.setSupplier(contract.getSupplier());
-				boundContract.setConsumer(connector);
-				contracts.add(boundContract);
 
-				this.addInstantiatedContract(contract, boundContract);
+				for (Contract boundContract : contract.bindConsumer(connector,
+						this.myResourceManager)) {
+
+					this.addInstantiatedContract(contract, boundContract);
+					contracts.add(boundContract);
+				}
+				// end for.
+
 				this.addContractedConnector(connector, contract);
 			}
 
@@ -471,15 +504,15 @@ public class ContractRegistry {
 
 			/* Probably bind the contract when it was defined externally. */
 			if (contract.getOwner() != null || contract.getConsumer() != null) {
-				/* FIXME Claas: When bind, when set? */
-				Contract boundContract;
-				boundContract = new Contract();
-				boundContract.setDefinition(contract);
-				boundContract.setConsumer(contract.getConsumer());
-				boundContract.setSupplier(connector);
-				contracts.add(boundContract);
 
-				this.addInstantiatedContract(contract, boundContract);
+				for (Contract boundContract : contract.bindSupplier(connector,
+						this.myResourceManager)) {
+
+					this.addInstantiatedContract(contract, boundContract);
+					contracts.add(boundContract);
+				}
+				// end for.
+
 				this.addContractedConnector(connector, contract);
 			}
 
