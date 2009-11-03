@@ -93,6 +93,7 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	Collection<URI> getSubProperties(URI relationshipOrProperty);
 
 
+
 	
 	
 
