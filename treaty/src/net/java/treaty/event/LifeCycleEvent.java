@@ -2,28 +2,55 @@ package net.java.treaty.event;
 
 import java.net.URI;
 
+import net.java.treaty.Component;
+
 /**
  * <p>
- * This interface represents different events, that can occur during a
- * component's life cycle. ILifeCycleEvents are use to trigger the verification
- * mechanism of Treaty.
+ * {@link LifeCycleEvent} represents different events, that can occur during a
+ * component's life cycle. {@link LifeCycleEvent}s are use to trigger the
+ * verification mechanism of Treaty.
  * </p>
  * 
  * @author Claas Wilke
  * 
  */
-public interface LifeCycleEvent {
+public class LifeCycleEvent {
+
+	/** The {@link Component}, to which this {@link LifeCycleEvent} belongs to. */
+	private Component myComponent;
+
+	/** The type of this {@link LifeCycleEvent}. */
+	private URI myType;
 
 	/**
 	 * <p>
-	 * Returns the unique ID of the component, this {@link LifeCycleEvent}
-	 * belongs to.
+	 * Creates a new {@link LifeCycleEvent}.
 	 * </p>
 	 * 
-	 * @return The unique ID of the component, this {@link LifeCycleEvent}
-	 *         belongs to.
+	 * @param component
+	 *          The {@link Component}, to which this {@link LifeCycleEvent}
+	 *          belongs to.
+	 * @param type
+	 *          The type of this {@link LifeCycleEvent}.
 	 */
-	public String getComponentID();
+	public LifeCycleEvent(Component component, URI type) {
+
+		this.myComponent = component;
+		this.myType = type;
+	}
+
+	/**
+	 * <p>
+	 * Returns {@link Component}, to which this {@link LifeCycleEvent} belongs to.
+	 * </p>
+	 * 
+	 * @return The {@link Component}, to which this {@link LifeCycleEvent} belongs
+	 *         to.
+	 */
+	public Component getComponent() {
+
+		return this.myComponent;
+	}
 
 	/**
 	 * <p>
@@ -32,5 +59,8 @@ public interface LifeCycleEvent {
 	 * 
 	 * @return The type of this {@link LifeCycleEvent}.
 	 */
-	public URI getType();
+	public URI getType() {
+
+		return this.myType;
+	}
 }
