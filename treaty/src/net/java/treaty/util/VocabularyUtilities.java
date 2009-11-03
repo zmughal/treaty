@@ -18,6 +18,7 @@ import net.java.treaty.Contract;
 import net.java.treaty.ContractVisitor;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
+import net.java.treaty.TreatyException;
 import net.java.treaty.Vocabulary;
 /**
  * A set of vocabulary related utilities.
@@ -65,6 +66,22 @@ public class VocabularyUtilities {
 		};
 		c.accept(visitor);
 		return coll;
+	}
+	/**
+	 * Check whether two types are valid domain and range types for a relationship.
+	 * @param voc
+	 * @param relationship
+	 * @param type1
+	 * @param type2
+	 * @throws TreatyException
+	 */
+	public void checkTypeSafety(Vocabulary voc, URI relationship, URI type1, URI type2) throws TreatyException {
+		URI domain = voc.getDomain(relationship);
+		URI range = voc.getDomain(relationship);
+		if (!(domain.equals(type1) || voc.getSupertypes(type1).contains(domain))) 
+			throw new TreatyException(""+type1+ " is not a valid domain type for " + relationship);
+		if (!(range.equals(type2) || voc.getSupertypes(type2).contains(range))) 
+			throw new TreatyException(""+type2+ " is not a valid range type for " + relationship);
 	}
 	
 
