@@ -20,18 +20,77 @@ import java.util.Collection;
  * @author Jens Dietrich
  */
 
-public interface ContractVocabulary extends Verifier, ResourceLoader{
+public interface ContractVocabulary extends Verifier, ResourceLoader {
+	
 	/**
-	 * Get a collection of all contributed predicates. 
-	 * The check method must be able to check all conditions with predicates from the collection returned. 
-	 * @return a collection
+	 * Get the types in the vocabulary.
+	 * @return a collection of types
 	 */
-	public Collection<URI> getContributedPredicates();
+	Collection<URI> getTypes();
 	/**
-	 * Get a collection of all types. 
-	 * @return a collection
+	 * Get the relationships (aka object properties) in the vocabulary.
+	 * @return a collection of relationships
 	 */
-	public Collection<URI> getContributedTypes();
+	Collection<URI> getRelationships();
+	/**
+	 * Get the properties (aka data properties) in the vocabulary.
+	 * @return a collection of types
+	 */
+	Collection<URI> getProperties();
+	/**
+	 * Checks whether a property or relationship is defined for a certain type.
+	 * Note that inheritance should be supported here.
+	 * @param relationshipOrProperty
+	 * @param domain
+	 * @return
+	 */
+	boolean checkDomain(URI relationshipOrProperty, URI domain);
+	/**
+	 * Checks whether a relationship can link to a certain type,
+	 * or a property can be of this type.
+	 * The types could be built-in XMLSChema types representing primitives.
+	 * Note that inheritance should be supported here.
+	 * @param relationshipOrProperty
+	 * @param range
+	 * @return
+	 */
+	boolean checkRange(URI relationshipOrProperty, URI range);
+	/**
+	 * Get the domain for a property.
+	 * @param relationshipOrProperty
+	 * @return
+	 */
+	URI getDomain(URI relationshipOrProperty);
+	/**
+	 * Get the range for a property.
+	 * @param relationshipOrProperty
+	 * @return
+	 */
+	URI getRange(URI relationshipOrProperty);
+	/**
+	 * Get a collection of super types for a given type.
+	 * @param type
+	 * @return
+	 */
+	Collection<URI> getSupertypes(URI type);
+	/**
+	 * Get a collection of sub types for a given type.
+	 * @param type
+	 * @return
+	 */
+	Collection<URI> getSubtypes(URI type);
+	/**
+	 * Get a collection of super properties for a given relationship of property.
+	 * @param relationshipOrProperty
+	 * @return
+	 */
+	Collection<URI> getSuperProperties(URI relationshipOrProperty);
+	/**
+	 * Get a collection of sub properties for a given relationship of property.
+	 * @param relationshipOrProperty
+	 * @return
+	 */
+	Collection<URI> getSubProperties(URI relationshipOrProperty);
 
 
 	

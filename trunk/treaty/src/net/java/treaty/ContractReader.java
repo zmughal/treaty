@@ -26,7 +26,7 @@ public interface ContractReader  {
 	 * @return
 	 * @throws TreatyException
 	 */
-	public Contract read (InputStream in,Vocabulary voc) throws TreatyException;
+	public Contract read (InputStream in,ContractVocabulary voc) throws TreatyException;
 		public ResourceManager getLoader() ;
 	
 
