@@ -24,47 +24,70 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 
 /**
- * Contract vocabulary based on a formal ontology (OWL, RDFS or similar).
- * The ontology is represented as (jena) OntModel.
+ * Contract vocabulary based on a formal ontology (OWL, RDFS or similar). The
+ * ontology is represented as (jena) OntModel.
+ * 
  * @author jens dietrich
  */
 
 public abstract class ContractOntology implements ContractVocabulary {
 
 	/**
-	 * Get an ontology representing this vocabulary. This can be used for ontology reasoning other
-	 * than subclass reasoning.
+	 * Get an ontology representing this vocabulary. This can be used for ontology
+	 * reasoning other than subclass reasoning.
 	 */
-	public abstract OntModel getOntology() ;
-	
-	@Override
-	public boolean checkDomain(URI relationshipOrProperty, URI domain) throws TreatyException {
+	public abstract OntModel getOntology();
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#checkDomain(java.net.URI,
+	 * java.net.URI)
+	 */
+	public boolean checkDomain(URI relationshipOrProperty, URI domain)
+			throws TreatyException {
+
 		OntModel model = getOntology();
-		ObjectProperty prop = model.getObjectProperty(relationshipOrProperty.toString());
-		if (prop==null) return false;
+		ObjectProperty prop =
+				model.getObjectProperty(relationshipOrProperty.toString());
+		if (prop == null)
+			return false;
 		return domain.toString().equals(prop.getDomain().getURI());
 	}
 
-	@Override
-	public boolean checkRange(URI relationshipOrProperty, URI range) throws TreatyException {
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#checkRange(java.net.URI,
+	 * java.net.URI)
+	 */
+	public boolean checkRange(URI relationshipOrProperty, URI range)
+			throws TreatyException {
+
 		OntModel model = getOntology();
-		ObjectProperty prop = model.getObjectProperty(relationshipOrProperty.toString());
-		if (prop==null) return false;
+		ObjectProperty prop =
+				model.getObjectProperty(relationshipOrProperty.toString());
+		if (prop == null)
+			return false;
 		return range.toString().equals(prop.getRange().getURI());
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getDomain(java.net.URI)
+	 */
 	public URI getDomain(URI relationshipOrProperty) throws TreatyException {
+
 		OntModel model = getOntology();
-		ObjectProperty prop = model.getObjectProperty(relationshipOrProperty.toString());
-		if (prop!=null)
+		ObjectProperty prop =
+				model.getObjectProperty(relationshipOrProperty.toString());
+		if (prop != null)
 			try {
 				return new URI(prop.getDomain().getURI());
 			} catch (URISyntaxException e) {
 				throw new TreatyException(e);
 			}
-		DatatypeProperty dprop = model.getDatatypeProperty(relationshipOrProperty.toString());
-		if (dprop!=null)
+		DatatypeProperty dprop =
+				model.getDatatypeProperty(relationshipOrProperty.toString());
+		if (dprop != null)
 			try {
 				return new URI(dprop.getDomain().getURI());
 			} catch (URISyntaxException e) {
@@ -73,11 +96,16 @@ public abstract class ContractOntology implements ContractVocabulary {
 		return null;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getProperties()
+	 */
 	public Collection<URI> getProperties() throws TreatyException {
+
 		OntModel model = getOntology();
 		Collection<URI> props = new HashSet<URI>();
-		for (Iterator<DatatypeProperty> iter = model.listDatatypeProperties();iter.hasNext();) {
+		for (Iterator<DatatypeProperty> iter = model.listDatatypeProperties(); iter
+				.hasNext();) {
 			try {
 				props.add(new URI(iter.next().getURI()));
 			} catch (URISyntaxException e) {
@@ -87,18 +115,24 @@ public abstract class ContractOntology implements ContractVocabulary {
 		return props;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getRange(java.net.URI)
+	 */
 	public URI getRange(URI relationshipOrProperty) throws TreatyException {
+
 		OntModel model = getOntology();
-		ObjectProperty prop = model.getObjectProperty(relationshipOrProperty.toString());
-		if (prop!=null)
+		ObjectProperty prop =
+				model.getObjectProperty(relationshipOrProperty.toString());
+		if (prop != null)
 			try {
 				return new URI(prop.getRange().getURI());
 			} catch (URISyntaxException e) {
 				throw new TreatyException(e);
 			}
-		DatatypeProperty dprop = model.getDatatypeProperty(relationshipOrProperty.toString());
-		if (dprop!=null)
+		DatatypeProperty dprop =
+				model.getDatatypeProperty(relationshipOrProperty.toString());
+		if (dprop != null)
 			try {
 				return new URI(dprop.getRange().getURI());
 			} catch (URISyntaxException e) {
@@ -107,11 +141,16 @@ public abstract class ContractOntology implements ContractVocabulary {
 		return null;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getRelationships()
+	 */
 	public Collection<URI> getRelationships() throws TreatyException {
+
 		OntModel model = getOntology();
 		Collection<URI> props = new HashSet<URI>();
-		for (Iterator<ObjectProperty> iter = model.listObjectProperties();iter.hasNext();) {
+		for (Iterator<ObjectProperty> iter = model.listObjectProperties(); iter
+				.hasNext();) {
 			try {
 				props.add(new URI(iter.next().getURI()));
 			} catch (URISyntaxException e) {
@@ -121,12 +160,18 @@ public abstract class ContractOntology implements ContractVocabulary {
 		return props;
 	}
 
-	@Override
-	public Collection<URI> getSubProperties(URI relationshipOrProperty) throws TreatyException {
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getSubProperties(java.net.URI)
+	 */
+	public Collection<URI> getSubProperties(URI relationshipOrProperty)
+			throws TreatyException {
+
 		OntModel model = getOntology();
 		OntProperty prop = model.getOntProperty(relationshipOrProperty.toString());
 		Collection<URI> props = new HashSet<URI>();
-		for (Iterator<? extends OntProperty> iter = prop.listSubProperties(false);iter.hasNext();) {
+		for (Iterator<? extends OntProperty> iter = prop.listSubProperties(false); iter
+				.hasNext();) {
 			try {
 				props.add(new URI(iter.next().getURI()));
 			} catch (URISyntaxException e) {
@@ -136,12 +181,16 @@ public abstract class ContractOntology implements ContractVocabulary {
 		return props;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getSubtypes(java.net.URI)
+	 */
 	public Collection<URI> getSubtypes(URI type) throws TreatyException {
+
 		OntModel model = getOntology();
 		OntClass clazz = model.getOntClass(type.toString());
 		Collection<URI> clazzes = new HashSet<URI>();
-		for (Iterator<OntClass> iter = clazz.listSubClasses(false);iter.hasNext();) {
+		for (Iterator<OntClass> iter = clazz.listSubClasses(false); iter.hasNext();) {
 			try {
 				clazzes.add(new URI(iter.next().getURI()));
 			} catch (URISyntaxException e) {
@@ -151,12 +200,18 @@ public abstract class ContractOntology implements ContractVocabulary {
 		return clazzes;
 	}
 
-	@Override
-	public Collection<URI> getSuperProperties(URI relationshipOrProperty) throws TreatyException {
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getSuperProperties(java.net.URI)
+	 */
+	public Collection<URI> getSuperProperties(URI relationshipOrProperty)
+			throws TreatyException {
+
 		OntModel model = getOntology();
 		OntProperty prop = model.getOntProperty(relationshipOrProperty.toString());
 		Collection<URI> props = new HashSet<URI>();
-		for (Iterator<? extends OntProperty> iter = prop.listSuperProperties(false);iter.hasNext();) {
+		for (Iterator<? extends OntProperty> iter = prop.listSuperProperties(false); iter
+				.hasNext();) {
 			try {
 				props.add(new URI(iter.next().getURI()));
 			} catch (URISyntaxException e) {
@@ -166,12 +221,17 @@ public abstract class ContractOntology implements ContractVocabulary {
 		return props;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getSupertypes(java.net.URI)
+	 */
 	public Collection<URI> getSupertypes(URI type) throws TreatyException {
+
 		OntModel model = getOntology();
 		OntClass clazz = model.getOntClass(type.toString());
 		Collection<URI> clazzes = new HashSet<URI>();
-		for (Iterator<OntClass> iter = clazz.listSuperClasses(false);iter.hasNext();) {
+		for (Iterator<OntClass> iter = clazz.listSuperClasses(false); iter
+				.hasNext();) {
 			try {
 				clazzes.add(new URI(iter.next().getURI()));
 			} catch (URISyntaxException e) {
@@ -181,11 +241,15 @@ public abstract class ContractOntology implements ContractVocabulary {
 		return clazzes;
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getTypes()
+	 */
 	public Collection<URI> getTypes() throws TreatyException {
+
 		OntModel model = getOntology();
 		Collection<URI> classes = new HashSet<URI>();
-		for (Iterator<OntClass> iter = model.listClasses();iter.hasNext();) {
+		for (Iterator<OntClass> iter = model.listClasses(); iter.hasNext();) {
 			try {
 				classes.add(new URI(iter.next().getURI()));
 			} catch (URISyntaxException e) {
@@ -194,6 +258,4 @@ public abstract class ContractOntology implements ContractVocabulary {
 		}
 		return classes;
 	}
-
-
 }
