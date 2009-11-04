@@ -73,7 +73,7 @@ public class ContractRegistryStartUpJob extends Job {
 
 		/* Probably cancel the job. */
 		if (monitor.isCanceled()) {
-			EclipseContractRegistry.getInstance().clear();
+			EclipseContractRegistry.clear();
 			return Status.CANCEL_STATUS;
 		}
 		// no else.

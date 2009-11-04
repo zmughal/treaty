@@ -386,7 +386,8 @@ public class BundleActivationUpdateJob extends Job {
 			 * contracts.
 			 */
 			for (Contract legislatorContract : EclipseContractRegistry.getInstance()
-					.removeUnboundLegislatorContractsForContractedConnector(eclipseExtensionPoint)) {
+					.removeUnboundLegislatorContractsForContractedConnector(
+							eclipseExtensionPoint)) {
 
 				this.addContractToExtensionPoint(eclipseExtensionPoint,
 						legislatorContract);
