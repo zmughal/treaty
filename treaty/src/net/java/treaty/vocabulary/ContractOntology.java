@@ -170,10 +170,11 @@ public abstract class ContractOntology implements ContractVocabulary {
 		OntModel model = getOntology();
 		OntProperty prop = model.getOntProperty(relationshipOrProperty.toString());
 		Collection<URI> props = new HashSet<URI>();
-		for (Iterator<? extends OntProperty> iter = prop.listSubProperties(false); iter
-				.hasNext();) {
+		for (Iterator<? extends OntProperty> iter = prop.listSubProperties(false); iter.hasNext();) {
 			try {
-				props.add(new URI(iter.next().getURI()));
+				URI next = new URI(iter.next().getURI());
+				if (!relationshipOrProperty.equals(next)) // jena seems to returnn the URI itself
+					props.add(next);
 			} catch (URISyntaxException e) {
 				throw new TreatyException(e);
 			}
