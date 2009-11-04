@@ -19,7 +19,7 @@ import org.osgi.framework.BundleListener;
  * A {@link BundleListener} that checks if a started or stopped {@link Bundle}
  * uses or provides services that are specified with a Treaty contract or
  * defines external contracts. Probably, contracts are added to the
- * {@link ContractRegistry}.
+ * {@link EclipseContractRegistry}.
  * </p>
  * 
  * @author Claas Wilke
@@ -63,6 +63,6 @@ public class BundleEventContractListener implements BundleListener {
 	 */
 	public void bundleChanged(BundleEvent event) {
 
-		ContractRegistry.getInstance().update(event);
+		EclipseContractRegistry.getInstance().update(event);
 	}
 }

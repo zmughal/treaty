@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -15,21 +15,23 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Set;
 
+import net.java.treaty.Connector;
+import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
+import net.java.treaty.ContractVocabulary;
+import net.java.treaty.Role;
 import net.java.treaty.VerificationReport;
+import net.java.treaty.contractregistry.ContractRegistry;
 import net.java.treaty.eclipse.ContractVerificationSchedulingRule;
-import net.java.treaty.eclipse.EclipseConnector;
 import net.java.treaty.eclipse.EclipseExtension;
-import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
+import net.java.treaty.eclipse.EclipseResourceManager;
 import net.java.treaty.eclipse.EclipseVerifier;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.jobs.VerificationJob;
 import net.java.treaty.eclipse.jobs.VerificationJobListener;
-import net.java.treaty.event.LifeCycleEvent;
 
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -42,18 +44,15 @@ import org.osgi.framework.BundleEvent;
 
 /**
  * <p>
- * A registry used to add and remove dynamically Treaty contracts during
- * {@link Bundle}'s life cycle. The {@link ContractRegistry} can extends
- * {@link Observable}. Thus, it can be listened by other classes like the
- * ContractView.
+ * Extends the {@link ContractVocabulary} for Eclipse implementation.
  * </p>
  * 
  * @author Claas Wilke
  */
-public final class ContractRegistry extends Observable {
+public final class EclipseContractRegistry extends ContractRegistry {
 
-	/** Singleton Instance of the {@link ContractRegistry}. */
-	private static ContractRegistry myInstance;
+	/** Singleton Instance of the {@link EclipseContractRegistry}. */
+	private static EclipseContractRegistry myInstance;
 
 	/** The {@link EclipsePlugin}s on that contracts are defined. */
 	private Map<Bundle, EclipsePlugin> contractedPlugins =
@@ -97,14 +96,16 @@ public final class ContractRegistry extends Observable {
 	 * Private constructor for Singleton Pattern.
 	 * </p>
 	 */
-	private ContractRegistry() {
+	private EclipseContractRegistry() {
+
+		super(new EclipseResourceManager());
 
 		this.init();
 	}
 
 	/**
 	 * <p>
-	 * A helper method that initializes the {@link ContractRegistry}.
+	 * A helper method that initializes the {@link EclipseContractRegistry}.
 	 * </p>
 	 */
 	private void init() {
@@ -119,102 +120,29 @@ public final class ContractRegistry extends Observable {
 
 	/**
 	 * <p>
-	 * Returns the Singleton Instance of the {@link ContractRegistry}.
+	 * Clears the {@link EclipseContractRegistry}.
+	 * </p>
+	 */
+	public static void clear() {
+	
+		myInstance = new EclipseContractRegistry();
+	}
+
+	/**
+	 * <p>
+	 * Returns the Singleton Instance of the {@link EclipseContractRegistry}.
 	 * </p>
 	 * 
-	 * @return The Singleton Instance of the {@link ContractRegistry}.
+	 * @return The Singleton Instance of the {@link EclipseContractRegistry}.
 	 */
-	public static ContractRegistry getInstance() {
+	public static EclipseContractRegistry getInstance() {
 
 		if (myInstance == null) {
-			myInstance = new ContractRegistry();
+			myInstance = new EclipseContractRegistry();
 		}
 		// no else.
 
 		return myInstance;
-	}
-
-	/**
-	 * <p>
-	 * Clears the {@link ContractRegistry}.
-	 * </p>
-	 */
-	public void clear() {
-
-		this.contractedExtensionPoints.clear();
-		this.contractedExtensions.clear();
-		this.contractedPlugins.clear();
-
-		this.boundExternalContracts.clear();
-		this.unboundExternalContracts.clear();
-	}
-
-	/**
-	 * <p>
-	 * Returns a {@link Set} of all {@link Contract}s that must be validated after
-	 * a given {@link LifeCycleEvent} occurred.
-	 * </p>
-	 * 
-	 * @return A {@link Set} of all {@link Contract}s that must be validated after
-	 *         a given {@link LifeCycleEvent} occurred.
-	 */
-	public LinkedHashSet<Contract> getAffectedContracts(
-			LifeCycleEvent lifeCycleEvent) {
-
-		LinkedHashSet<Contract> result;
-		LinkedHashSet<Contract> resultCandidates;
-
-		EclipsePlugin eclipsePlugin;
-
-		resultCandidates = new LinkedHashSet<Contract>();
-
-		/* Get the bundle and the EclipsePlugin. */
-		eclipsePlugin = (EclipsePlugin) lifeCycleEvent.getComponent();
-
-		/*
-		 * Collect contracts of the extensions of all extension points of this
-		 * bundle.
-		 */
-		for (EclipseExtensionPoint eclipseExtensionPoint : eclipsePlugin
-				.getExtensionPoints()) {
-
-			/* Iterate on the extension point's extensions. */
-			for (EclipseExtension eclipseExtension : eclipseExtensionPoint
-					.getExtensions()) {
-				resultCandidates.addAll(this.getOwnedContracts(eclipseExtension));
-			}
-			// end for.
-		}
-		// end for.
-
-		/*
-		 * Get all contracts that are defined by other bundle on the bundle's
-		 * extensions.
-		 */
-		for (EclipseExtension eclipseExtension : eclipsePlugin.getExtensions()) {
-
-			resultCandidates.addAll(this.getOwnedContracts(eclipseExtension));
-		}
-		// end for (iteration on extensions).
-
-		/* Filter the contracts depending on their event types. */
-		result = new LinkedHashSet<Contract>();
-
-		for (Contract contract : resultCandidates) {
-
-			/*
-			 * FIXME Claas: Filter the contracts depending on their event types when
-			 * event types are available.
-			 */
-			// /* Only add contracts of the right type to the result. */
-			// if (contract.getEventTypes().contains(lifeCycleEvent.getType())) {
-			// result.add(contract);
-			// }
-			// // no else.
-			result.add(contract);
-		}
-
-		return result;
 	}
 
 	/**
@@ -229,147 +157,74 @@ public final class ContractRegistry extends Observable {
 		LinkedHashSet<EclipsePlugin> result;
 
 		result = new LinkedHashSet<EclipsePlugin>();
-		result.addAll(this.contractedPlugins.values());
 
-		return result;
-	}
+		/* Add the eclipse plug-ins of all contracted consumers. */
+		for (Connector connector : this.myConsumerContracts.keySet()) {
 
-	/**
-	 * <p>
-	 * Returns the {@link IExtensionPoint}s on that contracts are defined.
-	 * </p>
-	 * 
-	 * @return The {@linkIExtensionPoint}s on that contracts are defined.
-	 */
-	public LinkedHashSet<IExtensionPoint> getContractedExtensionPoints() {
-
-		LinkedHashSet<IExtensionPoint> result;
-
-		result = new LinkedHashSet<IExtensionPoint>();
-		result.addAll(this.contractedExtensionPoints.keySet());
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Returns the {@link Contract}s that are owned by a given
-	 * {@link EclipseConnector}. The term 'owns' means that the
-	 * {@link EclipseConnector} defines these {@link Contract}s or is bound to
-	 * these {@link Contract}s.
-	 * </p>
-	 * 
-	 * @param eclipseConnector
-	 *          The {@link EclipseConnector} those {@link Contract}s shall be
-	 *          returned.
-	 * @return The owned {@link Contract}s of the given {@link EclipseConnector}.
-	 */
-	public LinkedHashSet<Contract> getOwnedContracts(
-			EclipseConnector eclipseConnector) {
-
-		LinkedHashSet<Contract> result;
-		result = new LinkedHashSet<Contract>();
-
-		/* Check if the given connector is an EclipseExtensionPoint. */
-		if (eclipseConnector instanceof EclipseExtensionPoint) {
-
-			IExtensionPoint extensionPoint;
-			EclipseExtensionPoint eclipseExtensionPoint;
-
-			eclipseExtensionPoint = (EclipseExtensionPoint) eclipseConnector;
-			extensionPoint = eclipseExtensionPoint.getWrappedExtensionPoint();
-
-			/* Probably add contracts defined by this EclipseExtensionPoint. */
-			if (this.contractedExtensionPoints.containsKey(extensionPoint)) {
-				result.addAll(this.contractedExtensionPoints.get(extensionPoint));
-			}
-			// no else.
-
-			/* Probably add bound external contracts. */
-			if (this.boundExternalContracts.containsKey(extensionPoint)) {
-				result.addAll(this.boundExternalContracts.get(extensionPoint));
+			if (connector.getOwner() instanceof EclipsePlugin) {
+				result.add((EclipsePlugin) connector.getOwner());
 			}
 			// no else.
 		}
-
-		/* Else check if the given connector is an EclipseExtension. */
-		else if (eclipseConnector instanceof EclipseExtension) {
-
-			EclipseExtension eclipseExtension;
-			IExtension extension;
-
-			eclipseExtension = (EclipseExtension) eclipseConnector;
-			extension = eclipseExtension.getWrappedExtension();
-
-			/* Probably add all contracts defined on the given EclipseExtension. */
-			if (this.contractedExtensions.containsKey(extension)) {
-				result.addAll(this.contractedExtensions.get(extension));
-			}
-			// no else.
-		}
-		// no else (nor extension point nor extension given).
+		// end for.
 
 		return result;
 	}
 
 	/**
 	 * <p>
-	 * Checks, if a given {@link IExtensionPoint} has external {@link Contract}s
-	 * in the {@link ContractRegistry}.
+	 * Checks if a given {@link Connector} plays a given {@link Role} (in at least
+	 * one {@link Contract}).
 	 * </p>
 	 * 
-	 * <p>
-	 * This method is public visible for test reasons only. It shuoldn't be that
-	 * interesting for regular clients.
-	 * </p>
-	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} that shall be checked.
-	 * @return <code>true</code> if the given {@link IExtensionPoint} has external
-	 *         {@link Contract}s in the {@link ContractRegistry}.
+	 * @param connector
+	 *          The {@link Connector} that shall be checked.
+	 * @param role
+	 *          The {@link Role} that shall be checked.
+	 * @return <code>true</code>, if a given {@link Connector} plays a given
+	 *         {@link Role} (in at least one {@link Contract}).
 	 */
-	public boolean hasExtensionPointExternalContracts(
-			IExtensionPoint extensionPoint) {
+	public boolean playsConnectorRole(Connector connector, Role role) {
 
-		return this.boundExternalContracts.containsKey(extensionPoint);
+		boolean result;
+
+		switch (role) {
+
+		case LEGISLATOR:
+
+			result = this.myLegislatorContracts.containsKey(connector);
+			break;
+
+		case CONSUMER:
+
+			result = this.myConsumerContracts.containsKey(connector);
+			break;
+
+		case SUPPLIER:
+
+			result = this.mySupplierContracts.containsKey(connector);
+			break;
+
+		default:
+			result = false;
+		}
+		// end switch.
+
+		return result;
 	}
 
 	/**
 	 * <p>
-	 * Checks, if a given {@link IExtensionPoint} (by its ID) has external
-	 * {@link Contract}s in the {@link ContractRegistry} that have not been bound
-	 * to the {@link IExtensionPoint} yet.
-	 * </p>
-	 * 
-	 * <p>
-	 * This method is public visible for test reasons only. It shuoldn't be that
-	 * interesting for regular clients.
-	 * </p>
-	 * 
-	 * @param extensionPointID
-	 *          The unique ID of the {@link IExtensionPoint} that shall be
-	 *          checked.
-	 * @return <code>true</code> if the given {@link IExtensionPoint} has unbound
-	 *         external {@link Contract}s in the {@link ContractRegistry}.
-	 */
-	public boolean hasExtensionPointUnboundExternalContracts(
-			String extensionPointID) {
-
-		return this.unboundExternalContracts.containsKey(extensionPointID);
-	}
-
-	/**
-	 * <p>
-	 * Updates this {@link ContractRegistry} with a given {@link BundleEvent}.
-	 * E.g., if the {@link BundleEvent} represents a new started {@link Bundle},
-	 * the contracts of this {@link Bundle} will be added to the
-	 * {@link ContractRegistry}. If the {@link Bundle} has been stopped, probably
-	 * provided contracts will be removed again.
+	 * Updates this {@link EclipseContractRegistry} with a given
+	 * {@link BundleEvent}. E.g., if the {@link BundleEvent} represents a new
+	 * started {@link Bundle}, the contracts of this {@link Bundle} will be added
+	 * to the {@link EclipseContractRegistry}. If the {@link Bundle} has been
+	 * stopped, probably provided contracts will be removed again.
 	 * </p>
 	 * 
 	 * @param event
 	 *          The {@link BundleEvent} used to update the
-	 *          {@link ContractRegistry}.
+	 *          {@link EclipseContractRegistry}.
 	 */
 	public synchronized void update(BundleEvent event) {
 
@@ -413,13 +268,117 @@ public final class ContractRegistry extends Observable {
 		}
 		// end switch.
 
-		this.notifyObservers();
+		this.notifyContractRegistryListeners();
 	}
 
 	/**
-	 * FIXME Claas: Should this method be part of the {@link ContractRegistry}? I
-	 * think it should be located in the {@link EclipseVerifier} or a similar
-	 * class.
+	 * <p>
+	 * Returns all instances of a given {@link Contract} that belongs to a given
+	 * {@link Connector}.
+	 * </p>
+	 * 
+	 * <p>
+	 * <strong>FIXME Please not that this method currently only works for
+	 * {@link Connector}s having the type {@link ConnectorType#CONSUMER}.</strong>
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose instances shall be returned.
+	 * @param connector
+	 *          The {@link Connector} to which the instances shall belong to.
+	 * @return A {@link Set} of all found {@link Contract} instances.
+	 */
+	protected Set<Contract> getInstancesOfContract(Contract contract,
+			Connector connector) {
+
+		Set<Contract> result;
+		result = new LinkedHashSet<Contract>();
+
+		if (connector.getType().equals(ConnectorType.CONSUMER)) {
+
+			for (Contract ownedContract : this.getContracts(connector, Role.CONSUMER)) {
+
+				if (ownedContract.equals(contract)
+						|| ownedContract.getDefinition().equals(connector)) {
+
+					result.add(ownedContract);
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// no else.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link IExtensionPoint}s on that contracts are defined.
+	 * </p>
+	 * 
+	 * @return The {@linkIExtensionPoint}s on that contracts are defined.
+	 */
+	public LinkedHashSet<IExtensionPoint> getContractedExtensionPoints() {
+
+		LinkedHashSet<IExtensionPoint> result;
+
+		result = new LinkedHashSet<IExtensionPoint>();
+		result.addAll(this.contractedExtensionPoints.keySet());
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Checks, if a given {@link IExtensionPoint} has external {@link Contract}s
+	 * in the {@link EclipseContractRegistry}.
+	 * </p>
+	 * 
+	 * <p>
+	 * This method is public visible for test reasons only. It shuoldn't be that
+	 * interesting for regular clients.
+	 * </p>
+	 * 
+	 * @param extensionPoint
+	 *          The {@link IExtensionPoint} that shall be checked.
+	 * @return <code>true</code> if the given {@link IExtensionPoint} has external
+	 *         {@link Contract}s in the {@link EclipseContractRegistry}.
+	 */
+	public boolean hasExtensionPointExternalContracts(
+			IExtensionPoint extensionPoint) {
+
+		return this.boundExternalContracts.containsKey(extensionPoint);
+	}
+
+	/**
+	 * <p>
+	 * Checks, if a given {@link IExtensionPoint} (by its ID) has external
+	 * {@link Contract}s in the {@link EclipseContractRegistry} that have not been
+	 * bound to the {@link IExtensionPoint} yet.
+	 * </p>
+	 * 
+	 * <p>
+	 * This method is public visible for test reasons only. It shuoldn't be that
+	 * interesting for regular clients.
+	 * </p>
+	 * 
+	 * @param extensionPointID
+	 *          The unique ID of the {@link IExtensionPoint} that shall be
+	 *          checked.
+	 * @return <code>true</code> if the given {@link IExtensionPoint} has unbound
+	 *         external {@link Contract}s in the {@link EclipseContractRegistry}.
+	 */
+	public boolean hasExtensionPointUnboundExternalContracts(
+			String extensionPointID) {
+
+		return this.unboundExternalContracts.containsKey(extensionPointID);
+	}
+
+	/**
+	 * FIXME Claas: Should this method be part of the
+	 * {@link EclipseContractRegistry}? I think it should be located in the
+	 * {@link EclipseVerifier} or a similar class.
 	 * 
 	 * <p>
 	 * Verifies a Collection of given {@link Contract}s for a given
@@ -713,13 +672,13 @@ public final class ContractRegistry extends Observable {
 	/**
 	 * <p>
 	 * Checks if a given {@link IExtension} has registered {@link Contract}s in
-	 * the {@link ContractRegistry}.
+	 * the {@link EclipseContractRegistry}.
 	 * </p>
 	 * 
 	 * @param extensionPoint
 	 *          The {@link IExtension} that shall be checked.
 	 * @return <code>true</code> if the {@link IExtension} has {@link Contract}s
-	 *         in the {@link ContractRegistry}.
+	 *         in the {@link EclipseContractRegistry}.
 	 */
 	protected boolean hasExtensionContracts(IExtension extension) {
 
@@ -729,13 +688,13 @@ public final class ContractRegistry extends Observable {
 	/**
 	 * <p>
 	 * Checks if a given {@link IExtensionPoint} has registered {@link Contract}s
-	 * in the {@link ContractRegistry}.
+	 * in the {@link EclipseContractRegistry}.
 	 * </p>
 	 * 
 	 * @param extensionPoint
 	 *          The {@link IExtensionPoint} that shall be checked.
 	 * @return <code>true</code> if the {@link IExtensionPoint} has
-	 *         {@link Contract}s in the {@link ContractRegistry}.
+	 *         {@link Contract}s in the {@link EclipseContractRegistry}.
 	 */
 	protected boolean hasExtensionPointContracts(IExtensionPoint extensionPoint) {
 
@@ -745,7 +704,7 @@ public final class ContractRegistry extends Observable {
 	/**
 	 * <p>
 	 * A helper method that removes all bound external {@link Contract}s from the
-	 * {@link ContractRegistry} for a given {@link IExtensionPoint}.
+	 * {@link EclipseContractRegistry} for a given {@link IExtensionPoint}.
 	 * </p>
 	 * 
 	 * @param extensionPoint
@@ -811,7 +770,7 @@ public final class ContractRegistry extends Observable {
 	/**
 	 * <p>
 	 * A helper method that removes all unbound external {@link Contract}s from
-	 * the {@link ContractRegistry} for a given {@link IExtensionPoint}s
+	 * the {@link EclipseContractRegistry} for a given {@link IExtensionPoint}s
 	 * identifier.
 	 * </p>
 	 * 
@@ -837,7 +796,7 @@ public final class ContractRegistry extends Observable {
 	/**
 	 * <p>
 	 * A helper method that removes a given bound external {@link Contract}s from
-	 * the {@link ContractRegistry} for a given {@link IExtensionPoint}.
+	 * the {@link EclipseContractRegistry} for a given {@link IExtensionPoint}.
 	 * </p>
 	 * 
 	 * @param extensionPoint
@@ -931,7 +890,8 @@ public final class ContractRegistry extends Observable {
 	/**
 	 * <p>
 	 * A helper method that removes a given unbound external {@link Contract}s
-	 * from the {@link ContractRegistry} for a given {@link IExtensionPoint}'s ID.
+	 * from the {@link EclipseContractRegistry} for a given
+	 * {@link IExtensionPoint}'s ID.
 	 * </p>
 	 * 
 	 * @param extensionPointID
