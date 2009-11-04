@@ -370,11 +370,6 @@ public final class EclipseContractRegistry extends ContractRegistry {
 	 * {@link Connector}.
 	 * </p>
 	 * 
-	 * <p>
-	 * <strong>FIXME Please note that this method currently only works for
-	 * {@link Connector}s having the type {@link ConnectorType#CONSUMER}.</strong>
-	 * </p>
-	 * 
 	 * @param contract
 	 *          The {@link Contract} whose instances shall be returned.
 	 * @param connector
@@ -391,6 +386,23 @@ public final class EclipseContractRegistry extends ContractRegistry {
 
 			Set<Contract> ownedContracts;
 			ownedContracts = this.getContracts(connector, Role.CONSUMER);
+
+			for (Contract ownedContract : ownedContracts) {
+
+				if (ownedContract.equals(contract)
+						|| ownedContract.getDefinition().equals(contract)) {
+
+					result.add(ownedContract);
+				}
+				// no else.
+			}
+			// end for.
+		}
+
+		else if (connector.getType().equals(ConnectorType.SUPPLIER)) {
+
+			Set<Contract> ownedContracts;
+			ownedContracts = this.getContracts(connector, Role.SUPPLIER);
 
 			for (Contract ownedContract : ownedContracts) {
 
