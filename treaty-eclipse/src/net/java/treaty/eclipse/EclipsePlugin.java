@@ -56,6 +56,56 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		this.bundle = bundle;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Component#getConnectors()
+	 */
+	public List<Connector> getConnectors() {
+
+		List<Connector> connectors = new ArrayList<Connector>();
+		connectors.addAll(this.getExtensionPoints());
+		connectors.addAll(this.getExtensions());
+		return connectors;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Component#getId()
+	 */
+	public String getId() {
+
+		return this.bundle.getSymbolicName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Component#getResource(java.lang.String)
+	 */
+	public URL getResource(String adr) {
+
+		return this.getBundle().getEntry(adr);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Component#loadClass(java.lang.String)
+	 */
+	public Class<?> loadClass(String className) throws ClassNotFoundException {
+
+		return this.bundle.loadClass(className);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+
+		return new StringBuffer().append(this.getClass().getName()).append('(')
+				.append(getId()).append(')').toString();
+	}
+
 	/**
 	 * <p>
 	 * Adds a given {@link EclipseExtension} to this {@link EclipsePlugin}.
@@ -174,11 +224,6 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		return this.extensionPoints.remove(eclipseExtensionPoint);
 	}
 
-	public String getId() {
-
-		return this.bundle.getSymbolicName();
-	}
-
 	public Bundle getBundle() {
 
 		return bundle;
@@ -189,11 +234,6 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		this.bundle = bundle;
 	}
 
-	public URL getResource(String adr) {
-
-		return this.getBundle().getEntry(adr);
-	}
-
 	public boolean hasContracts() {
 
 		for (EclipseExtensionPoint xp : this.extensionPoints) {
@@ -202,20 +242,4 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		}
 		return false;
 	}
-
-	public List<Connector> getConnectors() {
-
-		List<Connector> connectors = new ArrayList<Connector>();
-		connectors.addAll(this.getExtensionPoints());
-		connectors.addAll(this.getExtensions());
-		return connectors;
-	}
-
-	@Override
-	public String toString() {
-
-		return new StringBuffer().append(this.getClass().getName()).append('(')
-				.append(getId()).append(')').toString();
-	}
-
 }
