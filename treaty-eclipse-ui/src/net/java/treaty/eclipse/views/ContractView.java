@@ -1305,6 +1305,171 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				&& !instantiatedConstracts.isEmpty());
 	}
 
+	/**
+	 * <p>
+	 * Runs the verification for a given {@link List} of {@link Contract}s.
+	 * </p>
+	 * 
+	 * @param contracts
+	 *          The {@link Contract}s that shall be verified.
+	 * @param disableActions
+	 *          TODO
+	 */
+	private void verify(List<Contract> contracts, boolean disableActions) {
+
+		/* The {@link VerificationReport} of the verification. */
+		final VerificationReport verReport = new VerificationReport() {
+
+			/** The {@link Contract} of this {@link VerificationReport}. */
+			private Contract contract = null;
+
+			/*
+			 * (non-Javadoc)
+			 * @see net.java.treaty.VerificationReport#getContract()
+			 */
+			public Contract getContract() {
+
+				return this.contract;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see net.java.treaty.VerificationReport#log(java.lang.Object,
+			 * net.java.treaty.VerificationResult, java.lang.String[])
+			 */
+			public void log(Object context, VerificationResult result,
+					String... remarks) {
+
+				if (context instanceof Annotatable) {
+					((Annotatable) context).setProperty(VERIFICATION_RESULT, result);
+				}
+				// no else.
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.VerificationReport#setContract(net.java.treaty.Contract
+			 * )
+			 */
+			public void setContract(Contract contract) {
+
+				this.contract = contract;
+			}
+		};
+
+		/* A {@link VerificationJobListener} used during verification. */
+		VerificationJobListener vListener = new VerificationJobListener() {
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.eclipse.jobs.VerificationJobListener#
+			 * verificationStatusChanged()
+			 */
+			public void verificationStatusChanged() {
+
+				updateTree();
+			}
+		};
+
+		/* A {@link IJobChangeListener} used during verification. */
+		IJobChangeListener jListener = new IJobChangeListener() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#aboutToRun(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void aboutToRun(IJobChangeEvent e) {
+
+				/* Do nothing. */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#awake(org.eclipse.
+			 * core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void awake(IJobChangeEvent e) {
+
+				/* Do nothing. */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#done(org.eclipse.core
+			 * .runtime.jobs.IJobChangeEvent)
+			 */
+			public void done(IJobChangeEvent e) {
+
+				VerificationJob verificationJob;
+
+				updateTree();
+
+				verificationJob = (VerificationJob) e.getJob();
+				reportVerificationResult(verificationJob.getDoneContracts(),
+						verificationJob.getFailedContracts());
+
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+
+					/*
+					 * (non-Javadoc)
+					 * @see java.lang.Runnable#run()
+					 */
+					public void run() {
+
+						switchActions(true);
+					}
+				});
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#running(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void running(IJobChangeEvent e) {
+
+				/* Do nothing. */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#scheduled(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void scheduled(IJobChangeEvent e) {
+
+				/* Do nothing. */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#sleeping(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void sleeping(IJobChangeEvent e) {
+
+				/* Do nothing. */
+			}
+		};
+
+		/* Probably disable the actions. */
+		if (disableActions) {
+			this.switchActions(false);
+		}
+
+		/* Verify the contracts. */
+		EclipseContractRegistry.getInstance().verify(contracts, verReport,
+				vListener, jListener);
+	}
+
 	public ImageDescriptor getImageDescriptor(String path) {
 
 		return AbstractUIPlugin
@@ -1723,100 +1888,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			contracts.addAll(p.getInstantiatedContracts());
 		}
 		verify(contracts, true);
-	}
-
-	/**
-	 * Run verification.
-	 */
-	private void verify(List<Contract> contracts, boolean disableActions) {
-
-		final VerificationReport verReport = new VerificationReport() {
-
-			Contract contract = null;
-
-			public Contract getContract() {
-
-				return contract;
-			}
-
-			public void log(Object context, VerificationResult result,
-					String... remarks) {
-
-				if (context instanceof AbstractCondition) {
-					((AbstractCondition) context)
-							.setProperty(VERIFICATION_RESULT, result);
-				}
-			}
-
-			public void setContract(Contract contract) {
-
-				this.contract = contract;
-			}
-		};
-		VerificationJobListener vListener = new VerificationJobListener() {
-
-			public void verificationStatusChanged() {
-
-				updateTree();
-			}
-		};
-		IJobChangeListener jListener = new IJobChangeListener() {
-
-			public void aboutToRun(IJobChangeEvent e) {
-
-			}
-
-			public void awake(IJobChangeEvent e) {
-
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#done(org.eclipse.core
-			 * .runtime.jobs.IJobChangeEvent)
-			 */
-			public void done(IJobChangeEvent e) {
-
-				VerificationJob verificationJob;
-
-				updateTree();
-
-				verificationJob = (VerificationJob) e.getJob();
-				reportVerificationResult(verificationJob.getDoneContracts(),
-						verificationJob.getFailedContracts());
-
-				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-
-					/*
-					 * (non-Javadoc)
-					 * @see java.lang.Runnable#run()
-					 */
-					public void run() {
-
-						switchActions(true);
-					}
-				});
-			}
-
-			public void running(IJobChangeEvent e) {
-
-			}
-
-			public void scheduled(IJobChangeEvent e) {
-
-			}
-
-			public void sleeping(IJobChangeEvent e) {
-
-			}
-		};
-		if (disableActions) {
-			switchActions(false);
-		}
-		EclipseContractRegistry.getInstance().verify(contracts, verReport,
-				vListener, jListener);
-
 	}
 
 	private void reportVerificationResult(List<Contract> allContracts,
