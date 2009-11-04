@@ -92,9 +92,9 @@ public final class EclipseContractRegistry extends ContractRegistry {
 	private void init() {
 
 		/* Do the initial startup. */
-		ContractRegistryStartUpJob contractRegistryStartUpJob;
+		InitialEclipseContractRegistryJob contractRegistryStartUpJob;
 		contractRegistryStartUpJob =
-				new ContractRegistryStartUpJob("Initial ContractRegistry Startup");
+				new InitialEclipseContractRegistryJob("Initial ContractRegistry Startup");
 
 		contractRegistryStartUpJob.schedule();
 	}
