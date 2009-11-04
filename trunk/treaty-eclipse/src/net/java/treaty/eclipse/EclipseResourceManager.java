@@ -14,18 +14,18 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.java.treaty.Connector;
+import net.java.treaty.InstantiationContext;
+import net.java.treaty.ResourceLoaderException;
+import net.java.treaty.ResourceManager;
+
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
-import org.osgi.framework.Bundle;
-
-import net.java.treaty.Connector;
-import net.java.treaty.InstantiationContext;
-import net.java.treaty.ResourceManager;
-import net.java.treaty.ResourceLoaderException;
 
 /**
  * Utility to extract resources.
@@ -34,18 +34,28 @@ import net.java.treaty.ResourceLoaderException;
  */
 public class EclipseResourceManager implements ResourceManager {
 
-	public String resolve(URI type, String ref,
-			net.java.treaty.Connector connector, InstantiationContext context)
-			throws ResourceLoaderException {
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ResourceManager#resolve(java.net.URI,
+	 * java.lang.String, net.java.treaty.Connector,
+	 * net.java.treaty.InstantiationContext)
+	 */
+	public String resolve(URI type, String ref, Connector connector,
+			InstantiationContext context) throws ResourceLoaderException {
 
-		EclipseExtension extension = (EclipseExtension) connector;
-		Document doc = this.loadPluginMetaData(connector);
+		EclipseExtension extension;
+		Document doc;
+
+		extension = (EclipseExtension) connector;
+		doc = this.loadPluginMetaData(connector);
+
 		if (context == null || context == InstantiationContext.DEFAULT_CONTEXT) {
 			// prepend xpath expression to select plugin node
 			// example (serviceprovider/@class is the actual resource reference):
 			// /plugin/extension[@point="net.java.treaty.eclipse.example.clock.dateformatter"]/serviceprovider/@class
 
-			// NOTE !!: we use the index in the xpath queries, this index orgininates
+			// NOTE !!: we use the index in the xpath queries, this index
+			// orgininates
 			// from the EclipseRegistry
 			// and we assume that the order of the extensions is the same as in
 			// plugin.xml!!
@@ -57,7 +67,8 @@ public class EclipseResourceManager implements ResourceManager {
 				xpath = XPath.newInstance(query.toString());
 				List<Element> nodes = xpath.selectNodes(doc);
 				if (nodes.size() == 0) {
-					// Logger.info("No resource references found in plugin.xml for " + ref
+					// Logger.info("No resource references found in plugin.xml for " +
+					// ref
 					// + " - check xpath");
 					return null;
 				}
@@ -85,7 +96,8 @@ public class EclipseResourceManager implements ResourceManager {
 				xpath = XPath.newInstance(ref);
 				List<Element> nodes = xpath.selectNodes(eContext.getContextNode());
 				if (nodes.size() == 0) {
-					// Logger.info("No resource references found in plugin.xml for " + ref
+					// Logger.info("No resource references found in plugin.xml for " +
+					// ref
 					// + " in context " + eContext.getContextNode() + " - check xpath");
 					return null;
 				}
@@ -105,9 +117,10 @@ public class EclipseResourceManager implements ResourceManager {
 						e);
 			}
 		}
-		else
-			throw new ResourceLoaderException();
 
+		else {
+			throw new ResourceLoaderException();
+		}
 	}
 
 	/*

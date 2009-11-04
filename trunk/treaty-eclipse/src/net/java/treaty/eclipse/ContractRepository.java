@@ -16,7 +16,7 @@ import java.util.List;
 
 import net.java.treaty.Contract;
 import net.java.treaty.VerificationReport;
-import net.java.treaty.eclipse.contractregistry.ContractRegistry;
+import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.jobs.ContractLoadingJob;
 import net.java.treaty.eclipse.jobs.VerificationJob;
 import net.java.treaty.eclipse.jobs.VerificationJobListener;
@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.jobs.MultiRule;
  * @author Jens Dietrich
  * 
  * @deprecated This Class is deprecated and has been Replaced by the
- *             {@link ContractRegistry}.
+ *             {@link EclipseContractRegistry}.
  */
 public class ContractRepository {
 

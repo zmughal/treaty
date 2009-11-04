@@ -12,7 +12,7 @@ package net.java.treaty.eclipse;
 
 import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
-import net.java.treaty.eclipse.contractregistry.ContractRegistry;
+import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 
 import org.eclipse.core.runtime.IExtension;
 
@@ -175,7 +175,7 @@ public class EclipseExtension extends EclipseConnector {
 	 * 
 	 * @deprecated This method does not add a {@link Contract} to this
 	 *             {@link EclipseExtension} anymore because all {@link Contract}s
-	 *             are stored by the {@link ContractRegistry} now.
+	 *             are stored by the {@link EclipseContractRegistry} now.
 	 */
 	@Deprecated
 	public void addContract(Contract contract) {
