@@ -97,6 +97,16 @@ public class ComponentMock implements Component {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.Component#loadClass(java.lang.String)
+	 */
+	public Class<?> loadClass(String className) throws ClassNotFoundException {
+
+		/* The ComponentMock cannot load classes. */
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.Annotatable#removeProperty(java.lang.String)
 	 */
 	public Object removeProperty(String key) {
@@ -124,7 +134,7 @@ public class ComponentMock implements Component {
 	 *          The {@link Connector} that shall be added.
 	 */
 	public void addConnector(Connector connector) {
-	
+
 		if (!this.myConnectors.contains(connector)) {
 			this.myConnectors.add(connector);
 		}
@@ -140,7 +150,7 @@ public class ComponentMock implements Component {
 	 *          The {@link Connector} that shall be removed.
 	 */
 	public void removeConnector(Connector connector) {
-	
+
 		this.myConnectors.remove(connector);
 	}
 }
