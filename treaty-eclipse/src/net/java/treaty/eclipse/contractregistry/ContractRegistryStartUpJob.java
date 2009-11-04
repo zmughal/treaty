@@ -28,13 +28,13 @@ import org.osgi.framework.BundleEvent;
 /**
  * <p>
  * The {@link ContractRegistryStartUpJob} is used to initialize the
- * {@link ContractRegistry} to capture all {@link BundleEvent}s that did happen
- * before the {@link ContractRegistry} has been started.
+ * {@link EclipseContractRegistry} to capture all {@link BundleEvent}s that did happen
+ * before the {@link EclipseContractRegistry} has been started.
  * </p>
  * 
  * <p>
  * The {@link ContractRegistryStartUpJob} can also be used to re-initialize the
- * {@link ContractRegistry}.
+ * {@link EclipseContractRegistry}.
  * </p>
  * 
  * @author Claas Wilke
@@ -73,7 +73,7 @@ public class ContractRegistryStartUpJob extends Job {
 
 		/* Probably cancel the job. */
 		if (monitor.isCanceled()) {
-			ContractRegistry.getInstance().clear();
+			EclipseContractRegistry.getInstance().clear();
 			return Status.CANCEL_STATUS;
 		}
 		// no else.
@@ -87,7 +87,7 @@ public class ContractRegistryStartUpJob extends Job {
 				BundleEvent bundleEvent;
 				bundleEvent = new BundleEvent(BundleEvent.STARTED, bundle);
 
-				ContractRegistry.getInstance().update(bundleEvent);
+				EclipseContractRegistry.getInstance().update(bundleEvent);
 			}
 			// no else.
 
