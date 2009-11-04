@@ -16,6 +16,8 @@ import java.net.URI;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.TreatyException;
 import net.java.treaty.vocabulary.CompositeContractOntology;
+import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
+import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
 
 
 /**
@@ -26,6 +28,21 @@ import net.java.treaty.vocabulary.CompositeContractOntology;
 public class VocabularyRegistry extends CompositeContractOntology  {
 	public static VocabularyRegistry INSTANCE = new VocabularyRegistry();
 	
+	
+	
+	private VocabularyRegistry() {
+		super();
+		try {
+			this.add(new JavaVocabulary());
+			this.add(new OWLVocabulary());
+		}
+		catch (TreatyException x) {
+			Logger.error("cannot install bootstrap vocabularies");
+		}
+	}
+
+
+
 	// overridden , super throws exception
 	protected void reportDuplicateDef(String kind, URI resource,ContractVocabulary voc, ContractVocabulary part) throws TreatyException {
 		StringBuffer b = new StringBuffer()
