@@ -81,7 +81,7 @@ public class JavaVocabularyTests {
 		URI range = jv.getRange(new URI("http://www.treaty.org/java#implements"));
 		assertEquals(new URI("http://www.treaty.org/java#AbstractType"),range);
 	}
-	
+	// for debugging 
 	private void list(Collection<URI> list) {
 		for (URI u:list) System.out.println(u);
 	}
