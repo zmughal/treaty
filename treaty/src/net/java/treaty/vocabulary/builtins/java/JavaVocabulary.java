@@ -13,16 +13,10 @@ package net.java.treaty.vocabulary.builtins.java;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-
 import net.java.treaty.*;
 import net.java.treaty.vocabulary.ContractOntology;
-
 
 /**
  * Contributes the Java vocabulary. Warning: this is not complete.
@@ -47,7 +41,7 @@ public class JavaVocabulary extends ContractOntology {
 
 	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException  {
 		if (!type.toString().startsWith(NS)) 
-			throw new ResourceLoaderException("This plugin cannot be used to instantiate resources of this type: " + type);
+			throw new ResourceLoaderException("This vocabulary cannot be used to instantiate resources of this type: " + type);
 		
 		Component c = connector.getOwner();
 		
@@ -168,18 +162,5 @@ public class JavaVocabulary extends ContractOntology {
 		}
 		return ontology;
 	}
-	public static void main(String[] args) throws Exception {
-		JavaVocabulary jv = new JavaVocabulary();
-		for (java.net.URI u:jv.getRelationships()) {
-			System.out.println("relationship: "+u);
-		}
-		for (java.net.URI u:jv.getTypes()) {
-			System.out.println("type: "+u);
-		}
-		for (java.net.URI u:jv.getProperties()) {
-			System.out.println("property: "+u);
-		}
-	}
-	
 
 }
