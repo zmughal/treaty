@@ -20,6 +20,7 @@ Export-Package: com.clarkparsia.explanation,
  edu.unika.aifb.rdf.api.syntax,
  edu.unika.aifb.rdf.api.util,
  net.java.treaty;uses:="org.apache.log4j",
+ net.java.treaty.contractregistry,
  net.java.treaty.eclipse;
   uses:="org.eclipse.core.runtime,
    org.eclipse.jface.resource,
