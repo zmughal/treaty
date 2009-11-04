@@ -103,7 +103,7 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	 */
 	public Set<EclipseExtension> getExtensions() {
 
-		return this.extensions;
+		return new HashSet<EclipseExtension>(this.extensions);
 	}
 
 	/**

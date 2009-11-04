@@ -13,14 +13,17 @@ package net.java.treaty.eclipse;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import net.java.treaty.Component;
 import net.java.treaty.Connector;
+import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
 import net.java.treaty.ContractReader;
 import net.java.treaty.PropertySupport;
+import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
-import net.java.treaty.eclipse.contractregistry.ContractRegistry;
+import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.xml.XMLContractReader;
 
 /**
@@ -101,16 +104,30 @@ public abstract class EclipseConnector extends PropertySupport implements
 
 	/**
 	 * <p>
-	 * Returns a {@link LinkedHashSet} containing all {@link Contract}s defined on
-	 * this {@link EclipseConnector}.
+	 * Returns a {@link Set} containing all {@link Contract}s defined on this
+	 * {@link EclipseConnector}.
 	 * </p>
 	 * 
-	 * @return A {@link LinkedHashSet} containing all {@link Contract}s defined on
-	 *         this {@link EclipseConnector}.
+	 * @return A {@link Set} containing all {@link Contract}s defined on this
+	 *         {@link EclipseConnector}.
 	 */
-	public LinkedHashSet<Contract> getContracts() {
+	public Set<Contract> getContracts() {
 
-		return ContractRegistry.getInstance().getOwnedContracts(this);
+		LinkedHashSet<Contract> result;
+		result = new LinkedHashSet<Contract>();
+
+		if (this.getType().equals(ConnectorType.CONSUMER)) {
+			result.addAll(EclipseContractRegistry.getInstance().getContracts(this,
+					Role.CONSUMER));
+		}
+
+		else if (this.getType().equals(ConnectorType.SUPPLIER)) {
+			result.addAll(EclipseContractRegistry.getInstance().getContracts(this,
+					Role.SUPPLIER));
+		}
+		// no else.
+
+		return result;
 	}
 
 	public static String getContractLocation(Connector c) {
