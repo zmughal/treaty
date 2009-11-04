@@ -24,7 +24,7 @@ import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.EclipseResourceManager;
 import net.java.treaty.eclipse.Logger;
-import net.java.treaty.eclipse.contractregistry.ContractRegistry;
+import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
@@ -42,7 +42,7 @@ import org.osgi.framework.Bundle;
  * 
  * @author Jens Dietrich
  * 
- * @Deprecated This class is deprecated. The {@link ContractRegistry} now
+ * @Deprecated This class is deprecated. The {@link EclipseContractRegistry} now
  *             manages the {@link Contract} loading itself.
  */
 @Deprecated
