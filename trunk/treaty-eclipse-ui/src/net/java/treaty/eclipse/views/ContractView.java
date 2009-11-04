@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 import net.java.treaty.AbstractCondition;
 import net.java.treaty.Annotatable;
@@ -39,6 +37,7 @@ import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
+import net.java.treaty.contractregistry.ContractRegistryListener;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.ContractRepository;
 import net.java.treaty.eclipse.EclipseExtension;
@@ -46,7 +45,7 @@ import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.Exporter;
 import net.java.treaty.eclipse.Logger;
-import net.java.treaty.eclipse.contractregistry.ContractRegistry;
+import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.jobs.VerificationJob;
 import net.java.treaty.eclipse.jobs.VerificationJobListener;
 import net.java.treaty.eclipse.ui.Activator;
@@ -95,7 +94,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  * 
  * @author Jens Dietrich
  */
-public class ContractView extends ViewPart implements Observer {
+public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	/**
 	 * <p>
@@ -722,7 +721,7 @@ public class ContractView extends ViewPart implements Observer {
 				// no else.
 
 				node.addChild(new TreeObject(new KeyValueNode("op", propertyCondition
-						.getOperator().getName())));
+						.getOperator().toString())));
 				node.addChild(new TreeObject(new KeyValueNode("value", ""
 						+ propertyCondition.getValue())));
 			}
@@ -944,7 +943,7 @@ public class ContractView extends ViewPart implements Observer {
 				buf.append(c.getProperty());
 			}
 			buf.append(' ');
-			buf.append(c.getOperator().getName());
+			buf.append(c.getOperator().toString());
 			buf.append(' ');
 			buf.append(c.getValue());
 			return buf.toString();
@@ -1192,38 +1191,34 @@ public class ContractView extends ViewPart implements Observer {
 
 	/*
 	 * (non-Javadoc)
-	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 * @see net.java.treaty.contractregistry.ContractRegistryListener#update()
 	 */
-	@Override
-	public void update(Observable observable, Object arg1) {
+	public void update() {
 
-		if (observable instanceof ContractRegistry) {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 
-			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			/*
+			 * (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			public void run() {
 
-				/*
-				 * (non-Javadoc)
-				 * @see java.lang.Runnable#run()
-				 */
-				public void run() {
-
-					actionReloadContracts();
-				}
-			});
-		}
-		// no else.
+				actionReloadContracts();
+			}
+		});
 	}
 
 	/**
 	 * <p>
-	 * Updates the GUI by requesting the {@link ContractRegistry} for a new
+	 * Updates the GUI by requesting the {@link EclipseContractRegistry} for a new
 	 * version of the current {@link Contract} model.
 	 * </p>
 	 */
 	private void actionReloadContracts() {
 
 		/* Load the contracted plug-ins. */
-		this.plugins = ContractRegistry.getInstance().getContractedEclipsePlugins();
+		this.plugins =
+				EclipseContractRegistry.getInstance().getContractedEclipsePlugins();
 
 		/* Update the viewer. */
 		this.viewer.setContentProvider(new ViewContentProvider());
@@ -1322,7 +1317,8 @@ public class ContractView extends ViewPart implements Observer {
 
 		actionReloadContracts(); // background initialization
 
-		ContractRegistry.getInstance().addObserver(this);
+		/* Register as listener of the contract registry. */
+		EclipseContractRegistry.getInstance().addContractRegistryListener(this);
 	}
 
 	private Object getSelectedObject() {
@@ -1748,8 +1744,8 @@ public class ContractView extends ViewPart implements Observer {
 		if (disableActions) {
 			switchActions(false);
 		}
-		ContractRegistry.getInstance().verify(contracts, verReport, vListener,
-				jListener);
+		EclipseContractRegistry.getInstance().verify(contracts, verReport,
+				vListener, jListener);
 
 	}
 
