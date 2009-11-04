@@ -89,6 +89,12 @@ public class BundleActivationUpdateJob extends Job {
 	private static final String CONTRACT_LOCATION_SUFFIX = ".contract";
 
 	/**
+	 * The state in which a {@link Bundle} must be before its {@link Contract}s
+	 * shall be added to the registry.
+	 */
+	private static final int ACTIVE_BUNDLE_STATE = Bundle.ACTIVE;
+
+	/**
 	 * The {@link Bundle} to which this {@link BundleActivationUpdateJob} belongs
 	 * to.
 	 */
@@ -251,11 +257,18 @@ public class BundleActivationUpdateJob extends Job {
 										extensionRegistry.getExtensionPoint(extensionPointID);
 
 								/* If no extension point has been found, log the error. */
-								if (extensionPoint == null) {
+								if (extensionPoint == null
+										|| org.eclipse.core.runtime.Platform.getBundle(
+												extensionPoint.getContributor().getName()).getState() != ACTIVE_BUNDLE_STATE) {
 
 									Logger.warn("No extension point with id " + extensionPointID
 											+ " found for external contract " + contractLocation
 											+ ".");
+
+									/* Store the unbound legislator to bind it later on. */
+									EclipseContractRegistry.getInstance()
+											.addUnboundLegislatorContract(extensionPointID,
+													legislatorContract);
 								}
 
 								/* Else add the legislator contract to the extension point. */
@@ -346,22 +359,39 @@ public class BundleActivationUpdateJob extends Job {
 							+ extensionPoint.getUniqueIdentifier() + CONTRACT_LOCATION_SUFFIX;
 			contractURL = eclipsePlugin.getResource(contractName);
 
+			EclipseExtensionPoint eclipseExtensionPoint;
+			eclipseExtensionPoint =
+					EclipseAdapterFactory.getInstance().createExtensionPoint(
+							extensionPoint);
+
 			/* If a contract has been found, add it to the extension point. */
 			if (contractURL != null) {
 
-				EclipseExtensionPoint eclipseExtensionPoint;
-				eclipseExtensionPoint =
-						EclipseAdapterFactory.getInstance().createExtensionPoint(
-								extensionPoint);
-
 				Contract contract;
-				contract =
-						EclipseExtensionPoint.createContract(contractURL,
-								eclipseExtensionPoint);
+
+				/* FIXME Claas: changes this when the bug with Jena was fixed. */
+				// contract =
+				// EclipseExtensionPoint.createContract(contractURL,
+				// eclipseExtensionPoint);
+				contract = new Contract();
+				contract.setLocation(contractURL);
+				contract.setDefinition(contract);
 
 				this.addContractToExtensionPoint(eclipseExtensionPoint, contract);
 			}
 			// no else (extension point not contracted by own plug-in).
+
+			/*
+			 * Also check if the extension point has further unbound legislator
+			 * contracts.
+			 */
+			for (Contract legislatorContract : EclipseContractRegistry.getInstance()
+					.removeUnboundLegislatorContractsForContractedConnector(eclipseExtensionPoint)) {
+
+				this.addContractToExtensionPoint(eclipseExtensionPoint,
+						legislatorContract);
+			}
+			// no else (no unbound legislator contracts).
 
 			monitor.worked(WORK_INTERNAL_CONTRACTS / extensionPoints.length);
 		}
@@ -517,10 +547,19 @@ public class BundleActivationUpdateJob extends Job {
 				eclipseExtension =
 						EclipseAdapterFactory.getInstance().createExtension(extension);
 
-				eclipseExtensionPoint.addExtension(eclipseExtension);
+				/*
+				 * Only add the Contract to the extension if the extension's plug'in is
+				 * in the right state.
+				 */
+				if (((EclipsePlugin) eclipseExtension.getOwner()).getBundle()
+						.getState() == ACTIVE_BUNDLE_STATE) {
+					eclipseExtensionPoint.addExtension(eclipseExtension);
 
-				EclipseContractRegistry.getInstance().updateContract(
-						UpdateType.ADD_CONTRACT, contract, eclipseExtension, Role.SUPPLIER);
+					EclipseContractRegistry.getInstance().updateContract(
+							UpdateType.ADD_CONTRACT, contract, eclipseExtension,
+							Role.SUPPLIER);
+				}
+				// no else.
 			}
 
 			catch (TreatyException e) {

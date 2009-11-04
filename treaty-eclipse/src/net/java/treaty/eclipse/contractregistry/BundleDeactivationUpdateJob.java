@@ -246,6 +246,16 @@ public class BundleDeactivationUpdateJob extends Job {
 										+ "from ExtensionPoint.", e);
 					}
 					// end catch.
+
+					/* Check if the contract was an external contract. */
+					if (contract.getDefinition() != null
+							&& contract.getSupplier() == null) {
+
+						/* Register the legislator contract as unbound. */
+						EclipseContractRegistry.getInstance().addUnboundLegislatorContract(
+								eclipseExtensionPoint.getId(), contract.getDefinition());
+					}
+					// no else.
 				}
 				// end for.
 			}
@@ -274,7 +284,7 @@ public class BundleDeactivationUpdateJob extends Job {
 		EclipsePlugin eclipsePlugin;
 		List<EclipseExtension> eclipseExtensions;
 
-		/* Get the eclipse plugin. */
+		/* Get the eclipse plug-in. */
 		eclipsePlugin =
 				EclipseAdapterFactory.getInstance().createEclipsePlugin(this.myBundle);
 
@@ -308,6 +318,11 @@ public class BundleDeactivationUpdateJob extends Job {
 				}
 			}
 			// end for.
+
+			/* Probably remove unbound legislator contracts as well. */
+			EclipseContractRegistry.getInstance()
+					.removeUnboundLegislatorContractsForLegislatorConnector(
+							eclipseExtension);
 
 			monitor.worked(WORK_LEGISLATOR_CONTRACTS / eclipseExtensions.size());
 		}

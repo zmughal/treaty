@@ -12,6 +12,7 @@ package net.java.treaty.eclipse.contractregistry;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -25,7 +26,7 @@ import net.java.treaty.Role;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.contractregistry.ContractRegistry;
 import net.java.treaty.eclipse.ContractVerificationSchedulingRule;
-import net.java.treaty.eclipse.EclipseExtension;
+import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.EclipseResourceManager;
 import net.java.treaty.eclipse.EclipseVerifier;
@@ -33,8 +34,6 @@ import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.jobs.VerificationJob;
 import net.java.treaty.eclipse.jobs.VerificationJobListener;
 
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
@@ -54,42 +53,24 @@ public final class EclipseContractRegistry extends ContractRegistry {
 	/** Singleton Instance of the {@link EclipseContractRegistry}. */
 	private static EclipseContractRegistry myInstance;
 
-	/** The {@link EclipsePlugin}s on that contracts are defined. */
-	private Map<Bundle, EclipsePlugin> contractedPlugins =
-			new LinkedHashMap<Bundle, EclipsePlugin>();
-
-	/** The {@link IExtensionPoint}s on which {@link Contract}s are defined. */
-	private Map<IExtensionPoint, LinkedHashSet<Contract>> contractedExtensionPoints =
-			new LinkedHashMap<IExtensionPoint, LinkedHashSet<Contract>>();
-
-	/** The {@link IExtension}s on which {@link Contract}s are defined. */
-	private Map<IExtension, LinkedHashSet<Contract>> contractedExtensions =
-			new LinkedHashMap<IExtension, LinkedHashSet<Contract>>();
+	/**
+	 * Contains all legislator {@link Contract}s that have not yet been bound to
+	 * the contracted {@link EclipseExtensionPoint} because the
+	 * {@link EclipseExtensionPoint}s {@link EclipsePlugin} has not been activated
+	 * yet. The key is the ID of the contracted {@link EclipseExtensionPoint}.
+	 */
+	private Map<String, LinkedHashSet<Contract>> unboundLegislatorContracts =
+			new LinkedHashMap<String, LinkedHashSet<Contract>>();
 
 	/**
-	 * Contains all {@link IExtensionPoint}s on that external {@link Contract}s
-	 * have been defined by other {@link EclipsePlugin}s. The
-	 * {@link EclipsePlugin} that defined a {@link Contract} can be accessed via
-	 * the {@link Contract#getOwner()} method.
+	 * Contains all {@link Connector}s that play the {@link Role#LEGISLATOR} and
+	 * provided {@link Contract}s for other {@link Connector}s that have not been
+	 * activated yet. The key is the legislator {@link Connector} and the value
+	 * contains the Unique IDs of all {@link Connector}s that are contracted with
+	 * unbound {@link Contract}s.
 	 */
-	private Map<IExtensionPoint, LinkedHashSet<Contract>> boundExternalContracts =
-			new HashMap<IExtensionPoint, LinkedHashSet<Contract>>();
-
-	/**
-	 * Contains all external {@link Contract}s in relation to the
-	 * {@link IExtension} that defines the external {@link Contract}.
-	 */
-	private Map<IExtension, LinkedHashSet<Contract>> externalContracts =
-			new HashMap<IExtension, LinkedHashSet<Contract>>();
-
-	/**
-	 * Contains all {@link IExtensionPoint}s (as their unique IDs) on that
-	 * external {@link Contract}s have been defined by other {@link EclipsePlugin}
-	 * s. The {@link EclipsePlugin} that defined a {@link Contract} can be
-	 * accessed via the {@link Contract#getOwner()} method.
-	 */
-	private Map<String, LinkedHashSet<Contract>> unboundExternalContracts =
-			new HashMap<String, LinkedHashSet<Contract>>();
+	private Map<Connector, HashSet<String>> legislatorsWithUnboundContracts =
+			new HashMap<Connector, HashSet<String>>();
 
 	/**
 	 * <p>
@@ -124,7 +105,7 @@ public final class EclipseContractRegistry extends ContractRegistry {
 	 * </p>
 	 */
 	public static void clear() {
-	
+
 		myInstance = new EclipseContractRegistry();
 	}
 
@@ -169,6 +150,22 @@ public final class EclipseContractRegistry extends ContractRegistry {
 		// end for.
 
 		return result;
+	}
+
+	/**
+	 * <p>
+	 * Checks if a given {@link Connector} (as its ID) has at least one unbound
+	 * legislator {@link Contract}.
+	 * </p>
+	 * 
+	 * @param connectorID
+	 *          The unique ID of {@link Connector} that shall be checked.
+	 * @return <code>true</code> if the given {@link Connector} has at least one
+	 *         unbound legislator {@link Contract}
+	 */
+	public boolean hasUnboundLegislatorContracts(String connectorID) {
+
+		return this.unboundLegislatorContracts.containsKey(connectorID);
 	}
 
 	/**
@@ -272,110 +269,6 @@ public final class EclipseContractRegistry extends ContractRegistry {
 	}
 
 	/**
-	 * <p>
-	 * Returns all instances of a given {@link Contract} that belongs to a given
-	 * {@link Connector}.
-	 * </p>
-	 * 
-	 * <p>
-	 * <strong>FIXME Please not that this method currently only works for
-	 * {@link Connector}s having the type {@link ConnectorType#CONSUMER}.</strong>
-	 * </p>
-	 * 
-	 * @param contract
-	 *          The {@link Contract} whose instances shall be returned.
-	 * @param connector
-	 *          The {@link Connector} to which the instances shall belong to.
-	 * @return A {@link Set} of all found {@link Contract} instances.
-	 */
-	protected Set<Contract> getInstancesOfContract(Contract contract,
-			Connector connector) {
-
-		Set<Contract> result;
-		result = new LinkedHashSet<Contract>();
-
-		if (connector.getType().equals(ConnectorType.CONSUMER)) {
-
-			for (Contract ownedContract : this.getContracts(connector, Role.CONSUMER)) {
-
-				if (ownedContract.equals(contract)
-						|| ownedContract.getDefinition().equals(connector)) {
-
-					result.add(ownedContract);
-				}
-				// no else.
-			}
-			// end for.
-		}
-		// no else.
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Returns the {@link IExtensionPoint}s on that contracts are defined.
-	 * </p>
-	 * 
-	 * @return The {@linkIExtensionPoint}s on that contracts are defined.
-	 */
-	public LinkedHashSet<IExtensionPoint> getContractedExtensionPoints() {
-
-		LinkedHashSet<IExtensionPoint> result;
-
-		result = new LinkedHashSet<IExtensionPoint>();
-		result.addAll(this.contractedExtensionPoints.keySet());
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Checks, if a given {@link IExtensionPoint} has external {@link Contract}s
-	 * in the {@link EclipseContractRegistry}.
-	 * </p>
-	 * 
-	 * <p>
-	 * This method is public visible for test reasons only. It shuoldn't be that
-	 * interesting for regular clients.
-	 * </p>
-	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} that shall be checked.
-	 * @return <code>true</code> if the given {@link IExtensionPoint} has external
-	 *         {@link Contract}s in the {@link EclipseContractRegistry}.
-	 */
-	public boolean hasExtensionPointExternalContracts(
-			IExtensionPoint extensionPoint) {
-
-		return this.boundExternalContracts.containsKey(extensionPoint);
-	}
-
-	/**
-	 * <p>
-	 * Checks, if a given {@link IExtensionPoint} (by its ID) has external
-	 * {@link Contract}s in the {@link EclipseContractRegistry} that have not been
-	 * bound to the {@link IExtensionPoint} yet.
-	 * </p>
-	 * 
-	 * <p>
-	 * This method is public visible for test reasons only. It shuoldn't be that
-	 * interesting for regular clients.
-	 * </p>
-	 * 
-	 * @param extensionPointID
-	 *          The unique ID of the {@link IExtensionPoint} that shall be
-	 *          checked.
-	 * @return <code>true</code> if the given {@link IExtensionPoint} has unbound
-	 *         external {@link Contract}s in the {@link EclipseContractRegistry}.
-	 */
-	public boolean hasExtensionPointUnboundExternalContracts(
-			String extensionPointID) {
-
-		return this.unboundExternalContracts.containsKey(extensionPointID);
-	}
-
-	/**
 	 * FIXME Claas: Should this method be part of the
 	 * {@link EclipseContractRegistry}? I think it should be located in the
 	 * {@link EclipseVerifier} or a similar class.
@@ -424,195 +317,124 @@ public final class EclipseContractRegistry extends ContractRegistry {
 
 	/**
 	 * <p>
-	 * This method can be used to add a {@link Contract} to the list of bound
-	 * external {@link Contract}s.
+	 * Adds a given {@link Contract} to the list of unbound legislator
+	 * {@link Contract}s in respect to the {@link EclipseExtensionPoint}s unique
+	 * ID that is contracted by the {@link Contract}.
 	 * </p>
 	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} to that the contract shall be added.
+	 * @param extensionPointID
+	 *          The unique ID of the {@link EclipseExtensionPoint} that is
+	 *          contracted.
 	 * @param contract
-	 *          The {@link Contract} that shall be added.
+	 *          The legislator {@link Contract} that shall be added.
+	 * @return
 	 */
-	protected void addBoundExternalContract(
-			IExtensionPoint contractedExtensionPoint, Contract contract) {
+	protected void addUnboundLegislatorContract(String extensionPointID,
+			Contract contract) {
 
-		LinkedHashSet<Contract> boundContracts;
+		/* Store the legislator contract. */
+		LinkedHashSet<Contract> legislatorContracts;
 
-		if (this.boundExternalContracts.containsKey(contractedExtensionPoint)) {
-			boundContracts =
-					this.boundExternalContracts.get(contractedExtensionPoints);
+		if (this.unboundLegislatorContracts.containsKey(extensionPointID)) {
+			legislatorContracts =
+					this.unboundLegislatorContracts.get(extensionPointID);
 		}
 
 		else {
-			boundContracts = new LinkedHashSet<Contract>();
+			legislatorContracts = new LinkedHashSet<Contract>();
 		}
 
-		boundContracts.add(contract);
-		this.boundExternalContracts.put(contractedExtensionPoint, boundContracts);
+		legislatorContracts.add(contract);
+		this.unboundLegislatorContracts.put(extensionPointID, legislatorContracts);
 
-		/* Add the contract to the list of all external contracts as well. */
-		this.addExternalContract(contract);
+		/* Also store the legislator itself in another map to improve resoning. */
+		HashSet<String> contractedConnectors;
 
-		/* Update change status. */
-		this.setChanged();
+		if (this.legislatorsWithUnboundContracts.containsKey(contract.getOwner())) {
+			contractedConnectors =
+					this.legislatorsWithUnboundContracts.get(contract.getOwner());
+		}
+
+		else {
+			contractedConnectors = new HashSet<String>();
+		}
+
+		contractedConnectors.add(extensionPointID);
+		this.legislatorsWithUnboundContracts.put(contract.getOwner(),
+				contractedConnectors);
 	}
 
 	/**
 	 * <p>
-	 * This method can be used to add a {@link Bundle} to the {@link Set} of
-	 * contracted {@link Bundle}s externally.
+	 * Returns all instances of a given {@link Contract} that belongs to a given
+	 * {@link Connector}.
 	 * </p>
 	 * 
-	 * @param bundle
-	 *          The {@link Bundle} that shall be added.
-	 */
-	protected void addContractedBundle(Bundle bundle) {
-
-		EclipsePlugin eclipsePlugin;
-		eclipsePlugin =
-				EclipseAdapterFactory.getInstance().createEclipsePlugin(bundle);
-
-		this.contractedPlugins.put(bundle, eclipsePlugin);
-
-		/* Update change status. */
-		this.setChanged();
-	}
-
-	/**
 	 * <p>
-	 * This method can be used to add a {@link Contract} to an
-	 * {@link IExtensionPoint} externally.
+	 * <strong>FIXME Please note that this method currently only works for
+	 * {@link Connector}s having the type {@link ConnectorType#CONSUMER}.</strong>
 	 * </p>
 	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} to that the contract shall be added.
 	 * @param contract
-	 *          The {@link Contract} that shall be added.
+	 *          The {@link Contract} whose instances shall be returned.
+	 * @param connector
+	 *          The {@link Connector} to which the instances shall belong to.
+	 * @return A {@link Set} of all found {@link Contract} instances.
 	 */
-	protected void addContractToExtensionPoint(IExtensionPoint extensionPoint,
-			Contract contract) {
+	protected Set<Contract> getInstancesOfContract(Contract contract,
+			Connector connector) {
 
-		LinkedHashSet<Contract> definedContracts;
+		Set<Contract> result;
+		result = new LinkedHashSet<Contract>();
 
-		definedContracts = this.contractedExtensionPoints.get(extensionPoint);
+		if (connector.getType().equals(ConnectorType.CONSUMER)) {
 
-		if (definedContracts == null) {
-			definedContracts = new LinkedHashSet<Contract>();
+			Set<Contract> ownedContracts;
+			ownedContracts = this.getContracts(connector, Role.CONSUMER);
+
+			for (Contract ownedContract : ownedContracts) {
+
+				if (ownedContract.equals(contract)
+						|| ownedContract.getDefinition().equals(contract)) {
+
+					result.add(ownedContract);
+				}
+				// no else.
+			}
+			// end for.
 		}
 		// no else.
 
-		definedContracts.add(contract);
-		this.contractedExtensionPoints.put(extensionPoint, definedContracts);
-
-		/* Update change status. */
-		this.setChanged();
+		return result;
 	}
 
 	/**
 	 * <p>
-	 * This method can be used to add a {@link Contract} to the list of unbound
-	 * external {@link Contract}s.
+	 * Removes and returns all unbound legislator {@link Contract}s from this
+	 * {@link EclipseContractRegistry} that contract a given {@link Connector}.
 	 * </p>
 	 * 
-	 * @param extensionPointID
-	 *          The ID of the {@link IExtensionPoint} to that the contract shall
-	 *          be added.
-	 * @param contract
-	 *          The {@link Contract} that shall be added.
-	 */
-	protected void addUnboundExternalContract(String extensionPointID,
-			Contract contract) {
-
-		LinkedHashSet<Contract> externalContractsOfExtension;
-
-		if (this.unboundExternalContracts.containsKey(extensionPointID)) {
-			externalContractsOfExtension =
-					this.unboundExternalContracts.get(extensionPointID);
-		}
-
-		else {
-			externalContractsOfExtension = new LinkedHashSet<Contract>();
-		}
-
-		/* Probably unbind the contract. */
-		contract.setConsumer(null);
-		externalContractsOfExtension.add(contract);
-
-		this.unboundExternalContracts.put(extensionPointID,
-				externalContractsOfExtension);
-
-		/* Add the contract to the list of all external contracts as well. */
-		this.addExternalContract(contract);
-
-		/* Update change status. */
-		this.setChanged();
-	}
-
-	/**
-	 * <p>
-	 * This method can be used to add a {@link LinkedHashSet} of {@link Contract}s
-	 * to the list of unbound external {@link Contract}s.
-	 * </p>
-	 * 
-	 * @param extensionPointID
-	 *          The ID of the {@link IExtensionPoint} to that the contract shall
-	 *          be added.
-	 * @param contracts
-	 *          The {@link Contract}s that shall be added.
-	 */
-	protected void addUnboundExternalContracts(String extensionPointID,
-			LinkedHashSet<Contract> contracts) {
-
-		LinkedHashSet<Contract> externalContractsOfExtension;
-
-		if (this.unboundExternalContracts.containsKey(extensionPointID)) {
-			externalContractsOfExtension =
-					this.unboundExternalContracts.get(extensionPointID);
-		}
-
-		else {
-			externalContractsOfExtension = new LinkedHashSet<Contract>();
-		}
-
-		/* Probably unbind the contracts. */
-		for (Contract contract : contracts) {
-			contract.setConsumer(null);
-		}
-
-		externalContractsOfExtension.addAll(contracts);
-
-		this.unboundExternalContracts.put(extensionPointID,
-				externalContractsOfExtension);
-
-		/* Add the contracts to the list of all external contracts as well. */
-		for (Contract contract : contracts) {
-			this.addExternalContract(contract);
-		}
-		// end for.
-
-		/* Update change status. */
-		this.setChanged();
-	}
-
-	/**
-	 * <p>
-	 * Returns all external {@link Contract}s defined by the given
-	 * {@link IExtension}.
-	 * </p>
-	 * 
-	 * @param extension
-	 *          The {@link IExtension} whose external {@link Contract}s shall be
+	 * @param connector
+	 *          The {@link Connector} whose legislator {@link Contract}s shall be
 	 *          returned.
-	 * @return The external {@link Contract}s as a {@link LinkedHashSet}.
+	 * @return The removed legislator {@link Contract}s.
 	 */
-	protected LinkedHashSet<Contract> getExternalContractsOfExtension(
-			IExtension extension) {
+	protected Set<Contract> removeUnboundLegislatorContractsForContractedConnector(
+			Connector connector) {
 
-		LinkedHashSet<Contract> result;
+		Set<Contract> result;
 		result = new LinkedHashSet<Contract>();
 
-		if (this.externalContracts.containsKey(extension)) {
-			result.addAll(this.externalContracts.get(extension));
+		if (this.unboundLegislatorContracts.containsKey(connector.getId())) {
+
+			result.addAll(this.unboundLegislatorContracts.remove(connector.getId()));
+
+			/* Also remove the legislator's of the found contracts from a second map. */
+			for (Contract legislatorContract : result) {
+
+				this.removeIdFromLegislatorWithUnboundContracts(legislatorContract
+						.getOwner(), connector.getId());
+			}
 		}
 		// no else.
 
@@ -621,397 +443,54 @@ public final class EclipseContractRegistry extends ContractRegistry {
 
 	/**
 	 * <p>
-	 * Returns all external {@link Contract}s of a given {@link IExtensionPoint}.
+	 * Removes and all unbound legislator {@link Contract}s from this
+	 * {@link EclipseContractRegistry} that are owned by a given {@link Connector}
+	 * .
 	 * </p>
 	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} whose external {@link Contract}s shall
-	 *          be returned.
-	 * @return The external {@link Contract}s as a {@link LinkedHashSet}.
-	 */
-	protected LinkedHashSet<Contract> getExternalContractsOfExtensionPoint(
-			IExtensionPoint extensionPoint) {
-
-		LinkedHashSet<Contract> result;
-		result = new LinkedHashSet<Contract>();
-
-		if (this.boundExternalContracts.containsKey(extensionPoint)) {
-			result.addAll(this.boundExternalContracts.get(extensionPoint));
-		}
-		// no else.
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Returns all external {@link Contract}s of a given {@link IExtensionPoint}'s
-	 * ID that are already defined but not bound yet because the
-	 * {@link IExtensionPoint}'s {@link Bundle} has not been activated yet.
-	 * </p>
-	 * 
-	 * @param extensionPointID
-	 *          The unique ID of the {@link IExtensionPoint} whose external
-	 *          {@link Contract}s shall be returned.
-	 * @return The unbound external {@link Contract}s as a {@link LinkedHashSet}.
-	 */
-	protected LinkedHashSet<Contract> getUnboundExternalContractsOfExtensionPoint(
-			String extensionPointID) {
-
-		LinkedHashSet<Contract> result;
-		result = new LinkedHashSet<Contract>();
-
-		if (this.unboundExternalContracts.containsKey(extensionPointID)) {
-			result.addAll(this.unboundExternalContracts.get(extensionPointID));
-		}
-		// no else.
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Checks if a given {@link IExtension} has registered {@link Contract}s in
-	 * the {@link EclipseContractRegistry}.
-	 * </p>
-	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtension} that shall be checked.
-	 * @return <code>true</code> if the {@link IExtension} has {@link Contract}s
-	 *         in the {@link EclipseContractRegistry}.
-	 */
-	protected boolean hasExtensionContracts(IExtension extension) {
-
-		return this.contractedExtensions.containsKey(extension);
-	}
-
-	/**
-	 * <p>
-	 * Checks if a given {@link IExtensionPoint} has registered {@link Contract}s
-	 * in the {@link EclipseContractRegistry}.
-	 * </p>
-	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} that shall be checked.
-	 * @return <code>true</code> if the {@link IExtensionPoint} has
-	 *         {@link Contract}s in the {@link EclipseContractRegistry}.
-	 */
-	protected boolean hasExtensionPointContracts(IExtensionPoint extensionPoint) {
-
-		return this.contractedExtensionPoints.containsKey(extensionPoint);
-	}
-
-	/**
-	 * <p>
-	 * A helper method that removes all bound external {@link Contract}s from the
-	 * {@link EclipseContractRegistry} for a given {@link IExtensionPoint}.
-	 * </p>
-	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} for which all bound external
-	 *          {@link Contract}s shall be removed.
-	 * @return Returns the removed {@link Contract}s as a {@link LinkedHashSet}.
-	 */
-	protected LinkedHashSet<Contract> removeAllBoundExternalContracts(
-			IExtensionPoint extensionPoint) {
-
-		LinkedHashSet<Contract> result;
-
-		result = this.boundExternalContracts.remove(extensionPoint);
-
-		/* Remove the contracts from the list of all external contracts as well. */
-		for (Contract contract : result) {
-			this.removeExternalContract(contract);
-		}
-
-		/* Update change status. */
-		this.setChanged();
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * This method can be used to remove all {@link Contract}s from an
-	 * {@link IExtension}.
-	 * </p>
-	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtension} from that all {@link Contract}s shall be
+	 * @param connector
+	 *          The {@link Connector} whose legislator {@link Contract}s shall be
 	 *          removed.
 	 */
-	protected void removeAllContractsFromExtension(IExtension extension) {
+	protected void removeUnboundLegislatorContractsForLegislatorConnector(
+			Connector connector) {
 
-		this.contractedExtensions.remove(extension);
+		if (this.legislatorsWithUnboundContracts.containsKey(connector)) {
 
-		/* Update change status. */
-		this.setChanged();
-	}
+			for (String contractedID : this.legislatorsWithUnboundContracts
+					.remove(connector)) {
 
-	/**
-	 * <p>
-	 * This method can be used to remove all {@link Contract}s from an
-	 * {@link IExtensionPoint}.
-	 * </p>
-	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} from that all {@link Contract}s shall
-	 *          be removed.
-	 */
-	protected void removeAllContractsFromExtensionPoint(
-			IExtensionPoint extensionPoint) {
+				if (this.unboundLegislatorContracts.containsKey(contractedID)) {
 
-		this.contractedExtensionPoints.remove(extensionPoint);
+					LinkedHashSet<Contract> remainingContracts;
+					LinkedHashSet<Contract> removedContracts;
+					remainingContracts =
+							this.unboundLegislatorContracts.get(contractedID);
+					removedContracts = new LinkedHashSet<Contract>();
 
-		/* Update change status. */
-		this.setChanged();
-	}
+					for (Contract legislatorContract : remainingContracts) {
 
-	/**
-	 * <p>
-	 * A helper method that removes all unbound external {@link Contract}s from
-	 * the {@link EclipseContractRegistry} for a given {@link IExtensionPoint}s
-	 * identifier.
-	 * </p>
-	 * 
-	 * @param uniqueIdentifier
-	 *          The unique ID of the {@link IExtensionPoint} for which all unbound
-	 *          external {@link Contract}s shall be removed.
-	 */
-	protected void removeAllUnboundExternalContracts(String uniqueIdentifier) {
+						if (legislatorContract.getOwner().equals(connector)) {
+							removedContracts.add(legislatorContract);
+						}
+						// no else.
+					}
+					// end for.
 
-		LinkedHashSet<Contract> contracts;
+					remainingContracts.removeAll(removedContracts);
 
-		contracts = this.unboundExternalContracts.remove(uniqueIdentifier);
+					if (remainingContracts.size() > 0) {
+						this.unboundLegislatorContracts.put(contractedID,
+								remainingContracts);
+					}
 
-		/* Remove the contracts from the list of all external contracts as well. */
-		for (Contract contract : contracts) {
-			this.removeExternalContract(contract);
-		}
-
-		/* Update change status. */
-		this.setChanged();
-	}
-
-	/**
-	 * <p>
-	 * A helper method that removes a given bound external {@link Contract}s from
-	 * the {@link EclipseContractRegistry} for a given {@link IExtensionPoint}.
-	 * </p>
-	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} for which the bound external
-	 *          {@link Contract}s shall be removed.
-	 * @param contract
-	 *          The {@link Contract} that shall be removed.
-	 */
-	protected void removeBoundExternalContract(IExtensionPoint extensionPoint,
-			Contract contract) {
-
-		if (this.boundExternalContracts.containsKey(extensionPoint)) {
-
-			LinkedHashSet<Contract> boundContracts;
-			boundContracts = this.boundExternalContracts.get(extensionPoint);
-
-			boundContracts.remove(contract);
-
-			if (boundContracts.size() > 0) {
-				this.boundExternalContracts.put(extensionPoint, boundContracts);
+					else {
+						this.unboundLegislatorContracts.remove(contractedID);
+					}
+				}
+				// no else.
 			}
-
-			else {
-				this.boundExternalContracts.remove(extensionPoint);
-			}
-
-			/* Remove the contract from the list of all external contracts as well. */
-			this.removeExternalContract(contract);
-
-			/* Update change status. */
-			this.setChanged();
-		}
-		// no else.
-	}
-
-	/**
-	 * <p>
-	 * Removes a given {@link Bundle} from the List of contracted {@link Bundle}s.
-	 * </p>
-	 * 
-	 * @param bundle
-	 *          The {@link Bundle} that shall be removed.
-	 */
-	protected void removeContractedBundle(Bundle bundle) {
-
-		this.contractedPlugins.remove(bundle);
-
-		/* Update change status. */
-		this.setChanged();
-	}
-
-	/**
-	 * <p>
-	 * Removes a given {@link Contract} from a given {@link IExtensionPoint}.
-	 * </p>
-	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} from that the {@link Contract} shall
-	 *          be removed.
-	 * @param contract
-	 *          The {@link Contract} that shall be removed.
-	 */
-	protected void removeContractFromExtensionPoint(
-			IExtensionPoint extensionPoint, Contract contract) {
-
-		LinkedHashSet<Contract> definedContracts;
-
-		/* Remove the contract from the extension point. */
-		if (this.contractedExtensionPoints.containsKey(extensionPoint)) {
-
-			definedContracts = this.contractedExtensionPoints.get(extensionPoint);
-			definedContracts.remove(contract);
-
-			/* Probably remove the contracted extension point. */
-			if (definedContracts.size() == 0) {
-				this.contractedExtensionPoints.remove(extensionPoint);
-			}
-
-			/* Else only remove the contract from the registry. */
-			else {
-				this.contractedExtensionPoints.put(extensionPoint, definedContracts);
-			}
-			// end else.
-		}
-		// no else.
-
-		/* Update change status. */
-		this.setChanged();
-	}
-
-	/**
-	 * <p>
-	 * A helper method that removes a given unbound external {@link Contract}s
-	 * from the {@link EclipseContractRegistry} for a given
-	 * {@link IExtensionPoint}'s ID.
-	 * </p>
-	 * 
-	 * @param extensionPointID
-	 *          The unique ID of {@link IExtensionPoint} for which the unbound
-	 *          external {@link Contract}s shall be removed.
-	 * @param contract
-	 *          The {@link Contract} that shall be removed.
-	 */
-	protected void removeUnboundExternalContract(String extensionPointID,
-			Contract contract) {
-
-		LinkedHashSet<Contract> boundContracts;
-		boundContracts = this.unboundExternalContracts.get(extensionPointID);
-
-		boundContracts.remove(contract);
-
-		if (boundContracts.size() > 0) {
-			this.unboundExternalContracts.put(extensionPointID, boundContracts);
-		}
-
-		else {
-			this.unboundExternalContracts.remove(extensionPointID);
-		}
-
-		/* Remove the contract from the list of all external contracts as well. */
-		this.removeExternalContract(contract);
-
-		/* Update change status. */
-		this.setChanged();
-	}
-
-	/**
-	 * <p>
-	 * This method can be used to set the {@link Contract} of an
-	 * {@link IExtension} externally.
-	 * </p>
-	 * 
-	 * @param extension
-	 *          The {@link IExtension} whose {@link Contract}s shall be set.
-	 * @param contracts
-	 *          The {@link Contract}s that shall be set.
-	 */
-	protected void setContractsOfExtension(IExtension extension,
-			LinkedHashSet<Contract> contracts) {
-
-		this.contractedExtensions.put(extension, contracts);
-
-		/* Update change status. */
-		this.setChanged();
-	}
-
-	/**
-	 * <p>
-	 * This method can be used to add a {@link Contract} to the list of external
-	 * {@link Contract}s.
-	 * </p>
-	 * 
-	 * @param contract
-	 *          The {@link Contract} that shall be added.
-	 */
-	private void addExternalContract(Contract contract) {
-
-		LinkedHashSet<Contract> externalContractsOfExtension;
-		IExtension legislatorExtension;
-
-		legislatorExtension =
-				((EclipseExtension) contract.getOwner()).getWrappedExtension();
-
-		if (this.externalContracts.containsKey(legislatorExtension)) {
-			externalContractsOfExtension =
-					this.externalContracts.get(legislatorExtension);
-		}
-
-		else {
-			externalContractsOfExtension = new LinkedHashSet<Contract>();
-		}
-
-		externalContractsOfExtension.add(contract);
-
-		this.externalContracts.put(legislatorExtension,
-				externalContractsOfExtension);
-
-		/* Update change status. */
-		this.setChanged();
-	}
-
-	/**
-	 * <p>
-	 * This method can be used to remove a {@link Contract} from the list of
-	 * external {@link Contract}s.
-	 * </p>
-	 * 
-	 * @param contract
-	 *          The {@link Contract} that shall be added.
-	 */
-	private void removeExternalContract(Contract contract) {
-
-		LinkedHashSet<Contract> externalContractsOfExtension;
-		IExtension legislatorExtension;
-
-		legislatorExtension =
-				((EclipseExtension) contract.getOwner()).getWrappedExtension();
-
-		if (this.externalContracts.containsKey(legislatorExtension)) {
-			externalContractsOfExtension =
-					this.externalContracts.get(legislatorExtension);
-
-			externalContractsOfExtension.remove(contract);
-
-			if (externalContractsOfExtension.size() == 0) {
-				this.externalContracts.remove(legislatorExtension);
-			}
-
-			else {
-				this.externalContracts.put(legislatorExtension,
-						externalContractsOfExtension);
-			}
-
-			/* Update change status. */
-			this.setChanged();
+			// end for.
 		}
 		// no else.
 	}
@@ -1053,5 +532,38 @@ public final class EclipseContractRegistry extends ContractRegistry {
 		default:
 			return "UNKNOWN";
 		}
+	}
+
+	/**
+	 * <p>
+	 * A helper method that removes a given {@link Connector}s ID from the list of
+	 * IDs for a given {@link Connector} playing the {@link Role#LEGISLATOR} in
+	 * external {@link Contract}s.
+	 * 
+	 * @param legislator
+	 *          The legislator {@link Connector} from that the ID shall be
+	 *          removed.
+	 * @param id
+	 *          The ID that shall be removed.
+	 */
+	private void removeIdFromLegislatorWithUnboundContracts(Connector legislator,
+			String id) {
+
+		if (this.legislatorsWithUnboundContracts.containsKey(legislator)) {
+
+			HashSet<String> contractedIDs;
+			contractedIDs = this.legislatorsWithUnboundContracts.get(legislator);
+
+			contractedIDs.remove(id);
+
+			if (contractedIDs.size() > 0) {
+				this.legislatorsWithUnboundContracts.put(legislator, contractedIDs);
+			}
+
+			else {
+				this.legislatorsWithUnboundContracts.remove(legislator);
+			}
+		}
+		// no else.
 	}
 }
