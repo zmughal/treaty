@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -714,11 +715,17 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				parent.addChild(node);
 				this.addResourceNode(node, propertyCondition.getResource(), ownerTypes);
 
-				if (propertyCondition.getProperty() != null) {
+				Iterator<String> propertyNameIterator;
+				propertyNameIterator = propertyCondition.getPropertyNames();
+
+				while (propertyNameIterator.hasNext()) {
+					String propertyName;
+					propertyName = propertyNameIterator.next();
+
 					node.addChild(new TreeObject(new KeyValueNode("property",
-							propertyCondition.getProperty().toString())));
+							propertyName)));
 				}
-				// no else.
+				// end while.
 
 				node.addChild(new TreeObject(new KeyValueNode("op", propertyCondition
 						.getOperator().toString())));
@@ -919,57 +926,21 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		}
 	};
 
-	class ViewLabelProvider implements ITableLabelProvider {
+	/**
+	 * <p>
+	 * Used to provide the labels for the {@link TreeViewer}.
+	 * </p>
+	 * 
+	 * @author Jens Dietrich
+	 */
+	private class ViewLabelProvider implements ITableLabelProvider {
 
-		private String toString(RelationshipCondition c) {
-
-			StringBuffer buf = new StringBuffer();
-			buf.append(toString(c.getResource1()));
-			buf.append(' ');
-			String p = c.getRelationship().toString();
-			p = p.substring(p.lastIndexOf('#') + 1); // last token
-			buf.append(p);
-			buf.append(' ');
-			buf.append(toString(c.getResource2()));
-			return buf.toString();
-		}
-
-		private String toString(PropertyCondition c) {
-
-			StringBuffer buf = new StringBuffer();
-			buf.append(toString(c.getResource()));
-			buf.append(' ');
-			if (c.getProperty() != null) {
-				buf.append(c.getProperty());
-			}
-			buf.append(' ');
-			buf.append(c.getOperator().toString());
-			buf.append(' ');
-			buf.append(c.getValue());
-			return buf.toString();
-		}
-
-		private String toString(ExistsCondition c) {
-
-			StringBuffer buf = new StringBuffer();
-			buf.append(toString(c.getResource()));
-			buf.append(" must exist");
-			return buf.toString();
-		}
-
-		private String toString(Resource r) {
-
-			if (r.getName() != null) {
-				boolean loadProblem =
-						r.getValue() == null
-								&& r.getProperty(VERIFICATION_EXCEPTION) != null;
-				return loadProblem ? "!" + r.getName() : r.getName();
-			}
-			else {
-				return r.getId();
-			}
-		}
-
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang
+		 * .Object, int)
+		 */
 		public String getColumnText(Object n, int col) {
 
 			if (!(n instanceof TreeObject)) {
@@ -1042,23 +1013,99 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			return obj.toString();
 		}
 
-		// get the load/verification status as string
-		private String getStatus(Object n) {
+		/**
+		 * <p>
+		 * Returns the verification status of a given {@link Object} as a
+		 * {@link String}.
+		 * </p>
+		 * 
+		 * @param object
+		 *          The {@link Object} whose status shall be returned.
+		 * @return The verification status as a {@link String}.
+		 */
+		private String getStatus(Object object) {
 
-			if (n instanceof Annotatable) {
-				Annotatable c = (Annotatable) n;
-				Object status = c.getProperty(VERIFICATION_RESULT);
+			String result;
+			result = "";
+
+			if (object instanceof Annotatable) {
+
+				Annotatable annotatable;
+				Object status;
+
+				annotatable = (Annotatable) object;
+				status = annotatable.getProperty(VERIFICATION_RESULT);
+
 				if (status == VerificationResult.FAILURE) {
-					return "failure";
+					result = "failure";
 				}
+
 				else if (status == VerificationResult.SUCCESS) {
-					return "success";
+					result = "success";
 				}
+
 				else {
-					return "not verified";
+					result = "not verified";
 				}
+				// no else.
 			}
-			return "";
+			return result;
+		}
+
+		private String toString(RelationshipCondition c) {
+
+			StringBuffer buf = new StringBuffer();
+			buf.append(toString(c.getResource1()));
+			buf.append(' ');
+			String p = c.getRelationship().toString();
+			p = p.substring(p.lastIndexOf('#') + 1); // last token
+			buf.append(p);
+			buf.append(' ');
+			buf.append(toString(c.getResource2()));
+			return buf.toString();
+		}
+
+		private String toString(PropertyCondition c) {
+
+			StringBuffer buf = new StringBuffer();
+			buf.append(toString(c.getResource()));
+			buf.append(' ');
+
+			Iterator<String> propertyNameIterator;
+			propertyNameIterator = c.getPropertyNames();
+
+			while (propertyNameIterator.hasNext()) {
+				buf.append(c.getProperty(propertyNameIterator.next()));
+				buf.append(' ');
+			}
+			// end while
+
+			buf.append(' ');
+			buf.append(c.getOperator().toString());
+			buf.append(' ');
+			buf.append(c.getValue());
+			return buf.toString();
+		}
+
+		private String toString(ExistsCondition c) {
+
+			StringBuffer buf = new StringBuffer();
+			buf.append(toString(c.getResource()));
+			buf.append(" must exist");
+			return buf.toString();
+		}
+
+		private String toString(Resource r) {
+
+			if (r.getName() != null) {
+				boolean loadProblem =
+						r.getValue() == null
+								&& r.getProperty(VERIFICATION_EXCEPTION) != null;
+				return loadProblem ? "!" + r.getName() : r.getName();
+			}
+			else {
+				return r.getId();
+			}
 		}
 
 		// get the load/verification status icon
@@ -1170,6 +1217,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	 */
 	@Override
 	public void dispose() {
+
+		/* Remove disconnect from Contract Registry. */
+		EclipseContractRegistry.getInstance().removeContractRegistryListener(this);
 
 		/* Dispose all icons. */
 		for (Image icon : icons.values()) {
@@ -1720,13 +1770,33 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 			}
 
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#done(org.eclipse.core
+			 * .runtime.jobs.IJobChangeEvent)
+			 */
 			public void done(IJobChangeEvent e) {
 
+				VerificationJob verificationJob;
+
 				updateTree();
-				VerificationJob vJob = (VerificationJob) e.getJob();
-				reportVerificationResult(vJob.getDoneContracts(), vJob
-						.getFailedContracts());
-				switchActions(true);
+
+				verificationJob = (VerificationJob) e.getJob();
+				reportVerificationResult(verificationJob.getDoneContracts(),
+						verificationJob.getFailedContracts());
+
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+
+					/*
+					 * (non-Javadoc)
+					 * @see java.lang.Runnable#run()
+					 */
+					public void run() {
+
+						switchActions(true);
+					}
+				});
 			}
 
 			public void running(IJobChangeEvent e) {
