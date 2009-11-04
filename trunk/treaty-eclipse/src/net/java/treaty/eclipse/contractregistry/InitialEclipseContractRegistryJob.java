@@ -27,29 +27,29 @@ import org.osgi.framework.BundleEvent;
 
 /**
  * <p>
- * The {@link ContractRegistryStartUpJob} is used to initialize the
+ * The {@link InitialEclipseContractRegistryJob} is used to initialize the
  * {@link EclipseContractRegistry} to capture all {@link BundleEvent}s that did happen
  * before the {@link EclipseContractRegistry} has been started.
  * </p>
  * 
  * <p>
- * The {@link ContractRegistryStartUpJob} can also be used to re-initialize the
+ * The {@link InitialEclipseContractRegistryJob} can also be used to re-initialize the
  * {@link EclipseContractRegistry}.
  * </p>
  * 
  * @author Claas Wilke
  */
-public class ContractRegistryStartUpJob extends Job {
+public class InitialEclipseContractRegistryJob extends Job {
 
 	/**
 	 * <p>
-	 * Creates a new {@link ContractRegistryStartUpJob} with a given name.
+	 * Creates a new {@link InitialEclipseContractRegistryJob} with a given name.
 	 * </p>
 	 * 
 	 * @param name
-	 *          The name of the {@link ContractRegistryStartUpJob}.
+	 *          The name of the {@link InitialEclipseContractRegistryJob}.
 	 */
-	public ContractRegistryStartUpJob(String name) {
+	public InitialEclipseContractRegistryJob(String name) {
 
 		super(name);
 	}

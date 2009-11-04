@@ -36,94 +36,180 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 /**
- * Verification job.
+ * <p>
+ * A {@link Job} to verify a given {@link Collection} of {@link Contract}s.
+ * </p>
  * 
  * @author Jens Dietrich
  */
-
 public class VerificationJob extends Job {
 
+	/** The Contracts that shall be verified. */
 	private Collection<Contract> contracts = null;
-	private VerificationReport verReport = null;
-	private List<Contract> failedContracts = new ArrayList<Contract>();
+
+	/** The done {@link Contract}s. */
 	private List<Contract> doneContracts = new ArrayList<Contract>();
-	private List<VerificationJobListener> jobListeners =
+
+	/** The failed {@link Contract}s. */
+	private List<Contract> failedContracts = new ArrayList<Contract>();
+
+	/** The {@link VerificationJobListener}s of this {@link VerificationJob}. */
+	private List<VerificationJobListener> myListeners =
 			new ArrayList<VerificationJobListener>();
 
-	public void addVerificationJobListener(VerificationJobListener l) {
+	/** The {@link VerificationReport} to report the results. */
+	private VerificationReport verificationReport = null;
 
-		jobListeners.add(l);
-	}
-
-	public void removeVerificationJobListener(VerificationJobListener l) {
-
-		jobListeners.remove(l);
-	}
-
-	private void statusChanged() {
-
-		for (VerificationJobListener l : jobListeners) {
-			l.verificationStatusChanged();
-		}
-	}
-
+	/**
+	 * <p>
+	 * Creates a new {@link VerificationJob}.
+	 * </p>
+	 * 
+	 * @param name
+	 *          The name of the {@link VerificationJob}.
+	 * @param contracts
+	 *          The {@link Contract}s that shall be verified.
+	 * @param verificationReport
+	 *          The {@link VerificationReport} to report the result.
+	 */
 	public VerificationJob(String name, Collection<Contract> contracts,
-			VerificationReport verReport) {
+			VerificationReport verificationReport) {
 
 		super(name);
+
 		this.contracts = contracts;
-		this.verReport = verReport;
+		this.verificationReport = verificationReport;
 	}
 
+	/**
+	 * <p>
+	 * Adds a new {@link VerificationJobListener} to this {@link VerificationJob}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link VerificationJobListener} that shall be added.
+	 */
+	public void addVerificationJobListener(VerificationJobListener listener) {
+
+		this.myListeners.add(listener);
+	}
+
+	/**
+	 * <p>
+	 * Removes a {@link VerificationJobListener} from this {@link VerificationJob}
+	 * .
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link VerificationJobListener} that shall be removed.
+	 */
+	public void removeVerificationJobListener(VerificationJobListener listener) {
+
+		this.myListeners.remove(listener);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor
+	 * )
+	 */
 	protected IStatus run(IProgressMonitor monitor) {
-
-		monitor.beginTask("run verification", (2 * contracts.size()) + 3);
-
-		monitor.subTask("Reset verification status");
-		for (Contract c : contracts) {
-			resetVerificationStatus(c);
+	
+		monitor.beginTask("Run Verification.", (2 * contracts.size()) + 3);
+	
+		monitor.subTask("Reset verification status.");
+	
+		for (Contract contract : this.contracts) {
+			this.resetVerificationStatus(contract);
 		}
-		statusChanged();
-		if (monitor.isCanceled())
+		// end for.
+	
+		/* Notify Listeners. */
+		this.statusChanged();
+	
+		/* Probably cancel. */
+		if (monitor.isCanceled()) {
 			return Status.CANCEL_STATUS;
-
-		monitor.subTask("loading installed vocabularies");
-		EclipseVerifier verifier = new EclipseVerifier();
+		}
+		// no else.
+	
+		monitor.subTask("Loading installed Vocabularies.");
+	
+		EclipseVerifier verifier;
+		verifier = new EclipseVerifier();
+	
 		monitor.worked(3);
-
-		// loading resources
-		for (Contract c : contracts) {
-			// System.out.println("loading resources in " + c);
+	
+		/* Loading resources. */
+		for (Contract contract : this.contracts) {
+	
 			try {
-				loadResources(c, verifier);
-			} catch (ResourceLoaderException e) {
-				// do not set result to failure - even if resources cannot be loaded,
-				// contract
-				// could still succeed, e.g. when conditions are disjunctions
-				// c.setProperty(VERIFICATION_RESULT,VerificationResult.FAILURE);
-				c.setProperty(VERIFICATION_EXCEPTION, e);
+				this.loadResources(contract, verifier);
 			}
+	
+			catch (ResourceLoaderException e) {
+				/*
+				 * Do not set result to failure - even if resources cannot be loaded,
+				 * the contract could still succeed, e.g. when conditions are
+				 * disjunctions.
+				 */
+				contract.setProperty(VERIFICATION_EXCEPTION, e);
+			}
+	
 			monitor.worked(1);
-			if (monitor.isCanceled())
+	
+			/* Probably cancel. */
+			if (monitor.isCanceled()) {
 				return Status.CANCEL_STATUS;
+			}
+			// no else.
 		}
-
-		monitor.subTask("checking contracts");
-		for (Contract c : contracts) {
-			// System.out.println("checking contract " + c);
-			// TODO: contracts also fail when mandatory resources cannot be loaded
-			boolean result =
-					c.check(verReport, verifier, VerificationPolicy.DETAILED);
-			if (!result)
-				failedContracts.add(c);
-			doneContracts.add(c);
-			propagateResults(c);
+	
+		monitor.subTask("Checking Contracts.");
+	
+		for (Contract contract : contracts) {
+	
+			/* TODO: contracts also fail when mandatory resources cannot be loaded. */
+			boolean result;
+			result =
+					contract.check(verificationReport, verifier,
+							VerificationPolicy.DETAILED);
+	
+			if (!result) {
+				this.failedContracts.add(contract);
+			}
+	
+			this.doneContracts.add(contract);
+	
+			this.propagateResults(contract);
+	
 			monitor.worked(1);
-			statusChanged();
-			if (monitor.isCanceled())
+	
+			/* Notify Listeners. */
+			this.statusChanged();
+	
+			/* Probably cancel. */
+			if (monitor.isCanceled()) {
 				return Status.CANCEL_STATUS;
+			}
+			// no else.
 		}
+	
 		return Status.OK_STATUS;
+	}
+
+	/**
+	 * <p>
+	 * Used to notify all register {@link VerificationJobListener}s.
+	 * </p>
+	 */
+	private void statusChanged() {
+
+		for (VerificationJobListener listener : this.myListeners) {
+			listener.verificationStatusChanged();
+		}
+		// end for.
 	}
 
 	private void combineResults(Annotatable a, Annotatable part) {
@@ -235,7 +321,7 @@ public class VerificationJob extends Job {
 
 	public VerificationReport getVerReport() {
 
-		return verReport;
+		return verificationReport;
 	}
 
 	public List<Contract> getFailedContracts() {
