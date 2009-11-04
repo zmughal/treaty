@@ -37,5 +37,14 @@ public interface Component extends Annotatable {
 	 * @return
 	 */
 	URL getResource(String adr);
+	/**
+	 * Load a (Java) class using the components classloader.
+	 * This method somehow contractdicts the platform-independent design of treaty.
+	 * It is therefore optional. E.g., clients should be prepared to handle an 
+	 * UnsupportedOperationExcxeption.
+	 * @param className a fully qualified class name
+	 * @return a class
+	 */
+	Class loadClass(String className) throws ClassNotFoundException;
 	
 }
