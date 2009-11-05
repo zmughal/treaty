@@ -23,83 +23,171 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 
 /**
- * Provider for icons representing types in user interfaces.
- * Extensions provide concrete subclasses.
+ * <p>
+ * Provider for icons representing types in user interfaces. Extensions provide
+ * concrete subclasses.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public abstract class IconProvider {
-	
+
+	/** A {@link List} of {@link IconProvider}s used already. */
 	private static List<IconProvider> providers = null;
-	private static Map<String,Image> icons = new HashMap<String,Image>();
-	
+
+	/** A {@link List} of Icons used already. */
+	private static Map<String, Image> icons = new HashMap<String, Image>();
+
 	/**
-	 * Get the icon
-	 * @param type the type
-	 * @param isVariable whether the resource is a variable
-	 * @return
+	 * <p>
+	 * Searches for an icon (as an {@link Image}) for a given type (as {@link URI}
+	 * ).
+	 * </p>
+	 * 
+	 * @param type
+	 *          The type whose icon shall be returned.
+	 * @param isVariable
+	 *          Indicates whether or not the resource is a variable.
+	 * @return The icon (as an {@link Image}) for a given type (as {@link URI}).
 	 */
-	protected abstract Image getIcon(URI type,boolean isVariable) ;
-	
+	public static Image findIcon(URI type, boolean isVariable) {
+
+		Image result;
+		String name;
+
+		name = type.toString();
+
+		if (isVariable) {
+			name += "_v";
+		}
+
+		else {
+			name += "_c";
+		}
+
+		result = icons.get(name);
+
+		if (result == null) {
+
+			for (IconProvider provider : getProviders()) {
+				result = provider.getIcon(type, isVariable);
+
+				if (result != null) {
+					icons.put(name, result);
+					break;
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// no else.
+
+		return result;
+	}
+
 	/**
-	 * Get the icon
-	 * @param type the type
-	 * @param isVariable whether the resource is a variable
-	 * @return
+	 * <p>
+	 * Clears the lists of {@link IconProvider}s and icons. Disposes all
+	 * {@link Image}s.
+	 * </p>
 	 */
-	public static Image findIcon(URI type,boolean isVariable) {
-		String name = type.toString()+(isVariable?"_v":"_c");
-		Image i = icons.get(name);
-		if (i==null) {
-			for (IconProvider p:getProviders()) {
-				i = p.getIcon(type, isVariable);
-				if (i!=null) {
-					icons.put(name,i);
-					return i;
-				}
-			}
-		}
-		return i;
-	}
-	
-	
-	private static List<IconProvider> getProviders() {
-		if (providers==null) {
-			providers = new ArrayList<IconProvider>();
-			
-			// extensions
-			IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
-			IExtensionPoint xp = registry.getExtensionPoint("net.java.treaty.eclipse.typeicons");
-			
-			for (IExtension x:xp.getExtensions()) {
-				String pluginId = x.getContributor().getName();
-				try {
-					IConfigurationElement[] attributes = x.getConfigurationElements();
-					for (int j=0;j<attributes.length;j++) {
-						IConfigurationElement p = attributes[j];
-						String clazzName = p.getAttribute("class");	
-						Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(pluginId);
-						Class clazz = bundle.loadClass(clazzName);
-						if (IconProvider.class.isAssignableFrom(clazz)) {
-							providers.add((IconProvider)clazz.newInstance());
-						}
-					}
-				}
-				catch (Exception e) {
-					Logger.error("Error loading icon provider from "+pluginId,e);
-				}			
-			}
-			
-		}
-		return providers;
-	}
-	
 	public static void release() {
+
 		providers = null;
-		for (Image i:icons.values()) {
-			i.dispose();
+
+		for (Image icon : icons.values()) {
+			icon.dispose();
 		}
+		// end for.
+
 		icons.clear();
 	}
-	
+
+	/**
+	 * <p>
+	 * Returns the icon (as an {@link Image}) for a given type (as {@link URI}).
+	 * </p>
+	 * 
+	 * @param type
+	 *          The type whose icon shall be returned.
+	 * @param isVariable
+	 *          Indicates whether or not the resource is a variable.
+	 * @return The icon (as an {@link Image}) for a given type (as {@link URI}).
+	 */
+	protected abstract Image getIcon(URI type, boolean isVariable);
+
+	/**
+	 * <p>
+	 * Returns all {@link IconProvider}s that are currently connected to the
+	 * Treaty Framework.
+	 * </p>
+	 * 
+	 * @return All {@link IconProvider}s that are currently connected to the
+	 *         Treaty Framework.
+	 */
+	private static List<IconProvider> getProviders() {
+
+		/* Probably initialize the IconProviders. */
+		/*
+		 * FIXME Claas: Probably this method should be updated if a new vocabulary
+		 * occurs dynamically.
+		 */
+		if (providers == null) {
+
+			providers = new ArrayList<IconProvider>();
+
+			IExtensionRegistry extensionRegistry;
+			IExtensionPoint extensionPoint;
+
+			extensionRegistry =
+					org.eclipse.core.runtime.Platform.getExtensionRegistry();
+			extensionPoint =
+					extensionRegistry
+							.getExtensionPoint("net.java.treaty.eclipse.typeicons");
+
+			/* Iterate on all extensions that provide icon providers. */
+			for (IExtension extension : extensionPoint.getExtensions()) {
+
+				String pluginId;
+				pluginId = extension.getContributor().getName();
+
+				try {
+					IConfigurationElement[] attributes;
+					attributes = extension.getConfigurationElements();
+
+					for (int index = 0; index < attributes.length; index++) {
+
+						IConfigurationElement configurationElement;
+						configurationElement = attributes[index];
+
+						String clazzName;
+						clazzName = configurationElement.getAttribute("class");
+
+						Bundle bundle;
+						bundle = org.eclipse.core.runtime.Platform.getBundle(pluginId);
+
+						/* Try to load the provider class. */
+						Class<?> clazz;
+						clazz = bundle.loadClass(clazzName);
+
+						/* Probably add it to the list of IconProviders. */
+						if (IconProvider.class.isAssignableFrom(clazz)) {
+							providers.add((IconProvider) clazz.newInstance());
+						}
+						// no else.
+					}
+					// end for.
+				}
+
+				catch (Exception e) {
+					Logger.error("Error loading icon provider from " + pluginId, e);
+				}
+				// end catch.
+			}
+			// end for (iteration on extensions).
+		}
+		// no else (no initialization).
+
+		return providers;
+	}
 }

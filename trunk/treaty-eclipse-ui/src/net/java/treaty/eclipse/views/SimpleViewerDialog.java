@@ -21,52 +21,109 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-
 /**
+ * <p>
  * Abstract superclass for simple pop-up text dialogs.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public abstract class SimpleViewerDialog extends Dialog {
+
+	/** The {@link Text} of this {@link SimpleViewerDialog}. */
 	private Text text = null;
+
 	/**
-	 * Constructor.
+	 * <p>
+	 * Creares a new {@link SimpleViewerDialog}
+	 * </p>
+	 * 
 	 * @param parentShell
-	 * @param url
+	 *          The parent {@link Shell} of this {@link SimpleViewerDialog}.
 	 */
 	public SimpleViewerDialog(Shell parentShell) {
+
 		super(parentShell);
+
 		this.setShellStyle(SWT.RESIZE | SWT.TITLE);
 	}
-	/**
-	 * Create the dialog area.
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.
+	 * Shell)
 	 */
-	protected Control createDialogArea(Composite parent) {	 
-		GridData gd = new GridData();
-		gd.grabExcessHorizontalSpace = true;
-		gd.grabExcessVerticalSpace = true;
-		gd.horizontalAlignment = GridData.FILL;
-		gd.verticalAlignment = GridData.FILL;				
-		text = new Text(parent,SWT.MULTI | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
-		text.setLayoutData(gd);		
-		initText(text);		
-		return text;
-	}
-	
-	protected abstract void initText(Text text) ;
-	
-	protected abstract String getTitle();
-	
-	
+	@Override
 	protected void configureShell(Shell newShell) {
-	      super.configureShell(newShell);
-	      newShell.setText(getTitle());
-	      Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-	      newShell.setSize(Math.min(600,screen.width-200),Math.min(800,screen.height-200));
-	      newShell.setLocation(100,100);
+
+		super.configureShell(newShell);
+
+		newShell.setText(getTitle());
+
+		Dimension screen;
+		screen = Toolkit.getDefaultToolkit().getScreenSize();
+
+		newShell.setSize(Math.min(600, screen.width - 200), Math.min(800,
+				screen.height - 200));
+		newShell.setLocation(100, 100);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.
+	 * swt.widgets.Composite)
+	 */
+	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		    createButton(parent, IDialogConstants.OK_ID, "Close", false);
+	
+		createButton(parent, IDialogConstants.OK_ID, "Close", false);
 	}
- 
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets
+	 * .Composite)
+	 */
+	@Override
+	protected Control createDialogArea(Composite parent) {
+
+		GridData gridData;
+		gridData = new GridData();
+
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.FILL;
+
+		this.text =
+				new Text(parent, SWT.MULTI | SWT.READ_ONLY | SWT.H_SCROLL
+						| SWT.V_SCROLL);
+		this.text.setLayoutData(gridData);
+		this.initText(this.text);
+
+		return this.text;
+	}
+
+	/**
+	 * <p>
+	 * Initializes the {@link Text} of this {@link SimpleViewerDialog} with a
+	 * given {@link Text}.
+	 * </p>
+	 * 
+	 * @param text
+	 *          The {@link Text} used for initializing.
+	 */
+	protected abstract void initText(Text text);
+
+	/**
+	 * <p>
+	 * Returns the title of this {@link SimpleViewerDialog}.
+	 * </p>
+	 * 
+	 * @return The title of this {@link SimpleViewerDialog}.
+	 */
+	protected abstract String getTitle();
 }
