@@ -10,8 +10,6 @@
 
 package net.java.treaty;
 
-import java.util.Iterator;
-
 
 /**
  * Interface for contracts and conditions.  
