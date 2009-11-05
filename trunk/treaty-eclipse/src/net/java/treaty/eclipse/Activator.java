@@ -11,6 +11,7 @@
 package net.java.treaty.eclipse;
 
 import net.java.treaty.eclipse.contractregistry.BundleEventContractListener;
+import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
@@ -51,6 +52,9 @@ public class Activator extends Plugin {
 		plugin = this;
 
 		context.addBundleListener(BundleEventContractListener.getInstance());
+		
+		/* Initialize the contract registry. */
+		EclipseContractRegistry.getInstance();
 	}
 
 	/*
