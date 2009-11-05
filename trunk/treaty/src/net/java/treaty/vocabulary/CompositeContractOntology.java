@@ -43,7 +43,7 @@ public class CompositeContractOntology extends ContractOntology {
 
 	private OntModel ontology = ModelFactory.createOntologyModel();;
 
-	public void add(ContractOntology voc) throws TreatyException {
+	public void add(ContractVocabulary voc) throws TreatyException {
 
 		// check whether types or predicates are defined twice
 		for (URI uri : voc.getTypes()) {
@@ -69,7 +69,11 @@ public class CompositeContractOntology extends ContractOntology {
 		}
 
 		this.vocabularyContributions.add(voc);
-		this.ontology.addSubModel(voc.getOntology());
+		// we accept non ontologies here to support "lightweight" plugins
+		// TODO log warning
+		if (voc instanceof ContractOntology) {
+			this.ontology.addSubModel(((ContractOntology)voc).getOntology());
+		}
 	}
 
 	// can be overridden, e.g. just logging warning might be enough
@@ -86,7 +90,13 @@ public class CompositeContractOntology extends ContractOntology {
 	public boolean remove(ContractOntology voc) throws TreatyException {
 
 		boolean result = this.vocabularyContributions.remove(voc);
-		this.ontology.removeSubModel(voc.getOntology());
+		
+		// we accept non ontologies here to support "lightweight" plugins
+		// TODO log warning
+		if (voc instanceof ContractOntology) {
+			this.ontology.removeSubModel(((ContractOntology)voc).getOntology());
+		}
+
 		return result;
 	}
 
