@@ -365,13 +365,9 @@ public class BundleActivationUpdateJob extends Job {
 
 				Contract contract;
 
-				/* FIXME Claas: changes this when the bug with Jena was fixed. */
-				// contract =
-				// EclipseExtensionPoint.createContract(contractURL,
-				// eclipseExtensionPoint);
-				contract = new Contract();
-				contract.setLocation(contractURL);
-				contract.setDefinition(contract);
+				contract =
+						EclipseExtensionPoint.createContract(contractURL,
+								eclipseExtensionPoint);
 
 				this.addContractToExtensionPoint(eclipseExtensionPoint, contract);
 			}
