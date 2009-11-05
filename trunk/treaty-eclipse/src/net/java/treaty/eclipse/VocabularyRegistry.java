@@ -10,7 +10,6 @@
 
 package net.java.treaty.eclipse;
 
-
 import java.net.URI;
 
 import net.java.treaty.ContractVocabulary;
@@ -20,42 +19,62 @@ import net.java.treaty.vocabulary.builtins.BasicOpVocabulary;
 import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
 import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
 
-
 /**
- * Registry for contract vocabularies. 
- * Vocabulary contributions from different plugins are aggregated here.
- * @author jens dietrich
+ * <p>
+ * Registry for contract vocabularies. Vocabulary contributions from different
+ * plugins are aggregated here.
+ * </p>
+ * 
+ * @author Jens Dietrich
  */
-public class VocabularyRegistry extends CompositeContractOntology  {
+public class VocabularyRegistry extends CompositeContractOntology {
+
+	/** The singleton instance of the {@link VocabularyRegistry}. */
 	public static VocabularyRegistry INSTANCE = new VocabularyRegistry();
-	
-	
-	
+
+	/**
+	 * <p>
+	 * Creates a new {@link VocabularyRegistry}. Private constructor for singleton
+	 * pattern.
+	 * </p>
+	 */
 	private VocabularyRegistry() {
+
 		super();
+
 		try {
 			this.add(new BasicOpVocabulary());
 			this.add(new JavaVocabulary());
 			this.add(new OWLVocabulary());
 		}
+
 		catch (TreatyException x) {
 			Logger.error("cannot install bootstrap vocabularies");
 		}
 	}
 
+	/**
+	 * <p>
+	 * Overridden, super method throws exception. This implementation just logs a
+	 * warning.
+	 * </p>
+	 */
+	@Override
+	protected void reportDuplicateDef(String kind, URI resource,
+			ContractVocabulary voc, ContractVocabulary part) throws TreatyException {
 
+		StringBuffer buffer;
 
-	// overridden , super throws exception
-	protected void reportDuplicateDef(String kind, URI resource,ContractVocabulary voc, ContractVocabulary part) throws TreatyException {
-		StringBuffer b = new StringBuffer()
-			.append("Attempt to redefine ")
-			.append(kind)
-			.append(" ")
-			.append(resource)
-			.append(" in ")
-			.append(voc)
-			.append(" - this is already defined in ")
-			.append(part);
-		Logger.warn(b.toString());
+		buffer = new StringBuffer();
+		buffer.append("Attempt to redefine ");
+		buffer.append(kind);
+		buffer.append(" ");
+		buffer.append(resource);
+		buffer.append(" in ");
+		buffer.append(voc);
+		buffer.append(" - this is already defined in ");
+		buffer.append(part);
+
+		Logger.warn(buffer.toString());
 	}
 }
