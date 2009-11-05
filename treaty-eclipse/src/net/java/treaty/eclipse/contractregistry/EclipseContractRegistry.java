@@ -10,11 +10,13 @@
 
 package net.java.treaty.eclipse.contractregistry;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,6 +51,28 @@ import org.osgi.framework.BundleEvent;
  * @author Claas Wilke
  */
 public final class EclipseContractRegistry extends ContractRegistry {
+
+	/**
+	 * Contains the {@link Bundle} states that shall be interpreted by the
+	 * {@link EclipseContractRegistry} as {@link Bundle}s, whose {@link Contract}s
+	 * shall be registered.
+	 */
+	public static final List<Integer> ACTIVE_BUNDLE_STATES =
+			Arrays.asList(new Integer[] { Bundle.ACTIVE });
+
+	/**
+	 * The {@link BundleEvent} type that shall cause an update of the
+	 * {@link ContractRegistry} that adds all {@link Contract} provided by the
+	 * given {@link Bundle}.
+	 */
+	public static final int ADD_BUNDLE_EVENT = BundleEvent.STARTED;
+
+	/**
+	 * The {@link BundleEvent} type that shall cause an update of the
+	 * {@link ContractRegistry} that removes all {@link Contract} provided by the
+	 * given {@link Bundle}.
+	 */
+	public static final int REMOVE_BUNDLE_EVENT = BundleEvent.STOPPED;
 
 	/** Singleton Instance of the {@link EclipseContractRegistry}. */
 	private static EclipseContractRegistry myInstance;
@@ -94,7 +118,8 @@ public final class EclipseContractRegistry extends ContractRegistry {
 		/* Do the initial startup. */
 		InitialEclipseContractRegistryJob contractRegistryStartUpJob;
 		contractRegistryStartUpJob =
-				new InitialEclipseContractRegistryJob("Initial ContractRegistry Startup");
+				new InitialEclipseContractRegistryJob(
+						"Initial ContractRegistry Startup");
 
 		contractRegistryStartUpJob.schedule();
 	}
@@ -227,7 +252,7 @@ public final class EclipseContractRegistry extends ContractRegistry {
 
 		switch (event.getType()) {
 
-		case BundleEvent.STARTED: {
+		case ADD_BUNDLE_EVENT: {
 
 			Job bundleActivationJob;
 			bundleActivationJob =
@@ -239,7 +264,7 @@ public final class EclipseContractRegistry extends ContractRegistry {
 			break;
 		}
 
-		case BundleEvent.STOPPED: {
+		case REMOVE_BUNDLE_EVENT: {
 
 			Job bundleDeactivationJob;
 			bundleDeactivationJob =
