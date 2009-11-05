@@ -89,12 +89,6 @@ public class BundleActivationUpdateJob extends Job {
 	private static final String CONTRACT_LOCATION_SUFFIX = ".contract";
 
 	/**
-	 * The state in which a {@link Bundle} must be before its {@link Contract}s
-	 * shall be added to the registry.
-	 */
-	private static final int ACTIVE_BUNDLE_STATE = Bundle.ACTIVE;
-
-	/**
 	 * The {@link Bundle} to which this {@link BundleActivationUpdateJob} belongs
 	 * to.
 	 */
@@ -258,8 +252,10 @@ public class BundleActivationUpdateJob extends Job {
 
 								/* If no extension point has been found, log the error. */
 								if (extensionPoint == null
-										|| org.eclipse.core.runtime.Platform.getBundle(
-												extensionPoint.getContributor().getName()).getState() != ACTIVE_BUNDLE_STATE) {
+										|| !EclipseContractRegistry.ACTIVE_BUNDLE_STATES
+												.contains(org.eclipse.core.runtime.Platform.getBundle(
+														extensionPoint.getContributor().getName())
+														.getState())) {
 
 									Logger.warn("No extension point with id " + extensionPointID
 											+ " found for external contract " + contractLocation
@@ -552,8 +548,9 @@ public class BundleActivationUpdateJob extends Job {
 				 * Only add the Contract to the extension if the extension's plug'in is
 				 * in the right state.
 				 */
-				if (((EclipsePlugin) eclipseExtension.getOwner()).getBundle()
-						.getState() == ACTIVE_BUNDLE_STATE) {
+				if (EclipseContractRegistry.ACTIVE_BUNDLE_STATES
+						.contains(((EclipsePlugin) eclipseExtension.getOwner()).getBundle()
+								.getState())) {
 					eclipseExtensionPoint.addExtension(eclipseExtension);
 
 					EclipseContractRegistry.getInstance().updateContract(
