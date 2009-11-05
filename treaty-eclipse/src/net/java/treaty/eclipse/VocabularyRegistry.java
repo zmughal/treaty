@@ -16,6 +16,7 @@ import java.net.URI;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.TreatyException;
 import net.java.treaty.vocabulary.CompositeContractOntology;
+import net.java.treaty.vocabulary.builtins.BasicOpVocabulary;
 import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
 import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
 
@@ -33,6 +34,7 @@ public class VocabularyRegistry extends CompositeContractOntology  {
 	private VocabularyRegistry() {
 		super();
 		try {
+			this.add(new BasicOpVocabulary());
 			this.add(new JavaVocabulary());
 			this.add(new OWLVocabulary());
 		}
