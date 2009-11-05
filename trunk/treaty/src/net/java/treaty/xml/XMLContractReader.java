@@ -31,11 +31,8 @@ import org.jdom.xpath.XPath;
 
 public class XMLContractReader implements ContractReader  {
 	
-	private ResourceManager loader = null;
-	
-	public XMLContractReader(ResourceManager loader) {
+	public XMLContractReader() {
 		super();
-		this.loader = loader;
 	} 
 	/**
 	 * Read a contract from an input stream.
@@ -243,9 +240,7 @@ public class XMLContractReader implements ContractReader  {
 		}
 		return resources;
 	}
-	public ResourceManager getLoader() {
-		return loader;
-	} 
+
 	
 
 }
