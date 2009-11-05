@@ -179,6 +179,38 @@ public final class EclipseContractRegistry extends ContractRegistry {
 
 	/**
 	 * <p>
+	 * Returns all {@link Contract}s that are instantiated. Meaning: all
+	 * {@link Contract}s that are bound to a {@link Connector} of the
+	 * {@link ConnectorType#CONSUMER} and to a {@link Connector} of the
+	 * {@link ConnectorType#SUPPLIER} as well.
+	 * </p>
+	 * 
+	 * @return All {@link Contract}s that are instantiated.
+	 */
+	public Collection<Contract> getInstantiatedContracts() {
+
+		Set<Contract> result;
+		result = new LinkedHashSet<Contract>();
+
+		/* Only supplier contracts could be instantiated. */
+		for (Connector aSupplierConnector : this.mySupplierContracts.keySet()) {
+
+			for (Contract contract : this.mySupplierContracts.get(aSupplierConnector)) {
+
+				if (contract.isInstantiated()) {
+					result.add(contract);
+				}
+				// no else.
+			}
+			// end for (iteration on contracts).
+		}
+		// end for (iteration on suppliers).
+
+		return result;
+	}
+
+	/**
+	 * <p>
 	 * Checks if a given {@link Connector} (as its ID) has at least one unbound
 	 * legislator {@link Contract}.
 	 * </p>
