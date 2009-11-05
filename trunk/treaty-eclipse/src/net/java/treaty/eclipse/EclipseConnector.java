@@ -68,7 +68,7 @@ public abstract class EclipseConnector extends PropertySupport implements
 			ContractReader reader;
 
 			Logger.info("Loading contract from " + location);
-			reader = new XMLContractReader(new EclipseResourceManager());
+			reader = new XMLContractReader();
 
 			/* Try to read the contract. */
 			try {
