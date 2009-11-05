@@ -10,57 +10,94 @@
 
 package net.java.treaty.eclipse.views;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Control;
+
+import net.java.treaty.Contract;
+
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-
 /**
- * Dialog to display raw contract definitions.
+ * <p>
+ * A {@link SimpleViewerDialog} to display raw contract definitions.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public class ViewContractSourceDialog extends SimpleViewerDialog {
+
+	/** The {@link URL} of the {@link Contract} that shall be displayed. */
 	private URL contractURL = null;
+
 	/**
-	 * Constructor.
+	 * <p>
+	 * Creates a new {@link ViewContractSourceDialog}.
+	 * </p>
+	 * 
 	 * @param parentShell
+	 *          The {@link Shell} used as parent.
 	 * @param url
+	 *          The {@link URL} of the {@link Contract} that shall be displayed.
 	 */
-	public ViewContractSourceDialog(Shell parentShell,URL contractURL) {
+	public ViewContractSourceDialog(Shell parentShell, URL contractURL) {
+
 		super(parentShell);
 		this.contractURL = contractURL;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.views.SimpleViewerDialog#getTitle()
+	 */
 	@Override
 	protected String getTitle() {
+
 		return this.contractURL.toString();
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.eclipse.views.SimpleViewerDialog#initText(org.eclipse.swt
+	 * .widgets.Text)
+	 */
 	@Override
 	protected void initText(Text text) {
+
 		try {
-			String SEP = System.getProperty("line.separator");
-			StringBuffer buf = new StringBuffer();
-			InputStreamReader isr = new InputStreamReader(this.contractURL.openStream());
-			BufferedReader bsr = new BufferedReader(isr);
+			String separatorPropertyName;
+			separatorPropertyName = System.getProperty("line.separator");
+
+			StringBuffer buffer;
+			buffer = new StringBuffer();
+
+			InputStreamReader iputStreamReader;
+			iputStreamReader = new InputStreamReader(this.contractURL.openStream());
+
+			BufferedReader bufferedReader;
+			bufferedReader = new BufferedReader(iputStreamReader);
+
 			String line = null;
-			while ((line=bsr.readLine())!=null) {
-				buf.append(line);
-				buf.append(SEP);
+
+			while ((line = bufferedReader.readLine()) != null) {
+				buffer.append(line);
+				buffer.append(separatorPropertyName);
 			}
-			text.setText(buf.toString());
-			bsr.close();
-		} catch (IOException e) {
+			// end while.
+
+			text.setText(buffer.toString());
+			bufferedReader.close();
+		}
+		// end try.
+
+		catch (IOException e) {
+
 			text.setText("Error - cannot load contract");
 			e.printStackTrace();
 		}
-	} 
+		// end catch.
+	}
 }

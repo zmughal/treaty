@@ -15,33 +15,62 @@ import java.io.StringWriter;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-
 /**
- * Dialog to display the exception stack trace.
+ * <p>
+ * A {@link SimpleViewerDialog} to display the exception stack trace.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public class ViewExceptionStackTraceDialog extends SimpleViewerDialog {
-	private Throwable exception = null;
+
+	/** The {@link Throwable} that shall be displayed. */
+	private Throwable throwable = null;
+
 	/**
-	 * Constructor.
+	 * <p>
+	 * Creates a new {@link ViewExceptionStackTraceDialog}.
+	 * </p>
+	 * 
 	 * @param parentShell
-	 * @param exception
+	 *          The {@link Shell} used as parent.
+	 * @param throwable
+	 *          The {@link Throwable} that shall be displayed.
 	 */
-	public ViewExceptionStackTraceDialog(Shell parentShell,Throwable exception) {
+	public ViewExceptionStackTraceDialog(Shell parentShell, Throwable throwable) {
+
 		super(parentShell);
-		this.exception = exception;
+		this.throwable = throwable;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.views.SimpleViewerDialog#getTitle()
+	 */
 	@Override
 	protected String getTitle() {
-		return "Verification exception details";
+
+		return "Verification Exception Details";
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.eclipse.views.SimpleViewerDialog#initText(org.eclipse.swt
+	 * .widgets.Text)
+	 */
 	@Override
 	protected void initText(Text text) {
-		StringWriter s = new StringWriter();
-		PrintWriter out = new PrintWriter(s);
-		exception.printStackTrace(out);
-		out.close();
-		text.setText(s.toString());
-	} 
+
+		StringWriter stringWriter;
+		stringWriter = new StringWriter();
+
+		PrintWriter printWriter;
+		printWriter = new PrintWriter(stringWriter);
+
+		this.throwable.printStackTrace(printWriter);
+		printWriter.close();
+
+		text.setText(stringWriter.toString());
+	}
 }

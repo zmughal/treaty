@@ -40,7 +40,6 @@ import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.contractregistry.ContractRegistryListener;
 import net.java.treaty.eclipse.Constants;
-import net.java.treaty.eclipse.ContractRepository;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
@@ -136,6 +135,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * (non-Javadoc)
 		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 		 */
+		@SuppressWarnings("unchecked")
 		public Object getAdapter(Class key) {
 
 			return null;
@@ -254,20 +254,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		public boolean hasChildren() {
 
 			return children.size() > 0;
-		}
-
-		/**
-		 * <p>
-		 * Removes a given {@link TreeObject} as child to this {@link TreeParent}.
-		 * </p>
-		 * 
-		 * @param child
-		 *          The {@link TreeObject} that shall be removed.
-		 */
-		public void removeChild(TreeObject child) {
-
-			children.remove(child);
-			child.setParent(null);
 		}
 	}
 
@@ -845,7 +831,354 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		}
 	}
 
+	/**
+	 * The {@link TreeViewer} used to display the {@link Contract}s and their
+	 * {@link EclipsePlugin}s.
+	 */
 	private TreeViewer viewer;
+
+	/**
+	 * <p>
+	 * Creates a new {@link ContractView}.
+	 * </p>
+	 */
+	public ContractView() {
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+	 */
+	@Override
+	public void dispose() {
+
+		/* Remove disconnect from Contract Registry. */
+		EclipseContractRegistry.getInstance().removeContractRegistryListener(this);
+
+		/* Dispose all icons. */
+		for (Image icon : icons.values()) {
+			icon.dispose();
+		}
+
+		super.dispose();
+	}
+
+	/**
+	 * <p>
+	 * Passing the focus request to the viewer's control.
+	 * </p>
+	 */
+	public void setFocus() {
+
+		this.viewer.getControl().setFocus();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.contractregistry.ContractRegistryListener#update()
+	 */
+	public void update() {
+
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			public void run() {
+
+				actionReloadContracts();
+			}
+		});
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link ImageDescriptor} for a given path.
+	 * </p>
+	 * 
+	 * @param path
+	 *          The path whose {@link ImageDescriptor} shall be returned.
+	 * @return The {@link ImageDescriptor} for a given path.
+	 */
+	public ImageDescriptor getImageDescriptor(String path) {
+
+		return AbstractUIPlugin
+				.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path);
+	}
+
+	/**
+	 * <p>
+	 * Behaviour of the {@link Action} to export all instantiated {@link Contract}
+	 * s by using a given {@link Exporter}.
+	 * </p>
+	 * 
+	 * @param exporter
+	 *          The {@link Exporter} that shall be used for export.
+	 */
+	private void actionExport(Exporter exporter) {
+	
+		Collection<Contract> contracts;
+		contracts =
+				EclipseContractRegistry.getInstance().getInstantiatedContracts();
+	
+		/* Try to export. */
+		try {
+			String fileName;
+			fileName = null;
+	
+			/* Probably export to a folder. */
+			if (exporter.exportToFolder()) {
+	
+				DirectoryDialog directoryDialog;
+	
+				directoryDialog =
+						new DirectoryDialog(this.getViewSite().getShell(), SWT.OPEN);
+				directoryDialog.setText("Select a target folder for export.");
+	
+				fileName = directoryDialog.open();
+			}
+	
+			/* Else export to a file. */
+			else {
+				FileDialog fileDialog;
+	
+				fileDialog = new FileDialog(this.getViewSite().getShell(), SWT.OPEN);
+				fileDialog.setFilterExtensions(exporter.getFilterExtensions());
+				fileDialog.setFilterNames(exporter.getFilterNames());
+				fileDialog.setText("Select a file for export.");
+	
+				fileName = fileDialog.open();
+			}
+			// no else.
+	
+			/* Probably export the contracts. */
+			if (fileName != null) {
+				exporter.export(contracts, new File(fileName));
+			}
+			// no else.
+		}
+		// end try.
+	
+		catch (IOException e) {
+			Logger.error("Exception exporting contracts", e);
+		}
+		// end catch.
+	}
+
+	/**
+	 * <p>
+	 * Updates the GUI by requesting the {@link EclipseContractRegistry} for a new
+	 * version of the current {@link Contract} model.
+	 * </p>
+	 */
+	private void actionReloadContracts() {
+	
+		/* Load the contracted plug-ins. */
+		this.plugins =
+				EclipseContractRegistry.getInstance().getContractedEclipsePlugins();
+	
+		/* Update the viewer. */
+		this.viewer.setContentProvider(new ViewContentProvider());
+		this.viewer.setInput(getViewSite());
+	
+		this.switchActions(true);
+	}
+
+	/**
+	 * <p>
+	 * A helper method that verifies and refreshes all {@link Contract}s, if the
+	 * given flag is <code>true</code>.
+	 * </p>
+	 * 
+	 * @param on
+	 *          Indicates whether or not all {@link Contract}s shall be verified
+	 *          and refreshed.
+	 */
+	private void switchActions(boolean on) {
+	
+		/* Probably verify and refresh. */
+		this.actVerifyAll.setEnabled(on);
+		this.actRefresh.setEnabled(on);
+	
+		for (Action act : this.actsExport) {
+			act.setEnabled(on);
+		}
+	
+		/* Probably verify selected, instantiated contracts. */
+		List<Contract> instantiatedConstracts;
+		instantiatedConstracts = getSelectedInstantiatedContracts();
+	
+		this.actVerifySelected.setEnabled(on && instantiatedConstracts != null
+				&& !instantiatedConstracts.isEmpty());
+	}
+
+	/**
+	 * <p>
+	 * Runs the verification for a given {@link List} of {@link Contract}s.
+	 * </p>
+	 * 
+	 * @param contracts
+	 *          The {@link Contract}s that shall be verified.
+	 * @param disableActions
+	 *          TODO
+	 */
+	private void verify(List<Contract> contracts, boolean disableActions) {
+	
+		/* The {@link VerificationReport} of the verification. */
+		final VerificationReport verReport = new VerificationReport() {
+	
+			/** The {@link Contract} of this {@link VerificationReport}. */
+			private Contract contract = null;
+	
+			/*
+			 * (non-Javadoc)
+			 * @see net.java.treaty.VerificationReport#getContract()
+			 */
+			public Contract getContract() {
+	
+				return this.contract;
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 * @see net.java.treaty.VerificationReport#log(java.lang.Object,
+			 * net.java.treaty.VerificationResult, java.lang.String[])
+			 */
+			public void log(Object context, VerificationResult result,
+					String... remarks) {
+	
+				if (context instanceof Annotatable) {
+					((Annotatable) context).setProperty(VERIFICATION_RESULT, result);
+				}
+				// no else.
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.VerificationReport#setContract(net.java.treaty.Contract
+			 * )
+			 */
+			public void setContract(Contract contract) {
+	
+				this.contract = contract;
+			}
+		};
+	
+		/* A {@link VerificationJobListener} used during verification. */
+		VerificationJobListener vListener = new VerificationJobListener() {
+	
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.eclipse.jobs.VerificationJobListener#
+			 * verificationStatusChanged()
+			 */
+			public void verificationStatusChanged() {
+	
+				updateTree();
+			}
+		};
+	
+		/* A {@link IJobChangeListener} used during verification. */
+		IJobChangeListener jListener = new IJobChangeListener() {
+	
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#aboutToRun(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void aboutToRun(IJobChangeEvent e) {
+	
+				/* Do nothing. */
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#awake(org.eclipse.
+			 * core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void awake(IJobChangeEvent e) {
+	
+				/* Do nothing. */
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#done(org.eclipse.core
+			 * .runtime.jobs.IJobChangeEvent)
+			 */
+			public void done(IJobChangeEvent e) {
+	
+				VerificationJob verificationJob;
+	
+				updateTree();
+	
+				verificationJob = (VerificationJob) e.getJob();
+				reportVerificationResult(verificationJob.getDoneContracts(),
+						verificationJob.getFailedContracts());
+	
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+	
+					/*
+					 * (non-Javadoc)
+					 * @see java.lang.Runnable#run()
+					 */
+					public void run() {
+	
+						switchActions(true);
+					}
+				});
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#running(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void running(IJobChangeEvent e) {
+	
+				/* Do nothing. */
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#scheduled(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void scheduled(IJobChangeEvent e) {
+	
+				/* Do nothing. */
+			}
+	
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#sleeping(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void sleeping(IJobChangeEvent e) {
+	
+				/* Do nothing. */
+			}
+		};
+	
+		/* Probably disable the actions. */
+		if (disableActions) {
+			this.switchActions(false);
+		}
+	
+		/* Verify the contracts. */
+		EclipseContractRegistry.getInstance().verify(contracts, verReport,
+				vListener, jListener);
+	}
+
 	private DrillDownAdapter drillDownAdapter;
 	private Action actRefresh;
 	private Action actVerifyAll;
@@ -1204,280 +1537,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	/**
 	 * <p>
-	 * Creates a new {@link ContractView}.
-	 * </p>
-	 */
-	public ContractView() {
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-	 */
-	@Override
-	public void dispose() {
-
-		/* Remove disconnect from Contract Registry. */
-		EclipseContractRegistry.getInstance().removeContractRegistryListener(this);
-
-		/* Dispose all icons. */
-		for (Image icon : icons.values()) {
-			icon.dispose();
-		}
-
-		super.dispose();
-	}
-
-	/**
-	 * <p>
-	 * Passing the focus request to the viewer's control.
-	 * </p>
-	 */
-	public void setFocus() {
-
-		this.viewer.getControl().setFocus();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.contractregistry.ContractRegistryListener#update()
-	 */
-	public void update() {
-
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see java.lang.Runnable#run()
-			 */
-			public void run() {
-
-				actionReloadContracts();
-			}
-		});
-	}
-
-	/**
-	 * <p>
-	 * Updates the GUI by requesting the {@link EclipseContractRegistry} for a new
-	 * version of the current {@link Contract} model.
-	 * </p>
-	 */
-	private void actionReloadContracts() {
-
-		/* Load the contracted plug-ins. */
-		this.plugins =
-				EclipseContractRegistry.getInstance().getContractedEclipsePlugins();
-
-		/* Update the viewer. */
-		this.viewer.setContentProvider(new ViewContentProvider());
-		this.viewer.setInput(getViewSite());
-
-		this.switchActions(true);
-	}
-
-	/**
-	 * <p>
-	 * A helper method that verifies and refreshes all {@link Contract}s, if the
-	 * given flag is <code>true</code>.
-	 * </p>
-	 * 
-	 * @param on
-	 *          Indicates whether or not all {@link Contract}s shall be verified
-	 *          and refreshed.
-	 */
-	private void switchActions(boolean on) {
-
-		/* Probably verify and refresh. */
-		this.actVerifyAll.setEnabled(on);
-		this.actRefresh.setEnabled(on);
-
-		for (Action act : this.actsExport) {
-			act.setEnabled(on);
-		}
-
-		/* Probably verify selected, instantiated contracts. */
-		List<Contract> instantiatedConstracts;
-		instantiatedConstracts = getSelectedInstantiatedContracts();
-
-		this.actVerifySelected.setEnabled(on && instantiatedConstracts != null
-				&& !instantiatedConstracts.isEmpty());
-	}
-
-	/**
-	 * <p>
-	 * Runs the verification for a given {@link List} of {@link Contract}s.
-	 * </p>
-	 * 
-	 * @param contracts
-	 *          The {@link Contract}s that shall be verified.
-	 * @param disableActions
-	 *          TODO
-	 */
-	private void verify(List<Contract> contracts, boolean disableActions) {
-
-		/* The {@link VerificationReport} of the verification. */
-		final VerificationReport verReport = new VerificationReport() {
-
-			/** The {@link Contract} of this {@link VerificationReport}. */
-			private Contract contract = null;
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.java.treaty.VerificationReport#getContract()
-			 */
-			public Contract getContract() {
-
-				return this.contract;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.java.treaty.VerificationReport#log(java.lang.Object,
-			 * net.java.treaty.VerificationResult, java.lang.String[])
-			 */
-			public void log(Object context, VerificationResult result,
-					String... remarks) {
-
-				if (context instanceof Annotatable) {
-					((Annotatable) context).setProperty(VERIFICATION_RESULT, result);
-				}
-				// no else.
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * net.java.treaty.VerificationReport#setContract(net.java.treaty.Contract
-			 * )
-			 */
-			public void setContract(Contract contract) {
-
-				this.contract = contract;
-			}
-		};
-
-		/* A {@link VerificationJobListener} used during verification. */
-		VerificationJobListener vListener = new VerificationJobListener() {
-
-			/*
-			 * (non-Javadoc)
-			 * @seenet.java.treaty.eclipse.jobs.VerificationJobListener#
-			 * verificationStatusChanged()
-			 */
-			public void verificationStatusChanged() {
-
-				updateTree();
-			}
-		};
-
-		/* A {@link IJobChangeListener} used during verification. */
-		IJobChangeListener jListener = new IJobChangeListener() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#aboutToRun(org.eclipse
-			 * .core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void aboutToRun(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#awake(org.eclipse.
-			 * core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void awake(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#done(org.eclipse.core
-			 * .runtime.jobs.IJobChangeEvent)
-			 */
-			public void done(IJobChangeEvent e) {
-
-				VerificationJob verificationJob;
-
-				updateTree();
-
-				verificationJob = (VerificationJob) e.getJob();
-				reportVerificationResult(verificationJob.getDoneContracts(),
-						verificationJob.getFailedContracts());
-
-				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-
-					/*
-					 * (non-Javadoc)
-					 * @see java.lang.Runnable#run()
-					 */
-					public void run() {
-
-						switchActions(true);
-					}
-				});
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#running(org.eclipse
-			 * .core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void running(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#scheduled(org.eclipse
-			 * .core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void scheduled(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#sleeping(org.eclipse
-			 * .core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void sleeping(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-		};
-
-		/* Probably disable the actions. */
-		if (disableActions) {
-			this.switchActions(false);
-		}
-
-		/* Verify the contracts. */
-		EclipseContractRegistry.getInstance().verify(contracts, verReport,
-				vListener, jListener);
-	}
-
-	public ImageDescriptor getImageDescriptor(String path) {
-
-		return AbstractUIPlugin
-				.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path);
-	}
-
-	/**
-	 * <p>
 	 * This is a call-back that will allow us to create the viewer and initialize
 	 * it.
 	 * </p>
@@ -1713,7 +1772,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 			public void run() {
 
-				actExport(exporter);
+				actionExport(exporter);
 			}
 
 		}
@@ -1737,34 +1796,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			exporters = Exporter.getInstances();
 		}
 		return exporters;
-	}
-
-	private void actExport(Exporter exporter) {
-
-		Collection<Contract> contracts =
-				ContractRepository.getDefault().getInstantiatedContracts();
-		try {
-			String fileName = null;
-			if (exporter.exportToFolder()) {
-				DirectoryDialog dlg =
-						new DirectoryDialog(this.getViewSite().getShell(), SWT.OPEN);
-				dlg.setText("Select target folder for export");
-				fileName = dlg.open();
-			}
-			else {
-				FileDialog dlg =
-						new FileDialog(this.getViewSite().getShell(), SWT.OPEN);
-				dlg.setFilterExtensions(exporter.getFilterExtensions());
-				dlg.setFilterNames(exporter.getFilterNames());
-				dlg.setText("Select file for export");
-				fileName = dlg.open();
-			}
-			if (fileName != null) {
-				exporter.export(contracts, new File(fileName));
-			}
-		} catch (IOException e) {
-			Logger.error("Exception exporting contracts", e);
-		}
 	}
 
 	private void actShowContractSource() {
