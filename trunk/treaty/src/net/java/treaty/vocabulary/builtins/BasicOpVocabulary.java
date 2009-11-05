@@ -10,7 +10,6 @@
 
 package net.java.treaty.vocabulary.builtins;
 
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -26,110 +25,188 @@ import net.java.treaty.VerificationException;
 
 /**
  * Vocabulary for basic operations.
+ * 
  * @author jens
  */
 public class BasicOpVocabulary implements ContractVocabulary {
 
-	private URI default_domain,default_range;
+	private URI default_domain, default_range;
 
 	private boolean definesProperty(URI uri) {
-		return BuiltInOperators.INSTANCE.getInstance(uri)!=null;
-	}
-	@Override
-	public boolean checkDomain(URI relationshipOrProperty, URI domain) throws TreatyException {
-		return this.definesProperty(relationshipOrProperty); // does not matter if it is defined here
+
+		return BuiltInOperators.INSTANCE.getInstance(uri) != null;
 	}
 
-	@Override
-	public boolean checkRange(URI relationshipOrProperty, URI range) throws TreatyException {
-		return this.definesProperty(relationshipOrProperty); // does not matter if it is defined here
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#checkDomain(java.net.URI,
+	 * java.net.URI)
+	 */
+	public boolean checkDomain(URI relationshipOrProperty, URI domain)
+			throws TreatyException {
+
+		return this.definesProperty(relationshipOrProperty); // does not matter if
+		// it is defined here
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#checkRange(java.net.URI,
+	 * java.net.URI)
+	 */
+	public boolean checkRange(URI relationshipOrProperty, URI range)
+			throws TreatyException {
+
+		return this.definesProperty(relationshipOrProperty); // does not matter if
+		// it is defined here
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getDomain(java.net.URI)
+	 */
 	public URI getDomain(URI relationshipOrProperty) throws TreatyException {
+
 		try {
-			if (default_domain==null) {
+			if (default_domain == null) {
 				// everything goes, types are not enforced for built-in ops
 				default_domain = new URI("http://www.w3.org/2002/07/owl#");
-			}		
+			}
 			return default_domain;
 		} catch (URISyntaxException e) {
 			throw new TreatyException();
-		} 
+		}
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getProperties()
+	 */
 	public Collection<URI> getProperties() throws TreatyException {
+
 		return BuiltInOperators.INSTANCE.getOpIds();
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getRange(java.net.URI)
+	 */
 	public URI getRange(URI relationshipOrProperty) throws TreatyException {
+
 		try {
-			if (default_range==null) {
+			if (default_range == null) {
 				// everything goes, types are not enforced for built-in ops
 				default_range = new URI("http://www.w3.org/2002/07/owl#");
-			}		
+			}
 			return default_range;
 		} catch (URISyntaxException e) {
 			throw new TreatyException();
-		} 
+		}
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getRelationships()
+	 */
 	public Collection<URI> getRelationships() throws TreatyException {
-		return Collections.EMPTY_SET;
+
+		return Collections.emptySet();
 	}
 
-	@Override
-	public Collection<URI> getSubProperties(URI relationshipOrProperty) throws TreatyException {
-		return Collections.EMPTY_SET;
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getSubProperties(java.net.URI)
+	 */
+	public Collection<URI> getSubProperties(URI relationshipOrProperty)
+			throws TreatyException {
+
+		return Collections.emptySet();
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getSubtypes(java.net.URI)
+	 */
 	public Collection<URI> getSubtypes(URI type) throws TreatyException {
-		return Collections.EMPTY_SET;
+
+		return Collections.emptySet();
 	}
 
-	@Override
-	public Collection<URI> getSuperProperties(URI relationshipOrProperty) throws TreatyException {
-		return Collections.EMPTY_SET;
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getSuperProperties(java.net.URI)
+	 */
+	public Collection<URI> getSuperProperties(URI relationshipOrProperty)
+			throws TreatyException {
+
+		return Collections.emptySet();
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getSupertypes(java.net.URI)
+	 */
 	public Collection<URI> getSupertypes(URI type) throws TreatyException {
-		return Collections.EMPTY_SET;
+
+		return Collections.emptySet();
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVocabulary#getTypes()
+	 */
 	public Collection<URI> getTypes() throws TreatyException {
-		return Collections.EMPTY_SET;
+
+		return Collections.emptySet();
 	}
 
-	@Override
-	public void check(RelationshipCondition relationshipCondition) 	throws VerificationException {
-		throw new VerificationException("The basic operations vocabularies does not define relationships");
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.RelationshipCondition)
+	 */
+	public void check(RelationshipCondition relationshipCondition)
+			throws VerificationException {
+
+		throw new VerificationException(
+				"The basic operations vocabularies does not define relationships");
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.PropertyCondition)
+	 */
 	public void check(PropertyCondition condition) throws VerificationException {
+
 		URI uri = condition.getOperator();
 		BuiltInOperator op = BuiltInOperators.INSTANCE.getInstance(uri);
-		if (op==null)
-			throw new VerificationException("Cannot check condition, this is not a built in opperation: "+op);
+		if (op == null)
+			throw new VerificationException(
+					"Cannot check condition, this is not a built in opperation: " + op);
 		Object res = condition.getResource().getValue();
-		if (!op.compare(res, condition.getValue()) )
+		if (!op.compare(res, condition.getValue()))
 			throw new VerificationException("verification failed for " + condition);
 	}
 
-	@Override
-	public void check(ExistsCondition relationshipCondition) throws VerificationException {
-		throw new VerificationException("The basic operations vocabularies does not define types");
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.ExistsCondition)
+	 */
+	public void check(ExistsCondition relationshipCondition)
+			throws VerificationException {
+
+		throw new VerificationException(
+				"The basic operations vocabularies does not define types");
 	}
 
-	@Override
-	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException {
-		throw new ResourceLoaderException("The basic operations vocabularies does not define types");
-	}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ResourceLoader#load(java.net.URI, java.lang.String,
+	 * net.java.treaty.Connector)
+	 */
+	public Object load(URI type, String name, Connector connector)
+			throws ResourceLoaderException {
 
+		throw new ResourceLoaderException(
+				"The basic operations vocabularies does not define types");
+	}
 }
