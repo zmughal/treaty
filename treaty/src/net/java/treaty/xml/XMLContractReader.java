@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import net.java.treaty.*;
+import net.java.treaty.vocabulary.builtins.BuiltInOperators;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -40,7 +41,7 @@ public class XMLContractReader implements ContractReader  {
 	 * Read a contract from an input stream.
 	 * TODO: check contract read against vocabulary
 	 */
-	public Contract read (InputStream in,Vocabulary voc) throws TreatyException {
+	public Contract read (InputStream in,ContractVocabulary voc) throws TreatyException {
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		try {
@@ -145,12 +146,17 @@ public class XMLContractReader implements ContractReader  {
 				if (resource==null)
 					throw new InvalidContractException("Invalid resource reference in condition: " + resourceRef);
 				condition.setResource(resource);
-				String property = e.getAttributeValue("type");
-				condition.setProperty(property);
 				String operator = e.getAttributeValue("operator");
-				Operator op = Operator.getInstance(operator);
+				
+				// try to find out whether this is a URI or a predefined alias
+				URI op = BuiltInOperators.INSTANCE.getURI(operator);
 				if (op==null) {
-					throw new InvalidContractException("Invalid operator symbol encountered: " + operator);
+					try {
+						condition.setOperator(new URI(operator));
+					}
+					catch (Exception x) {
+						throw new InvalidContractException("Invalid operator symbol encountered: " + operator);
+					}
 				}
 				else {
 					condition.setOperator(op);
