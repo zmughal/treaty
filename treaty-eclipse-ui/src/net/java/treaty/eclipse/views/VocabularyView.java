@@ -10,9 +10,11 @@
 
 package net.java.treaty.eclipse.views;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Iterator;
 
 import net.java.treaty.eclipse.Vocabulary;
 import net.java.treaty.eclipse.VocabularyRegistry;
@@ -46,16 +48,15 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.semanticweb.owl.model.OWLAnnotation;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLDataRange;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLObjectProperty;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLSubClassAxiom;
+
+import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.xmloutput.impl.Basic;
 
 /**
  * <p>
@@ -236,6 +237,9 @@ public class VocabularyView extends ViewPart {
 	private class ViewContentProvider implements IStructuredContentProvider,
 			ITreeContentProvider {
 
+		/** The maximum depth of the tree. Required to avoid cycles. */
+		private final int MAX_TREE_DEPTH = 42;
+
 		/** The root {@link TreeParent} object of the view. */
 		private TreeParent invisibleRoot;
 
@@ -358,63 +362,141 @@ public class VocabularyView extends ViewPart {
 		private void initialize() {
 
 			invisibleRoot = new TreeParent("");
-			addNodes(invisibleRoot, Vocabulary.getDefault().getOntology());
+			addNodes(invisibleRoot, VocabularyRegistry.INSTANCE.getOntology());
 		}
 
-		// TODO Probably change this method.
-		private void addNodes(TreeParent parent, OWLOntology ontology) {
+		/**
+		 * <p>
+		 * Adds the node for a given {@link OntModel} and its children nodes to a
+		 * given {@link TreeParent}.
+		 * </p>
+		 * 
+		 * @param parent
+		 *          The {@link TreeParent} to which the node shall be added.
+		 * @param ontology
+		 *          The {@link OntModel} for that a node shall be added.
+		 */
+		private void addNodes(TreeParent parent, OntModel ontology) {
 
-			addNodes(parent, ontology, 0);
+			/* Add all classes of the ontology. */
+			Iterator<OntClass> ontClassIterator;
+			ontClassIterator = ontology.listClasses();
+
+			while (ontClassIterator.hasNext()) {
+
+				this.addNodes(parent, ontClassIterator.next(), 0);
+			}
+			// end for.
+
+			/* Add all properties of the ontology. */
+			Iterator<OntProperty> ontPropertyIterator;
+			ontPropertyIterator = ontology.listAllOntProperties();
+
+			while (ontPropertyIterator.hasNext()) {
+
+				this.addNodes(parent, ontPropertyIterator.next(), 0);
+			}
+			// end while.
+
+			/* Add all datatype properties of the ontology. */
+			Iterator<DatatypeProperty> datatypePropertyIterator;
+			datatypePropertyIterator = ontology.listDatatypeProperties();
+
+			while (datatypePropertyIterator.hasNext()) {
+
+				this.addNodes(parent, datatypePropertyIterator.next(), 0);
+			}
+			// end while.
 		}
 
-		// TODO Probably change this method.
-		private void addNodes(TreeParent parent, OWLOntology ontology, int level) {
+		/**
+		 * <p>
+		 * A helper method that adds a node for a given {@link OntClass} and its
+		 * subclasses to a given {@link TreeParent}.
+		 * </p>
+		 * 
+		 * @param parent
+		 *          The {@link TreeParent} to that the node(s) shall be added.
+		 * @param ontClass
+		 *          The {@link OntClass} for which a node shall be added.
+		 * @param level
+		 *          The depth at which the {@link OntClass} shall be added (used to
+		 *          break cycles at a certain depth).
+		 */
+		private void addNodes(TreeParent parent, OntClass ontClass, int level) {
 
-			// MAX LEVEL to handle loops
-			if (level >= 42) {
-				return;
-			}
+			if (level <= MAX_TREE_DEPTH) {
 
-			if (level == 0) {
-				// add classes without superclass axioms
-				for (OWLClass c : ontology.getReferencedClasses()) {
-					Collection<OWLSubClassAxiom> sca =
-							ontology.getSubClassAxiomsForLHS(c);
-					// TODO check if owl:Thing is declared as superclass
-					boolean toplevel = sca.size() == 0;
-					if (!toplevel && sca.size() == 1) {
-						OWLDescription sc = sca.iterator().next().getSuperClass();
-						toplevel = sc.isOWLThing();
+				Iterator<OntClass> subClassIterator;
+				subClassIterator = ontClass.listSubClasses(true);
+
+				/* Probably add children as well. */
+				if (subClassIterator.hasNext()) {
+					TreeParent node;
+					node = new TreeParent(ontClass);
+
+					while (subClassIterator.hasNext()) {
+						this.addNodes(node, subClassIterator.next(), level + 1);
 					}
-					if (toplevel && !c.isOWLThing()) {
-						TreeParent node = new TreeParent(c);
-						parent.addChild(node);
-						addNodes(node, ontology, level + 1);
-					}
+					// end while.
+
+					parent.addChild(node);
 				}
+
+				else {
+					TreeObject node;
+					node = new TreeObject(ontClass);
+
+					parent.addChild(node);
+				}
+				// end else.
 			}
-			else {
-				OWLClass superClass = (OWLClass) parent.getObject();
-				for (OWLClass c : ontology.getReferencedClasses()) {
-					for (OWLSubClassAxiom ax : ontology.getSubClassAxiomsForLHS(c)) {
-						if (superClass.equals(ax.getSuperClass())) {
-							TreeParent node = new TreeParent(c);
-							parent.addChild(node);
-							addNodes(node, ontology, level + 1);
-						}
+			// no else.
+		}
+
+		/**
+		 * <p>
+		 * A helper method that adds a node for a given {@link OntProperty} and its
+		 * sub-properties to a given {@link TreeParent}.
+		 * </p>
+		 * 
+		 * @param parent
+		 *          The {@link TreeParent} to that the node(s) shall be added.
+		 * @param ontProperty
+		 *          The {@link OntProperty} for which a node shall be added.
+		 * @param level
+		 *          The depth at which the {@link OntClass} shall be added (used to
+		 *          break cycles at a certain depth).
+		 */
+		private void addNodes(TreeParent parent, OntProperty ontProperty, int level) {
+
+			if (level <= MAX_TREE_DEPTH) {
+
+				Iterator<? extends OntProperty> subPropertyIterator;
+				subPropertyIterator = ontProperty.listSubProperties(true);
+
+				/* Probably add children as well. */
+				if (subPropertyIterator.hasNext()) {
+					TreeParent node;
+					node = new TreeParent(ontProperty);
+
+					while (subPropertyIterator.hasNext()) {
+						this.addNodes(node, subPropertyIterator.next(), level + 1);
 					}
+					// end while.
+
+					parent.addChild(node);
 				}
-				// add properties
-				for (OWLObjectProperty p : ontology.getReferencedObjectProperties()) {
-					for (OWLDescription d : p.getDomains(ontology)) {
-						if (d.equals(superClass)) {
-							TreeObject node = new TreeObject(p);
-							parent.addChild(node);
-						}
-					}
+
+				else {
+					TreeObject node;
+					node = new TreeObject(ontProperty);
+
+					parent.addChild(node);
 				}
+				// end else.
 			}
-			// end else.
+			// no else.
 		}
 	}
 
@@ -456,13 +538,12 @@ public class VocabularyView extends ViewPart {
 			result = null;
 			object = ((TreeObject) treeObject).getObject();
 
-			// TODO Probably different now
-			if (collumn == 0 && object instanceof OWLClass) {
+			if (collumn == 0 && object instanceof OntClass) {
 				result = ICON_TYPE;
 			}
 
-			// TODO Probably different now
-			else if (collumn == 0 && object instanceof OWLObjectProperty) {
+			/* FIXME Claas: Probably decide here between Object and Data Properties. */
+			else if (collumn == 0 && object instanceof OntProperty) {
 				result = ICON_PREDICATE;
 			}
 
@@ -503,103 +584,68 @@ public class VocabularyView extends ViewPart {
 
 			object = ((TreeObject) treeObject).getObject();
 
-			// TODO Probably change this.
-			if (collumn == 0 && object instanceof OWLNamedObject) {
-				URI uri;
-				uri = ((OWLNamedObject) object).getURI();
+			if (collumn == 0 && object instanceof Resource) {
 
-				if (uri == null) {
+				result = ((Resource) object).getURI();
+
+				if (result == null) {
 					result = object.toString();
 				}
-
-				else {
-					result = uri.toString();
-				}
+				// no else.
 			}
 
-			// TODO Probably change this.
-			else if (collumn == 1 && object instanceof OWLEntity) {
+			else if (collumn == 1 && object instanceof Resource) {
 
-				OWLEntity entity;
-				entity = (OWLEntity) object;
-
+				// FIXME Claas: How do i get the contributor id.
+				// OWLEntity entity;
+				// entity = (OWLEntity) object;
+				//
+				// result = "";
+				//
+				// for (OWLAnnotation annotation : entity.getAnnotations(Vocabulary
+				// .getDefault().getOntology(), LABEL_ANNOTATION)) {
+				//
+				// String value;
+				//
+				// if (annotation.getAnnotationValue() == null) {
+				// value = null;
+				// }
+				//
+				// else {
+				// value = annotation.getAnnotationValue().toString();
+				// }
+				//
+				// if (value != null && value.startsWith(Vocabulary.OWNER_ANNOTATION)) {
+				// result = value.substring(Vocabulary.OWNER_ANNOTATION.length() + 1);
+				// }
+				// }
 				result = "";
-
-				for (OWLAnnotation annotation : entity.getAnnotations(Vocabulary
-						.getDefault().getOntology(), LABEL_ANNOTATION)) {
-
-					String value;
-
-					if (annotation.getAnnotationValue() == null) {
-						value = null;
-					}
-
-					else {
-						value = annotation.getAnnotationValue().toString();
-					}
-
-					if (value != null && value.startsWith(Vocabulary.OWNER_ANNOTATION)) {
-						result = value.substring(Vocabulary.OWNER_ANNOTATION.length() + 1);
-					}
-				}
 			}
 
-			// TODO Probably change this.
-			else if (collumn == 2 && object instanceof OWLObjectProperty) {
+			else if (collumn == 2 && object instanceof OntProperty) {
 
-				OWLObjectProperty objectProperty;
-				objectProperty = (OWLObjectProperty) object;
+				OntProperty ontProperty;
+				ontProperty = (OntProperty) object;
 
 				StringBuffer buffer;
 				buffer = new StringBuffer();
 
-				for (OWLDescription description : objectProperty.getRanges(Vocabulary
-						.getDefault().getOntology())) {
+				Iterator<? extends OntResource> rangeIterator;
+				rangeIterator = ontProperty.listRange();
+
+				while (rangeIterator.hasNext()) {
+
+					OntResource range;
+					range = rangeIterator.next();
 
 					if (buffer.length() > 0) {
 						buffer.append(',');
 					}
 					// no else.
 
-					if (description instanceof OWLNamedObject) {
-						buffer.append(((OWLNamedObject) description).getURI());
-					}
-
-					else {
-						buffer.append(description);
-					}
+					buffer.append(range.getURI());
 				}
-				// end for.
-
-				result = buffer.toString();
-			}
-
-			// TODO Probably change this.
-			else if (collumn == 2 && object instanceof OWLDataProperty) {
-
-				OWLDataProperty dataProperty;
-				dataProperty = (OWLDataProperty) object;
-
-				StringBuffer buffer;
-				buffer = new StringBuffer();
-
-				for (OWLDataRange dataRange : dataProperty.getRanges(Vocabulary
-						.getDefault().getOntology())) {
-
-					if (buffer.length() > 0) {
-						buffer.append(',');
-					}
-					// no else.
-
-					if (dataRange instanceof OWLNamedObject) {
-						buffer.append(((OWLNamedObject) dataRange).getURI());
-					}
-
-					else {
-						buffer.append(dataRange);
-					}
-				}
-				// end for.
+				// end while.
 
 				result = buffer.toString();
 			}
@@ -658,6 +704,9 @@ public class VocabularyView extends ViewPart {
 	/** The {@link Action} used to refresh this {@link VocabularyView}. */
 	private Action actionRefresh;
 
+	/** The {@link DrillDownAdapter} of this {@link VocabularyView}. */
+	private DrillDownAdapter drillDownAdapter;
+
 	/**
 	 * A {@link StyledText} belonging to this {@link VocabularyView} that is used
 	 * to display the whole ontology as text file.
@@ -686,51 +735,50 @@ public class VocabularyView extends ViewPart {
 	 * @parent The parent {@link Composite} of the viewer.
 	 */
 	public void createPartControl(Composite parent) {
-	
+
 		final TabFolder tabFolder = new TabFolder(parent, SWT.BORDER);
-	
+
 		TabItem tabItem1;
 		tabItem1 = new TabItem(tabFolder, SWT.NULL);
 		tabItem1.setText("Types and Properties");
-	
+
 		this.viewer =
 				new TreeViewer(tabFolder, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		this.drillDownAdapter = new DrillDownAdapter(this.viewer);
-	
+
 		this.viewer.getTree().setHeaderVisible(true);
-	
+
 		TreeColumn column1;
 		column1 = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
 		column1.setText("Type or Property");
 		column1.setWidth(350);
-	
+
 		TreeColumn column2 = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
 		column2.setText("Contributed by");
 		column2.setWidth(300);
-	
+
 		TreeColumn column3 = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
 		column3.setText("Property Type (Range)");
 		column3.setWidth(200);
-	
+
 		this.viewer.setContentProvider(new ViewContentProvider());
 		this.viewer.setLabelProvider(new ViewLabelProvider());
 		this.viewer.setInput(getViewSite());
-	
+
 		this.makeActions();
 		this.hookContextMenu();
 		this.contributeToActionBars();
-	
+
 		tabItem1.setControl(viewer.getControl());
-	
+
 		TabItem tabItem2;
 		tabItem2 = new TabItem(tabFolder, SWT.NULL);
 		tabItem2.setText("merged ontology (owl)");
-	
+
 		this.text =
 				new StyledText(tabFolder, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		this.text.setText(Vocabulary.getDefault().getOWL());
+		this.text.setText(this.getOntologyAsRDF());
 		tabItem2.setControl(this.text);
-	
 	}
 
 	/*
@@ -838,6 +886,27 @@ public class VocabularyView extends ViewPart {
 
 	/**
 	 * <p>
+	 * Returns an RDF representation of the ontology as a {@link String}.
+	 * </p>
+	 * 
+	 * @return An RDF representation of the ontology as a {@link String}.
+	 */
+	private String getOntologyAsRDF() {
+
+		RDFWriter rdfWriter;
+		rdfWriter = new Basic();
+
+		OutputStream outputStream;
+		outputStream = new ByteArrayOutputStream();
+
+		rdfWriter.write(VocabularyRegistry.INSTANCE.getOntology(), outputStream,
+				"http://www.treaty.org/");
+
+		return outputStream.toString();
+	}
+
+	/**
+	 * <p>
 	 * A helper method to hook in the Context Menu.
 	 * </p>
 	 */
@@ -869,8 +938,6 @@ public class VocabularyView extends ViewPart {
 		this.getSite().registerContextMenu(menuManager, this.viewer);
 	}
 
-	private DrillDownAdapter drillDownAdapter;
-
 	/**
 	 * <p>
 	 * A helper method to create the {@link Action}s required for this
@@ -893,7 +960,7 @@ public class VocabularyView extends ViewPart {
 				Vocabulary.getDefault();
 
 				viewer.setContentProvider(new ViewContentProvider());
-				text.setText(Vocabulary.getDefault().getOWL());
+				text.setText(getOntologyAsRDF());
 			}
 		};
 
