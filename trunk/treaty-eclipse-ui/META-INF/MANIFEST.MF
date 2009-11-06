@@ -6,7 +6,7 @@ Bundle-Version: 1.1.0
 Bundle-Activator: net.java.treaty.eclipse.ui.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.java.treaty.eclipse;bundle-version="1.0.18"
+ net.java.treaty.eclipse;bundle-version="1.2.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Jens Dietrich

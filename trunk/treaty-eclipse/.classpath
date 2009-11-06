@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/jena-2.6.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/icu4j-3.4.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/iri-0.7.jar"/>
@@ -13,7 +14,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jaxen-jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/saxpath.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/treaty.jar" sourcepath="/treaty/src"/>
-	<classpathentry kind="lib" path="lib/jena-2.6.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
