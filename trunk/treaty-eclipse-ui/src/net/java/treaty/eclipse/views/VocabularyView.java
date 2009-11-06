@@ -542,7 +542,10 @@ public class VocabularyView extends ViewPart {
 				result = ICON_TYPE;
 			}
 
-			/* FIXME Claas: Probably decide here between Object and Data Properties. */
+			else if (collumn == 0 && object instanceof DatatypeProperty) {
+				result = ICON_DATATYPE_PROPERTY;
+			}
+
 			else if (collumn == 0 && object instanceof OntProperty) {
 				result = ICON_PREDICATE;
 			}
@@ -697,6 +700,10 @@ public class VocabularyView extends ViewPart {
 	private final Image ICON_PREDICATE =
 			this.getImageDescriptor("icons/owl_property.gif").createImage();
 
+	/** Icon used to display datatype properties. */
+	private final Image ICON_DATATYPE_PROPERTY =
+			this.getImageDescriptor("icons/owl_datatypeproperty.gif").createImage();
+
 	/** Icon used to display types. */
 	private final Image ICON_TYPE =
 			this.getImageDescriptor("icons/owl_class.gif").createImage();
@@ -802,6 +809,7 @@ public class VocabularyView extends ViewPart {
 		ICON_PLUGIN.dispose();
 		ICON_PREDICATE.dispose();
 		ICON_TYPE.dispose();
+		ICON_DATATYPE_PROPERTY.dispose();
 
 		super.dispose();
 	}
@@ -957,7 +965,6 @@ public class VocabularyView extends ViewPart {
 				text.setText("");
 
 				Vocabulary.reset();
-				Vocabulary.getDefault();
 
 				viewer.setContentProvider(new ViewContentProvider());
 				text.setText(getOntologyAsRDF());
