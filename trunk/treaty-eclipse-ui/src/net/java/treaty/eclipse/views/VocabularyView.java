@@ -13,6 +13,7 @@ package net.java.treaty.eclipse.views;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -509,10 +510,6 @@ public class VocabularyView extends ViewPart {
 	 */
 	private class ViewLabelProvider implements ITableLabelProvider {
 
-		/** A URI representing the Annotation used for labels. */
-		public URI LABEL_ANNOTATION =
-				URI.create("http://www.w3.org/2000/01/rdf-schema#label");
-
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -599,30 +596,19 @@ public class VocabularyView extends ViewPart {
 
 			else if (collumn == 1 && object instanceof Resource) {
 
-				// FIXME Claas: How do i get the contributor id.
-				// OWLEntity entity;
-				// entity = (OWLEntity) object;
-				//
-				// result = "";
-				//
-				// for (OWLAnnotation annotation : entity.getAnnotations(Vocabulary
-				// .getDefault().getOntology(), LABEL_ANNOTATION)) {
-				//
-				// String value;
-				//
-				// if (annotation.getAnnotationValue() == null) {
-				// value = null;
-				// }
-				//
-				// else {
-				// value = annotation.getAnnotationValue().toString();
-				// }
-				//
-				// if (value != null && value.startsWith(Vocabulary.OWNER_ANNOTATION)) {
-				// result = value.substring(Vocabulary.OWNER_ANNOTATION.length() + 1);
-				// }
-				// }
-				result = "";
+				Resource resource;
+				resource = (Resource) object;
+
+				try {
+					URI resourceURI;
+					resourceURI = new URI(resource.getURI());
+
+					result = VocabularyRegistry.INSTANCE.getOwnerAnnotation(resourceURI);
+				}
+
+				catch (URISyntaxException e) {
+					result = "";
+				}
 			}
 
 			else if (collumn == 2 && object instanceof OntProperty) {
@@ -907,8 +893,9 @@ public class VocabularyView extends ViewPart {
 		OutputStream outputStream;
 		outputStream = new ByteArrayOutputStream();
 
-		rdfWriter.write(VocabularyRegistry.INSTANCE.getOntology(), outputStream,
-				"http://www.treaty.org/");
+		/* FIXME Claas: Remove this comment when problem with URIs is fixed. */
+		// rdfWriter.write(VocabularyRegistry.INSTANCE.getOntology(), outputStream,
+		//		null);
 
 		return outputStream.toString();
 	}
