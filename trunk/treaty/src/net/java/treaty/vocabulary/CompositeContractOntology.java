@@ -12,6 +12,7 @@ package net.java.treaty.vocabulary;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import net.java.treaty.Connector;
 import net.java.treaty.ContractVocabulary;
@@ -21,8 +22,11 @@ import net.java.treaty.RelationshipCondition;
 import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationException;
+import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  * Supports vocabulary composition. Each vocabulary contribution (=part) defines
@@ -38,13 +42,14 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class CompositeContractOntology extends ContractOntology {
 
+	public static final String OWNER = "http://owner";
+	
 	private List<ContractVocabulary> vocabularyContributions =
 			new ArrayList<ContractVocabulary>();
 
 	private OntModel ontology = ModelFactory.createOntologyModel();;
 
-	public void add(ContractVocabulary voc) throws TreatyException {
-
+	public void add(ContractVocabulary voc,String owner) throws TreatyException {
 		// check whether types or predicates are defined twice
 		for (URI uri : voc.getTypes()) {
 			for (ContractVocabulary part : vocabularyContributions) {
@@ -69,11 +74,25 @@ public class CompositeContractOntology extends ContractOntology {
 		}
 
 		this.vocabularyContributions.add(voc);
+		
 		// we accept non ontologies here to support "lightweight" plugins
 		// TODO log warning
 		if (voc instanceof ContractOntology) {
-			this.ontology.addSubModel(((ContractOntology)voc).getOntology());
+			ContractOntology ont = (ContractOntology)voc;
+			this.ontology.addSubModel(ont.getOntology());
+			
+			// add annotations to ontology
+			AnnotationProperty ann = ont.getOntology().createAnnotationProperty(OWNER);
+			addOwnerAnnotation(ont.getOntology(),ann,ont.getTypes(),owner);
+			addOwnerAnnotation(ont.getOntology(),ann,ont.getRelationships(),owner);
+			addOwnerAnnotation(ont.getOntology(),ann,ont.getProperties(),owner);
 		}
+	}
+	
+	private void addOwnerAnnotation(OntModel model,AnnotationProperty ann,Collection<URI> resources,String owner) {
+		for (URI uri : resources) {
+			model.add(model.getResource(uri.toString()),ann,owner);
+		}		
 	}
 
 	// can be overridden, e.g. just logging warning might be enough
@@ -214,5 +233,19 @@ public class CompositeContractOntology extends ContractOntology {
 
 		return ontology;
 	}
-
+	/**
+	 * Get the owner annotation of a types, property or relationship.
+	 * @param resource
+	 * @return
+	 */
+	public String getOwnerAnnotation(URI resource) {
+		AnnotationProperty ann = ontology.getAnnotationProperty(CompositeContractOntology.OWNER);
+		if (ann==null) return null;
+		Resource r = ontology.getResource("http://www.treaty.org/java#InstantiableClass");
+		if (r==null) return null;
+		Statement s = r.getProperty(ann);
+		if (s==null) return null;
+		String t = s.getString();
+		return t;
+	}
 }
