@@ -43,9 +43,9 @@ public class VocabularyRegistry extends CompositeContractOntology {
 		super();
 
 		try {
-			this.add(new BasicOpVocabulary());
-			this.add(new JavaVocabulary());
-			this.add(new OWLVocabulary());
+			this.add(new BasicOpVocabulary(), "net.java.treaty");
+			this.add(new JavaVocabulary(), "net.java.treaty");
+			this.add(new OWLVocabulary(), "net.java.treaty");
 		}
 
 		catch (TreatyException x) {
