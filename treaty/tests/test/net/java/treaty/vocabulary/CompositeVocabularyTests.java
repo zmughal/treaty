@@ -23,7 +23,7 @@ import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
 
 /**
  * Tests for composite vocabulary.
- * Also tests ontology resoning.
+ * Also tests ontology reasoning.
  * @author jens dietrich
  */
 public class CompositeVocabularyTests {
@@ -32,9 +32,9 @@ public class CompositeVocabularyTests {
 	@Before
 	public void setUp() throws Exception {
 		voc = new CompositeContractOntology();
-		voc.add(new JavaVocabulary());
-		voc.add(new OWLVocabulary());
-		voc.add(new TestVocabulary());
+		voc.add(new JavaVocabulary(),"builtin-java");
+		voc.add(new OWLVocabulary(),"builtin-owl");
+		voc.add(new TestVocabulary(),"test");
 	}
 	@After 
 	public void tearDown() throws Exception {
@@ -92,6 +92,14 @@ public class CompositeVocabularyTests {
 		assertTrue(voc.getSuperProperties(subProp).contains(superProp));
 		assertEquals(1,voc.getSuperProperties(subProp).size());
 
+	}
+	
+	@Test
+	public void testOwnerAnnotations () throws Exception {
+		assertEquals("builtin-java",voc.getOwnerAnnotation(new URI("http://www.treaty.org/java#InstantiableClass")));
+		assertEquals("builtin-java",voc.getOwnerAnnotation(new URI("http://www.treaty.org/java#implements")));
+		assertEquals("builtin-java",voc.getOwnerAnnotation(new URI("http://www.treaty.org/owl#OWLType")));
+		assertEquals("builtin-java",voc.getOwnerAnnotation(new URI("http://www.treaty.org/test#specialImplements")));
 	}
 	
 	// for debugging 
