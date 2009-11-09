@@ -1,7 +1,5 @@
-package net.java.treaty.eclipse;
-
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -9,6 +7,8 @@ package net.java.treaty.eclipse;
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
  * See the License for the specific language governing permissions and limitations under the License. 
  */
+
+package net.java.treaty.eclipse;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -95,17 +95,6 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		return this.bundle.loadClass(className);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-
-		return new StringBuffer().append(this.getClass().getName()).append('(')
-				.append(getId()).append(')').toString();
-	}
-
 	/**
 	 * <p>
 	 * Adds a given {@link EclipseExtension} to this {@link EclipsePlugin}.
@@ -130,6 +119,18 @@ public class EclipsePlugin extends PropertySupport implements Component {
 	public void addExtensionPoint(EclipseExtensionPoint eclipseExtensionPoint) {
 
 		this.extensionPoints.add(eclipseExtensionPoint);
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Bundle} this {@link EclipsePlugin} wraps.
+	 * </p>
+	 * 
+	 * @return The {@link Bundle} this {@link EclipsePlugin} wraps.
+	 */
+	public Bundle getBundle() {
+
+		return this.bundle;
 	}
 
 	/**
@@ -195,6 +196,33 @@ public class EclipsePlugin extends PropertySupport implements Component {
 
 	/**
 	 * <p>
+	 * Returns, whether or not this {@link EclipsePlugin} has
+	 * {@link EclipseExtensionPoint}s that are contracted.
+	 * </p>
+	 * 
+	 * @return <code>true</code> if this {@link EclipsePlugin} has
+	 *         {@link EclipseExtensionPoint}s that are contracted.
+	 */
+	public boolean hasContracts() {
+
+		boolean result;
+		result = false;
+
+		for (EclipseExtensionPoint eclipseExtensionPoint : this.extensionPoints) {
+
+			if (eclipseExtensionPoint.hasContracts()) {
+				result = true;
+				break;
+			}
+			// no else.
+		}
+		// end for.
+
+		return result;
+	}
+
+	/**
+	 * <p>
 	 * Removes a given {@link EclipseExtension} from this {@link EclipsePlugin}.
 	 * </p>
 	 * 
@@ -224,22 +252,27 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		return this.extensionPoints.remove(eclipseExtensionPoint);
 	}
 
-	public Bundle getBundle() {
-
-		return bundle;
-	}
-
+	/**
+	 * <p>
+	 * Sets the {@link Bundle} this {@link EclipsePlugin} wraps.
+	 * </p>
+	 * 
+	 * @param bundle
+	 *          The {@link Bundle} this {@link EclipsePlugin} wraps.
+	 */
 	public void setBundle(Bundle bundle) {
 
 		this.bundle = bundle;
 	}
 
-	public boolean hasContracts() {
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
 
-		for (EclipseExtensionPoint xp : this.extensionPoints) {
-			if (xp.hasContracts())
-				return true;
-		}
-		return false;
+		return new StringBuffer().append(this.getClass().getName()).append('(')
+				.append(getId()).append(')').toString();
 	}
 }

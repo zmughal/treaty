@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -28,7 +28,9 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
 /**
+ * <p>
  * Utility to extract resources.
+ * </p>
  * 
  * @author Jens Dietrich
  */
@@ -40,87 +42,123 @@ public class EclipseResourceManager implements ResourceManager {
 	 * java.lang.String, net.java.treaty.Connector,
 	 * net.java.treaty.InstantiationContext)
 	 */
-	public String resolve(URI type, String ref, Connector connector,
+	@SuppressWarnings("unchecked")
+	public String resolve(URI type, String reference, Connector connector,
 			InstantiationContext context) throws ResourceLoaderException {
 
-		EclipseExtension extension;
-		Document doc;
+		EclipseExtension eclipseExtension;
+		Document document;
 
-		extension = (EclipseExtension) connector;
-		doc = this.loadPluginMetaData(connector);
+		eclipseExtension = (EclipseExtension) connector;
+		document = this.loadPluginMetaData(connector);
 
+		/* Probably use the default context. */
 		if (context == null || context == InstantiationContext.DEFAULT_CONTEXT) {
-			// prepend xpath expression to select plugin node
-			// example (serviceprovider/@class is the actual resource reference):
-			// /plugin/extension[@point="net.java.treaty.eclipse.example.clock.dateformatter"]/serviceprovider/@class
+			/* Prepend xpath expression to select plug-in node. */
+			/* Example (serviceprovider/@class is the actual resource reference): */
+			/*
+			 * /plugin/extension[@point="net.java.treaty.eclipse.example.clock.dateformatter"
+			 * ]/serviceprovider/@class
+			 */
 
-			// NOTE !!: we use the index in the xpath queries, this index
-			// orgininates
-			// from the EclipseRegistry
-			// and we assume that the order of the extensions is the same as in
-			// plugin.xml!!
+			/*
+			 * NOTE!!: we use the index in the xpath queries, this index orgininates
+			 * from the EclipseRegistry and we assume that the order of the extensions
+			 * is the same as in plugin.xml!!
+			 */
 
-			StringBuffer query = this.createXPath(extension);
-			query.append(ref);
-			XPath xpath;
+			/* Create the query for the given extension and reference. */
+			StringBuffer query;
+			query = this.createXPath(eclipseExtension);
+			query.append(reference);
+
 			try {
+				XPath xpath;
 				xpath = XPath.newInstance(query.toString());
-				List<Element> nodes = xpath.selectNodes(doc);
+
+				List<Element> nodes;
+				nodes = xpath.selectNodes(document);
+
 				if (nodes.size() == 0) {
-					// Logger.info("No resource references found in plugin.xml for " +
-					// ref
-					// + " - check xpath");
 					return null;
 				}
+
 				Object node = nodes.get(0);
+
 				if (node instanceof Element) {
 					return ((Element) node).getValue();
 				}
+
 				else if (node instanceof Attribute) {
 					return ((Attribute) node).getValue();
 				}
-				else
+
+				else {
 					throw new ResourceLoaderException(
-							"Exception reading resource name from plugin.xml - check xpath reference");
-			} catch (JDOMException e) {
-				throw new ResourceLoaderException(
-						"Exception reading resource name from plugin.xml - check xpath reference",
-						e);
+							"Exception reading resource name from plugin.xml - "
+									+ "check xpath reference");
+				}
 			}
-		}
-		else if (context instanceof EclipseInstantiationContext) {
-			EclipseInstantiationContext eContext =
-					(EclipseInstantiationContext) context;
-			XPath xpath;
-			try {
-				xpath = XPath.newInstance(ref);
-				List<Element> nodes = xpath.selectNodes(eContext.getContextNode());
-				if (nodes.size() == 0) {
-					// Logger.info("No resource references found in plugin.xml for " +
-					// ref
-					// + " in context " + eContext.getContextNode() + " - check xpath");
-					return null;
-				}
-				Object node = nodes.get(0);
-				if (node instanceof Element) {
-					return ((Element) node).getValue();
-				}
-				else if (node instanceof Attribute) {
-					return ((Attribute) node).getValue();
-				}
-				else
-					throw new ResourceLoaderException(
-							"Exception reading resource name from plugin.xml - check xpath reference");
-			} catch (JDOMException e) {
+			// end try.
+
+			catch (JDOMException e) {
 				throw new ResourceLoaderException(
-						"Exception reading resource name from plugin.xml - check xpath reference",
-						e);
+						"Exception reading resource name from plugin.xml - "
+								+ "check xpath reference", e);
 			}
+			// end catch.
 		}
 
-		else {
-			throw new ResourceLoaderException();
+		/* Else use another context. */
+		else if (context instanceof EclipseInstantiationContext) {
+
+			EclipseInstantiationContext eclipseContext;
+			eclipseContext = (EclipseInstantiationContext) context;
+
+			try {
+				XPath xpath;
+				xpath = XPath.newInstance(reference);
+
+				List<Element> nodes =
+						xpath.selectNodes(eclipseContext.getContextNode());
+
+				if (nodes.size() == 0) {
+					return null;
+				}
+
+				Object node;
+				node = nodes.get(0);
+
+				if (node instanceof Element) {
+					return ((Element) node).getValue();
+				}
+
+				else if (node instanceof Attribute) {
+					return ((Attribute) node).getValue();
+				}
+
+				else {
+					throw new ResourceLoaderException(
+							"Exception reading resource name from plugin.xml - "
+									+ "check xpath reference");
+				}
+			}
+			// end try
+
+			catch (JDOMException e) {
+				throw new ResourceLoaderException(
+						"Exception reading resource name from plugin.xml - "
+								+ "check xpath reference", e);
+			}
+			// end catch.
 		}
+
+		/* Else throw an exception. */
+		else {
+			throw new ResourceLoaderException(
+					"Unknown kind of InstantiationContext: " + context);
+		}
+		// end else.
 	}
 
 	/*
@@ -129,44 +167,108 @@ public class EclipseResourceManager implements ResourceManager {
 	 * net.java.treaty.ResourceManager#getInstantiationContexts(net.java.treaty
 	 * .Connector, java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<InstantiationContext> getInstantiationContexts(
 			Connector connector, String contextDefinition)
 			throws ResourceLoaderException {
 
 		if (contextDefinition == null) {
-			List<InstantiationContext> contexts =
-					new ArrayList<InstantiationContext>();
+
+			List<InstantiationContext> contexts;
+
+			contexts = new ArrayList<InstantiationContext>();
 			contexts.add(InstantiationContext.DEFAULT_CONTEXT);
+
 			return contexts;
 		}
 
-		EclipseExtension extension = (EclipseExtension) connector;
-		Document doc = this.loadPluginMetaData(connector);
-		// prepend xpath expression to select plugin node
-		// example (serviceprovider/@class is the actual resource reference):
-		// /plugin/extension[@point="net.java.treaty.eclipse.example.clock.dateformatter"]/serviceprovider/@class
-		StringBuffer query = this.createXPath(extension);
+		EclipseExtension eclipseExtension;
+		eclipseExtension = (EclipseExtension) connector;
+
+		Document document = this.loadPluginMetaData(connector);
+
+		/* Prepend xpath expression to select plugin node. */
+		/* Example (serviceprovider/@class is the actual resource reference): */
+		/*
+		 * /plugin/extension[@point="net.java.treaty.eclipse.example.clock.dateformatter"
+		 * ]/serviceprovider/@class
+		 */
+
+		StringBuffer query;
+
+		query = this.createXPath(eclipseExtension);
 		query.append(contextDefinition);
+
 		try {
-			XPath xpath = XPath.newInstance(query.toString());
-			List<Element> nodes = xpath.selectNodes(doc);
-			List<InstantiationContext> contexts =
-					new ArrayList<InstantiationContext>();
+
+			XPath xpath;
+			xpath = XPath.newInstance(query.toString());
+
+			List<Element> nodes;
+			nodes = xpath.selectNodes(document);
+
+			List<InstantiationContext> contexts;
+			contexts = new ArrayList<InstantiationContext>();
+
 			int counter = 1;
+
 			for (Element node : nodes) {
-				String fullXpath = query.toString() + '[' + counter + ']';
+				String fullXpath;
+				fullXpath = query.toString() + '[' + counter + ']';
+
 				contexts.add(new EclipseInstantiationContext(node, fullXpath));
 				counter = counter + 1;
 			}
+
 			return contexts;
-		} catch (JDOMException e) {
-			throw new ResourceLoaderException(
-					"Exception reading resource name from plugin.xml - check xpath reference",
-					e);
 		}
+		// end try.
+
+		catch (JDOMException e) {
+			throw new ResourceLoaderException(
+					"Exception reading resource name from plugin.xml - "
+							+ "check xpath reference", e);
+		}
+		// end catch.
 	}
 
-	// TODO cache
+	/**
+	 * <p>
+	 * A helper method that returns the xpath expression for a given
+	 * {@link EclipseExtension}.
+	 * </p>
+	 * 
+	 * @param extension
+	 *          The {@link EclipseExtension} for that the xpath shall be returned.
+	 * @return The xpath as a {@link StringBuffer}.
+	 */
+	private StringBuffer createXPath(EclipseExtension extension) {
+
+		StringBuffer result = new StringBuffer();
+
+		result.append("/plugin/extension[@point=\"");
+		result.append(extension.getExtensionPoint().getId());
+		result.append("\"][");
+		result.append(extension.getExtensionIndex());
+		result.append("]/");
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * A helper method that loads the meta data from a {@link EclipsePlugin}.
+	 * </p>
+	 * 
+	 * @param connector
+	 *          The {@link Connector} of those {@link EclipsePlugin} the meta data
+	 *          shall be loaded.
+	 * @return The loaded meta data as a {@link Document}.
+	 * @throws ResourceLoaderException
+	 *           Thrown, if the given {@link Connector} is not an
+	 *           {@link EclipseConnector}.
+	 */
+	// TODO Cache the results here.
 	private Document loadPluginMetaData(Connector connector)
 			throws ResourceLoaderException {
 
@@ -174,29 +276,29 @@ public class EclipseResourceManager implements ResourceManager {
 			throw new ResourceLoaderException(
 					"This resource loader can only bind resources from EclipseExtensions");
 		}
-		EclipseExtension extension = (EclipseExtension) connector;
-		EclipsePlugin component = (EclipsePlugin) extension.getOwner();
+		// no else.
 
-		URL url = component.getResource("plugin.xml");
+		EclipseExtension eclipseExtension;
+		eclipseExtension = (EclipseExtension) connector;
 
-		SAXBuilder builder = new SAXBuilder();
+		EclipsePlugin eclipsePlugin;
+		eclipsePlugin = (EclipsePlugin) eclipseExtension.getOwner();
+
+		URL url;
+		url = eclipsePlugin.getResource("plugin.xml");
+
+		SAXBuilder builder;
+
+		builder = new SAXBuilder();
 		builder.setValidation(false);
+
+		/* Try to open the document. */
 		try {
 			return builder.build(url.openStream());
-		} catch (Exception e) {
-			throw new ResourceLoaderException("Cannot parse plugin.xml", e);
 		}
 
-	}
-
-	private StringBuffer createXPath(EclipseExtension extension) {
-
-		StringBuffer query = new StringBuffer();
-		query.append("/plugin/extension[@point=\"");
-		query.append(extension.getExtensionPoint().getId());
-		query.append("\"][");
-		query.append(extension.getExtensionIndex());
-		query.append("]/");
-		return query;
+		catch (Exception e) {
+			throw new ResourceLoaderException("Cannot parse plugin.xml", e);
+		}
 	}
 }

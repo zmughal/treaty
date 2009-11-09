@@ -22,7 +22,7 @@ import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
 /**
  * <p>
  * Registry for contract vocabularies. Vocabulary contributions from different
- * plugins are aggregated here.
+ * plug-ins are aggregated here.
  * </p>
  * 
  * @author Jens Dietrich
