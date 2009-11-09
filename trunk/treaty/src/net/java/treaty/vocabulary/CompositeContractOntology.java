@@ -42,7 +42,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 public class CompositeContractOntology extends ContractOntology {
 
-	public static final String OWNER = "http://owner";
+	public static final String OWNER = "http://www.treaty.org/owner";
 	
 	private List<ContractVocabulary> vocabularyContributions =
 			new ArrayList<ContractVocabulary>();
