@@ -18,36 +18,71 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.osgi.framework.Bundle;
-import net.java.treaty.*;
+
+import net.java.treaty.Connector;
+import net.java.treaty.ContractVocabulary;
+import net.java.treaty.ExistsCondition;
+import net.java.treaty.PropertyCondition;
+import net.java.treaty.RelationshipCondition;
+import net.java.treaty.Resource;
+import net.java.treaty.ResourceLoaderException;
+import net.java.treaty.VerificationException;
 import net.java.treaty.eclipse.EclipsePlugin;
+import net.java.treaty.vocabulary.ContractOntology;
+
+import org.osgi.framework.Bundle;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * Contributes the JUnit vocabulary.
+ * 
  * @author Jens Dietrich
  */
 
-public class JUnitVocabulary implements ContractVocabulary {
-	
-	
+public class JUnitVocabulary extends ContractOntology implements
+		ContractVocabulary {
+
+	/** The singleton Instance of the {@link JUnitVocabulary}. */
+	public static JUnitVocabulary INSTANCE = new JUnitVocabulary();
+
 	public static final String NS = "http://www.treaty.org/junit#";
 	// types
-	public static final String TESTCASE = NS+"TestCase";
+	public static final String TESTCASE = NS + "TestCase";
 	// types defined elsewhere
-	public static final String INSTANTIABLE_CLASS = "http://www.treaty.org/java#InstantiableClass";
-	
+	public static final String INSTANTIABLE_CLASS =
+			"http://www.treaty.org/java#InstantiableClass";
+
 	// relationships
-	public static final String VERIFIES = NS+"verifies";
+	public static final String VERIFIES = NS + "verifies";
+
+	/**
+	 * The {@link Resource} location of the ontology file of the
+	 * {@link OCLVocabulary}.
+	 */
+	private static final String RESOURCE_ONTOLOGY = "./vocabulary/junit.owl";
+
+	/** The {@link OntModel} belonging to the {@link OCLVocabulary}. */
+	private OntModel myOntology = null;
+
 	// registry
 	private Collection<URI> predicates = null;
 	private Collection<URI> types = null;
-	
-	public JUnitVocabulary() {
+
+	/**
+	 * <p>
+	 * Private Constructor for Singleton pattern.
+	 * </p>
+	 */
+	private JUnitVocabulary() {
+
 		super();
 	}
 
 	public Collection<URI> getContributedPredicates() {
-		if (predicates==null) {
+
+		if (predicates == null) {
 			predicates = new ArrayList<URI>();
 			try {
 				predicates.add(new URI(VERIFIES));
@@ -59,7 +94,8 @@ public class JUnitVocabulary implements ContractVocabulary {
 	}
 
 	public Collection<URI> getContributedTypes() {
-		if (types==null) {
+
+		if (types == null) {
 			types = new ArrayList<URI>();
 			try {
 				types.add(new URI(TESTCASE));
@@ -70,8 +106,9 @@ public class JUnitVocabulary implements ContractVocabulary {
 		return types;
 	}
 
+	public void check(RelationshipCondition condition)
+			throws VerificationException {
 
-	public void check(RelationshipCondition condition) throws VerificationException {
 		String rel = condition.getRelationship().toString();
 		Resource res1 = condition.getResource1();
 		Resource res2 = condition.getResource2();
@@ -79,104 +116,145 @@ public class JUnitVocabulary implements ContractVocabulary {
 		assert res1.isLoaded();
 		assert res2.isInstantiated();
 		assert res2.isLoaded();
-		if (VERIFIES.equals(rel)) {		
-			Class test = (Class)res2.getValue();
-			this.checkJUnit4Type(res2,test);
-			Class tested = (Class)res1.getValue();
+		if (VERIFIES.equals(rel)) {
+			Class<?> test = (Class<?>) res2.getValue();
+			this.checkJUnit4Type(res2, test);
+			Class<?> tested = (Class<?>) res1.getValue();
 			try {
 				boolean result = new TestRunner().run(test, tested);
 				if (!result) {
-					throw new VerificationException("Implementation class "+tested+" failed test "+test);
+					throw new VerificationException("Implementation class " + tested
+							+ " failed test " + test);
 				}
+			} catch (Exception x) {
+				throw new VerificationException("", x);
 			}
-			catch (Exception x) {
-				throw new VerificationException("",x);
-			}
-			
-		}
-	
-	}
-	
 
-	public Object load(URI type, String name,Connector connector) throws ResourceLoaderException {
-		if (!type.toString().startsWith(NS)) 
-			throw new ResourceLoaderException("This plugin cannot be used to instantiate resources of this type: " + type);
-		Bundle b = ((EclipsePlugin)connector.getOwner()).getBundle();
-		
-		 try {
-			Class clazz = b.loadClass(name);
+		}
+
+	}
+
+	public Object load(URI type, String name, Connector connector)
+			throws ResourceLoaderException {
+
+		if (!type.toString().startsWith(NS))
+			throw new ResourceLoaderException(
+					"This plugin cannot be used to instantiate resources of this type: "
+							+ type);
+		Bundle b = ((EclipsePlugin) connector.getOwner()).getBundle();
+
+		try {
+			Class<?> clazz = b.loadClass(name);
 			if (INSTANTIABLE_CLASS.equals(type)) {
 				try {
 					return clazz;
-				}
-				catch (Exception x) {
-					throw new ResourceLoaderException("This class can be loaded but not instantiated: " + name);
+				} catch (Exception x) {
+					throw new ResourceLoaderException(
+							"This class can be loaded but not instantiated: " + name);
 				}
 			}
 			else if (TESTCASE.equals(type)) {
 				try {
 					clazz.newInstance();
+				} catch (Exception x) {
+					throw new ResourceLoaderException(
+							"This class can be loaded but not instantiated: " + name);
 				}
-				catch (Exception x) {
-					throw new ResourceLoaderException("This class can be loaded but not instantiated: " + name);
-				}				
 			}
-			else 
+			else
 				return clazz;
 		} catch (ClassNotFoundException e) {
-			throw new ResourceLoaderException("Cannot load class " + name + " with classloader from plugin " + b.getBundleId());
+			throw new ResourceLoaderException("Cannot load class " + name
+					+ " with classloader from plugin " + b.getBundleId());
 		}
-		throw new ResourceLoaderException("Cannot load resource " + name + " of type " + type);
+		throw new ResourceLoaderException("Cannot load resource " + name
+				+ " of type " + type);
 	}
-	
-	public void check(PropertyCondition relationshipCondition) throws VerificationException {
-		throw new VerificationException("This vocabulary does not define property conditions");
+
+	public void check(PropertyCondition relationshipCondition)
+			throws VerificationException {
+
+		throw new VerificationException(
+				"This vocabulary does not define property conditions");
 	}
-	
+
 	public void check(ExistsCondition condition) throws VerificationException {
+
 		Resource resource = condition.getResource();
 		assert resource.isInstantiated();
 		assert resource.isLoaded();
-		Class clazz = (Class)resource.getValue();
+		Class<?> clazz = (Class<?>) resource.getValue();
 		if (TESTCASE.equals(resource.getType().toString())) {
-			checkJUnit4Type(resource,clazz);
+			checkJUnit4Type(resource, clazz);
 		}
 	}
 
-	private void checkJUnit4Type(Resource resource,Class clazz) throws VerificationException {
-		
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.vocabulary.ContractOntology#getOntology()
+	 */
+	@Override
+	public OntModel getOntology() {
+
+		/* Probably load the ontology. */
+		if (this.myOntology == null) {
+			this.myOntology = ModelFactory.createOntologyModel();
+			this.myOntology.read(Activator.getDefault().getBundle().getResource(
+					RESOURCE_ONTOLOGY).toString());
+		}
+		// no else.
+
+		return this.myOntology;
+	}
+
+	private void checkJUnit4Type(Resource resource, Class<?> clazz)
+			throws VerificationException {
+
 		if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
-			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this is class should not be abstract");
+			throw new VerificationException("The value of resource " + resource
+					+ " is " + clazz + " - this is class should not be abstract");
 		if (!Modifier.isPublic(clazz.getModifiers())) {
-			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this class must be public");
+			throw new VerificationException("The value of resource " + resource
+					+ " is " + clazz + " - this class must be public");
 		}
 		// check for constructor with parameter used for dependency injection
 		boolean ok = false;
-		for (Constructor constructor:clazz.getConstructors()) {
-			if (Modifier.isPublic(constructor.getModifiers()) && constructor.getParameterTypes().length==1) {
+		for (Constructor<?> constructor : clazz.getConstructors()) {
+			if (Modifier.isPublic(constructor.getModifiers())
+					&& constructor.getParameterTypes().length == 1) {
 				ok = true;
 				break;
 			}
 		}
 		if (!ok) {
-			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this class must have a public constructor with one parameter to inject the object to be tested");
+			throw new VerificationException(
+					"The value of resource "
+							+ resource
+							+ " is "
+							+ clazz
+							+ " - this class must have a public constructor with one parameter to inject the object to be tested");
 		}
 		// check that at least one test case exists
 		ok = false;
-		for (Method method:clazz.getMethods()) {
+		for (Method method : clazz.getMethods()) {
 			if (Modifier.isPublic(method.getModifiers())) {
-				for (Annotation anno:method.getAnnotations()) {
+				for (Annotation anno : method.getAnnotations()) {
 					if ("org.junit.Test".equals(anno.annotationType().getName())) {
 						ok = true;
 						break;
 					}
 				}
-				
+
 			}
 		}
 		if (!ok) {
-			throw new VerificationException("The value of resource "+resource+" is " + clazz + " - this class must have at least one test method annotated with @org.junit.Test");
+			throw new VerificationException(
+					"The value of resource "
+							+ resource
+							+ " is "
+							+ clazz
+							+ " - this class must have at least one test method annotated with @org.junit.Test");
 		}
 	}
-	
+
 }
