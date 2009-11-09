@@ -96,7 +96,6 @@ public class UpdateJobExtensionPointsAdded extends Job {
 		/* Update monitor status. */
 		monitor.beginTask("Update ContracRegistry.", TOTAL_WORK);
 
-		// FIXME Claas: Remove try after debugging.
 		try {
 			/*
 			 * Afterwards, check if the bundle provides extension points that contract
@@ -105,8 +104,14 @@ public class UpdateJobExtensionPointsAdded extends Job {
 			this.searchForExtensionPointsWithContracts(monitor);
 		}
 
+		/*
+		 * Log every exception otherwhise the exception is lost, thus the Job is
+		 * running in its own thread.
+		 */
 		catch (Exception e) {
-			e.printStackTrace();
+
+			Logger.error("Unexpected Exception during update of Contract Registry.",
+					e);
 		}
 
 		monitor.done();

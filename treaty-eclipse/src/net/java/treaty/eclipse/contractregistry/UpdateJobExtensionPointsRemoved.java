@@ -83,25 +83,30 @@ public class UpdateJobExtensionPointsRemoved extends Job {
 	 */
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-	
+
 		/* Update monitor status. */
 		monitor.beginTask("Update ContracRegistry.", WORK_EXTENSION_POINTS
 				+ WORK_EXTENSION_POINT_REMOVAL);
-	
-		// FIXME Claas: Remove try after debugging.
+
 		try {
 			/* Probably remove contracted extension points from the registry. */
 			this.searchForContractedExtensionPoints(monitor);
-	
+
 			this.removeExtensionPoints(monitor);
 		}
-	
+
+		/*
+		 * Log every exception otherwhise the exception is lost, thus the Job is
+		 * running in its own thread.
+		 */
 		catch (Exception e) {
-			e.printStackTrace();
+
+			Logger.error("Unexpected Exception during update of Contract Registry.",
+					e);
 		}
-	
+
 		monitor.done();
-	
+
 		return Status.OK_STATUS;
 	}
 
@@ -233,28 +238,29 @@ public class UpdateJobExtensionPointsRemoved extends Job {
 	 *          The {@link IProgressMonitor} used to monitor this {@link Job}.
 	 */
 	private void removeExtensionPoints(IProgressMonitor monitor) {
-	
+
 		/* Update monitor status. */
 		monitor.subTask("Remove Extensions Points.");
-	
+
 		if (this.myExtensionPoints == null || this.myExtensionPoints.length == 0) {
 			monitor.worked(WORK_EXTENSION_POINT_REMOVAL);
 		}
 		// no else.
-	
+
 		for (IExtensionPoint extensionPoint : this.myExtensionPoints) {
-	
+
 			EclipseExtensionPoint eclipseExtensionPoint;
 			eclipseExtensionPoint =
 					EclipseAdapterFactory.getInstance().createExtensionPoint(
 							extensionPoint);
-	
+
 			EclipsePlugin eclipsePlugin;
 			eclipsePlugin = (EclipsePlugin) eclipseExtensionPoint.getOwner();
-	
+
 			eclipsePlugin.removeExtensionPoint(eclipseExtensionPoint);
-	
-			monitor.worked(WORK_EXTENSION_POINT_REMOVAL / this.myExtensionPoints.length);
+
+			monitor.worked(WORK_EXTENSION_POINT_REMOVAL
+					/ this.myExtensionPoints.length);
 		}
 		// end for.
 	}
