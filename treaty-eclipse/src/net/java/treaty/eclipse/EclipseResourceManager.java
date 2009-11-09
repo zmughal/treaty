@@ -46,6 +46,7 @@ public class EclipseResourceManager implements ResourceManager {
 	public String resolve(URI type, String reference, Connector connector,
 			InstantiationContext context) throws ResourceLoaderException {
 
+		/* FIXME Claas: What to do here for extension points? */
 		EclipseExtension eclipseExtension;
 		Document document;
 
@@ -172,7 +173,7 @@ public class EclipseResourceManager implements ResourceManager {
 			Connector connector, String contextDefinition)
 			throws ResourceLoaderException {
 
-		if (contextDefinition == null) {
+		if (contextDefinition == null || !(connector instanceof EclipseExtension)) {
 
 			List<InstantiationContext> contexts;
 
