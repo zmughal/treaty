@@ -16,6 +16,7 @@ import net.java.treaty.Contract;
 import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
 import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
+import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.Logger;
@@ -38,20 +39,6 @@ import org.osgi.framework.Bundle;
  * @author Claas Wilke
  */
 public class UpdateJobExtensionPointsAdded extends Job {
-
-	/**
-	 * The suffix of the file where {@link Contract}s are located inside the same
-	 * plug-in, whose {@link IExtensionPoint} they contract.
-	 */
-	private static final String CONTRACT_LOCATION_SUFFIX = ".contract";
-
-	/**
-	 * The prefix of the location where {@link Contract}s are located inside the
-	 * same plug-in, whose {@link IExtensionPoint} they contract. Generally
-	 * speaking, this leads to the folder inside the plug-in, where the
-	 * {@link Contract} is located.
-	 */
-	private static final String INTERNAL_CONTRACT_LOCATION_PREFIX = "/META-INF/";
 
 	/**
 	 * The work of {@link UpdateJobExtensionPointsAdded}s to search for
@@ -144,8 +131,9 @@ public class UpdateJobExtensionPointsAdded extends Job {
 
 			String contractName;
 			contractName =
-					INTERNAL_CONTRACT_LOCATION_PREFIX
-							+ extensionPoint.getUniqueIdentifier() + CONTRACT_LOCATION_SUFFIX;
+					Constants.INTERNAL_CONTRACT_LOCATION_PREFIX
+							+ extensionPoint.getUniqueIdentifier()
+							+ Constants.CONTRACT_LOCATION_SUFFIX;
 
 			Bundle bundle;
 			bundle =

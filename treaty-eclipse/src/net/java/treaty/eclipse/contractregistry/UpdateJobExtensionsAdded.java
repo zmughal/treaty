@@ -17,6 +17,7 @@ import net.java.treaty.Contract;
 import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
 import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
+import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.Logger;
@@ -52,17 +53,6 @@ public class UpdateJobExtensionsAdded extends Job {
 	 * {@link Contract}s.
 	 */
 	private static final int WORK_EXTERNAL_CONTRACTS = 33000;
-
-	/** The id of the {@link IExtensionPoint} used to provide external contracts. */
-	private static final String LEGISLATOR_CONTRACT_EXTENSION_POINT_ID =
-			"net.java.treaty.eclipse.contract";
-
-	/**
-	 * The name of the attribute of {@link IExtension}s used to provide external
-	 * contracts that lead to the contract definition.
-	 */
-	private static final String LEGISLATOR_CONTRACT_ATTRIBUTE_LOCATION =
-			"location";
 
 	/**
 	 * The {@link IExtension}s to which this {@link UpdateJobExtensionsAdded}
@@ -155,7 +145,7 @@ public class UpdateJobExtensionsAdded extends Job {
 
 			/* Check if the extension provides an external contract. */
 			if (extension.getExtensionPointUniqueIdentifier().equals(
-					LEGISLATOR_CONTRACT_EXTENSION_POINT_ID)) {
+					Constants.LEGISLATOR_CONTRACT_EXTENSION_POINT_ID)) {
 
 				/*
 				 * Iterate through the attributes of the extension and try to load their
@@ -168,7 +158,7 @@ public class UpdateJobExtensionsAdded extends Job {
 						String contractLocation;
 						contractLocation =
 								extensionAttribute
-										.getAttribute(LEGISLATOR_CONTRACT_ATTRIBUTE_LOCATION);
+										.getAttribute(Constants.LEGISLATOR_CONTRACT_ATTRIBUTE_LOCATION);
 
 						Bundle bundle;
 						bundle =
