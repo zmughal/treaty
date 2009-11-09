@@ -15,9 +15,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import net.java.treaty.Connector;
 import net.java.treaty.ContractVocabulary;
@@ -66,10 +63,6 @@ public class JUnitVocabulary extends ContractOntology implements
 	/** The {@link OntModel} belonging to the {@link OCLVocabulary}. */
 	private OntModel myOntology = null;
 
-	// registry
-	private Collection<URI> predicates = null;
-	private Collection<URI> types = null;
-
 	/**
 	 * <p>
 	 * Private Constructor for Singleton pattern.
@@ -78,32 +71,6 @@ public class JUnitVocabulary extends ContractOntology implements
 	private JUnitVocabulary() {
 
 		super();
-	}
-
-	public Collection<URI> getContributedPredicates() {
-
-		if (predicates == null) {
-			predicates = new ArrayList<URI>();
-			try {
-				predicates.add(new URI(VERIFIES));
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-		}
-		return predicates;
-	}
-
-	public Collection<URI> getContributedTypes() {
-
-		if (types == null) {
-			types = new ArrayList<URI>();
-			try {
-				types.add(new URI(TESTCASE));
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-		}
-		return types;
 	}
 
 	public void check(RelationshipCondition condition)
