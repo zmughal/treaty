@@ -77,7 +77,6 @@ public class UpdateJobExtensionsRemoved extends Job {
 		monitor.beginTask("Update ContracRegistry.", WORK_CONTRACTED_EXTENSIONS
 				+ WORK_LEGISLATOR_CONTRACTS + WORK_EXTENSION_REMOVAL);
 
-		// FIXME Claas: Remove try after debugging.
 		try {
 			/* Probably remove contracted extensions from the registry. */
 			this.searchForContractedExtensions(monitor);
@@ -88,8 +87,14 @@ public class UpdateJobExtensionsRemoved extends Job {
 			this.removeExtensionsAndExtensionPoints(monitor);
 		}
 
+		/*
+		 * Log every exception otherwhise the exception is lost, thus the Job is
+		 * running in its own thread.
+		 */
 		catch (Exception e) {
-			e.printStackTrace();
+
+			Logger.error("Unexpected Exception during update of Contract Registry.",
+					e);
 		}
 
 		monitor.done();

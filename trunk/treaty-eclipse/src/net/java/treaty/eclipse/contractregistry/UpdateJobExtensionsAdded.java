@@ -101,7 +101,6 @@ public class UpdateJobExtensionsAdded extends Job {
 		monitor.beginTask("Update ContracRegistry.", WORK_CONTRACTED_EXTENSIONS
 				+ WORK_EXTERNAL_CONTRACTS);
 
-		// FIXME Claas: Remove try after debugging.
 		try {
 			/* First, check for external contracts. */
 			this.searchForLegislatorContracts(monitor);
@@ -113,8 +112,14 @@ public class UpdateJobExtensionsAdded extends Job {
 			this.searchForExtensionsWithContracts(monitor);
 		}
 
+		/*
+		 * Log every exception otherwhise the exception is lost, thus the Job is
+		 * running in its own thread.
+		 */
 		catch (Exception e) {
-			e.printStackTrace();
+
+			Logger.error("Unexpected Exception during update of Contract Registry.",
+					e);
 		}
 
 		monitor.done();
