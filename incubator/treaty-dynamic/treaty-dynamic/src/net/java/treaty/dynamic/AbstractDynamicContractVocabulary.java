@@ -5,6 +5,7 @@ import net.java.treaty.ExistsCondition;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.VerificationException;
+import net.java.treaty.vocabulary.ContractOntology;
 
 /**
  * <p>
@@ -18,8 +19,8 @@ import net.java.treaty.VerificationException;
  * 
  * @author Claas Wilke
  */
-public abstract class AbstractDynamicContractVocabulary implements
-		IDynamicContractVocabulary {
+public abstract class AbstractDynamicContractVocabulary extends
+		ContractOntology implements IDynamicContractVocabulary {
 
 	/*
 	 * (non-Javadoc)
@@ -29,8 +30,7 @@ public abstract class AbstractDynamicContractVocabulary implements
 	public void check(RelationshipCondition relationshipCondition)
 			throws VerificationException {
 
-		this.check(relationshipCondition, LifecycleEvent.MANUAL_VERIFICATION,
-				null);
+		this.check(relationshipCondition, LifecycleEvent.MANUAL_VERIFICATION, null);
 	}
 
 	/*
