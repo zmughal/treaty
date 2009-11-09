@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import net.java.treaty.eclipse.Vocabulary;
 import net.java.treaty.eclipse.VocabularyRegistry;
 import net.java.treaty.eclipse.ui.Activator;
 
@@ -893,9 +892,8 @@ public class VocabularyView extends ViewPart {
 		OutputStream outputStream;
 		outputStream = new ByteArrayOutputStream();
 
-		/* FIXME Claas: Remove this comment when problem with URIs is fixed. */
-		// rdfWriter.write(VocabularyRegistry.INSTANCE.getOntology(), outputStream,
-		//		null);
+		rdfWriter.write(VocabularyRegistry.INSTANCE.getOntology(), outputStream,
+				null);
 
 		return outputStream.toString();
 	}
@@ -951,7 +949,8 @@ public class VocabularyView extends ViewPart {
 
 				text.setText("");
 
-				Vocabulary.reset();
+				// FIXME How to reset the VocabularyRepository. Is this required at all?
+				// Vocabulary.reset();
 
 				viewer.setContentProvider(new ViewContentProvider());
 				text.setText(getOntologyAsRDF());
