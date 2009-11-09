@@ -15,13 +15,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
 import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
+import net.java.treaty.ContractReader;
 import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
 import net.java.treaty.contractregistry.ContractRegistry;
 import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
 import net.java.treaty.event.LifeCycleEvent;
+import net.java.treaty.xml.XMLContractReader;
 
 import org.junit.Test;
 
@@ -53,7 +60,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Legislator 1", componentMock, ConnectorType.CONSUMER);
 
 		Contract contract;
-		contract = new Contract();
+		contract = this.createTestContract();
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -71,8 +78,12 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
+		/* The registry should know the contract. */
 		assertTrue(contractRegistry.getContracts(legistlatorMock, Role.LEGISLATOR)
 				.contains(contract));
+		/* The contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(legistlatorMock, Role.LEGISLATOR)
+				.iterator().next().getConstraints().isEmpty());
 		assertFalse(contractRegistry.getContracts(legistlatorMock, Role.CONSUMER)
 				.contains(contract));
 		assertFalse(contractRegistry.getContracts(legistlatorMock, Role.SUPPLIER)
@@ -120,7 +131,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Consumer 1", componentMock, ConnectorType.CONSUMER);
 
 		Contract contract;
-		contract = new Contract();
+		contract = this.createTestContract();
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -140,8 +151,12 @@ public class ContractRegistryTests {
 
 		assertFalse(contractRegistry.getContracts(consumerMock, Role.LEGISLATOR)
 				.contains(contract));
+		/* The registry should know the contract. */
 		assertTrue(contractRegistry.getContracts(consumerMock, Role.CONSUMER)
 				.contains(contract));
+		/* The contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(consumerMock, Role.CONSUMER)
+				.iterator().next().getConstraints().isEmpty());
 		assertFalse(contractRegistry.getContracts(consumerMock, Role.SUPPLIER)
 				.contains(contract));
 
@@ -182,12 +197,12 @@ public class ContractRegistryTests {
 		ComponentMock componentMock;
 		componentMock = new ComponentMock("Component 1");
 
-		ConnectorMock consumerMock;
-		consumerMock =
+		ConnectorMock supplierMock;
+		supplierMock =
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = new Contract();
+		contract = this.createTestContract();
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -197,7 +212,7 @@ public class ContractRegistryTests {
 		/* Add the contract. */
 		try {
 			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
-					consumerMock, Role.CONSUMER);
+					supplierMock, Role.CONSUMER);
 			fail("Expected TreatyException was not thrown.");
 		}
 
@@ -226,7 +241,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = new Contract();
+		contract = this.createTestContract();
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -248,8 +263,12 @@ public class ContractRegistryTests {
 				.contains(contract));
 		assertFalse(contractRegistry.getContracts(supplierMock, Role.CONSUMER)
 				.contains(contract));
+		/* The registry should know the contract. */
 		assertTrue(contractRegistry.getContracts(supplierMock, Role.SUPPLIER)
 				.contains(contract));
+		/* The contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(supplierMock, Role.SUPPLIER)
+				.iterator().next().getConstraints().isEmpty());
 
 		/* The supplier should be set as supplier of the contract. */
 		assertEquals(supplierMock, contractRegistry.getContracts(supplierMock,
@@ -293,7 +312,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Consumer 1", componentMock, ConnectorType.CONSUMER);
 
 		Contract contract;
-		contract = new Contract();
+		contract = this.createTestContract();
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -336,7 +355,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Consumer 1", componentMock, ConnectorType.CONSUMER);
 
 		Contract contract;
-		contract = new Contract();
+		contract = this.createTestContract();
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -356,10 +375,16 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
+		/* The registry should know the contract. */
 		assertTrue(contractRegistry.getContracts(legistlatorMock, Role.LEGISLATOR)
 				.contains(contract));
+		/* The contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(legistlatorMock, Role.LEGISLATOR)
+				.iterator().next().getConstraints().isEmpty());
+
 		assertFalse(contractRegistry.getContracts(consumerMock, Role.LEGISLATOR)
 				.contains(contract));
+
 		assertFalse(contractRegistry.getContracts(legistlatorMock, Role.CONSUMER)
 				.contains(contract));
 
@@ -369,6 +394,10 @@ public class ContractRegistryTests {
 		 */
 		assertEquals(contract, contractRegistry.getContracts(consumerMock,
 				Role.CONSUMER).iterator().next().getDefinition());
+
+		/* The consumer's contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(consumerMock, Role.CONSUMER)
+				.iterator().next().getConstraints().isEmpty());
 
 		/* Remove the contracts. */
 		try {
@@ -419,7 +448,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = new Contract();
+		contract = this.createTestContract();
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -452,6 +481,10 @@ public class ContractRegistryTests {
 		 */
 		assertEquals(contract, contractRegistry.getContracts(supplierMock,
 				Role.SUPPLIER).iterator().next().getDefinition());
+
+		/* The supplier's contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(supplierMock, Role.SUPPLIER)
+				.iterator().next().getConstraints().isEmpty());
 
 		/* Remove the contracts. */
 		try {
@@ -507,7 +540,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = new Contract();
+		contract = this.createTestContract();
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -549,6 +582,10 @@ public class ContractRegistryTests {
 		assertEquals(contract, contractRegistry.getContracts(consumerMock,
 				Role.CONSUMER).iterator().next().getDefinition());
 
+		/* The consumer's contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(consumerMock, Role.CONSUMER)
+				.iterator().next().getConstraints().isEmpty());
+
 		/*
 		 * The supplier's contract should have the consumer's contract as
 		 * definition.
@@ -556,6 +593,10 @@ public class ContractRegistryTests {
 		assertEquals(contractRegistry.getContracts(consumerMock, Role.CONSUMER)
 				.iterator().next(), contractRegistry.getContracts(supplierMock,
 				Role.SUPPLIER).iterator().next().getDefinition());
+
+		/* The supplier's contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(supplierMock, Role.SUPPLIER)
+				.iterator().next().getConstraints().isEmpty());
 
 		/* Remove the contracts. */
 		try {
@@ -618,7 +659,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = new Contract();
+		contract = this.createTestContract();
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -660,6 +701,10 @@ public class ContractRegistryTests {
 		assertEquals(contract, contractRegistry.getContracts(supplierMock,
 				Role.SUPPLIER).iterator().next().getDefinition());
 
+		/* The supplier's contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(supplierMock, Role.SUPPLIER)
+				.iterator().next().getConstraints().isEmpty());
+
 		/*
 		 * The consumer's contract should have the supplier's contract as
 		 * definition.
@@ -667,6 +712,10 @@ public class ContractRegistryTests {
 		assertEquals(contractRegistry.getContracts(supplierMock, Role.SUPPLIER)
 				.iterator().next(), contractRegistry.getContracts(consumerMock,
 				Role.CONSUMER).iterator().next().getDefinition());
+
+		/* The consumer's contract should have constraints. */
+		assertFalse(contractRegistry.getContracts(consumerMock, Role.CONSUMER)
+				.iterator().next().getConstraints().isEmpty());
 
 		/* Remove the contracts. */
 		try {
@@ -1202,5 +1251,47 @@ public class ContractRegistryTests {
 				.size());
 		assertEquals(1, contractRegistry.getAffectedContracts(consumer2Update)
 				.size());
+	}
+
+	/**
+	 * <p>
+	 * A helper method that initializes a simple {@link Contract} used during
+	 * testing.
+	 * </p>
+	 * 
+	 * @return A simple {@link Contract} used during testing.
+	 */
+	private Contract createTestContract() {
+
+		Contract result;
+		result = null;
+
+		URL location;
+		location = null;
+
+		/* Try to read the contract. */
+		try {
+			File file;
+			file =
+					new File("tests/test/net/java/treaty/contractregistry/test.contract");
+
+			location = file.toURI().toURL();
+
+			ContractReader reader;
+			reader = new XMLContractReader();
+
+			result = reader.read(location.openStream(), VocabularyMock.INSTANCE);
+			result.setLocation(location);
+		}
+
+		catch (TreatyException e) {
+			fail("Exception loading contract from " + location + ":" + e.getMessage());
+		}
+
+		catch (IOException e) {
+			fail("Exception loading contract from " + location + ":" + e.getMessage());
+		}
+
+		return result;
 	}
 }
