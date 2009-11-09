@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -19,15 +19,11 @@ import net.java.treaty.TreatyException;
 import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
-import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.Logger;
 
-import org.eclipse.core.runtime.ContributorFactoryOSGi;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -37,28 +33,22 @@ import org.osgi.framework.Bundle;
 /**
  * <p>
  * A {@link Job} that is responsible to update the
- * {@link EclipseContractRegistry} after the activation of a new {@link Bundle}.
+ * {@link EclipseContractRegistry} after the add of an Array of
+ * {@link IExtension}s.
  * </p>
  * 
  * @author Claas Wilke
- * 
  */
-public class BundleActivationUpdateJob extends Job {
+public class UpdateJobExtensionsAdded extends Job {
 
 	/**
-	 * The work of {@link BundleActivationUpdateJob}s to search for
-	 * {@link Contract}s defined with a {@link Bundle}'s {@link IExtensionPoint}s.
-	 */
-	private static final int WORK_INTERNAL_CONTRACTS = 33000;
-
-	/**
-	 * The work of {@link BundleActivationUpdateJob}s to search for contracted
+	 * The work of {@link UpdateJobExtensionsAdded}s to search for contracted
 	 * {@link IExtension}s.
 	 */
 	private static final int WORK_CONTRACTED_EXTENSIONS = 33000;
 
 	/**
-	 * The work of {@link BundleActivationUpdateJob}s to search for external
+	 * The work of {@link UpdateJobExtensionsAdded}s to search for external
 	 * {@link Contract}s.
 	 */
 	private static final int WORK_EXTERNAL_CONTRACTS = 33000;
@@ -75,41 +65,27 @@ public class BundleActivationUpdateJob extends Job {
 			"location";
 
 	/**
-	 * The prefix of the location where {@link Contract}s are located inside the
-	 * same plug-in, whose {@link IExtensionPoint} they contract. Generally
-	 * speaking, this leads to the folder inside the plug-in, where the
-	 * {@link Contract} is located.
+	 * The {@link IExtension}s to which this {@link UpdateJobExtensionsAdded}
+	 * belongs to.
 	 */
-	private static final String INTERNAL_CONTRACT_LOCATION_PREFIX = "/META-INF/";
-
-	/**
-	 * The suffix of the file where {@link Contract}s are located inside the same
-	 * plug-in, whose {@link IExtensionPoint} they contract.
-	 */
-	private static final String CONTRACT_LOCATION_SUFFIX = ".contract";
-
-	/**
-	 * The {@link Bundle} to which this {@link BundleActivationUpdateJob} belongs
-	 * to.
-	 */
-	private Bundle myBundle;
+	private IExtension[] myExtensions;
 
 	/**
 	 * <p>
-	 * Creates a new {@link BundleActivationUpdateJob} for a given {@link Bundle}
-	 * that is now active.
+	 * Creates a new {@link UpdateJobExtensionsAdded} for a given array of
+	 * {@link IExtension}s that have been added.
 	 * </p>
 	 * 
-	 * @param bundle
-	 *          The {@link Bundle} that has been activated.
+	 * @param extensions
+	 *          The {@link IExtension}s that have been added.
 	 * @param name
 	 *          The name of this {@link Job}.
 	 */
-	public BundleActivationUpdateJob(Bundle bundle, String name) {
+	public UpdateJobExtensionsAdded(IExtension[] extensions, String name) {
 
 		super(name);
 
-		this.myBundle = bundle;
+		this.myExtensions = extensions;
 	}
 
 	/*
@@ -122,23 +98,17 @@ public class BundleActivationUpdateJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 
 		/* Update monitor status. */
-		monitor.beginTask("Update ContracRegistry.", WORK_INTERNAL_CONTRACTS
-				+ WORK_CONTRACTED_EXTENSIONS + WORK_EXTERNAL_CONTRACTS);
+		monitor.beginTask("Update ContracRegistry.", WORK_CONTRACTED_EXTENSIONS
+				+ WORK_EXTERNAL_CONTRACTS);
 
 		// FIXME Claas: Remove try after debugging.
 		try {
-			/* First, check if the bundle provides external contracts. */
+			/* First, check for external contracts. */
 			this.searchForLegislatorContracts(monitor);
 
 			/*
-			 * Afterwards, check if the bundle provides extension points that contract
-			 * themselves.
-			 */
-			this.searchForExtensionPointsWithContracts(monitor);
-
-			/*
-			 * Afterwards, check if the bundle provides extensions that can be bound
-			 * to already existing extension points and contracts.
+			 * Afterwards, check for extensions that can be bound to already existing
+			 * extension points and contracts.
 			 */
 			this.searchForExtensionsWithContracts(monitor);
 		}
@@ -169,29 +139,14 @@ public class BundleActivationUpdateJob extends Job {
 		/* Update monitor status. */
 		monitor.subTask("Search for Legislator Contracts in Extensions.");
 
-		IContributor contributor;
-		IExtension[] extensions;
-
-		IExtensionRegistry extensionRegistry;
-
-		/* Get the contributor for the bundle. */
-		contributor = ContributorFactoryOSGi.createContributor(this.myBundle);
-
-		/* Get the extension registry. */
-		extensionRegistry =
-				org.eclipse.core.runtime.Platform.getExtensionRegistry();
-
-		/* Get the bundle's extensions. */
-		extensions = extensionRegistry.getExtensions(contributor);
-
 		/* If not extension has been given at all, mark this task as worked. */
-		if (extensions.length == 0) {
+		if (this.myExtensions == null || this.myExtensions.length == 0) {
 			monitor.worked(WORK_EXTERNAL_CONTRACTS);
 		}
 		// no else.
 
 		/* Iterate on the extensions and search for legislator contracts. */
-		for (IExtension extension : extensions) {
+		for (IExtension extension : this.myExtensions) {
 
 			/* Check if the extension provides an external contract. */
 			if (extension.getExtensionPointUniqueIdentifier().equals(
@@ -210,10 +165,15 @@ public class BundleActivationUpdateJob extends Job {
 								extensionAttribute
 										.getAttribute(LEGISLATOR_CONTRACT_ATTRIBUTE_LOCATION);
 
-						if (this.myBundle != null && contractLocation != null) {
+						Bundle bundle;
+						bundle =
+								org.eclipse.core.runtime.ContributorFactoryOSGi
+										.resolve(extension.getContributor());
+
+						if (bundle != null && contractLocation != null) {
 
 							URL contractUrl;
-							contractUrl = this.myBundle.getEntry(contractLocation);
+							contractUrl = bundle.getEntry(contractLocation);
 
 							/* Check if the contract leads to an invalid URL. */
 							if (contractUrl == null) {
@@ -248,18 +208,14 @@ public class BundleActivationUpdateJob extends Job {
 												.lastIndexOf("/") + 1, contractLocation.length()
 												- ".contract".length());
 								extensionPoint =
-										extensionRegistry.getExtensionPoint(extensionPointID);
+										org.eclipse.core.runtime.Platform.getExtensionRegistry()
+												.getExtensionPoint(extensionPointID);
 
-								/* If no extension point has been found, log the error. */
-								if (extensionPoint == null
-										|| !EclipseContractRegistry.ACTIVE_BUNDLE_STATES
-												.contains(org.eclipse.core.runtime.Platform.getBundle(
-														extensionPoint.getContributor().getName())
-														.getState())) {
-
-									Logger.warn("No extension point with id " + extensionPointID
-											+ " found for external contract " + contractLocation
-											+ ".");
+								/*
+								 * If no extension point has been found, store the unbound
+								 * contract.
+								 */
+								if (extensionPoint == null) {
 
 									/* Store the unbound legislator to bind it later on. */
 									EclipseContractRegistry.getInstance()
@@ -296,99 +252,9 @@ public class BundleActivationUpdateJob extends Job {
 			}
 			// no else (no external contract).
 
-			monitor.worked(WORK_EXTERNAL_CONTRACTS / extensions.length);
+			monitor.worked(WORK_EXTERNAL_CONTRACTS / this.myExtensions.length);
 		}
 		// end for (iteration on extensions).
-	}
-
-	/**
-	 * <p>
-	 * A helper method that checks if a given {@link Bundle} contains contracted
-	 * {@link IExtensionPoint}s and adds them to the
-	 * {@link EclipseContractRegistry}.
-	 * </p>
-	 * 
-	 * @param monitor
-	 *          The {@link IProgressMonitor} used to monitor this {@link Job}.
-	 */
-	private void searchForExtensionPointsWithContracts(IProgressMonitor monitor) {
-
-		/* Update monitor status. */
-		monitor.subTask("Search for contracted ExtensionPoints.");
-
-		IContributor contributor;
-		IExtensionRegistry extensionRegistry;
-
-		EclipsePlugin eclipsePlugin;
-		IExtensionPoint[] extensionPoints;
-
-		/* Get the contributor for the bundle. */
-		contributor = ContributorFactoryOSGi.createContributor(this.myBundle);
-
-		/* Get the extension registry. */
-		extensionRegistry =
-				org.eclipse.core.runtime.Platform.getExtensionRegistry();
-
-		/* Get the EclipsePlugin. */
-		eclipsePlugin =
-				EclipseAdapterFactory.getInstance().createEclipsePlugin(this.myBundle);
-
-		/*
-		 * Get all extension points of the bundle and check for self provided
-		 * contracts.
-		 */
-		extensionPoints = extensionRegistry.getExtensionPoints(contributor);
-
-		/* If not extension point has been given at all, mark this task as worked. */
-		if (extensionPoints.length == 0) {
-			monitor.worked(WORK_INTERNAL_CONTRACTS);
-		}
-		// no else.
-
-		for (IExtensionPoint extensionPoint : extensionPoints) {
-
-			String contractName;
-			URL contractURL;
-
-			contractName =
-					INTERNAL_CONTRACT_LOCATION_PREFIX
-							+ extensionPoint.getUniqueIdentifier() + CONTRACT_LOCATION_SUFFIX;
-			contractURL = eclipsePlugin.getResource(contractName);
-
-			EclipseExtensionPoint eclipseExtensionPoint;
-			eclipseExtensionPoint =
-					EclipseAdapterFactory.getInstance().createExtensionPoint(
-							extensionPoint);
-
-			/* If a contract has been found, add it to the extension point. */
-			if (contractURL != null) {
-
-				Contract contract;
-
-				contract =
-						EclipseExtensionPoint.createContract(contractURL,
-								eclipseExtensionPoint);
-
-				this.addContractToExtensionPoint(eclipseExtensionPoint, contract);
-			}
-			// no else (extension point not contracted by own plug-in).
-
-			/*
-			 * Also check if the extension point has further unbound legislator
-			 * contracts.
-			 */
-			for (Contract legislatorContract : EclipseContractRegistry.getInstance()
-					.removeUnboundLegislatorContractsForContractedConnector(
-							eclipseExtensionPoint)) {
-
-				this.addContractToExtensionPoint(eclipseExtensionPoint,
-						legislatorContract);
-			}
-			// no else (no unbound legislator contracts).
-
-			monitor.worked(WORK_INTERNAL_CONTRACTS / extensionPoints.length);
-		}
-		// end for (iteration on external contracts).
 	}
 
 	/**
@@ -405,22 +271,8 @@ public class BundleActivationUpdateJob extends Job {
 		/* Update monitor status. */
 		monitor.subTask("Search for contracted Extensions.");
 
-		IContributor contributor;
-		IExtensionRegistry extensionRegistry;
-		IExtension[] extensions;
-
-		/* Get the contributor for the bundle. */
-		contributor = ContributorFactoryOSGi.createContributor(this.myBundle);
-
-		/* Get the extension registry. */
-		extensionRegistry =
-				org.eclipse.core.runtime.Platform.getExtensionRegistry();
-
-		/* Get the extensions of the bundle. */
-		extensions = extensionRegistry.getExtensions(contributor);
-
 		/* If not extension has been given at all, mark this task as worked. */
-		if (extensions.length == 0) {
+		if (this.myExtensions == null || this.myExtensions.length == 0) {
 			monitor.worked(WORK_CONTRACTED_EXTENSIONS);
 		}
 		// no else.
@@ -429,12 +281,12 @@ public class BundleActivationUpdateJob extends Job {
 		 * Iterate through the extensions and check if their extension point has a
 		 * contract.
 		 */
-		for (IExtension extension : extensions) {
+		for (IExtension extension : this.myExtensions) {
 
 			IExtensionPoint extensionPoint;
 			extensionPoint =
-					extensionRegistry.getExtensionPoint(extension
-							.getExtensionPointUniqueIdentifier());
+					org.eclipse.core.runtime.Platform.getExtensionRegistry()
+							.getExtensionPoint(extension.getExtensionPointUniqueIdentifier());
 
 			EclipseExtensionPoint eclipseExtensionPoint;
 			eclipseExtensionPoint =
@@ -469,7 +321,7 @@ public class BundleActivationUpdateJob extends Job {
 			}
 			// no else (extension not contracted).
 
-			monitor.worked(WORK_CONTRACTED_EXTENSIONS / extensions.length);
+			monitor.worked(WORK_CONTRACTED_EXTENSIONS / this.myExtensions.length);
 		}
 		// end for.
 	}
@@ -540,20 +392,10 @@ public class BundleActivationUpdateJob extends Job {
 				eclipseExtension =
 						EclipseAdapterFactory.getInstance().createExtension(extension);
 
-				/*
-				 * Only add the Contract to the extension if the extension's plug'in is
-				 * in the right state.
-				 */
-				if (EclipseContractRegistry.ACTIVE_BUNDLE_STATES
-						.contains(((EclipsePlugin) eclipseExtension.getOwner()).getBundle()
-								.getState())) {
-					eclipseExtensionPoint.addExtension(eclipseExtension);
+				eclipseExtensionPoint.addExtension(eclipseExtension);
 
-					EclipseContractRegistry.getInstance().updateContract(
-							UpdateType.ADD_CONTRACT, contract, eclipseExtension,
-							Role.SUPPLIER);
-				}
-				// no else.
+				EclipseContractRegistry.getInstance().updateContract(
+						UpdateType.ADD_CONTRACT, contract, eclipseExtension, Role.SUPPLIER);
 			}
 
 			catch (TreatyException e) {
