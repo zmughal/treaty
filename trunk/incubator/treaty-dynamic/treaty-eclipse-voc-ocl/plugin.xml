@@ -7,5 +7,4 @@
          point="net.java.treaty.eclipse.vocabulary">
        <vocabulary class="net.java.treaty.eclipse.vocabulary.ocl.OCLVocabulary" ontology="/vocabulary/ocl.owl"/> 
    </extension>
-
 </plugin>

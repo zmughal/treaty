@@ -20,10 +20,7 @@ with Dresden OCL2 for Eclipse. If not, see <http://www.gnu.org/licenses/>.
 package net.java.treaty.eclipse.vocabulary.ocl;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import net.java.treaty.Connector;
 import net.java.treaty.ContractVocabulary;
@@ -42,6 +39,9 @@ import net.java.treaty.eclipse.vocabulary.ocl.internal.msg.OclVocabularyMessages
 
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * <p>
@@ -79,14 +79,17 @@ public class OCLVocabulary extends AbstractDynamicContractVocabulary {
 	/** The OCL type of the {@link OCLVocabulary}. */
 	public static final String TYPE_OCL_FILE = NAMESPACE + "OCLFile";
 
+	/**
+	 * The {@link Resource} location of the ontology file of the
+	 * {@link OCLVocabulary}.
+	 */
+	private static final String RESOURCE_ONTOLOGY = "./vocabulary/ocl.owl";
+
 	/** The {@link OCLToolkitManager} of this {@link OCLVocabulary}. */
 	private OCLToolkitManager myOclToolkitManager;
 
-	/** A {@link Collection} of all predicates of the {@link OCLVocabulary}. */
-	private Collection<URI> myPredicates = null;
-
-	/** A {@link Collection} of all types of the {@link OCLVocabulary}. */
-	private Collection<URI> myTypes = null;
+	/** The {@link OntModel} belonging to the {@link OCLVocabulary}. */
+	private OntModel myOntology = null;
 
 	/**
 	 * <p>
@@ -197,57 +200,20 @@ public class OCLVocabulary extends AbstractDynamicContractVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getContributedPredicates()
+	 * @see net.java.treaty.vocabulary.ContractOntology#getOntology()
 	 */
-	public Collection<URI> getContributedPredicates() {
+	@Override
+	public OntModel getOntology() {
 
-		/* Eventually initialize the predicate collection. */
-		if (this.myPredicates == null) {
-
-			this.myPredicates = new ArrayList<URI>();
-
-			/* Try to add all predicates as URIs to the collection. */
-			try {
-				this.myPredicates.add(new URI(PREDICATE_INSTANCE_OF));
-				this.myPredicates.add(new URI(PREDICATE_FULFILLS_CONTRACT));
-			}
-
-			catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
+		/* Probably load the ontology. */
+		if (this.myOntology == null) {
+			this.myOntology = ModelFactory.createOntologyModel();
+			this.myOntology.read(OCLVocabularyPlugin.getDefault().getBundle()
+					.getResource(RESOURCE_ONTOLOGY).toString());
 		}
 		// no else.
 
-		return this.myPredicates;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getContributedTypes()
-	 */
-	public Collection<URI> getContributedTypes() {
-
-		/* Eventually initialize the types collection. */
-		if (this.myTypes == null) {
-
-			this.myTypes = new ArrayList<URI>();
-
-			/* Try to add all types as URIs to the collection. */
-			try {
-				this.myTypes.add(new URI(TYPE_MODEL_UML2));
-				this.myTypes.add(new URI(TYPE_MODEL_EMF_ECORE));
-				this.myTypes.add(new URI(TYPE_MODEL_JAVA));
-				this.myTypes.add(new URI(TYPE_MODELINSTANCE_JAVA));
-				this.myTypes.add(new URI(TYPE_OCL_FILE));
-			}
-
-			catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-		}
-		// no else.
-
-		return this.myTypes;
+		return this.myOntology;
 	}
 
 	/*
