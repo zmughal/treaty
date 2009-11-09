@@ -146,12 +146,26 @@ public class Resource extends PropertySupport implements Visitable, Annotatable 
 		r.setRef(this.getRef());
 		r.setOwner(connector);
 		r.setContext(context);
-		String name = mgr.resolve(getType(),getRef(),connector,context);
-		if (name==null) {
-			r.setProvided(false);
+		
+		// if there is no ref, but a name already exists, use this
+		if (this.getRef()==null) {
+			if (this.getName()==null) {
+				throw new ResourceLoaderException("Cannot instantiate " + this + ", neither a refertence nor a reusable name exists");
+			}
+			else {
+				r.setName(name);
+			}
 		}
+		// this means that we can "re-instantiate" resources that already have a name
+		// this makes sense as the reference may resolve to a new name
 		else {
-			r.setName(name);
+			String name = mgr.resolve(getType(),getRef(),connector,context);
+			if (name==null) {
+				r.setProvided(false);
+			}
+			else {
+				r.setName(name);
+			}
 		}
 		return r;
 	}
