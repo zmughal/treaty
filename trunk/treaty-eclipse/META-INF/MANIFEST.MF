@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: treaty for eclipse
-Bundle-SymbolicName: net.java.treaty.eclipse; singleton:=true
+Bundle-SymbolicName: net.java.treaty.eclipse;singleton:=true
 Bundle-Version: 1.2.0
 Bundle-Activator: net.java.treaty.eclipse.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.core.runtime
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/treaty.jar,
  lib/jaxen-core.jar,
@@ -77,13 +77,6 @@ Export-Package: com.clarkparsia.explanation,
  org.semanticweb.owl.profiles,
  org.semanticweb.owl.util,
  org.semanticweb.owl.vocab,
- test.net.java.treaty.contractregistry,
- test.net.java.treaty.script,
- test.net.java.treaty.vocabulary,
- test.net.java.treaty.vocabulary.builtins,
- test.net.java.treaty.vocabulary.builtins.java,
- test.net.java.treaty.vocabulary.builtins.owl,
- test.net.java.treaty.xml,
  uk.ac.manchester.cs.bhig.util,
  uk.ac.manchester.cs.owl
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
