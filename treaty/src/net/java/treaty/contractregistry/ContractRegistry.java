@@ -441,7 +441,7 @@ public class ContractRegistry {
 			}
 
 			/* Check if a supplier has been set yet. */
-			if (contract.getSupplier() != null) {
+			if (contract.getSupplier() != null || contract.getOwner() != null) {
 
 				for (Contract boundContract : contract.bindConsumer(connector,
 						this.myResourceManager)) {
@@ -451,22 +451,6 @@ public class ContractRegistry {
 				}
 				// end for.
 
-				this.addContractedConnector(connector, contract);
-			}
-
-			/* Else check if an owner (probably a legislator) has been set. */
-			else if (contract.getOwner() != null) {
-
-				Contract legislatorContract;
-				legislatorContract = new Contract();
-
-				legislatorContract.setDefinition(contract);
-				legislatorContract.setLocation(contract.getLocation());
-				legislatorContract.setConsumer(connector);
-
-				contracts.add(legislatorContract);
-
-				this.addInstantiatedContract(contract, legislatorContract);
 				this.addContractedConnector(connector, contract);
 			}
 
@@ -520,7 +504,7 @@ public class ContractRegistry {
 			}
 
 			/* Check if a consumer has been set yet. */
-			if (contract.getConsumer() != null) {
+			if (contract.getConsumer() != null || contract.getOwner() != null) {
 
 				for (Contract boundContract : contract.bindSupplier(connector,
 						this.myResourceManager)) {
@@ -530,22 +514,6 @@ public class ContractRegistry {
 				}
 				// end for.
 
-				this.addContractedConnector(connector, contract);
-			}
-
-			/* Else check if an owner (probably a legislator) has been set. */
-			else if (contract.getOwner() != null) {
-
-				Contract legislatorContract;
-				legislatorContract = new Contract();
-
-				legislatorContract.setDefinition(contract);
-				legislatorContract.setLocation(contract.getLocation());
-				legislatorContract.setSupplier(connector);
-
-				contracts.add(legislatorContract);
-
-				this.addInstantiatedContract(contract, legislatorContract);
 				this.addContractedConnector(connector, contract);
 			}
 
