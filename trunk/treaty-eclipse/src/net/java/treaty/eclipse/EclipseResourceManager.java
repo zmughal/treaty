@@ -45,6 +45,8 @@ public class EclipseResourceManager implements ResourceManager {
 	@SuppressWarnings("unchecked")
 	public String resolve(URI type, String reference, Connector connector,
 			InstantiationContext context) throws ResourceLoaderException {
+		
+		
 
 		/* FIXME Claas: What to do here for extension points? */
 		EclipseExtension eclipseExtension;
