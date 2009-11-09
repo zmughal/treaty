@@ -32,10 +32,12 @@ import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.EclipseResourceManager;
 import net.java.treaty.eclipse.EclipseVerifier;
-import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.jobs.VerificationJob;
 import net.java.treaty.eclipse.jobs.VerificationJobListener;
 
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IRegistryEventListener;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
@@ -50,29 +52,8 @@ import org.osgi.framework.BundleEvent;
  * 
  * @author Claas Wilke
  */
-public final class EclipseContractRegistry extends ContractRegistry {
-
-	/**
-	 * Contains the {@link Bundle} states that shall be interpreted by the
-	 * {@link EclipseContractRegistry} as {@link Bundle}s, whose {@link Contract}s
-	 * shall be registered.
-	 */
-	public static final List<Integer> ACTIVE_BUNDLE_STATES =
-			Arrays.asList(new Integer[] { Bundle.ACTIVE });
-
-	/**
-	 * The {@link BundleEvent} type that shall cause an update of the
-	 * {@link ContractRegistry} that adds all {@link Contract} provided by the
-	 * given {@link Bundle}.
-	 */
-	public static final int ADD_BUNDLE_EVENT = BundleEvent.STARTED;
-
-	/**
-	 * The {@link BundleEvent} type that shall cause an update of the
-	 * {@link ContractRegistry} that removes all {@link Contract} provided by the
-	 * given {@link Bundle}.
-	 */
-	public static final int REMOVE_BUNDLE_EVENT = BundleEvent.STOPPED;
+public final class EclipseContractRegistry extends ContractRegistry implements
+		IRegistryEventListener {
 
 	/** Singleton Instance of the {@link EclipseContractRegistry}. */
 	private static EclipseContractRegistry myInstance;
@@ -115,14 +96,103 @@ public final class EclipseContractRegistry extends ContractRegistry {
 	 */
 	private void init() {
 
+		/* Register the registry as listener of the ExtensionRegistry. */
+		org.eclipse.core.runtime.Platform.getExtensionRegistry().addListener(this);
+
 		/* Do the initial startup. */
-		InitialEclipseContractRegistryJob contractRegistryStartUpJob;
+		UpdateJobInitializeContractRegistry contractRegistryStartUpJob;
 		contractRegistryStartUpJob =
-				new InitialEclipseContractRegistryJob(
+				new UpdateJobInitializeContractRegistry(
 						"Initial ContractRegistry Startup");
 
 		contractRegistryStartUpJob.schedule();
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.core.runtime.IRegistryEventListener#added(org.eclipse.core.
+	 * runtime.IExtension[])
+	 */
+	public void added(IExtension[] extensions) {
+
+		Job jobExtensionsAdded;
+		jobExtensionsAdded =
+				new UpdateJobExtensionsAdded(extensions,
+						"Extensions Added. Update the ContractRegistry.");
+
+		jobExtensionsAdded.schedule();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.core.runtime.IRegistryEventListener#added(org.eclipse.core.
+	 * runtime.IExtensionPoint[])
+	 */
+	public void added(IExtensionPoint[] extensionPoints) {
+
+		Job jobExtensionPointsAdded;
+		jobExtensionPointsAdded =
+				new UpdateJobExtensionPointsAdded(extensionPoints,
+						"ExtensionPoints Added. Update the ContractRegistry.");
+
+		jobExtensionPointsAdded.schedule();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.core.runtime.IRegistryEventListener#removed(org.eclipse.core
+	 * .runtime.IExtension[])
+	 */
+	public void removed(IExtension[] extensions) {
+
+		Job jobExtensionsRemoved;
+		jobExtensionsRemoved =
+				new UpdateJobExtensionsRemoved(extensions,
+						"Extensions Removed. Update the ContractRegistry.");
+
+		jobExtensionsRemoved.schedule();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.core.runtime.IRegistryEventListener#removed(org.eclipse.core
+	 * .runtime.IExtensionPoint[])
+	 */
+	public void removed(IExtensionPoint[] extensionPoints) {
+
+		Job jobExtensionPointsRemoved;
+		jobExtensionPointsRemoved =
+				new UpdateJobExtensionPointsRemoved(extensionPoints,
+						"ExtensionPoints Removed. Update the ContractRegistry.");
+
+		jobExtensionPointsRemoved.schedule();
+	}
+
+	/**
+	 * Contains the {@link Bundle} states that shall be interpreted by the
+	 * {@link EclipseContractRegistry} as {@link Bundle}s, whose {@link Contract}s
+	 * shall be registered.
+	 */
+	public static final List<Integer> ACTIVE_BUNDLE_STATES =
+			Arrays.asList(new Integer[] { Bundle.ACTIVE });
+
+	/**
+	 * The {@link BundleEvent} type that shall cause an update of the
+	 * {@link ContractRegistry} that adds all {@link Contract} provided by the
+	 * given {@link Bundle}.
+	 */
+	public static final int ADD_BUNDLE_EVENT = BundleEvent.STARTED;
+
+	/**
+	 * The {@link BundleEvent} type that shall cause an update of the
+	 * {@link ContractRegistry} that removes all {@link Contract} provided by the
+	 * given {@link Bundle}.
+	 */
+	public static final int REMOVE_BUNDLE_EVENT = BundleEvent.STOPPED;
 
 	/**
 	 * <p>
@@ -269,60 +339,15 @@ public final class EclipseContractRegistry extends ContractRegistry {
 
 	/**
 	 * <p>
-	 * Updates this {@link EclipseContractRegistry} with a given
-	 * {@link BundleEvent}. E.g., if the {@link BundleEvent} represents a new
-	 * started {@link Bundle}, the contracts of this {@link Bundle} will be added
-	 * to the {@link EclipseContractRegistry}. If the {@link Bundle} has been
-	 * stopped, probably provided contracts will be removed again.
+	 * This method can be called when this plug-in shall be de-activated.
+	 * Unregisters the {@link EclipseContractRegistry} as listener of the
+	 * ExtensionRegistry.
 	 * </p>
-	 * 
-	 * @param event
-	 *          The {@link BundleEvent} used to update the
-	 *          {@link EclipseContractRegistry}.
 	 */
-	public synchronized void update(BundleEvent event) {
+	public void tearDown() {
 
-		switch (event.getType()) {
-
-		case ADD_BUNDLE_EVENT: {
-
-			Job bundleActivationJob;
-			bundleActivationJob =
-					new BundleActivationUpdateJob(event.getBundle(),
-							"Update Registry. New active Bundle.");
-
-			bundleActivationJob.schedule();
-
-			break;
-		}
-
-		case REMOVE_BUNDLE_EVENT: {
-
-			Job bundleDeactivationJob;
-			bundleDeactivationJob =
-					new BundleDeactivationUpdateJob(event.getBundle(),
-							"Update Registry. New stopped Bundle.");
-
-			bundleDeactivationJob.schedule();
-
-			break;
-		}
-
-		default: {
-			String msg;
-
-			msg = "Ignored BundleEvent of type ";
-			msg += this.getBundleEventTypeName(event.getType());
-			msg += " for bundle ";
-			msg += event.getBundle().toString();
-			msg += ".";
-
-			Logger.info(msg);
-		}
-		}
-		// end switch.
-
-		this.notifyContractRegistryListeners();
+		org.eclipse.core.runtime.Platform.getExtensionRegistry().removeListener(
+				this);
 	}
 
 	/**
@@ -562,45 +587,6 @@ public final class EclipseContractRegistry extends ContractRegistry {
 			// end for.
 		}
 		// no else.
-	}
-
-	/**
-	 * <p>
-	 * Transforms the given value of a {@link BundleEvent}'s type into the name of
-	 * the represented type.
-	 * </p>
-	 * 
-	 * @param type
-	 *          The type whose name shall be returned.
-	 * @return The name of the given type.
-	 */
-	private String getBundleEventTypeName(int type) {
-
-		switch (type) {
-
-		case BundleEvent.INSTALLED:
-			return "INSTALLED";
-		case BundleEvent.LAZY_ACTIVATION:
-			return "LAZY_ACTIVATION";
-		case BundleEvent.RESOLVED:
-			return "RESOLVED";
-		case BundleEvent.STARTED:
-			return "STARTED";
-		case BundleEvent.STARTING:
-			return "STARTING";
-		case BundleEvent.STOPPED:
-			return "STOPPED";
-		case BundleEvent.STOPPING:
-			return "STOPPING";
-		case BundleEvent.UNINSTALLED:
-			return "UNINSTALLED";
-		case BundleEvent.UNRESOLVED:
-			return "UNRESOLVED";
-		case BundleEvent.UPDATED:
-			return "UPDATED";
-		default:
-			return "UNKNOWN";
-		}
 	}
 
 	/**

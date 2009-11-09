@@ -12,6 +12,8 @@ package net.java.treaty.eclipse.contractregistry;
 
 import net.java.treaty.eclipse.Activator;
 
+import org.eclipse.core.runtime.ContributorFactoryOSGi;
+import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -22,29 +24,30 @@ import org.osgi.framework.BundleEvent;
 
 /**
  * <p>
- * The {@link InitialEclipseContractRegistryJob} is used to initialize the
+ * The {@link UpdateJobInitializeContractRegistry} is used to initialize the
  * {@link EclipseContractRegistry} to capture all {@link BundleEvent}s that did
  * happen before the {@link EclipseContractRegistry} has been started.
  * </p>
  * 
  * <p>
- * The {@link InitialEclipseContractRegistryJob} can also be used to
+ * The {@link UpdateJobInitializeContractRegistry} can also be used to
  * re-initialize the {@link EclipseContractRegistry}.
  * </p>
  * 
  * @author Claas Wilke
  */
-public class InitialEclipseContractRegistryJob extends Job {
+public class UpdateJobInitializeContractRegistry extends Job {
 
 	/**
 	 * <p>
-	 * Creates a new {@link InitialEclipseContractRegistryJob} with a given name.
+	 * Creates a new {@link UpdateJobInitializeContractRegistry} with a given
+	 * name.
 	 * </p>
 	 * 
 	 * @param name
-	 *          The name of the {@link InitialEclipseContractRegistryJob}.
+	 *          The name of the {@link UpdateJobInitializeContractRegistry}.
 	 */
-	public InitialEclipseContractRegistryJob(String name) {
+	public UpdateJobInitializeContractRegistry(String name) {
 
 		super(name);
 	}
@@ -61,11 +64,12 @@ public class InitialEclipseContractRegistryJob extends Job {
 		int totalWork;
 
 		/* Update monitor status. */
-		totalWork = 10000;
+		totalWork = 100000;
 		monitor.beginTask("Analysing contracts", totalWork + 1000);
 
 		bundles =
 				Activator.getDefault().getBundle().getBundleContext().getBundles();
+		monitor.worked(1000);
 
 		/* Probably cancel the job. */
 		if (monitor.isCanceled()) {
@@ -74,22 +78,21 @@ public class InitialEclipseContractRegistryJob extends Job {
 		}
 		// no else.
 
-		int checkedBundles = 0;
-
 		/* Notify the registry about all of these bundles that are already active. */
 		for (Bundle bundle : bundles) {
 
-			if (EclipseContractRegistry.ACTIVE_BUNDLE_STATES.contains(bundle
-					.getState())) {
-				BundleEvent bundleEvent;
-				bundleEvent = new BundleEvent(BundleEvent.STARTED, bundle);
+			IContributor contributor;
+			contributor = ContributorFactoryOSGi.createContributor(bundle);
 
-				EclipseContractRegistry.getInstance().update(bundleEvent);
-			}
-			// no else.
+			EclipseContractRegistry.getInstance().added(
+					org.eclipse.core.runtime.Platform.getExtensionRegistry()
+							.getExtensions(contributor));
 
-			checkedBundles++;
-			monitor.worked(totalWork / bundles.length * checkedBundles);
+			EclipseContractRegistry.getInstance().added(
+					org.eclipse.core.runtime.Platform.getExtensionRegistry()
+							.getExtensionPoints(contributor));
+
+			monitor.worked(totalWork / bundles.length);
 		}
 
 		monitor.done();

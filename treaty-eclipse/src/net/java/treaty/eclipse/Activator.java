@@ -10,7 +10,6 @@
 
 package net.java.treaty.eclipse;
 
-import net.java.treaty.eclipse.contractregistry.BundleEventContractListener;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 
 import org.eclipse.core.runtime.Plugin;
@@ -50,11 +49,6 @@ public class Activator extends Plugin {
 
 		super.start(context);
 		plugin = this;
-
-		context.addBundleListener(BundleEventContractListener.getInstance());
-		
-		/* Initialize the contract registry. */
-		EclipseContractRegistry.getInstance();
 	}
 
 	/*
@@ -63,10 +57,10 @@ public class Activator extends Plugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 
+		EclipseContractRegistry.getInstance().tearDown();
+
 		plugin = null;
 		super.stop(context);
-
-		context.removeBundleListener(BundleEventContractListener.getInstance());
 	}
 
 	/**
