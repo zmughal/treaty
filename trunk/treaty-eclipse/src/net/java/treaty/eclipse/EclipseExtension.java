@@ -11,8 +11,6 @@
 package net.java.treaty.eclipse;
 
 import net.java.treaty.ConnectorType;
-import net.java.treaty.Contract;
-import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 
 import org.eclipse.core.runtime.IExtension;
 
@@ -163,22 +161,5 @@ public class EclipseExtension extends EclipseConnector {
 				.append(
 						this.extension == null ? "?" : this.extension.getUniqueIdentifier())
 				.append(",defined in ").append(this.getOwner()).append(')').toString();
-	}
-
-	/**
-	 * <p>
-	 * Adds a given {@link Contract} to this {@link EclipseExtension}.
-	 * </p>
-	 * 
-	 * @param contract
-	 *          The {@link Contract} that shall be added.
-	 * 
-	 * @deprecated This method does not add a {@link Contract} to this
-	 *             {@link EclipseExtension} anymore because all {@link Contract}s
-	 *             are stored by the {@link EclipseContractRegistry} now.
-	 */
-	@Deprecated
-	public void addContract(Contract contract) {
-
 	}
 }
