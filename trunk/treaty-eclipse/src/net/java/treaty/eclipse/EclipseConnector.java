@@ -57,7 +57,8 @@ public abstract class EclipseConnector extends PropertySupport implements
 	 *         {@link URL} cannot be loaded.
 	 * 
 	 */
-	public static Contract createContract(URL location,	EclipseConnector contractOwner) {
+	public static Contract createContract(URL location,
+			EclipseConnector contractOwner) {
 
 		Contract result;
 		result = null;
@@ -72,7 +73,8 @@ public abstract class EclipseConnector extends PropertySupport implements
 
 			/* Try to read the contract. */
 			try {
-				result = reader.read(location.openStream(),VocabularyRegistry.INSTANCE);
+				result =
+						reader.read(location.openStream(), VocabularyRegistry.INSTANCE);
 				result.setLocation(location);
 
 				/* If the owner of the contract is not null, set the owner. */
@@ -98,8 +100,50 @@ public abstract class EclipseConnector extends PropertySupport implements
 	}
 
 	protected void configureNewContract(Contract newContract) {
-
+	
 		// by default nothing to do here
+	}
+
+	/**
+	 * <p>
+	 * Returns the default {@link Contract} location of a given {@link Connector}
+	 * 's {@link Contract}. This is the location of the {@link Contract}, if the
+	 * owning {@link EclipsePlugin} of the {@link Connector} contracts the
+	 * {@link Connector} itself.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose location shall be returned.
+	 * @return The default {@link Contract} location of a given {@link Connector}.
+	 */
+	public static String getContractLocation(Connector contract) {
+	
+		return Constants.INTERNAL_CONTRACT_LOCATION_PREFIX + contract.getId()
+				+ Constants.CONTRACT_LOCATION_SUFFIX;
+	}
+
+	/**
+	 * <p>
+	 * Creates a new {@link EclipseConnector} for a given owning
+	 * {@link EclipsePlugin}.
+	 * </p>
+	 * 
+	 * @param owner
+	 *          The owning {@link EclipsePlugin} of this {@link EclipseConnector}.
+	 */
+	public EclipseConnector(EclipsePlugin owner) {
+
+		super();
+		this.owner = owner;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Connector#getOwner()
+	 */
+	public Component getOwner() {
+
+		return this.owner;
 	}
 
 	/**
@@ -130,24 +174,16 @@ public abstract class EclipseConnector extends PropertySupport implements
 		return result;
 	}
 
-	public static String getContractLocation(Connector c) {
-
-		return "/META-INF/" + c.getId() + ".contract";
-	}
-
-	public Component getOwner() {
-
-		return owner;
-	}
-
+	/**
+	 * <p>
+	 * Sets the owning {@link EclipsePlugin} of this {@link EclipseConnector}.
+	 * </p>
+	 * 
+	 * @param owner
+	 *          The owning {@link EclipsePlugin} of this {@link EclipseConnector}.
+	 */
 	public void setOwner(EclipsePlugin owner) {
 
-		this.owner = owner;
-	}
-
-	public EclipseConnector(EclipsePlugin owner) {
-
-		super();
 		this.owner = owner;
 	}
 }

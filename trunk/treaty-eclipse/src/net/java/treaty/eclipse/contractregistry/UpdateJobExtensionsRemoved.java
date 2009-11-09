@@ -40,6 +40,24 @@ import org.osgi.framework.Bundle;
 public class UpdateJobExtensionsRemoved extends Job {
 
 	/**
+	 * The work of {@link UpdateJobExtensionsRemoved}s to search for contracted
+	 * {@link IExtension}s.
+	 */
+	private static final int WORK_CONTRACTED_EXTENSIONS = 33000;
+
+	/**
+	 * The work of {@link UpdateJobExtensionsRemoved}s to search for external
+	 * {@link Contract}s.
+	 */
+	private static final int WORK_LEGISLATOR_CONTRACTS = 33000;
+
+	/**
+	 * The work of {@link UpdateJobExtensionsRemoved}s to remove the
+	 * {@link Bundle} from the {@link EclipseContractRegistry}.
+	 */
+	private static final int WORK_EXTENSION_REMOVAL = 1000;
+
+	/**
 	 * The {@link IExtension}s that this {@link UpdateJobExtensionsRemoved} shall
 	 * handle.
 	 */
@@ -245,22 +263,4 @@ public class UpdateJobExtensionsRemoved extends Job {
 		}
 		// end for.
 	}
-
-	/**
-	 * The work of {@link UpdateJobExtensionsRemoved}s to search for contracted
-	 * {@link IExtension}s.
-	 */
-	private static final int WORK_CONTRACTED_EXTENSIONS = 33000;
-
-	/**
-	 * The work of {@link UpdateJobExtensionsRemoved}s to search for external
-	 * {@link Contract}s.
-	 */
-	private static final int WORK_LEGISLATOR_CONTRACTS = 33000;
-
-	/**
-	 * The work of {@link UpdateJobExtensionsRemoved}s to remove the
-	 * {@link Bundle} from the {@link EclipseContractRegistry}.
-	 */
-	private static final int WORK_EXTENSION_REMOVAL = 1000;
 }
