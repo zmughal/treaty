@@ -24,12 +24,12 @@ import java.util.List;
 
 import javax.xml.stream.events.Namespace;
 
-import net.java.treaty.dynamic.OperationInvocationContext;
 import net.java.treaty.dynamic.LifecycleEvent;
-import tudresden.ocl20.pivot.modelbus.IModel;
-import tudresden.ocl20.pivot.modelbus.IModelInstance;
-import tudresden.ocl20.pivot.modelbus.IModelObject;
+import net.java.treaty.dynamic.OperationInvocationContext;
 import tudresden.ocl20.pivot.modelbus.ModelAccessException;
+import tudresden.ocl20.pivot.modelbus.model.IModel;
+import tudresden.ocl20.pivot.modelbus.modelinstance.IModelInstance;
+import tudresden.ocl20.pivot.modelbus.modelinstance.types.IModelInstanceElement;
 import tudresden.ocl20.pivot.pivotmodel.Operation;
 import tudresden.ocl20.pivot.pivotmodel.Type;
 
@@ -72,15 +72,14 @@ public abstract class AbstractContextAdpaterService implements
 	 * net.java.treaty.dynamic.PointOfExecution)
 	 */
 	public OclInterpretationContext adaptContext(
-			OperationInvocationContext runtimeContext,
-			LifecycleEvent pointOfExecution) {
+			OperationInvocationContext runtimeContext, LifecycleEvent pointOfExecution) {
 
 		OclInterpretationContext result;
 
-		IModelObject modelSource;
+		IModelInstanceElement modelSource;
 		Operation modelOperation;
-		IModelObject[] modelArguments;
-		IModelObject modelResult;
+		IModelInstanceElement[] modelArguments;
+		IModelInstanceElement modelResult;
 
 		int index;
 
@@ -88,7 +87,8 @@ public abstract class AbstractContextAdpaterService implements
 		modelSource = this.adaptObjectToModelObject(runtimeContext.getSource());
 
 		/* Adapt the arguments. */
-		modelArguments = new IModelObject[runtimeContext.getArguments().length];
+		modelArguments =
+				new IModelInstanceElement[runtimeContext.getArguments().length];
 
 		index = 0;
 
@@ -114,15 +114,16 @@ public abstract class AbstractContextAdpaterService implements
 
 	/**
 	 * <p>
-	 * Adapts a given {@link Object} to an {@link IModelObject} of the current
-	 * {@link IModelInstance}.
+	 * Adapts a given {@link Object} to an {@link IModelInstanceElement} of the
+	 * current {@link IModelInstance}.
 	 * </p>
 	 * 
 	 * @param source
 	 *          The {@link Object} that shall be adapted.
-	 * @return The adapted {@link IModelObject}.
+	 * @return The adapted {@link IModelInstanceElement}.
 	 */
-	protected abstract IModelObject adaptObjectToModelObject(Object anObject);
+	protected abstract IModelInstanceElement adaptObjectToModelObject(
+			Object anObject);
 
 	/**
 	 * <p>
@@ -146,16 +147,16 @@ public abstract class AbstractContextAdpaterService implements
 	 * </p>
 	 * 
 	 * @param sourceObject
-	 *          The {@link IModelObject} to which the searched {@link Operation}
-	 *          belongs to.
+	 *          The {@link IModelInstanceElement} to that the searched
+	 *          {@link Operation} belongs to.
 	 * @param operationName
 	 *          The simple name of the {@link Operation}.
-	 * @param arguments
-	 *          The arguments (as {@link IModelObject})s of the Operation.
+	 * @param argumentTypeNames
+	 *          The names of the {@link Type}s of the arguments of the Operation.
 	 * @return The found {@link Operation} or <code>null</code>.
 	 */
-	protected Operation findOperationInModel(IModelObject sourceObject,
-			String operationName, String[] argumentTypeNams) {
+	protected Operation findOperationInModel(IModelInstanceElement sourceObject,
+			String operationName, String[] argumentTypeNames) {
 
 		Operation result;
 		result = null;
@@ -167,18 +168,18 @@ public abstract class AbstractContextAdpaterService implements
 			argumentTypes = new ArrayList<Type>();
 
 			/* Find the types of all arguments in the model. */
-			for (String anArgumentTypeName : argumentTypeNams) {
+			for (String anArgumentTypeName : argumentTypeNames) {
 				argumentTypes.add(this.findTypeInModel(anArgumentTypeName));
 			}
 
 			/* Try to find the operation in the model. */
 			for (Type aType : sourceObject.getTypes()) {
-					result = aType.lookupOperation(operationName, argumentTypes);
-					
-					if (result != null) {
-						break;
-					}
-					// no else.
+				result = aType.lookupOperation(operationName, argumentTypes);
+
+				if (result != null) {
+					break;
+				}
+				// no else.
 			}
 		}
 

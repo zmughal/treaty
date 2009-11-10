@@ -27,10 +27,9 @@ import javax.lang.model.type.PrimitiveType;
 import net.java.treaty.dynamic.OperationInvocationContext;
 import tudresden.ocl20.pivot.metamodels.java.JavaMetaModelPlugin;
 import tudresden.ocl20.pivot.modelbus.IModelBusConstants;
-import tudresden.ocl20.pivot.modelbus.IModelInstance;
-import tudresden.ocl20.pivot.modelbus.IModelObject;
-import tudresden.ocl20.pivot.modelbus.ModelAccessException;
-import tudresden.ocl20.pivot.modelinstancetype.java.JavaModelInstanceTypePlugin;
+import tudresden.ocl20.pivot.modelbus.modelinstance.IModelInstance;
+import tudresden.ocl20.pivot.modelbus.modelinstance.exception.TypeNotFoundInModelException;
+import tudresden.ocl20.pivot.modelbus.modelinstance.types.IModelInstanceElement;
 import tudresden.ocl20.pivot.pivotmodel.PrimitiveTypeKind;
 
 /**
@@ -60,30 +59,27 @@ public class JavaContextAdpaterService extends AbstractContextAdpaterService {
 
 	/**
 	 * <p>
-	 * Adapts a given {@link Object} to an {@link IModelObject} of the current
-	 * {@link IModelInstance}.
+	 * Adapts a given {@link Object} to an {@link IModelInstanceElement} of the
+	 * current {@link IModelInstance}.
 	 * </p>
 	 * 
 	 * @param source
 	 *          The {@link Object} that shall be adapted.
 	 * @return The adapted {@link IModelObject}.
 	 */
-	protected IModelObject adaptObjectToModelObject(Object anObject) {
+	protected IModelInstanceElement adaptObjectToModelObject(Object anObject) {
 
-		IModelObject result;
+		IModelInstanceElement result;
 
 		if (anObject != null) {
 
 			try {
-				result =
-						JavaModelInstanceTypePlugin.addModelObjectToInstance(anObject,
-								this.myModelInstance);
+				result = this.myModelInstance.addModelInstanceElement(anObject);
 			}
 
-			catch (ModelAccessException e) {
+			catch (TypeNotFoundInModelException e) {
 				result = null;
 			}
-
 		}
 
 		/* Given Object is null. */

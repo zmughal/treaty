@@ -34,8 +34,8 @@ import net.java.treaty.Resource;
 import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.VerificationException;
 import net.java.treaty.dynamic.IRuntimeContext;
-import net.java.treaty.dynamic.OperationInvocationContext;
 import net.java.treaty.dynamic.LifecycleEvent;
+import net.java.treaty.dynamic.OperationInvocationContext;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.vocabulary.ocl.OCLVocabulary;
 import net.java.treaty.eclipse.vocabulary.ocl.context.IContextAdapterService;
@@ -46,21 +46,23 @@ import net.java.treaty.eclipse.vocabulary.ocl.internal.msg.OclVocabularyMessages
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
 
-import tudresden.ocl20.interpreter.IInterpretationResult;
-import tudresden.ocl20.interpreter.IOclInterpreter;
-import tudresden.ocl20.interpreter.OclInterpreterPlugin;
+import tudresden.ocl20.pivot.essentialocl.standardlibrary.OclAny;
 import tudresden.ocl20.pivot.essentialocl.standardlibrary.OclBoolean;
-import tudresden.ocl20.pivot.essentialocl.standardlibrary.OclRoot;
+import tudresden.ocl20.pivot.interpreter.IInterpretationResult;
+import tudresden.ocl20.pivot.interpreter.IOclInterpreter;
+import tudresden.ocl20.pivot.interpreter.OclInterpreterPlugin;
 import tudresden.ocl20.pivot.metamodels.ecore.EcoreMetamodelPlugin;
 import tudresden.ocl20.pivot.metamodels.java.JavaMetaModelPlugin;
 import tudresden.ocl20.pivot.metamodels.uml2.UML2MetamodelPlugin;
-import tudresden.ocl20.pivot.modelbus.IMetamodel;
-import tudresden.ocl20.pivot.modelbus.IModel;
-import tudresden.ocl20.pivot.modelbus.IModelInstance;
-import tudresden.ocl20.pivot.modelbus.IModelObject;
-import tudresden.ocl20.pivot.modelbus.IModelProvider;
 import tudresden.ocl20.pivot.modelbus.ModelAccessException;
 import tudresden.ocl20.pivot.modelbus.ModelBusPlugin;
+import tudresden.ocl20.pivot.modelbus.metamodel.IMetamodel;
+import tudresden.ocl20.pivot.modelbus.model.IModel;
+import tudresden.ocl20.pivot.modelbus.model.IModelProvider;
+import tudresden.ocl20.pivot.modelbus.modelinstance.IModelInstance;
+import tudresden.ocl20.pivot.modelbus.modelinstance.IModelInstanceProvider;
+import tudresden.ocl20.pivot.modelbus.modelinstance.exception.TypeNotFoundInModelException;
+import tudresden.ocl20.pivot.modelbus.modelinstance.types.IModelInstanceElement;
 import tudresden.ocl20.pivot.modelinstancetype.java.JavaModelInstanceTypePlugin;
 import tudresden.ocl20.pivot.ocl2parser.parser.OCL2Parser;
 import tudresden.ocl20.pivot.pivotmodel.Constraint;
@@ -311,7 +313,8 @@ public class OCLToolkitManager {
 	 *           Thrown, if the resource can not be found or is not an
 	 *           {@link IModelInstance} or no active {@link IModel} has been set.
 	 */
-	public IModelInstance loadJavaModelInstance(String className, Connector connector) throws ResourceLoaderException {
+	public IModelInstance loadJavaModelInstance(String className,
+			Connector connector) throws ResourceLoaderException {
 
 		IModelInstance result;
 
@@ -345,14 +348,21 @@ public class OCLToolkitManager {
 
 			/* Try to create a model instance. */
 			try {
+				IModelInstanceProvider modelInstanceProvider;
+
 				modelInstanceClass = connectorBundle.loadClass(className);
+
+				/* Get the IModelInstanceProvider of the Model Instance Type. */
+				modelInstanceProvider =
+						ModelBusPlugin.getModelInstanceTypeRegistry().getModelInstanceType(
+								JavaModelInstanceTypePlugin.PLUGIN_ID)
+								.getModelInstanceProvider();
 
 				/*
 				 * Create an empty model instance. The Model Objects are registered
 				 * later on.
 				 */
-				result =
-						JavaModelInstanceTypePlugin.createEmptyModelInstance(activeModel);
+				result = modelInstanceProvider.createEmptyModelInstance(activeModel);
 
 				/* Add the model instance to the registry. */
 				ModelBusPlugin.getModelInstanceRegistry().addModelInstance(activeModel,
@@ -372,16 +382,6 @@ public class OCLToolkitManager {
 				msg =
 						NLS.bind(
 								OclVocabularyMessages.ERROR_LOAD_JAVA_MODEL_INVALID_LOCATION,
-								className, e.getMessage());
-
-				throw new ResourceLoaderException(msg);
-			}
-
-			catch (ModelAccessException e) {
-				String msg;
-
-				msg =
-						NLS.bind(OclVocabularyMessages.ERROR_LOAD_JAVA_MODEL_FAILED,
 								className, e.getMessage());
 
 				throw new ResourceLoaderException(msg);
@@ -561,8 +561,8 @@ public class OCLToolkitManager {
 	 * @param resource2
 	 *          The constraint resource {@link Resource}.
 	 * @param pointOfExecution
-	 *          The {@link LifecycleEvent} during run-time, at that this
-	 *          contract shall be verified.
+	 *          The {@link LifecycleEvent} during run-time, at that this contract
+	 *          shall be verified.
 	 * @param runtimeContext
 	 *          The {@link IRuntimeContext} of the contract verification.
 	 * @throws VerificationException
@@ -725,7 +725,7 @@ public class OCLToolkitManager {
 			if (resource.getType().toString().equals(
 					OCLVocabulary.TYPE_MODELINSTANCE_JAVA)) {
 
-				IModelObject modelObject;
+				IModelInstanceElement modelInstanceElement;
 				IModelInstance modelInstance;
 
 				modelInstance = (IModelInstance) resource.getValue();
@@ -743,12 +743,11 @@ public class OCLToolkitManager {
 					try {
 						javaModelObject = modelInstanceClass.newInstance();
 
-						modelObject =
-								JavaModelInstanceTypePlugin.addModelObjectToInstance(
-										javaModelObject, modelInstance);
+						modelInstanceElement =
+								modelInstance.addModelInstanceElement(javaModelObject);
 						result =
-								new OclInterpretationContext(pointOfExecution, modelObject,
-										null, null, null);
+								new OclInterpretationContext(pointOfExecution,
+										modelInstanceElement, null, null, null);
 					}
 
 					catch (InstantiationException e) {
@@ -771,7 +770,7 @@ public class OCLToolkitManager {
 						throw new VerificationException(msg);
 					}
 
-					catch (ModelAccessException e) {
+					catch (TypeNotFoundInModelException e) {
 						String msg;
 
 						msg =
@@ -881,7 +880,7 @@ public class OCLToolkitManager {
 			 * values or instances must be stored).
 			 */
 			anInterpreter.preparePostConditions(interpretationContext
-					.getModelObject(), interpretationContext.getOperation(),
+					.getModelInstanceElement(), interpretationContext.getOperation(),
 					interpretationContext.getArguments(), constraints);
 		}
 
@@ -904,7 +903,7 @@ public class OCLToolkitManager {
 		/* Else interpret only invariants. */
 		else {
 			this.checkInterpretationResults(anInterpreter.interpretConstraintsOfKind(
-					constraints, interpretationContext.getModelObject(),
+					constraints, interpretationContext.getModelInstanceElement(),
 					ConstraintKind.INVARIANT));
 		}
 	}
@@ -933,15 +932,15 @@ public class OCLToolkitManager {
 
 		/* Check all invariants. */
 		this.checkInterpretationResults(anInterpreter.interpretConstraintsOfKind(
-				constraints, interpretationContext.getModelObject(),
+				constraints, interpretationContext.getModelInstanceElement(),
 				ConstraintKind.INVARIANT));
 
 		/* Check all preconditions. */
 		this
 				.checkInterpretationResults(anInterpreter.interpretPreConditions(
-						interpretationContext.getModelObject(), interpretationContext
-								.getOperation(), interpretationContext.getArguments(),
-						constraints));
+						interpretationContext.getModelInstanceElement(),
+						interpretationContext.getOperation(), interpretationContext
+								.getArguments(), constraints));
 	}
 
 	/**
@@ -969,13 +968,13 @@ public class OCLToolkitManager {
 
 		/* Check all postconditions. */
 		this.checkInterpretationResults(anInterpreter.interpretPostConditions(
-				interpretationContext.getModelObject(), interpretationContext
+				interpretationContext.getModelInstanceElement(), interpretationContext
 						.getOperation(), interpretationContext.getArguments(),
 				interpretationContext.getResult(), constraints));
 
 		/* Check all invariants. */
 		this.checkInterpretationResults(anInterpreter.interpretConstraintsOfKind(
-				constraints, interpretationContext.getModelObject(),
+				constraints, interpretationContext.getModelInstanceElement(),
 				ConstraintKind.INVARIANT));
 	}
 
@@ -1009,13 +1008,13 @@ public class OCLToolkitManager {
 					|| aConstraint.getKind().equals(ConstraintKind.PRECONDITION)
 					|| aConstraint.getKind().equals(ConstraintKind.POSTCONDITION)) {
 
-				OclRoot anOclResult;
-				IModelObject anObject;
+				OclAny anOclResult;
+				IModelInstanceElement aModelInstanceElement;
 
 				boolean isResultTrue;
 
 				anOclResult = aResult.getResult();
-				anObject = aResult.getModelObject();
+				aModelInstanceElement = aResult.getModelObject();
 
 				/* Get the boolean result. */
 				isResultTrue = false;
@@ -1026,7 +1025,8 @@ public class OCLToolkitManager {
 					aBooleanResult = (OclBoolean) anOclResult;
 
 					/* Handle undefined and invalid results as well. */
-					if (!aBooleanResult.isOclUndefined().isTrue()) {
+					if (!aBooleanResult.oclIsInvalid().isTrue()
+							&& !aBooleanResult.oclIsUndefined().isTrue()) {
 						isResultTrue = aBooleanResult.isTrue();
 					}
 
@@ -1046,7 +1046,7 @@ public class OCLToolkitManager {
 
 					args[0] = aConstraint.getName();
 					args[1] = anOclResult;
-					args[2] = anObject;
+					args[2] = aModelInstanceElement;
 
 					msg =
 							NLS

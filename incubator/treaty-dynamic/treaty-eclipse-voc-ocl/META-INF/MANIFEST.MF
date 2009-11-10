@@ -7,16 +7,16 @@ Bundle-Activator: net.java.treaty.eclipse.vocabulary.ocl.OCLVocabularyPlugin
 Require-Bundle: org.eclipse.core.runtime,
  net.java.treaty.dynamic,
  net.java.treaty.eclipse,
- tudresden.ocl20.interpreter,
- tudresden.ocl20.pivot.essentialocl,
- tudresden.ocl20.pivot.essentialocl.standardlibrary,
- tudresden.ocl20.pivot.modelbus,
- tudresden.ocl20.pivot.ocl2parser,
- tudresden.ocl20.pivot.pivotmodel,
- tudresden.ocl20.pivot.metamodels.ecore,
- tudresden.ocl20.pivot.metamodels.java,
- tudresden.ocl20.pivot.metamodels.uml2,
- tudresden.ocl20.pivot.modelinstancetype.java
+ tudresden.ocl20.pivot.essentialocl;bundle-version="2.0.0",
+ tudresden.ocl20.pivot.essentialocl.standardlibrary;bundle-version="2.0.0",
+ tudresden.ocl20.pivot.modelbus;bundle-version="2.0.0",
+ tudresden.ocl20.pivot.interpreter;bundle-version="2.0.0",
+ tudresden.ocl20.pivot.ocl2parser;bundle-version="2.0.0",
+ tudresden.ocl20.pivot.pivotmodel;bundle-version="2.0.0",
+ tudresden.ocl20.pivot.metamodels.ecore;bundle-version="2.0.0",
+ tudresden.ocl20.pivot.metamodels.java;bundle-version="2.0.0",
+ tudresden.ocl20.pivot.metamodels.uml2;bundle-version="2.0.0",
+ tudresden.ocl20.pivot.modelinstancetype.java;bundle-version="2.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Claas Wilke
