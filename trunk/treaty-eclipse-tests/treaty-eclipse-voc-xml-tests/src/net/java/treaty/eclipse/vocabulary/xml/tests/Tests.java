@@ -38,7 +38,7 @@ public class Tests {
 	@Before
 	public void setUp() throws Exception {
 
-		VOC = XMLVocabulary.INSTANCE;
+		VOC = new XMLVocabulary();
 	}
 
 	@After
