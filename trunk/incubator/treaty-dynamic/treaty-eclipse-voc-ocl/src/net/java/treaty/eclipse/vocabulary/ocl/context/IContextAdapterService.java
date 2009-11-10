@@ -19,9 +19,9 @@ with Dresden OCL2 for Eclipse. If not, see <http://www.gnu.org/licenses/>.
  */
 package net.java.treaty.eclipse.vocabulary.ocl.context;
 
-import net.java.treaty.dynamic.OperationInvocationContext;
 import net.java.treaty.dynamic.LifecycleEvent;
-import tudresden.ocl20.pivot.modelbus.IModelInstance;
+import net.java.treaty.dynamic.OperationInvocationContext;
+import tudresden.ocl20.pivot.modelbus.modelinstance.IModelInstance;
 
 /**
  * <p>

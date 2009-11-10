@@ -20,7 +20,7 @@ with Dresden OCL2 for Eclipse. If not, see <http://www.gnu.org/licenses/>.
 package net.java.treaty.eclipse.vocabulary.ocl.test.base.model;
 
 import net.java.treaty.eclipse.vocabulary.ocl.OCLVocabulary;
-import tudresden.ocl20.pivot.modelbus.IModel;
+import tudresden.ocl20.pivot.modelbus.model.IModel;
 
 /**
  * <p>

@@ -19,13 +19,13 @@ with Dresden OCL2 for Eclipse. If not, see <http://www.gnu.org/licenses/>.
  */
 package net.java.treaty.eclipse.vocabulary.ocl.context;
 
-import tudresden.ocl20.pivot.modelbus.IModelObject;
+import net.java.treaty.dynamic.IRuntimeContext;
+import net.java.treaty.dynamic.LifecycleEvent;
+import net.java.treaty.dynamic.OperationInvocationContext;
+import tudresden.ocl20.pivot.modelbus.modelinstance.types.IModelInstanceElement;
 import tudresden.ocl20.pivot.pivotmodel.Constraint;
 import tudresden.ocl20.pivot.pivotmodel.Operation;
 import tudresden.ocl20.pivot.pivotmodel.Parameter;
-import net.java.treaty.dynamic.IRuntimeContext;
-import net.java.treaty.dynamic.OperationInvocationContext;
-import net.java.treaty.dynamic.LifecycleEvent;
 
 /**
  * <p>
@@ -45,8 +45,10 @@ public class OclInterpretationContext implements IRuntimeContext {
 	 */
 	private LifecycleEvent myPointOfExecution;
 
-	/** The {@link IModelObject} of this {@link OclInterpretationContext}. */
-	private IModelObject myModelObject;
+	/**
+	 * The {@link IModelInstanceElement} of this {@link OclInterpretationContext}.
+	 */
+	private IModelInstanceElement myModelInstanceElement;
 
 	/**
 	 * The {@link Operation} of this {@link OclInterpretationContext} or
@@ -56,16 +58,16 @@ public class OclInterpretationContext implements IRuntimeContext {
 	private Operation myOperation;
 
 	/**
-	 * The arguments (as {@link IModelObject}s) of this
+	 * The arguments (as {@link IModelInstanceElement}s) of this
 	 * {@link OclInterpretationContext} or an empty array.
 	 */
-	private IModelObject[] myArguments;
+	private IModelInstanceElement[] myArguments;
 
 	/**
 	 * The result of the invocation of the {@link Operation} of this
 	 * {@link OclInterpretationContext} or <code>null</code>.
 	 */
-	private IModelObject myResult;
+	private IModelInstanceElement myResult;
 
 	/**
 	 * <p>
@@ -75,8 +77,9 @@ public class OclInterpretationContext implements IRuntimeContext {
 	 * @param pointOfExecution
 	 *          The {@link LifecycleEvent} this {@link OclInterpretationContext}
 	 *          belongs to.
-	 * @param modelObject
-	 *          The {@link IModelObject} of this {@link OclInterpretationContext}.
+	 * @param modelInstanceElement
+	 *          The {@link IModelInstanceElement} of this
+	 *          {@link OclInterpretationContext}.
 	 * @param operation
 	 *          The {@link Operation} of this {@link OclInterpretationContext} or
 	 *          <code>null</code> if no {@link Operation} belongs to this
@@ -89,11 +92,11 @@ public class OclInterpretationContext implements IRuntimeContext {
 	 *          {@link OclInterpretationContext} or <code>null</code>.
 	 */
 	public OclInterpretationContext(LifecycleEvent pointOfExecution,
-			IModelObject modelObject, Operation operation, IModelObject[] arguments,
-			IModelObject result) {
+			IModelInstanceElement modelInstanceElement, Operation operation,
+			IModelInstanceElement[] arguments, IModelInstanceElement result) {
 
 		this.myPointOfExecution = pointOfExecution;
-		this.myModelObject = modelObject;
+		this.myModelInstanceElement = modelInstanceElement;
 		this.myOperation = operation;
 		this.myArguments = arguments;
 		this.myResult = result;
@@ -101,28 +104,30 @@ public class OclInterpretationContext implements IRuntimeContext {
 
 	/**
 	 * <p>
-	 * Returns the {@link LifecycleEvent} this {@link OclInterpretationContext}
-	 * belongs to.
+	 * Return the arguments (as {@link IModelInstanceElement}s) of this
+	 * {@link OclInterpretationContext} or an empty array.
 	 * </p>
 	 * 
-	 * @return The {@link LifecycleEvent} this {@link OclInterpretationContext}
-	 *         belongs to.
+	 * @return The arguments (as {@link IModelInstanceElement}s) of this
+	 *         {@link OclInterpretationContext} or an empty array.
 	 */
-	public LifecycleEvent getPointOfExecution() {
+	public IModelInstanceElement[] getArguments() {
 
-		return this.myPointOfExecution;
+		return this.myArguments;
 	}
 
 	/**
 	 * <p>
-	 * Returns the {@link IModelObject} of this {@link OclInterpretationContext}.
+	 * Returns the {@link IModelInstanceElement} of this
+	 * {@link OclInterpretationContext}.
 	 * </p>
 	 * 
-	 * @return The {@link IModelObject} of this {@link OclInterpretationContext}.
+	 * @return The {@link IModelInstanceElement} of this
+	 *         {@link OclInterpretationContext}.
 	 */
-	public IModelObject getModelObject() {
+	public IModelInstanceElement getModelInstanceElement() {
 
-		return this.myModelObject;
+		return this.myModelInstanceElement;
 	}
 
 	/**
@@ -143,16 +148,16 @@ public class OclInterpretationContext implements IRuntimeContext {
 
 	/**
 	 * <p>
-	 * Return the arguments (as {@link IModelObject}s) of this
-	 * {@link OclInterpretationContext} or an empty array.
+	 * Returns the {@link LifecycleEvent} this {@link OclInterpretationContext}
+	 * belongs to.
 	 * </p>
 	 * 
-	 * @return The arguments (as {@link IModelObject}s) of this
-	 *         {@link OclInterpretationContext} or an empty array.
+	 * @return The {@link LifecycleEvent} this {@link OclInterpretationContext}
+	 *         belongs to.
 	 */
-	public IModelObject[] getArguments() {
+	public LifecycleEvent getPointOfExecution() {
 
-		return this.myArguments;
+		return this.myPointOfExecution;
 	}
 
 	/**
@@ -164,7 +169,7 @@ public class OclInterpretationContext implements IRuntimeContext {
 	 * @return The result of the invocation of the {@link Operation} of this
 	 *         {@link OclInterpretationContext} or <code>null</code>.
 	 */
-	public IModelObject getResult() {
+	public IModelInstanceElement getResult() {
 
 		return this.myResult;
 	}
@@ -180,7 +185,7 @@ public class OclInterpretationContext implements IRuntimeContext {
 
 		result = OperationInvocationContext.class.getSimpleName();
 		result += "[";
-		result += "modelObject = " + this.myModelObject + ", ";
+		result += "modelObject = " + this.myModelInstanceElement + ", ";
 		result += "operation = " + this.myOperation + ", ";
 		result += "arguments = " + this.myArguments + ", ";
 		result += "result = " + this.myResult + ", ";

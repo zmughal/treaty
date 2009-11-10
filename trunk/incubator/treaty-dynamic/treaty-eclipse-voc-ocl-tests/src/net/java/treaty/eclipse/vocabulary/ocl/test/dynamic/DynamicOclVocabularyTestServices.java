@@ -38,8 +38,8 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.osgi.framework.Bundle;
 
-import tudresden.ocl20.pivot.modelbus.IModel;
-import tudresden.ocl20.pivot.modelbus.IModelInstance;
+import tudresden.ocl20.pivot.modelbus.model.IModel;
+import tudresden.ocl20.pivot.modelbus.modelinstance.IModelInstance;
 
 /**
  * <p>

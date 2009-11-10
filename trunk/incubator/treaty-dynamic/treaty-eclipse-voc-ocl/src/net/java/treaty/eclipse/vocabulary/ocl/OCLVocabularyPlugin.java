@@ -32,7 +32,8 @@ import org.osgi.framework.BundleContext;
 public class OCLVocabularyPlugin extends Plugin {
 
 	/** The plug-in ID. */
-	public static final String PLUGIN_ID = "net.java.treaty.eclipse.vocabulary.ocl";
+	public static final String PLUGIN_ID =
+			"net.java.treaty.eclipse.vocabulary.ocl";
 
 	/** The shared instance. */
 	private static OCLVocabularyPlugin plugin;
@@ -43,16 +44,17 @@ public class OCLVocabularyPlugin extends Plugin {
 	 * </p>
 	 */
 	public OCLVocabularyPlugin() {
+
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
 	 * )
 	 */
 	public void start(BundleContext context) throws Exception {
+
 		super.start(context);
 
 		plugin = this;
@@ -60,12 +62,12 @@ public class OCLVocabularyPlugin extends Plugin {
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
 	 * )
 	 */
 	public void stop(BundleContext context) throws Exception {
+
 		plugin = null;
 
 		super.stop(context);
@@ -79,6 +81,7 @@ public class OCLVocabularyPlugin extends Plugin {
 	 * @return The shared instance.
 	 */
 	public static OCLVocabularyPlugin getDefault() {
+
 		return plugin;
 	}
 }

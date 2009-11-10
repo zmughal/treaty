@@ -42,8 +42,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 
-import tudresden.ocl20.pivot.modelbus.IModel;
-import tudresden.ocl20.pivot.modelbus.IModelInstance;
+import tudresden.ocl20.pivot.modelbus.model.IModel;
+import tudresden.ocl20.pivot.modelbus.modelinstance.IModelInstance;
 
 /**
  * <p>
