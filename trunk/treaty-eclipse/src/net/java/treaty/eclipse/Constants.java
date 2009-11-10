@@ -11,6 +11,7 @@
 package net.java.treaty.eclipse;
 
 import net.java.treaty.Contract;
+import net.java.treaty.ContractVocabulary;
 
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -55,4 +56,19 @@ public interface Constants {
 	/** Key used to annotate verification exceptions. */
 	public static final String VERIFICATION_EXCEPTION =
 			"net.java.treaty.eclipse.verification.exception";
+
+	/**
+	 * The ID of the {@link IExtensionPoint} that can be used to extend the
+	 * {@link ContractVocabulary}.
+	 */
+	public static final String VOCABULARY_EXTENSION_POINT_ID =
+			"net.java.treaty.eclipse.vocabulary";
+
+	/**
+	 * The attribute of the {@link IExtensionPoint} that can be used to extend the
+	 * {@link ContractVocabulary} which provides the {@link ContractVocabulary}
+	 * implementation.
+	 */
+	public static final String VOCABULARY_EXTENSION_POINT_CLASS_ATTRIBUTE =
+			"class";
 }
