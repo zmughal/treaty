@@ -13,7 +13,10 @@ package net.java.treaty.vocabulary;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import net.java.treaty.Connector;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.ExistsCondition;
@@ -29,6 +32,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
+ * <p>
  * Supports vocabulary composition. Each vocabulary contribution (=part) defines
  * types, relationships and methods, and an ontology is used to build a model
  * suitable for inference for these parts. add and remove methods can be used to
@@ -36,20 +40,71 @@ import com.hp.hpl.jena.rdf.model.Statement;
  * responsibility of client apps. While it would make sense to synchronize
  * methods like add and remove, it is desirable that the check methods can run
  * in multiple threads.
+ * </p>
  * 
  * @author jens dietrich
  */
-
 public class CompositeContractOntology extends ContractOntology {
 
 	public static final String OWNER = "http://www.treaty.org/owner";
-	
+
+	/**
+	 * The {@link CompositeContractOntologyListener} of this
+	 * {@link CompositeContractOntology}.
+	 */
+	private Set<CompositeContractOntologyListener> myListeners =
+			new HashSet<CompositeContractOntologyListener>();
+
 	private List<ContractVocabulary> vocabularyContributions =
 			new ArrayList<ContractVocabulary>();
 
 	private OntModel ontology = ModelFactory.createOntologyModel();;
 
-	public void add(ContractVocabulary voc,String owner) throws TreatyException {
+	/**
+	 * <p>
+	 * Adds a new {@link CompositeContractOntologyListener} to this
+	 * {@link CompositeContractOntology}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link CompositeContractOntologyListener} that shall be added.
+	 */
+	public void addListener(CompositeContractOntologyListener listener) {
+
+		this.myListeners.add(listener);
+	}
+
+	/**
+	 * <p>
+	 * Notifies all {@link CompositeContractOntologyListener}s that the
+	 * {@link CompositeContractOntology}'s state has been changed.
+	 * </p>
+	 */
+	public void notifyListeners() {
+
+		for (CompositeContractOntologyListener listener : this.myListeners) {
+			listener.update();
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Removes a {@link CompositeContractOntologyListener} to this
+	 * {@link CompositeContractOntology}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link CompositeContractOntologyListener} that shall be
+	 *          removed.
+	 */
+	public void removeListener(CompositeContractOntologyListener listener) {
+
+		this.myListeners.remove(listener);
+	}
+
+	public void add(ContractVocabulary voc, String owner) throws TreatyException {
+
 		// check whether types or predicates are defined twice
 		for (URI uri : voc.getTypes()) {
 			for (ContractVocabulary part : vocabularyContributions) {
@@ -74,25 +129,45 @@ public class CompositeContractOntology extends ContractOntology {
 		}
 
 		this.vocabularyContributions.add(voc);
-		
+
 		// we accept non ontologies here to support "lightweight" plugins
 		// TODO log warning
 		if (voc instanceof ContractOntology) {
-			ContractOntology ont = (ContractOntology)voc;
+			ContractOntology ont = (ContractOntology) voc;
 			this.ontology.addSubModel(ont.getOntology());
-			
+
 			// add annotations to ontology
-			AnnotationProperty ann = ont.getOntology().createAnnotationProperty(OWNER);
-			addOwnerAnnotation(ont.getOntology(),ann,ont.getTypes(),owner);
-			addOwnerAnnotation(ont.getOntology(),ann,ont.getRelationships(),owner);
-			addOwnerAnnotation(ont.getOntology(),ann,ont.getProperties(),owner);
+			AnnotationProperty ann =
+					ont.getOntology().createAnnotationProperty(OWNER);
+			addOwnerAnnotation(ont.getOntology(), ann, ont.getTypes(), owner);
+			addOwnerAnnotation(ont.getOntology(), ann, ont.getRelationships(), owner);
+			addOwnerAnnotation(ont.getOntology(), ann, ont.getProperties(), owner);
 		}
+
+		this.notifyListeners();
 	}
-	
-	private void addOwnerAnnotation(OntModel model,AnnotationProperty ann,Collection<URI> resources,String owner) {
+
+	public boolean remove(ContractOntology voc) throws TreatyException {
+
+		boolean result = this.vocabularyContributions.remove(voc);
+
+		// we accept non ontologies here to support "lightweight" plugins
+		// TODO log warning
+		if (voc instanceof ContractOntology) {
+			this.ontology.removeSubModel(((ContractOntology) voc).getOntology());
+		}
+
+		this.notifyListeners();
+
+		return result;
+	}
+
+	private void addOwnerAnnotation(OntModel model, AnnotationProperty ann,
+			Collection<URI> resources, String owner) {
+
 		for (URI uri : resources) {
-			model.add(model.getResource(uri.toString()),ann,owner);
-		}		
+			model.add(model.getResource(uri.toString()), ann, owner);
+		}
 	}
 
 	// can be overridden, e.g. just logging warning might be enough
@@ -104,19 +179,6 @@ public class CompositeContractOntology extends ContractOntology {
 						" ").append(resource).append(" in ").append(voc).append(
 						" - this is already defined in ").append(part);
 		throw new TreatyException(b.toString());
-	}
-
-	public boolean remove(ContractOntology voc) throws TreatyException {
-
-		boolean result = this.vocabularyContributions.remove(voc);
-		
-		// we accept non ontologies here to support "lightweight" plugins
-		// TODO log warning
-		if (voc instanceof ContractOntology) {
-			this.ontology.removeSubModel(((ContractOntology)voc).getOntology());
-		}
-
-		return result;
 	}
 
 	public List<ContractVocabulary> getVocabularyContributions() {
@@ -233,18 +295,26 @@ public class CompositeContractOntology extends ContractOntology {
 
 		return ontology;
 	}
+
 	/**
 	 * Get the owner annotation of a types, property or relationship.
+	 * 
 	 * @param resource
 	 * @return
 	 */
 	public String getOwnerAnnotation(URI resource) {
-		AnnotationProperty ann = ontology.getAnnotationProperty(CompositeContractOntology.OWNER);
-		if (ann==null) return null;
-		Resource r = ontology.getResource("http://www.treaty.org/java#InstantiableClass");
-		if (r==null) return null;
+
+		AnnotationProperty ann =
+				ontology.getAnnotationProperty(CompositeContractOntology.OWNER);
+		if (ann == null)
+			return null;
+		Resource r =
+				ontology.getResource("http://www.treaty.org/java#InstantiableClass");
+		if (r == null)
+			return null;
 		Statement s = r.getProperty(ann);
-		if (s==null) return null;
+		if (s == null)
+			return null;
 		String t = s.getString();
 		return t;
 	}
