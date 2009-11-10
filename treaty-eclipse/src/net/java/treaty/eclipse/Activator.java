@@ -58,6 +58,7 @@ public class Activator extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 
 		EclipseContractRegistry.getInstance().tearDown();
+		VocabularyRegistry.INSTANCE.tearDown();
 
 		plugin = null;
 		super.stop(context);
