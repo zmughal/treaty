@@ -297,25 +297,53 @@ public class CompositeContractOntology extends ContractOntology {
 	}
 
 	/**
-	 * Get the owner annotation of a types, property or relationship.
+	 * <p>
+	 * Returns the owner annotation of a type, property or relationship.
+	 * </p>
 	 * 
-	 * @param resource
-	 * @return
+	 * @param resourceURI
+	 *          The the {@link URI} of the resource whose owner annotation shall
+	 *          be returned.
+	 * @return The annotation of a type, property or relationship.
 	 */
-	public String getOwnerAnnotation(URI resource) {
+	public String getOwnerAnnotation(URI resourceURI) {
 
-		AnnotationProperty ann =
+		String result;
+
+		AnnotationProperty annotationProperty;
+		annotationProperty =
 				ontology.getAnnotationProperty(CompositeContractOntology.OWNER);
-		if (ann == null)
-			return null;
-		Resource r =
-				ontology.getResource("http://www.treaty.org/java#InstantiableClass");
-		if (r == null)
-			return null;
-		Statement s = r.getProperty(ann);
-		if (s == null)
-			return null;
-		String t = s.getString();
-		return t;
+
+		if (annotationProperty == null) {
+			result = null;
+		}
+
+		else {
+			Resource resource;
+			resource =
+					ontology.getResource(resourceURI.toString());
+
+			if (resource == null) {
+				result = null;
+			}
+
+			else {
+				Statement statement;
+				statement = resource.getProperty(annotationProperty);
+
+				if (statement == null) {
+					result = null;
+				}
+
+				else {
+					result = statement.getString();
+				}
+				// end else.
+			}
+			// end else.
+		}
+		// end else.
+
+		return result;
 	}
 }
