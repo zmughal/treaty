@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 import net.java.treaty.eclipse.VocabularyRegistry;
 import net.java.treaty.eclipse.ui.Activator;
+import net.java.treaty.vocabulary.CompositeContractOntologyListener;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
@@ -45,6 +46,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -66,7 +68,8 @@ import com.hp.hpl.jena.xmloutput.impl.Basic;
  * 
  * @author Jens Dietrich
  */
-public class VocabularyView extends ViewPart {
+public class VocabularyView extends ViewPart implements
+		CompositeContractOntologyListener {
 
 	/**
 	 * <p>
@@ -715,7 +718,8 @@ public class VocabularyView extends ViewPart {
 	 */
 	public VocabularyView() {
 
-		/* Remains empty. */
+		/* Register as listener of the VocabularyRegistry. */
+		VocabularyRegistry.INSTANCE.addListener(this);
 	}
 
 	/**
@@ -785,6 +789,25 @@ public class VocabularyView extends ViewPart {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.vocabulary.CompositeContractOntologyListener#update()
+	 */
+	public void update() {
+
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			public void run() {
+
+				actionRefresh();
+			}
+		});
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
 	@Override
@@ -797,6 +820,23 @@ public class VocabularyView extends ViewPart {
 		ICON_DATATYPE_PROPERTY.dispose();
 
 		super.dispose();
+	}
+
+	/**
+	 * <p>
+	 * Refreshes the {@link VocabularyView} by reloading the Vocabulary.
+	 * </p>
+	 */
+	private void actionRefresh() {
+
+		/* Update the icon provider list. */
+		IconProvider.initializeProviderList();
+
+		/* Update the viewer. */
+		this.viewer.setContentProvider(new ViewContentProvider());
+		this.viewer.setInput(this.getViewSite());
+
+		this.text.setText(this.getOntologyAsRDF());
 	}
 
 	/**
@@ -947,13 +987,7 @@ public class VocabularyView extends ViewPart {
 			 */
 			public void run() {
 
-				text.setText("");
-
-				// FIXME How to reset the VocabularyRepository. Is this required at all?
-				// Vocabulary.reset();
-
-				viewer.setContentProvider(new ViewContentProvider());
-				text.setText(getOntologyAsRDF());
+				actionRefresh();
 			}
 		};
 
