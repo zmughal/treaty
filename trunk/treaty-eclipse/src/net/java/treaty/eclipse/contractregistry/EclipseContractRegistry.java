@@ -84,7 +84,7 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 	 */
 	private EclipseContractRegistry() {
 
-		super(new EclipseResourceManager());
+		super(EclipseResourceManager.INSTANCE);
 
 		this.init();
 	}

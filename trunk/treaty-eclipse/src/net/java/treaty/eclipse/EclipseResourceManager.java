@@ -36,6 +36,19 @@ import org.jdom.xpath.XPath;
  */
 public class EclipseResourceManager implements ResourceManager {
 
+	/** The singleton instance of the {@link EclipseResourceManager}. */
+	public static EclipseResourceManager INSTANCE = new EclipseResourceManager();
+
+	/**
+	 * <p>
+	 * Private constructor for singleton pattern.
+	 * </p>
+	 */
+	private EclipseResourceManager() {
+
+		/* Remains empty. */
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ResourceManager#resolve(java.net.URI,
@@ -45,10 +58,7 @@ public class EclipseResourceManager implements ResourceManager {
 	@SuppressWarnings("unchecked")
 	public String resolve(URI type, String reference, Connector connector,
 			InstantiationContext context) throws ResourceLoaderException {
-		
-		
 
-		/* FIXME Claas: What to do here for extension points? */
 		EclipseExtension eclipseExtension;
 		Document document;
 
