@@ -832,6 +832,12 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	}
 
 	/**
+	 * The {@link Action} that can be used to refresh the {@link ContractView}
+	 * manually.
+	 */
+	private Action actionRefresh;
+
+	/**
 	 * The {@link TreeViewer} used to display the {@link Contract}s and their
 	 * {@link EclipsePlugin}s.
 	 */
@@ -918,41 +924,41 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	 *          The {@link Exporter} that shall be used for export.
 	 */
 	private void actionExport(Exporter exporter) {
-	
+
 		Collection<Contract> contracts;
 		contracts =
 				EclipseContractRegistry.getInstance().getInstantiatedContracts();
-	
+
 		/* Try to export. */
 		try {
 			String fileName;
 			fileName = null;
-	
+
 			/* Probably export to a folder. */
 			if (exporter.exportToFolder()) {
-	
+
 				DirectoryDialog directoryDialog;
-	
+
 				directoryDialog =
 						new DirectoryDialog(this.getViewSite().getShell(), SWT.OPEN);
 				directoryDialog.setText("Select a target folder for export.");
-	
+
 				fileName = directoryDialog.open();
 			}
-	
+
 			/* Else export to a file. */
 			else {
 				FileDialog fileDialog;
-	
+
 				fileDialog = new FileDialog(this.getViewSite().getShell(), SWT.OPEN);
 				fileDialog.setFilterExtensions(exporter.getFilterExtensions());
 				fileDialog.setFilterNames(exporter.getFilterNames());
 				fileDialog.setText("Select a file for export.");
-	
+
 				fileName = fileDialog.open();
 			}
 			// no else.
-	
+
 			/* Probably export the contracts. */
 			if (fileName != null) {
 				exporter.export(contracts, new File(fileName));
@@ -960,7 +966,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			// no else.
 		}
 		// end try.
-	
+
 		catch (IOException e) {
 			Logger.error("Exception exporting contracts", e);
 		}
@@ -974,15 +980,15 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	 * </p>
 	 */
 	private void actionReloadContracts() {
-	
+
 		/* Load the contracted plug-ins. */
 		this.plugins =
 				EclipseContractRegistry.getInstance().getContractedEclipsePlugins();
-	
+
 		/* Update the viewer. */
 		this.viewer.setContentProvider(new ViewContentProvider());
 		this.viewer.setInput(getViewSite());
-	
+
 		this.switchActions(true);
 	}
 
@@ -997,19 +1003,19 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	 *          and refreshed.
 	 */
 	private void switchActions(boolean on) {
-	
+
 		/* Probably verify and refresh. */
 		this.actVerifyAll.setEnabled(on);
-		this.actRefresh.setEnabled(on);
-	
+		this.actionRefresh.setEnabled(on);
+
 		for (Action act : this.actsExport) {
 			act.setEnabled(on);
 		}
-	
+
 		/* Probably verify selected, instantiated contracts. */
 		List<Contract> instantiatedConstracts;
 		instantiatedConstracts = getSelectedInstantiatedContracts();
-	
+
 		this.actVerifySelected.setEnabled(on && instantiatedConstracts != null
 				&& !instantiatedConstracts.isEmpty());
 	}
@@ -1025,22 +1031,22 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	 *          TODO
 	 */
 	private void verify(List<Contract> contracts, boolean disableActions) {
-	
+
 		/* The {@link VerificationReport} of the verification. */
 		final VerificationReport verReport = new VerificationReport() {
-	
+
 			/** The {@link Contract} of this {@link VerificationReport}. */
 			private Contract contract = null;
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @see net.java.treaty.VerificationReport#getContract()
 			 */
 			public Contract getContract() {
-	
+
 				return this.contract;
 			}
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @see net.java.treaty.VerificationReport#log(java.lang.Object,
@@ -1048,13 +1054,13 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			 */
 			public void log(Object context, VerificationResult result,
 					String... remarks) {
-	
+
 				if (context instanceof Annotatable) {
 					((Annotatable) context).setProperty(VERIFICATION_RESULT, result);
 				}
 				// no else.
 			}
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @see
@@ -1062,28 +1068,28 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			 * )
 			 */
 			public void setContract(Contract contract) {
-	
+
 				this.contract = contract;
 			}
 		};
-	
+
 		/* A {@link VerificationJobListener} used during verification. */
 		VerificationJobListener vListener = new VerificationJobListener() {
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @seenet.java.treaty.eclipse.jobs.VerificationJobListener#
 			 * verificationStatusChanged()
 			 */
 			public void verificationStatusChanged() {
-	
+
 				updateTree();
 			}
 		};
-	
+
 		/* A {@link IJobChangeListener} used during verification. */
 		IJobChangeListener jListener = new IJobChangeListener() {
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @see
@@ -1091,10 +1097,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			 * .core.runtime.jobs.IJobChangeEvent)
 			 */
 			public void aboutToRun(IJobChangeEvent e) {
-	
+
 				/* Do nothing. */
 			}
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @see
@@ -1102,10 +1108,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			 * core.runtime.jobs.IJobChangeEvent)
 			 */
 			public void awake(IJobChangeEvent e) {
-	
+
 				/* Do nothing. */
 			}
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @see
@@ -1113,28 +1119,28 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			 * .runtime.jobs.IJobChangeEvent)
 			 */
 			public void done(IJobChangeEvent e) {
-	
+
 				VerificationJob verificationJob;
-	
+
 				updateTree();
-	
+
 				verificationJob = (VerificationJob) e.getJob();
 				reportVerificationResult(verificationJob.getDoneContracts(),
 						verificationJob.getFailedContracts());
-	
+
 				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-	
+
 					/*
 					 * (non-Javadoc)
 					 * @see java.lang.Runnable#run()
 					 */
 					public void run() {
-	
+
 						switchActions(true);
 					}
 				});
 			}
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @see
@@ -1142,10 +1148,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			 * .core.runtime.jobs.IJobChangeEvent)
 			 */
 			public void running(IJobChangeEvent e) {
-	
+
 				/* Do nothing. */
 			}
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @see
@@ -1153,10 +1159,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			 * .core.runtime.jobs.IJobChangeEvent)
 			 */
 			public void scheduled(IJobChangeEvent e) {
-	
+
 				/* Do nothing. */
 			}
-	
+
 			/*
 			 * (non-Javadoc)
 			 * @see
@@ -1164,23 +1170,23 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			 * .core.runtime.jobs.IJobChangeEvent)
 			 */
 			public void sleeping(IJobChangeEvent e) {
-	
+
 				/* Do nothing. */
 			}
 		};
-	
+
 		/* Probably disable the actions. */
 		if (disableActions) {
 			this.switchActions(false);
 		}
-	
+
 		/* Verify the contracts. */
 		EclipseContractRegistry.getInstance().verify(contracts, verReport,
 				vListener, jListener);
 	}
 
 	private DrillDownAdapter drillDownAdapter;
-	private Action actRefresh;
+
 	private Action actVerifyAll;
 	private Action actVerifySelected;
 	private Action actPrintStackTrace;
@@ -1657,7 +1663,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	private void fillLocalPullDown(IMenuManager manager) {
 
-		manager.add(actRefresh);
+		manager.add(actionRefresh);
 		manager.add(new Separator());
 		manager.add(actVerifyAll);
 		manager.add(actVerifySelected);
@@ -1669,7 +1675,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	private void fillContextMenu(IMenuManager manager) {
 
-		manager.add(actRefresh);
+		manager.add(actionRefresh);
 		manager.add(actVerifyAll);
 		manager.add(actVerifySelected);
 		manager.add(actPrintStackTrace);
@@ -1686,7 +1692,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	private void fillLocalToolBar(IToolBarManager manager) {
 
-		manager.add(actRefresh);
+		manager.add(actionRefresh);
 		manager.add(actVerifyAll);
 		manager.add(actVerifySelected);
 		manager.add(new Separator());
@@ -1711,16 +1717,16 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				.setToolTipText("Displays the verification exception stack trace");
 		actPrintStackTrace.setEnabled(false);
 
-		actRefresh = new Action() {
+		actionRefresh = new Action() {
 
 			public void run() {
 
 				actionReloadContracts();
 			}
 		};
-		actRefresh.setText("reset");
-		actRefresh.setImageDescriptor(getImageDescriptor("icons/refresh.gif"));
-		actRefresh
+		actionRefresh.setText("reset");
+		actionRefresh.setImageDescriptor(getImageDescriptor("icons/refresh.gif"));
+		actionRefresh
 				.setToolTipText("Reloads all contracts and resets verification status of all contracts");
 
 		actVerifyAll = new Action() {

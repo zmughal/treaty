@@ -14,7 +14,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import net.java.treaty.eclipse.Logger;
+import net.java.treaty.eclipse.VocabularyRegistry;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -128,66 +131,74 @@ public abstract class IconProvider {
 	private static List<IconProvider> getProviders() {
 
 		/* Probably initialize the IconProviders. */
-		/*
-		 * FIXME Claas: Probably this method should be updated if a new vocabulary
-		 * occurs dynamically.
-		 */
 		if (providers == null) {
 
-			providers = new ArrayList<IconProvider>();
-
-			IExtensionRegistry extensionRegistry;
-			IExtensionPoint extensionPoint;
-
-			extensionRegistry =
-					org.eclipse.core.runtime.Platform.getExtensionRegistry();
-			extensionPoint =
-					extensionRegistry
-							.getExtensionPoint("net.java.treaty.eclipse.typeicons");
-
-			/* Iterate on all extensions that provide icon providers. */
-			for (IExtension extension : extensionPoint.getExtensions()) {
-
-				String pluginId;
-				pluginId = extension.getContributor().getName();
-
-				try {
-					IConfigurationElement[] attributes;
-					attributes = extension.getConfigurationElements();
-
-					for (int index = 0; index < attributes.length; index++) {
-
-						IConfigurationElement configurationElement;
-						configurationElement = attributes[index];
-
-						String clazzName;
-						clazzName = configurationElement.getAttribute("class");
-
-						Bundle bundle;
-						bundle = org.eclipse.core.runtime.Platform.getBundle(pluginId);
-
-						/* Try to load the provider class. */
-						Class<?> clazz;
-						clazz = bundle.loadClass(clazzName);
-
-						/* Probably add it to the list of IconProviders. */
-						if (IconProvider.class.isAssignableFrom(clazz)) {
-							providers.add((IconProvider) clazz.newInstance());
-						}
-						// no else.
-					}
-					// end for.
-				}
-
-				catch (Exception e) {
-					Logger.error("Error loading icon provider from " + pluginId, e);
-				}
-				// end catch.
-			}
-			// end for (iteration on extensions).
+			initializeProviderList();
 		}
 		// no else (no initialization).
 
 		return providers;
+	}
+
+	/**
+	 * <p>
+	 * A helper method that initializes the list of {@link IconProvider}s. It can
+	 * also be used to update this list when the {@link VocabularyRegistry} has
+	 * been changed.
+	 * </p>
+	 */
+	protected static void initializeProviderList() {
+
+		providers = new ArrayList<IconProvider>();
+
+		IExtensionRegistry extensionRegistry;
+		IExtensionPoint extensionPoint;
+
+		extensionRegistry =
+				org.eclipse.core.runtime.Platform.getExtensionRegistry();
+		extensionPoint =
+				extensionRegistry
+						.getExtensionPoint("net.java.treaty.eclipse.typeicons");
+
+		/* Iterate on all extensions that provide icon providers. */
+		for (IExtension extension : extensionPoint.getExtensions()) {
+
+			String pluginId;
+			pluginId = extension.getContributor().getName();
+
+			try {
+				IConfigurationElement[] attributes;
+				attributes = extension.getConfigurationElements();
+
+				for (int index = 0; index < attributes.length; index++) {
+
+					IConfigurationElement configurationElement;
+					configurationElement = attributes[index];
+
+					String clazzName;
+					clazzName = configurationElement.getAttribute("class");
+
+					Bundle bundle;
+					bundle = org.eclipse.core.runtime.Platform.getBundle(pluginId);
+
+					/* Try to load the provider class. */
+					Class<?> clazz;
+					clazz = bundle.loadClass(clazzName);
+
+					/* Probably add it to the list of IconProviders. */
+					if (IconProvider.class.isAssignableFrom(clazz)) {
+						providers.add((IconProvider) clazz.newInstance());
+					}
+					// no else.
+				}
+				// end for.
+			}
+
+			catch (Exception e) {
+				Logger.error("Error loading icon provider from " + pluginId, e);
+			}
+			// end catch.
+		}
+		// end for (iteration on extensions).
 	}
 }
