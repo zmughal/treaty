@@ -43,5 +43,6 @@ Export-Package: com.hp.hpl.jena.ontology,
  net.java.treaty.vocabulary.builtins,
  net.java.treaty.vocabulary.builtins.java,
  net.java.treaty.vocabulary.builtins.owl,
+ net.java.treaty.vocabulary.builtins.xml,
  net.java.treaty.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
