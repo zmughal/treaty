@@ -23,6 +23,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+
 import net.java.treaty.Connector;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.ExistsCondition;
@@ -33,6 +34,7 @@ import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.VerificationException;
 import net.java.treaty.vocabulary.ContractOntology;
 import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
+
 import org.iso_relax.verifier.Verifier;
 import org.iso_relax.verifier.VerifierFactory;
 import org.xml.sax.InputSource;
@@ -41,17 +43,18 @@ import org.xml.sax.SAXException;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.sun.msv.driver.textui.DebugController;
 import com.sun.msv.reader.GrammarReaderController;
 import com.sun.msv.reader.dtd.DTDReader;
 
 /**
  * Contributes the XML vocabulary. Warning: this is not complete, support for
  * DTD,XPATH and XSLT is missing. TODO
+ * 
  * @author Jens Dietrich
  */
 
-public class XMLVocabulary extends ContractOntology implements ContractVocabulary {
+public class XMLVocabulary extends ContractOntology implements
+		ContractVocabulary {
 
 	public static final String NS = "http://www.treaty.org/xml#";
 	// types
@@ -61,42 +64,72 @@ public class XMLVocabulary extends ContractOntology implements ContractVocabular
 	// relationships
 	public static final String INSTANTIATES = NS + "instantiates";
 	public static final String INSTANTIATES_DTD = NS + "instantiatesDTD";
-	
+
 	// ontology
 	private OntModel ontology = null;
 
-
 	class Controller implements GrammarReaderController {
+
 		Controller() {
+
 			super();
 		}
-		private List<Exception> exceptions = new ArrayList<Exception>(); 
+
+		private List<Exception> exceptions = new ArrayList<Exception>();
 		private List<String> messages = new ArrayList<String>();
 		private boolean hadException = false;
-		@Override
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.sun.msv.reader.GrammarReaderController#error(org.xml.sax.Locator[],
+		 * java.lang.String, java.lang.Exception)
+		 */
 		public void error(Locator[] l, String m, Exception x) {
-			if (x!=null) this.exceptions.add(x);
-			if (m!=null) this.messages.add(m);
+
+			if (x != null)
+				this.exceptions.add(x);
+			if (m != null)
+				this.messages.add(m);
 			this.hadException = true;
 		}
 
-		@Override
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.sun.msv.reader.GrammarReaderController#warning(org.xml.sax.Locator[],
+		 * java.lang.String)
+		 */
 		public void warning(Locator[] arg0, String arg1) {
-			
+
 		}
-		@Override
-		public InputSource resolveEntity(String arg0, String arg1) throws SAXException, IOException {
+
+		/*
+		 * (non-Javadoc)
+		 * @see org.xml.sax.EntityResolver#resolveEntity(java.lang.String,
+		 * java.lang.String)
+		 */
+		public InputSource resolveEntity(String arg0, String arg1)
+				throws SAXException, IOException {
+
 			return null;
 		}
+
 		/**
 		 * Get an error message or null if there was no error while parsing.
+		 * 
 		 * @return
 		 */
 		String getFirstErrorMessage() {
-			if (this.exceptions.size()>0) return this.exceptions.get(0).getMessage();
-			else if (this.messages.size()>0) return this.messages.get(0);
-			else if (hadException) return "";
-			else return null;
+
+			if (this.exceptions.size() > 0)
+				return this.exceptions.get(0).getMessage();
+			else if (this.messages.size() > 0)
+				return this.messages.get(0);
+			else if (hadException)
+				return "";
+			else
+				return null;
 		}
 
 	};
@@ -153,7 +186,8 @@ public class XMLVocabulary extends ContractOntology implements ContractVocabular
 					}
 				}
 			} catch (Exception x) {
-				throw new VerificationException("Validation of the XML document against XMLSchema failed", x);
+				throw new VerificationException(
+						"Validation of the XML document against XMLSchema failed", x);
 			}
 		}
 		else if (INSTANTIATES_DTD.equals(rel)) {
@@ -171,7 +205,8 @@ public class XMLVocabulary extends ContractOntology implements ContractVocabular
 							"Validation of the XML document against DTD failed");
 				}
 			} catch (Exception x) {
-				throw new VerificationException("Validation of the XML document against DTD failed", x);
+				throw new VerificationException(
+						"Validation of the XML document against DTD failed", x);
 			}
 		}
 		else
@@ -183,19 +218,22 @@ public class XMLVocabulary extends ContractOntology implements ContractVocabular
 
 		if (!type.toString().startsWith(NS))
 			throw new ResourceLoaderException(
-					"This plugin cannot be used to instantiate resources of this type: "+ type);
+					"This plugin cannot be used to instantiate resources of this type: "
+							+ type);
 		try {
 			Object value = connector.getOwner().getResource(name);
 			return value;
 		} catch (Exception x) {
-			throw new ResourceLoaderException("Cannot locate xml resource: " + name,x);
+			throw new ResourceLoaderException("Cannot locate xml resource: " + name,
+					x);
 		}
 	}
 
 	public void check(PropertyCondition relationshipCondition)
 			throws VerificationException {
 
-		throw new VerificationException("This vocabulary does not define property conditions");
+		throw new VerificationException(
+				"This vocabulary does not define property conditions");
 	}
 
 	public void check(ExistsCondition condition) throws VerificationException {
@@ -219,7 +257,8 @@ public class XMLVocabulary extends ContractOntology implements ContractVocabular
 			DTDReader.parse(new InputSource(url.toString()), controller);
 			String errorMessage = controller.getFirstErrorMessage();
 			if (errorMessage != null) {
-				throw new VerificationException("The dtd " + url + " cannot be parsed: "+errorMessage);
+				throw new VerificationException("The dtd " + url
+						+ " cannot be parsed: " + errorMessage);
 			}
 		}
 		else if (XML_INSTANCE.equals(resource.getType().toString())) {
@@ -235,9 +274,11 @@ public class XMLVocabulary extends ContractOntology implements ContractVocabular
 
 	@Override
 	public OntModel getOntology() {
-		if (ontology==null) {
+
+		if (ontology == null) {
 			ontology = ModelFactory.createOntologyModel();
-			ontology.read(JavaVocabulary.class.getResource("/net/java/treaty/vocabulary/builtins/xml/xml.owl").toString());
+			ontology.read(JavaVocabulary.class.getResource(
+					"/net/java/treaty/vocabulary/builtins/xml/xml.owl").toString());
 		}
 		return ontology;
 	}
