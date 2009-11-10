@@ -1,12 +1,11 @@
 package test.net.java.treaty.script;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.net.URI;
+import java.util.Collection;
 
 import net.java.treaty.Conjunction;
 import net.java.treaty.Contract;
@@ -16,6 +15,8 @@ import net.java.treaty.Resource;
 import net.java.treaty.TreatyException;
 import net.java.treaty.XDisjunction;
 import net.java.treaty.script.TreatyScript;
+
+import org.junit.Test;
 
 public class TreatyScriptTests {
 	@Test
