@@ -8,28 +8,24 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package test.net.java.treaty.vocabulary.builtins;
+package test.net.java.treaty.vocabulary.builtins.xml;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import test.net.java.treaty.vocabulary.builtins.java.AllJavaTests;
-import test.net.java.treaty.vocabulary.builtins.owl.AllOwlTests;
-import test.net.java.treaty.vocabulary.builtins.xml.AllXmlTests;
-
 /**
  * <p>
  * Provides a JUnit Test Suite containing all JUnit test cases of the Treaty
- * Framework package <code>net.java.treaty.vocabulary.builtins</code> and its
- * sub-packages.
+ * Framework package <code>net.java.treaty.vocabulary.builtins.xml</code> and
+ * its sub-packages.
  * </p>
  * 
  * @author Claas Wilke
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { BuiltInOpTests.class, AllJavaTests.class,
-		AllOwlTests.class, AllXmlTests.class })
-public class AllBuiltinTests {
+@Suite.SuiteClasses( { XMLVocabularyTests.class,
+		XMLVocabularyVerificationTests.class })
+public class AllXmlTests {
 	/*
 	 * This class remains completely empty, being used only as a holder for the
 	 * above annotations.
