@@ -41,9 +41,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class JUnitVocabulary extends ContractOntology implements
 		ContractVocabulary {
 
-	/** The singleton Instance of the {@link JUnitVocabulary}. */
-	public static JUnitVocabulary INSTANCE = new JUnitVocabulary();
-
 	public static final String NS = "http://www.treaty.org/junit#";
 	// types
 	public static final String TESTCASE = NS + "TestCase";
@@ -65,10 +62,10 @@ public class JUnitVocabulary extends ContractOntology implements
 
 	/**
 	 * <p>
-	 * Private Constructor for Singleton pattern.
+	 * Creates a new {@link JUnitVocabulary}.
 	 * </p>
 	 */
-	private JUnitVocabulary() {
+	public JUnitVocabulary() {
 
 		super();
 	}
