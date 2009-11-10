@@ -196,12 +196,19 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 
 	/**
 	 * <p>
-	 * Clears the {@link EclipseContractRegistry}.
+	 * Clears the {@link EclipseContractRegistry}. <strong>Attention: The
+	 * {@link EclipseContractRegistry} will not be reinitialized but only
+	 * cleared!</strong>
 	 * </p>
 	 */
 	public static void clear() {
 
-		myInstance = new EclipseContractRegistry();
+		myInstance.contractedConnectors.clear();
+		myInstance.instantiatedContracts.clear();
+		myInstance.legislatorsWithUnboundContracts.clear();
+		myInstance.myConsumerContracts.clear();
+		myInstance.myLegislatorContracts.clear();
+		myInstance.mySupplierContracts.clear();
 	}
 
 	/**

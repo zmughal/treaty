@@ -63,9 +63,9 @@ public class VocabularyRegistry extends CompositeContractOntology implements
 		super();
 
 		try {
-			this.add(new BasicOpVocabulary(), "net.java.treaty");
-			this.add(new JavaVocabulary(), "net.java.treaty");
-			this.add(new OWLVocabulary(), "net.java.treaty");
+			this.add(new BasicOpVocabulary(), "net.java.treaty.vocabulary.builtin.basic");
+			this.add(new JavaVocabulary(), "net.java.treaty.vocabulary.builtin.java");
+			this.add(new OWLVocabulary(), "net.java.treaty.vocabulary.builtin.owl");
 		}
 
 		catch (TreatyException x) {
