@@ -11,45 +11,58 @@ package net.java.treaty.eclipse.vocabulary.xml.ui;
 
 import java.net.URI;
 
-import net.java.treaty.eclipse.vocabulary.xml.XMLVocabulary;
+import net.java.treaty.vocabulary.builtins.xml.XMLVocabulary;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
- * Provider for icons representing types in user interfaces.
- * Extensions provide concrete subclasses.
+ * Provider for icons representing types in user interfaces. Extensions provide
+ * concrete subclasses.
+ * 
  * @author Jens Dietrich
  */
 
 public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
-	
+
 	/**
 	 * Get the icon
-	 * @param type the type
-	 * @param isVariable whether the resource is a variable
+	 * 
+	 * @param type
+	 *          the type
+	 * @param isVariable
+	 *          whether the resource is a variable
 	 * @return
 	 */
-	public Image getIcon(URI type,boolean isVariable) {
+	public Image getIcon(URI type, boolean isVariable) {
+
 		String t = type.toString();
 		ImageDescriptor d = null;
 		if (XMLVocabulary.SCHEMA.equals(t)) {
-			d = isVariable?getImageDescriptor("icons/xsd_var.gif"):getImageDescriptor("icons/xsd.gif");
+			d =
+					isVariable ? getImageDescriptor("icons/xsd_var.gif")
+							: getImageDescriptor("icons/xsd.gif");
 		}
 		else if (XMLVocabulary.XML_INSTANCE.equals(t)) {
-			d = isVariable?getImageDescriptor("icons/xml_var.gif"):getImageDescriptor("icons/xml.gif");
+			d =
+					isVariable ? getImageDescriptor("icons/xml_var.gif")
+							: getImageDescriptor("icons/xml.gif");
 		}
 		else if (XMLVocabulary.DTD.equals(t)) {
-			d = isVariable?getImageDescriptor("icons/dtd_var.gif"):getImageDescriptor("icons/dtd.gif");
+			d =
+					isVariable ? getImageDescriptor("icons/dtd_var.gif")
+							: getImageDescriptor("icons/dtd.gif");
 		}
-		if (d!=null) {
+		if (d != null) {
 			return d.createImage();
 		}
 		return null;
 	}
-	
+
 	private ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path); 
+
+		return AbstractUIPlugin
+				.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path);
 	}
 }
