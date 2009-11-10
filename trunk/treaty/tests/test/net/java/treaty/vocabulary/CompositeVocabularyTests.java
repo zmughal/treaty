@@ -17,93 +17,146 @@ import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
+
 import net.java.treaty.vocabulary.CompositeContractOntology;
 import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
 import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
 
 /**
- * Tests for composite vocabulary.
- * Also tests ontology reasoning.
+ * <p>
+ * Tests for the class {@link CompositeContractOntology}. Also tests ontology
+ * reasoning.
+ * </p>
+ * 
  * @author jens dietrich
  */
 public class CompositeVocabularyTests {
 
 	private CompositeContractOntology voc = null;
+
 	@Before
 	public void setUp() throws Exception {
+
 		voc = new CompositeContractOntology();
-		voc.add(new JavaVocabulary(),"builtin-java");
-		voc.add(new OWLVocabulary(),"builtin-owl");
-		voc.add(new TestVocabulary(),"test");
+		voc.add(new JavaVocabulary(), "builtin-java");
+		voc.add(new OWLVocabulary(), "builtin-owl");
+		voc.add(new TestVocabulary(), "test");
 	}
-	@After 
+
+	@After
 	public void tearDown() throws Exception {
+
 		voc = null;
-	}	
+	}
+
 	@Test
 	public void testTypes() throws Exception {
+
 		Collection<URI> types = voc.getTypes();
-		assertEquals(5,types.size());
+		assertEquals(5, types.size());
 		assertTrue(types.contains(new URI("http://www.treaty.org/java#JavaType")));
-		assertTrue(types.contains(new URI("http://www.treaty.org/java#AbstractType")));
-		assertTrue(types.contains(new URI("http://www.treaty.org/java#InstantiableClass")));
+		assertTrue(types
+				.contains(new URI("http://www.treaty.org/java#AbstractType")));
+		assertTrue(types.contains(new URI(
+				"http://www.treaty.org/java#InstantiableClass")));
 		assertTrue(types.contains(new URI("http://www.treaty.org/owl#OWLType")));
-		assertTrue(types.contains(new URI("http://www.treaty.org/test#JavaSpecialClass")));
+		assertTrue(types.contains(new URI(
+				"http://www.treaty.org/test#JavaSpecialClass")));
 	}
-	
+
 	@Test
 	public void testRelationships() throws Exception {
+
 		Collection<URI> types = voc.getRelationships();
-		assertEquals(2,types.size());
+		assertEquals(2, types.size());
 		assertTrue(types.contains(new URI("http://www.treaty.org/java#implements")));
-		assertTrue(types.contains(new URI("http://www.treaty.org/test#specialImplements")));
+		assertTrue(types.contains(new URI(
+				"http://www.treaty.org/test#specialImplements")));
 	}
-	
+
 	@Test
 	public void testSubclasses() throws Exception {
-		Collection<URI> types = voc.getSubtypes(new URI("http://www.treaty.org/java#JavaType"));
-		assertEquals(3,types.size());
-		assertTrue(types.contains(new URI("http://www.treaty.org/java#AbstractType")));
-		assertTrue(types.contains(new URI("http://www.treaty.org/java#InstantiableClass")));
-		assertTrue(types.contains(new URI("http://www.treaty.org/test#JavaSpecialClass")));
+
+		Collection<URI> types =
+				voc.getSubtypes(new URI("http://www.treaty.org/java#JavaType"));
+		assertEquals(3, types.size());
+		assertTrue(types
+				.contains(new URI("http://www.treaty.org/java#AbstractType")));
+		assertTrue(types.contains(new URI(
+				"http://www.treaty.org/java#InstantiableClass")));
+		assertTrue(types.contains(new URI(
+				"http://www.treaty.org/test#JavaSpecialClass")));
 	}
-	
+
 	@Test
 	public void testSuperclasses() throws Exception {
-		Collection<URI> types = voc.getSupertypes(new URI("http://www.treaty.org/test#JavaSpecialClass"));
-		//list(types);
-		assertEquals(4,types.size());
-		assertTrue(types.contains(new URI("http://www.treaty.org/java#InstantiableClass")));
+
+		Collection<URI> types =
+				voc
+						.getSupertypes(new URI(
+								"http://www.treaty.org/test#JavaSpecialClass"));
+		// list(types);
+		assertEquals(4, types.size());
+		assertTrue(types.contains(new URI(
+				"http://www.treaty.org/java#InstantiableClass")));
 		assertTrue(types.contains(new URI("http://www.treaty.org/java#JavaType")));
 		assertTrue(types.contains(new URI("http://www.treaty.org#Resource")));
-		assertTrue(types.contains(new URI("http://www.w3.org/2000/01/rdf-schema#Resource")));
+		assertTrue(types.contains(new URI(
+				"http://www.w3.org/2000/01/rdf-schema#Resource")));
 	}
-	
+
 	@Test
 	public void testSubProperties() throws Exception {
+
 		URI superProp = new URI("http://www.treaty.org/java#implements");
 		URI subProp = new URI("http://www.treaty.org/test#specialImplements");
-		
+
 		list(voc.getSubProperties(superProp));
-		
+
 		assertTrue(voc.getSubProperties(superProp).contains(subProp));
-		assertEquals(1,voc.getSubProperties(superProp).size());
-		
+		assertEquals(1, voc.getSubProperties(superProp).size());
+
 		assertTrue(voc.getSuperProperties(subProp).contains(superProp));
-		assertEquals(1,voc.getSuperProperties(subProp).size());
+		assertEquals(1, voc.getSuperProperties(subProp).size());
 
 	}
-	
+
+	/**
+	 * <p>
+	 * Test the method {@link CompositeContractOntology#getOwnerAnnotation(URI)}.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 */
 	@Test
-	public void testOwnerAnnotations () throws Exception {
-		assertEquals("builtin-java",voc.getOwnerAnnotation(new URI("http://www.treaty.org/java#InstantiableClass")));
-		assertEquals("builtin-java",voc.getOwnerAnnotation(new URI("http://www.treaty.org/java#implements")));
-		assertEquals("builtin-java",voc.getOwnerAnnotation(new URI("http://www.treaty.org/owl#OWLType")));
-		assertEquals("builtin-java",voc.getOwnerAnnotation(new URI("http://www.treaty.org/test#specialImplements")));
+	public void testOwnerAnnotations() throws Exception {
+
+		assertEquals("builtin-java", voc.getOwnerAnnotation(new URI(
+				"http://www.treaty.org/java#InstantiableClass")));
+		assertEquals("builtin-java", voc.getOwnerAnnotation(new URI(
+				"http://www.treaty.org/java#implements")));
+		assertEquals("builtin-owl", voc.getOwnerAnnotation(new URI(
+				"http://www.treaty.org/owl#OWLType")));
+		assertEquals("test", voc.getOwnerAnnotation(new URI(
+				"http://www.treaty.org/test#specialImplements")));
 	}
-	
-	// for debugging 
+
+	/**
+	 * <p>
+	 * A helper method for debugging that prints a given {@link List} of
+	 * {@link URI}s on <code>System.out</code>.
+	 * </p>
+	 * 
+	 * @param list
+	 *          The {@link URI}s that shall be printed.
+	 */
 	private void list(Collection<URI> list) {
-		for (URI u:list) System.out.println(u);
+
+		for (URI u : list) {
+			System.out.println(u);
+		}
+		// end for.
 	}
 }
