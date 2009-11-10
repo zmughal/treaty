@@ -51,9 +51,6 @@ import com.sun.msv.reader.dtd.DTDReader;
 public class XMLVocabulary extends ContractOntology implements
 		ContractVocabulary {
 
-	/** The singleton Instance of the {@link JUnitVocabulary}. */
-	public static XMLVocabulary INSTANCE = new XMLVocabulary();
-
 	public static final String NS = "http://www.treaty.org/xml#";
 	// types
 	public static final String XML_INSTANCE = NS + "XMLInstance";
@@ -115,10 +112,10 @@ public class XMLVocabulary extends ContractOntology implements
 
 	/**
 	 * <p>
-	 * Private constructor for Singleton pattern.
+	 * Creates a new {@link XMLVocabulary}.
 	 * </p>
 	 */
-	private XMLVocabulary() {
+	public XMLVocabulary() {
 
 		super();
 	}

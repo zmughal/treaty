@@ -1,7 +1,5 @@
 package net.java.treaty.eclipse.vocabulary.xml;
 
-import net.java.treaty.eclipse.VocabularyRegistry;
-
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
@@ -34,10 +32,6 @@ public class Activator extends Plugin {
 
 		super.start(context);
 		plugin = this;
-
-		/* Register the vocabulary add the VocabularyRegistry. */
-		VocabularyRegistry.INSTANCE
-				.add(XMLVocabulary.INSTANCE, Activator.PLUGIN_ID);
 	}
 
 	/*
@@ -50,9 +44,6 @@ public class Activator extends Plugin {
 
 		plugin = null;
 		super.stop(context);
-
-		/* Register the vocabulary add the VocabularyRegistry. */
-		VocabularyRegistry.INSTANCE.remove(XMLVocabulary.INSTANCE);
 	}
 
 	/**
