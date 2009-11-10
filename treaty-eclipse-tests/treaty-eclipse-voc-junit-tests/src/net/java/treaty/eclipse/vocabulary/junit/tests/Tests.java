@@ -41,7 +41,7 @@ public class Tests {
 	@Before
 	public void setUp() throws Exception {
 
-		VOC = JUnitVocabulary.INSTANCE;
+		VOC = new JUnitVocabulary();
 		String id = Activator.PLUGIN_ID;
 		Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(id);
 		plugin = new EclipsePlugin(bundle);
