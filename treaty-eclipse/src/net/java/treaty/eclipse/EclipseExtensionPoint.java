@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -184,18 +184,5 @@ public class EclipseExtensionPoint extends EclipseConnector {
 						this.extensionPoint == null ? "?" : this.extensionPoint
 								.getUniqueIdentifier()).append(",defined in ").append(
 						this.getOwner()).append(')').toString();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.eclipse.EclipseConnector#configureNewContract(net.java.
-	 * treaty.Contract)
-	 */
-	protected void configureNewContract(Contract newContract) {
-
-		super.configureNewContract(newContract);
-
-		newContract.setConsumer(this);
 	}
 }
