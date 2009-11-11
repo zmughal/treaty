@@ -11,6 +11,7 @@
 package net.java.treaty.eclipse;
 
 import java.net.URI;
+import java.util.Collection;
 
 import net.java.treaty.Connector;
 import net.java.treaty.Contract;
@@ -21,8 +22,15 @@ import net.java.treaty.Resource;
 import net.java.treaty.ResourceLoader;
 import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.VerificationException;
+import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.Verifier;
+import net.java.treaty.eclipse.jobs.VerificationJob;
+import net.java.treaty.eclipse.jobs.VerificationJobListener;
+
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.MultiRule;
 
 /**
  * <p>
@@ -42,6 +50,49 @@ public class EclipseVerifier implements Verifier, ResourceLoader {
 	public EclipseVerifier() {
 
 		super();
+	}
+
+	/**
+	 * <p>
+	 * Verifies a Collection of given {@link Contract}s for a given
+	 * {@link VerificationReport}, {@link VerificationJobListener} and
+	 * {@link IJobChangeListener}.
+	 * </p>
+	 * 
+	 * @param contracts
+	 *          The {@link Contract}s that shall be verified.
+	 * @param verificationReport
+	 *          The {@link VerificationReport} used to store the results.
+	 * @param verificationJobListener
+	 *          A {@link VerificationJobListener} that can be used to observe the
+	 *          progress.
+	 * @param jobChangeListener
+	 *          An {@link IJobChangeListener} that can be used to observe the
+	 *          progress.
+	 */
+	public static void verify(Collection<Contract> contracts,
+			VerificationReport verificationReport,
+			VerificationJobListener verificationJobListener,
+			IJobChangeListener jobChangeListener) {
+
+		VerificationJob job;
+		job =
+				new VerificationJob("Treaty Component Verification", contracts,
+						verificationReport);
+
+		job.addVerificationJobListener(verificationJobListener);
+		job.addJobChangeListener(jobChangeListener);
+
+		ISchedulingRule combinedRule;
+		combinedRule = null;
+
+		for (Contract contract : contracts) {
+			MultiRule.combine(new ContractVerificationSchedulingRule(contract),
+					combinedRule);
+		}
+
+		job.setRule(combinedRule);
+		job.schedule();
 	}
 
 	/*
