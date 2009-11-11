@@ -649,10 +649,17 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		private void addResourceNode(TreeParent parent, Resource resource,
 				Map<Resource, OwnerType> ownerTypes) {
 
-			TreeParent node = new TreeParent(resource);
-			parent.addChild(node);
+			if (resource == null) {
+				TreeObject node = new TreeObject(resource);
+				parent.addChild(node);
+			}
 
-			this.addConditionPartNodes(node, resource, ownerTypes);
+			else {
+				TreeParent node = new TreeParent(resource);
+				parent.addChild(node);
+
+				this.addConditionPartNodes(node, resource, ownerTypes);
+			}
 		}
 
 		/**
