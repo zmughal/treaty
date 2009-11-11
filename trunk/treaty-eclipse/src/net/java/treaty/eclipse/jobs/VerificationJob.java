@@ -115,39 +115,39 @@ public class VerificationJob extends Job {
 	 * )
 	 */
 	protected IStatus run(IProgressMonitor monitor) {
-	
+
 		monitor.beginTask("Run Verification.", (2 * contracts.size()) + 3);
-	
+
 		monitor.subTask("Reset verification status.");
-	
+
 		for (Contract contract : this.contracts) {
 			this.resetVerificationStatus(contract);
 		}
 		// end for.
-	
+
 		/* Notify Listeners. */
 		this.statusChanged();
-	
+
 		/* Probably cancel. */
 		if (monitor.isCanceled()) {
 			return Status.CANCEL_STATUS;
 		}
 		// no else.
-	
+
 		monitor.subTask("Loading installed Vocabularies.");
-	
+
 		EclipseVerifier verifier;
 		verifier = new EclipseVerifier();
-	
+
 		monitor.worked(3);
-	
+
 		/* Loading resources. */
 		for (Contract contract : this.contracts) {
-	
+
 			try {
 				this.loadResources(contract, verifier);
 			}
-	
+
 			catch (ResourceLoaderException e) {
 				/*
 				 * Do not set result to failure - even if resources cannot be loaded,
@@ -156,47 +156,120 @@ public class VerificationJob extends Job {
 				 */
 				contract.setProperty(VERIFICATION_EXCEPTION, e);
 			}
-	
+
 			monitor.worked(1);
-	
+
 			/* Probably cancel. */
 			if (monitor.isCanceled()) {
 				return Status.CANCEL_STATUS;
 			}
 			// no else.
 		}
-	
+
 		monitor.subTask("Checking Contracts.");
-	
+
 		for (Contract contract : contracts) {
-	
+
 			/* TODO: contracts also fail when mandatory resources cannot be loaded. */
 			boolean result;
 			result =
 					contract.check(verificationReport, verifier,
 							VerificationPolicy.DETAILED);
-	
+
 			if (!result) {
 				this.failedContracts.add(contract);
 			}
-	
+
 			this.doneContracts.add(contract);
-	
+
 			this.propagateResults(contract);
-	
+
 			monitor.worked(1);
-	
+
 			/* Notify Listeners. */
 			this.statusChanged();
-	
+
 			/* Probably cancel. */
 			if (monitor.isCanceled()) {
 				return Status.CANCEL_STATUS;
 			}
 			// no else.
 		}
-	
+
 		return Status.OK_STATUS;
+	}
+
+	/**
+	 * <p>
+	 * A helper method that loads the {@link Resource}s required to verify a given
+	 * {@link Contract}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose {@link Resource}s shall be loaded.
+	 * @param loader
+	 *          The {@link ResourceLoader} used to load the {@link Resource}s.
+	 * @throws ResourceLoaderException
+	 *           Thrown, if the loading fails.
+	 */
+	private void loadResources(Contract contract, ResourceLoader loader)
+			throws ResourceLoaderException {
+
+		/* Probably load consumer resources. */
+		for (Resource resource : contract.getConsumerResources()) {
+			this.loadResource(contract, loader, contract.getConsumer(), resource);
+		}
+		// end for.
+
+		/* Probably load supplier resources. */
+		for (Resource resource : contract.getSupplierResources()) {
+			this.loadResource(contract, loader, contract.getSupplier(), resource);
+		}
+		// end for.
+
+		/* Probably load external resources (from legislator plug-ins). */
+		for (Resource resource : contract.getExternalResources()) {
+			loadResource(contract, loader, resource.getOwner(), resource);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Loads a given {@link Resource} from a given {@link Connector} using a given
+	 * {@link ResourceLoader}.
+	 * </p>
+	 * 
+	 * @param c
+	 *          FIXME Claas: parameter c is never used.
+	 * @param loader
+	 *          The {@link ResourceLoader} used to load the {@link Resource}.
+	 * @param connector
+	 *          The {@link Connector} from that the {@link Resource} shall be
+	 *          loaded.
+	 * @param resource
+	 *          The {@link Resource} that shall be loaded.
+	 */
+	private void loadResource(Contract c, ResourceLoader loader,
+			Connector connector, Resource resource) {
+
+		/* Check if the resource has been loaded already. */
+		if (resource.isProvided() && !resource.isLoaded()) {
+
+			/* Try to load the resource. */
+			try {
+				Object value;
+
+				value = loader.load(resource.getType(), resource.getName(), connector);
+				resource.setValue(value);
+			}
+
+			catch (ResourceLoaderException x) {
+				resource.setProperty(VERIFICATION_EXCEPTION, x);
+			}
+			// end catch.
+		}
+		// no else.
 	}
 
 	/**
@@ -274,42 +347,6 @@ public class VerificationJob extends Job {
 			ComplexCondition cc = (ComplexCondition) c;
 			for (AbstractCondition part : cc.getParts()) {
 				resetVerificationStatus(part);
-			}
-		}
-	}
-
-	private void loadResources(Contract c, ResourceLoader l)
-			throws ResourceLoaderException {
-
-		for (Resource r : c.getConsumerResources()) {
-			loadResource(c, l, c.getConsumer(), r);
-		}
-		for (Resource r : c.getSupplierResources()) {
-			loadResource(c, l, c.getSupplier(), r);
-		}
-		for (Resource r : c.getExternalResources()) {
-			loadResource(c, l, r.getOwner(), r);
-		}
-
-	}
-
-	/**
-	 * FIXME Claas parameter c is never used.
-	 * 
-	 * @param c
-	 * @param l
-	 * @param con
-	 * @param r
-	 */
-	private void loadResource(Contract c, ResourceLoader l, Connector con,
-			Resource r) {
-
-		if (r.isProvided() && !r.isLoaded()) {
-			try {
-				Object value = l.load(r.getType(), r.getName(), con);
-				r.setValue(value);
-			} catch (ResourceLoaderException x) {
-				r.setProperty(VERIFICATION_EXCEPTION, x);
 			}
 		}
 	}

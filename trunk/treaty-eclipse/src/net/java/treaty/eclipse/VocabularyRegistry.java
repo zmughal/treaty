@@ -23,6 +23,7 @@ import net.java.treaty.vocabulary.ContractOntology;
 import net.java.treaty.vocabulary.builtins.BasicOpVocabulary;
 import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
 import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
+import net.java.treaty.vocabulary.builtins.xml.XMLVocabulary;
 
 import org.eclipse.core.runtime.ContributorFactoryOSGi;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -62,16 +63,24 @@ public class VocabularyRegistry extends CompositeContractOntology implements
 
 		super();
 
+		/* Try to add the built-in vocabularies. */
 		try {
-			this.add(new BasicOpVocabulary(), "net.java.treaty.vocabulary.builtin.basic");
+			this.add(new BasicOpVocabulary(),
+					"net.java.treaty.vocabulary.builtin.basic");
 			this.add(new JavaVocabulary(), "net.java.treaty.vocabulary.builtin.java");
 			this.add(new OWLVocabulary(), "net.java.treaty.vocabulary.builtin.owl");
+			this.add(new XMLVocabulary(), "net.java.treaty.vocabulary.builtin.xml");
 		}
 
 		catch (TreatyException x) {
 			Logger.error("cannot install bootstrap vocabularies");
 		}
+		// end catch.
 
+		/*
+		 * Register as listener of the extension registry to get notified if new
+		 * vocabularies occur.
+		 */
 		org.eclipse.core.runtime.Platform.getExtensionRegistry().addListener(this,
 				Constants.VOCABULARY_EXTENSION_POINT_ID);
 
@@ -151,7 +160,7 @@ public class VocabularyRegistry extends CompositeContractOntology implements
 	 * </p>
 	 */
 	public void tearDown() {
-	
+
 		org.eclipse.core.runtime.Platform.getExtensionRegistry().removeListener(
 				this);
 	}

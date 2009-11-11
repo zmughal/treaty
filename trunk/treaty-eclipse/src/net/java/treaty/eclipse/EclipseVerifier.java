@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -10,181 +10,288 @@
 
 package net.java.treaty.eclipse;
 
+import java.net.URI;
+
+import net.java.treaty.Connector;
+import net.java.treaty.Contract;
+import net.java.treaty.ExistsCondition;
+import net.java.treaty.PropertyCondition;
+import net.java.treaty.RelationshipCondition;
+import net.java.treaty.Resource;
+import net.java.treaty.ResourceLoader;
+import net.java.treaty.ResourceLoaderException;
+import net.java.treaty.VerificationException;
+import net.java.treaty.VerificationResult;
+import net.java.treaty.Verifier;
+
 /**
- * Verifier for Eclipse.
+ * <p>
+ * The {@link EclipseVerifier} implements the {@link Verifier} interface for the
+ * Treaty Eclipse implementation. It can be used to verify {@link Contract}s.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
+public class EclipseVerifier implements Verifier, ResourceLoader {
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.Platform;
-import net.java.treaty.*;
+	/**
+	 * <p>
+	 * Creates a new {@link EclipseVerifier}.
+	 * </p>
+	 */
+	public EclipseVerifier() {
 
-public class EclipseVerifier implements Verifier,ResourceLoader {
-	private List<ContractVocabulary> vocContributions = null;
-	public EclipseVerifier () {
 		super();
-		loadVocabularyContributions();
-	}
-	private void loadVocabularyContributions() {
-		vocContributions = new ArrayList<ContractVocabulary>();
-		IExtensionPoint xp = Platform.getExtensionRegistry().getExtensionPoint("net.java.treaty.eclipse.vocabulary");
-		for (IExtension x:xp.getExtensions()) {
-			IConfigurationElement[] attributes = x.getConfigurationElements();	
-			String pluginId = x.getContributor().getName();
-			for (int j=0;j<attributes.length;j++) {
-				IConfigurationElement p = attributes[j];
-				String clazz = p.getAttribute("class");
-				try {
-					Class c = Platform.getBundle(pluginId).loadClass(clazz);
-					vocContributions.add((ContractVocabulary)c.newInstance());
-				}
-				catch (ClassNotFoundException ex) {
-					Logger.error("Cannot load vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
-				}
-				catch (IllegalAccessException ex) {
-					Logger.error("Cannot instantiate vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
-				}
-				catch (InstantiationException ex) {
-					Logger.error("Cannot instantiate vocabulary contribution "+clazz +" provided by bundle " + pluginId, ex);
-				}
-			}
-		}
 	}
 
-	
-	public void check(RelationshipCondition condition) throws VerificationException {
-		try {
-			VocabularyRegistry.INSTANCE.check(condition);
-			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
-			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
-		}
-		catch (VerificationException x) {
-			
-			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
-			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
-			throw (VerificationException)x.fillInStackTrace();
-		}
-		return;
-	}
-	
-	public void check(PropertyCondition condition) throws VerificationException {
-		try {
-			VocabularyRegistry.INSTANCE.check(condition);
-			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
-			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
-		}
-		catch (VerificationException x) {
-			
-			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
-			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
-			throw (VerificationException)x.fillInStackTrace();
-		}
-		return;
-
-	}
-	
-	private void checkBuiltInDatatype(Object v,URI type) throws VerificationException {
-		String t = type.toString();
-		// FIXME - remove this tmp hack
-		if (t.equals("http://www.w3.org/2001/XMLSchema:string")) {
-			System.out.println("oudated data type URI used !!: http://www.w3.org/2001/XMLSchema#string");
-		}
-		if (t.equals("http://www.w3.org/2001/XMLSchema#string")) {
-			return; 
-		}
-		// int should be used !! see http://www.w3.org/TR/xmlschema-2/
-		else if (t.equals("http://www.w3.org/2001/XMLSchema#int") || t.equals("http://www.w3.org/2001/XMLSchema#int")) {
-			if (v instanceof Integer) return;
-			try {
-				Integer.parseInt(v.toString());
-			}
-			catch (NumberFormatException x) {
-				throw new VerificationException(v.toString() + " is not an integer");
-			}
-		}
-		else if (t.equals("http://www.w3.org/2001/XMLSchema#double")) {
-			if (v instanceof Double) return;
-			try {
-				Double.parseDouble(v.toString());
-			}
-			catch (NumberFormatException x) {
-				throw new VerificationException(v.toString() + " is not a double");
-			}
-		}
-		else if (t.equals("http://www.w3.org/2001/XMLSchema#boolean")) {
-			if (v instanceof Double) return;
-			try {
-				Boolean.parseBoolean(v.toString());
-			}
-			catch (NumberFormatException x) {
-				throw new VerificationException(v.toString() + " is not a boolean");
-			}
-		}
-		else throw new VerificationException("unsupported data type: " + type);
-	}
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.ExistsCondition)
+	 */
 	public void check(ExistsCondition condition) throws VerificationException {
-		Resource resource = condition.getResource();
-		URI type = resource.getType();
-		
-		// built-in type string
+
+		Resource resource;
+		resource = condition.getResource();
+
+		URI type;
+		type = resource.getType();
+
+		/* FIXME Claas: Is this still necessary? */
+		/* Handle the built-in types separately. */
 		if (type.toString().startsWith("http://www.w3.org/2001/XMLSchema")) {
+
 			assert resource.isInstantiated();
 			assert resource.isLoaded();
-			if (resource.getValue()==null)
+
+			if (resource.getValue() == null) {
 				throw new VerificationException("Resource value should not be null");
-			checkBuiltInDatatype(resource.getValue(),type);
-			return;
+			}
+
+			this.checkBuiltInDatatype(resource.getValue(), type);
 		}
-		
+
+		/* Else try to verify the condition. */
+		else {
+			try {
+				VocabularyRegistry.INSTANCE.check(condition);
+
+				condition.setProperty(Constants.VERIFICATION_RESULT,
+						VerificationResult.SUCCESS);
+
+				/* Probably remove old exceptions. */
+				condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
+			}
+			// end try.
+
+			catch (VerificationException x) {
+
+				/* Set failure and exception. */
+				condition.setProperty(Constants.VERIFICATION_RESULT,
+						VerificationResult.FAILURE);
+				condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
+
+				throw (VerificationException) x.fillInStackTrace();
+			}
+			// end catch.
+		}
+		// end else.
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.PropertyCondition)
+	 */
+	public void check(PropertyCondition condition) throws VerificationException {
+
+		/* Try to verify the condition. */
 		try {
 			VocabularyRegistry.INSTANCE.check(condition);
-			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.SUCCESS);
+
+			condition.setProperty(Constants.VERIFICATION_RESULT,
+					VerificationResult.SUCCESS);
+
+			/* Probably remove old exceptions. */
 			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
 		}
-		catch (VerificationException x) {
-			
-			condition.setProperty(Constants.VERIFICATION_RESULT,VerificationResult.FAILURE);
-			condition.setProperty(Constants.VERIFICATION_EXCEPTION, x);
-			throw (VerificationException)x.fillInStackTrace();
+		// end try.
+
+		catch (VerificationException e) {
+
+			/* Set failure and exception. */
+			condition.setProperty(Constants.VERIFICATION_RESULT,
+					VerificationResult.FAILURE);
+			condition.setProperty(Constants.VERIFICATION_EXCEPTION, e);
+
+			throw (VerificationException) e.fillInStackTrace();
 		}
-		return;
+		// end catch.
 	}
-	
-	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException {
-		// built-in type string
-		String t = type.toString();
-		if (t.equals("http://www.w3.org/2001/XMLSchema#string")) {
-			return name;
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.RelationshipCondition)
+	 */
+	public void check(RelationshipCondition condition)
+			throws VerificationException {
+
+		/* Try to verify the condition. */
+		try {
+			VocabularyRegistry.INSTANCE.check(condition);
+
+			condition.setProperty(Constants.VERIFICATION_RESULT,
+					VerificationResult.SUCCESS);
+
+			/* Probably remove old exceptions. */
+			condition.removeProperty(Constants.VERIFICATION_EXCEPTION);
 		}
-		else if (t.equals("http://www.w3.org/2001/XMLSchema#int") || t.equals("http://www.w3.org/2001/XMLSchema#integer")) {
+		// end try.
+
+		catch (VerificationException e) {
+
+			/* Set failure and exception. */
+			condition.setProperty(Constants.VERIFICATION_RESULT,
+					VerificationResult.FAILURE);
+			condition.setProperty(Constants.VERIFICATION_EXCEPTION, e);
+
+			throw (VerificationException) e.fillInStackTrace();
+		}
+		// end catch.
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ResourceLoader#load(java.net.URI, java.lang.String,
+	 * net.java.treaty.Connector)
+	 */
+	public Object load(URI type, String name, Connector connector)
+			throws ResourceLoaderException {
+
+		Object result;
+
+		String typeName;
+		typeName = type.toString();
+
+		/* FIXME Claas: Is this still necessary? */
+		/* Handle built-in types especially. */
+		if (typeName.equals("http://www.w3.org/2001/XMLSchema#string")) {
+			result = name;
+		}
+
+		else if (typeName.equals("http://www.w3.org/2001/XMLSchema#int")
+				|| typeName.equals("http://www.w3.org/2001/XMLSchema#integer")) {
+
 			try {
-				return Integer.parseInt(name);
+				result = Integer.parseInt(name);
 			}
+
 			catch (NumberFormatException x) {
 				throw new ResourceLoaderException(x);
 			}
 		}
-		else if (t.equals("http://www.w3.org/2001/XMLSchema#double")) {
+
+		else if (typeName.equals("http://www.w3.org/2001/XMLSchema#double")) {
+
 			try {
-				return Double.parseDouble(name);
+				result = Double.parseDouble(name);
 			}
+
 			catch (NumberFormatException x) {
 				throw new ResourceLoaderException(x);
 			}
 		}
-		else if (t.equals("http://www.w3.org/2001/XMLSchema#boolean")) {
-			return Boolean.parseBoolean(name);
+
+		else if (typeName.equals("http://www.w3.org/2001/XMLSchema#boolean")) {
+			result = Boolean.parseBoolean(name);
 		}
-		
-		// load plugin types
-		return VocabularyRegistry.INSTANCE.load(type, name, connector);
+
+		/* Else delegate to the vocabularies. */
+		else {
+			result = VocabularyRegistry.INSTANCE.load(type, name, connector);
+		}
+
+		return result;
 	}
 
+	/**
+	 * FIXME Claas: Is this method still necessary?
+	 * 
+	 * <p>
+	 * A helper method to verify values for built-in data types.
+	 * </p>
+	 * 
+	 * @param value
+	 *          The value that shall be checked.
+	 * @param type
+	 *          The type (a {@link URI}) the value belongs to.
+	 * @throws VerificationException
+	 *           Thrown, if the verification fails.
+	 */
+	private void checkBuiltInDatatype(Object value, URI type)
+			throws VerificationException {
 
+		String typeName;
+		typeName = type.toString();
 
+		if (typeName.equals("http://www.w3.org/2001/XMLSchema:string")) {
+			Logger
+					.warn("oudated data type URI used !!: http://www.w3.org/2001/XMLSchema#string");
+		}
+		// no else.
+
+		if (typeName.equals("http://www.w3.org/2001/XMLSchema#string")) {
+			return;
+		}
+
+		/* int should be used ! see: http://www.w3.org/TR/xmlschema-2/ */
+		else if (typeName.equals("http://www.w3.org/2001/XMLSchema#int")
+				|| typeName.equals("http://www.w3.org/2001/XMLSchema#int")) {
+
+			if (value instanceof Integer) {
+				return;
+			}
+
+			try {
+				Integer.parseInt(value.toString());
+			}
+
+			catch (NumberFormatException x) {
+				throw new VerificationException(value.toString()
+						+ " is not an Integer.");
+			}
+		}
+
+		else if (typeName.equals("http://www.w3.org/2001/XMLSchema#double")) {
+
+			if (value instanceof Double) {
+				return;
+			}
+
+			try {
+				Double.parseDouble(value.toString());
+			}
+
+			catch (NumberFormatException x) {
+				throw new VerificationException(value.toString() + " is not a double");
+			}
+		}
+
+		else if (typeName.equals("http://www.w3.org/2001/XMLSchema#boolean")) {
+
+			if (value instanceof Boolean) {
+				return;
+			}
+
+			try {
+				Boolean.parseBoolean(value.toString());
+			}
+
+			catch (NumberFormatException x) {
+				throw new VerificationException(value.toString() + " is not a boolean");
+			}
+		}
+
+		else {
+			throw new VerificationException("Unsupported data type: " + type);
+		}
+	}
 }
