@@ -84,31 +84,42 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 		boolean result;
 
-		report.setContract(this);
-		result = true;
+		/* Check if the contract has been instantiated at all. */
+		if (this.isInstantiated()) {
 
-		/* FIXME Claas: No difference between if and else clause. */
-		if (policy == VerificationPolicy.DETAILED) {
-			for (AbstractCondition abstractCondition : this.constraints) {
-				result = result & abstractCondition.check(report, verifier, policy);
+			report.setContract(this);
+			result = true;
+
+			/* FIXME Claas: No difference between if and else clause. */
+			if (policy == VerificationPolicy.DETAILED) {
+				for (AbstractCondition abstractCondition : this.constraints) {
+					result = result & abstractCondition.check(report, verifier, policy);
+				}
+				// end for.
 			}
-			// end for.
-		}
-		else {
-			for (AbstractCondition abstractCondition : this.constraints) {
-				result = result && abstractCondition.check(report, verifier, policy);
+			else {
+				for (AbstractCondition abstractCondition : this.constraints) {
+					result = result && abstractCondition.check(report, verifier, policy);
+				}
+				// end for.
 			}
-			// end for.
-		}
-		// end else.
+			// end else.
 
-		if (result) {
-			report.log(this, VerificationResult.SUCCESS);
+			if (result) {
+				report.log(this, VerificationResult.SUCCESS);
+			}
+
+			else {
+				report.log(this, VerificationResult.FAILURE,
+						"Some parts of this condition are not satisfied.");
+			}
 		}
 
 		else {
-			report.log(this, VerificationResult.FAILURE,
-					"Some parts of this condition are not satisfied.");
+			result = false;
+
+			report.log(this, VerificationResult.UNKNOWN,
+					"The Contract has not been instantiated.");
 		}
 
 		return result;
