@@ -47,63 +47,68 @@ import com.sun.msv.reader.GrammarReaderController;
 import com.sun.msv.reader.dtd.DTDReader;
 
 /**
- * Contributes the XML vocabulary. Warning: this is not complete, support for
- * DTD,XPATH and XSLT is missing. TODO
+ * <p>
+ * Contributes the XML vocabulary. TODO Warning: this is not complete, support
+ * for DTD,XPATH and XSLT is missing.
+ * </p>
  * 
  * @author Jens Dietrich
  */
-
 public class XMLVocabulary extends ContractOntology implements
 		ContractVocabulary {
 
-	public static final String NS = "http://www.treaty.org/xml#";
-	// types
-	public static final String XML_INSTANCE = NS + "XMLInstance";
-	public static final String SCHEMA = NS + "XMLSchema";
-	public static final String DTD = NS + "DTD";
-	// relationships
-	public static final String INSTANTIATES = NS + "instantiates";
-	public static final String INSTANTIATES_DTD = NS + "instantiatesDTD";
-
-	// ontology
-	private OntModel ontology = null;
-
-	class Controller implements GrammarReaderController {
-
-		Controller() {
-
+	/**
+	 * <p>
+	 * Private helper class that implements an {@link GrammarReaderController}.
+	 * </p>
+	 * 
+	 * @author Jens Dietrich
+	 */
+	private class Controller implements GrammarReaderController {
+	
+		/**
+		 * Indicates if this {@link Controller} has had {@link Exception}s or
+		 * messages.
+		 */
+		private boolean hadException = false;
+	
+		/** The Exceptions of this {@link Controller}. */
+		private List<Exception> myExceptions = new ArrayList<Exception>();
+	
+		/** The messages of this {@link Controller}. */
+		private List<String> myMessages = new ArrayList<String>();
+	
+		/**
+		 * <p>
+		 * Creates a new {@link Controller}.
+		 * </p>
+		 */
+		public Controller() {
+	
 			super();
 		}
-
-		private List<Exception> exceptions = new ArrayList<Exception>();
-		private List<String> messages = new ArrayList<String>();
-		private boolean hadException = false;
-
+	
 		/*
 		 * (non-Javadoc)
 		 * @see
 		 * com.sun.msv.reader.GrammarReaderController#error(org.xml.sax.Locator[],
 		 * java.lang.String, java.lang.Exception)
 		 */
-		public void error(Locator[] l, String m, Exception x) {
-
-			if (x != null)
-				this.exceptions.add(x);
-			if (m != null)
-				this.messages.add(m);
+		public void error(Locator[] l, String msg, Exception exception) {
+	
+			if (exception != null) {
+				this.myExceptions.add(exception);
+			}
+			// no else.
+	
+			if (msg != null) {
+				this.myMessages.add(msg);
+			}
+			// no else.
+	
 			this.hadException = true;
 		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * com.sun.msv.reader.GrammarReaderController#warning(org.xml.sax.Locator[],
-		 * java.lang.String)
-		 */
-		public void warning(Locator[] arg0, String arg1) {
-
-		}
-
+	
 		/*
 		 * (non-Javadoc)
 		 * @see org.xml.sax.EntityResolver#resolveEntity(java.lang.String,
@@ -111,28 +116,82 @@ public class XMLVocabulary extends ContractOntology implements
 		 */
 		public InputSource resolveEntity(String arg0, String arg1)
 				throws SAXException, IOException {
-
+	
+			/* Do nothing here. */
 			return null;
 		}
-
-		/**
-		 * Get an error message or null if there was no error while parsing.
-		 * 
-		 * @return
+	
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * com.sun.msv.reader.GrammarReaderController#warning(org.xml.sax.Locator[],
+		 * java.lang.String)
 		 */
-		String getFirstErrorMessage() {
-
-			if (this.exceptions.size() > 0)
-				return this.exceptions.get(0).getMessage();
-			else if (this.messages.size() > 0)
-				return this.messages.get(0);
-			else if (hadException)
-				return "";
-			else
-				return null;
+		public void warning(Locator[] arg0, String arg1) {
+	
+			/* Do nothing here. */
 		}
+	
+		/**
+		 * <p>
+		 * Returns the first Error message of this {@link Controller} if any.
+		 * </p>
+		 * 
+		 * @return The first Error message of this {@link Controller} if any else
+		 *         <code>null</code>.
+		 */
+		public String getFirstErrorMessage() {
+	
+			String result;
+	
+			if (this.myExceptions.size() > 0) {
+				result = this.myExceptions.get(0).getMessage();
+			}
+	
+			else if (this.myMessages.size() > 0) {
+				result = this.myMessages.get(0);
+			}
+	
+			else if (this.hadException) {
+				result = "";
+			}
+	
+			else {
+				result = null;
+			}
+	
+			return result;
+		}
+	}
 
-	};
+	/** The name space of the {@link XMLVocabulary}. */
+	public static final String NAMESPACE_NAME = "http://www.treaty.org/xml#";
+
+	/** The name of the Relationship type instantiates for DTDs. */
+	public static final String RELATIONSHIP_NAME_INSTANTIATES_DTD =
+			NAMESPACE_NAME + "instantiatesDTD";
+
+	/** The name of the Relationship type instantiates for XML Schemas. */
+	public static final String RELATIONSHIP_NAME_INSTANTIATES_XML_SCHEMA =
+			NAMESPACE_NAME + "instantiates";
+
+	/** The name of the XML Instance type. */
+	public static final String TYPE_NAME_XML_INSTANCE =
+			NAMESPACE_NAME + "XMLInstance";
+
+	/** The name of the XML Schema type. */
+	public static final String TYPE_NAME_XML_SCHEMA =
+			NAMESPACE_NAME + "XMLSchema";
+
+	/** The name of the DTD type. */
+	public static final String TYPE_NAME_DTD = NAMESPACE_NAME + "DTD";
+
+	/** The Location of the ontology of the {@link XMLVocabulary}. */
+	private static final String ONTOLOGY_LOCATION =
+			"/net/java/treaty/vocabulary/builtins/xml/xml.owl";
+
+	/** The {@link OntModel} of the {@link XMLVocabulary}. */
+	private OntModel myOntology = null;
 
 	/**
 	 * <p>
@@ -144,91 +203,86 @@ public class XMLVocabulary extends ContractOntology implements
 		super();
 	}
 
-	public void check(RelationshipCondition condition)
-			throws VerificationException {
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.ExistsCondition)
+	 */
+	public void check(ExistsCondition condition) throws VerificationException {
 
-		String rel = condition.getRelationship().toString();
-		Resource res1 = condition.getResource1();
-		Resource res2 = condition.getResource2();
-		assert res1.isInstantiated();
-		assert res1.isLoaded();
-		assert res2.isInstantiated();
-		assert res2.isLoaded();
-		if (INSTANTIATES.equals(rel)) {
-			try {
-				URL schemaURL = (URL) res2.getValue();
-				URL instanceURL = (URL) res1.getValue();
-				SchemaFactory factory =
-						SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-				if (schemaURL == null) {
-					throw new VerificationException(
-							"Cannot validate XML instance against schema - schema URL is null for resource "
-									+ res2.getName());
-				}
-				else if (instanceURL == null) {
-					throw new VerificationException(
-							"Cannot validate XML instance against schema - instance URL is null for resource "
-									+ res1.getName());
-				}
-				else if (factory == null) {
-					throw new VerificationException(
-							"Cannot validate XML instance against schema - cannot load XML Schema factory");
-				}
-				else {
-					Schema schema = factory.newSchema(schemaURL);
-					javax.xml.validation.Validator validator = schema.newValidator();
-					InputStream in = instanceURL.openStream();
-					Source source = new StreamSource(in);
-					validator.validate(source);
-					try {
-						in.close();
-					} catch (Exception x) {
-					}
-				}
-			} catch (Exception x) {
-				throw new VerificationException(
-						"Validation of the XML document against XMLSchema failed", x);
-			}
-		}
-		else if (INSTANTIATES_DTD.equals(rel)) {
-			try {
-				URL schemaURL = (URL) res2.getValue();
-				URL instanceURL = (URL) res1.getValue();
-				VerifierFactory factory =
-						VerifierFactory.newInstance("http://www.w3.org/XML/1998/namespace");
-				org.iso_relax.verifier.Schema schema =
-						factory.compileSchema(schemaURL.toString());
-				Verifier verifier = schema.newVerifier();
+		Resource resource;
+		resource = condition.getResource();
 
-				if (!verifier.verify(instanceURL.toString())) {
-					throw new VerificationException(
-							"Validation of the XML document against DTD failed");
-				}
-			} catch (Exception x) {
-				throw new VerificationException(
-						"Validation of the XML document against DTD failed", x);
+		assert resource.isInstantiated();
+		assert resource.isLoaded();
+
+		URL resourceLocation;
+		resourceLocation = (URL) resource.getValue();
+
+		/* Probably check an XML Schema type. */
+		if (TYPE_NAME_XML_SCHEMA.equals(resource.getType().toString())) {
+
+			SchemaFactory schemaFactory;
+			schemaFactory =
+					SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+			try {
+				schemaFactory.newSchema(resourceLocation);
 			}
+			// end try.
+
+			catch (Exception x) {
+				throw new VerificationException("The schema " + resourceLocation
+						+ " cannot be parsed", x);
+			}
+			// end catch.
 		}
-		else
-			throw new VerificationException("predicate not supported + " + rel);
+
+		/* Else probably check a DTD Type. */
+		else if (TYPE_NAME_DTD.equals(resource.getType().toString())) {
+
+			Controller controller;
+			controller = new Controller();
+
+			DTDReader.parse(new InputSource(resourceLocation.toString()), controller);
+
+			String errorMessage;
+			errorMessage = controller.getFirstErrorMessage();
+
+			if (errorMessage != null) {
+				throw new VerificationException("The dtd " + resourceLocation
+						+ " cannot be parsed: " + errorMessage);
+			}
+			// no else.
+		}
+
+		/* Else probably check an XML Instance type. */
+		else if (TYPE_NAME_XML_INSTANCE.equals(resource.getType().toString())) {
+
+			try {
+				DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+						resourceLocation.openStream());
+			}
+			// end try.
+
+			catch (Exception x) {
+				throw new VerificationException("The xml document " + resourceLocation
+						+ " cannot be parsed", x);
+			}
+			// end catch.
+		}
+
+		/* Else throw an exception. */
+		else {
+			throw new VerificationException(
+					"Unknown type of Resource for Existconditon: " + resource);
+		}
+		// end else.
 	}
 
-	public Object load(URI type, String name, Connector connector)
-			throws ResourceLoaderException {
-
-		if (!type.toString().startsWith(NS))
-			throw new ResourceLoaderException(
-					"This plugin cannot be used to instantiate resources of this type: "
-							+ type);
-		try {
-			Object value = connector.getOwner().getResource(name);
-			return value;
-		} catch (Exception x) {
-			throw new ResourceLoaderException("Cannot locate xml resource: " + name,
-					x);
-		}
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.PropertyCondition)
+	 */
 	public void check(PropertyCondition relationshipCondition)
 			throws VerificationException {
 
@@ -236,50 +290,187 @@ public class XMLVocabulary extends ContractOntology implements
 				"This vocabulary does not define property conditions");
 	}
 
-	public void check(ExistsCondition condition) throws VerificationException {
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.RelationshipCondition)
+	 */
+	public void check(RelationshipCondition condition)
+			throws VerificationException {
 
-		Resource resource = condition.getResource();
-		assert resource.isInstantiated();
-		assert resource.isLoaded();
-		URL url = (URL) resource.getValue();
-		if (SCHEMA.equals(resource.getType().toString())) {
-			SchemaFactory factory =
-					SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		String reletionshipName;
+		reletionshipName = condition.getRelationship().toString();
+
+		Resource resource1;
+		resource1 = condition.getResource1();
+
+		Resource resource2;
+		resource2 = condition.getResource2();
+
+		assert resource1.isInstantiated();
+		assert resource1.isLoaded();
+		assert resource2.isInstantiated();
+		assert resource2.isLoaded();
+
+		/* Probably check instance of XML Schema relationship. */
+		if (RELATIONSHIP_NAME_INSTANTIATES_XML_SCHEMA.equals(reletionshipName)) {
+
+			/* Try to check the relationship. */
 			try {
-				factory.newSchema(url);
-			} catch (Exception x) {
-				throw new VerificationException("The schema " + url
-						+ " cannot be parsed", x);
+				URL schemaURL;
+				schemaURL = (URL) resource2.getValue();
+
+				URL instanceURL;
+				instanceURL = (URL) resource1.getValue();
+
+				SchemaFactory schemaFactory;
+				schemaFactory =
+						SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+				if (schemaURL == null) {
+					throw new VerificationException(
+							"Cannot validate XML instance against schema - schema URL is null for resource "
+									+ resource2.getName());
+				}
+
+				else if (instanceURL == null) {
+					throw new VerificationException(
+							"Cannot validate XML instance against schema - instance URL is null for resource "
+									+ resource1.getName());
+				}
+
+				else if (schemaFactory == null) {
+					throw new VerificationException(
+							"Cannot validate XML instance against schema - cannot load XML Schema factory");
+				}
+
+				else {
+					Schema schema;
+					schema = schemaFactory.newSchema(schemaURL);
+
+					javax.xml.validation.Validator validator;
+					validator = schema.newValidator();
+
+					InputStream inputStream;
+					inputStream = instanceURL.openStream();
+
+					Source source;
+					source = new StreamSource(inputStream);
+
+					validator.validate(source);
+
+					try {
+						inputStream.close();
+					}
+
+					catch (Exception e) {
+						/* Do nothing here. */
+					}
+					// end catch.
+				}
+				// end else.
 			}
-		}
-		else if (DTD.equals(resource.getType().toString())) {
-			Controller controller = new Controller();
-			DTDReader.parse(new InputSource(url.toString()), controller);
-			String errorMessage = controller.getFirstErrorMessage();
-			if (errorMessage != null) {
-				throw new VerificationException("The dtd " + url
-						+ " cannot be parsed: " + errorMessage);
+			// end try.
+
+			catch (Exception x) {
+				throw new VerificationException(
+						"Validation of the XML document against XMLSchema failed", x);
 			}
+			// end catch.
 		}
-		else if (XML_INSTANCE.equals(resource.getType().toString())) {
+
+		/* Else probably check an instance of DTD Relationship. */
+		else if (RELATIONSHIP_NAME_INSTANTIATES_DTD.equals(reletionshipName)) {
+
+			/* Try to check the relationship. */
 			try {
-				DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
-						url.openStream());
-			} catch (Exception x) {
-				throw new VerificationException("The xml document " + url
-						+ " cannot be parsed", x);
+				URL dtdURL;
+				dtdURL = (URL) resource2.getValue();
+
+				URL instanceURL;
+				instanceURL = (URL) resource1.getValue();
+
+				VerifierFactory verifierFactory;
+				verifierFactory =
+						VerifierFactory.newInstance("http://www.w3.org/XML/1998/namespace");
+
+				org.iso_relax.verifier.Schema schema;
+				schema = verifierFactory.compileSchema(dtdURL.toString());
+
+				Verifier verifier;
+				verifier = schema.newVerifier();
+
+				if (!verifier.verify(instanceURL.toString())) {
+					throw new VerificationException(
+							"Validation of the XML document against DTD failed");
+				}
+				// no else.
 			}
+			// end try.
+
+			catch (Exception x) {
+				throw new VerificationException(
+						"Validation of the XML document against DTD failed", x);
+			}
+			// end catch.
 		}
+
+		/* Else throw an exception. */
+		else {
+			throw new VerificationException("predicate not supported + "
+					+ reletionshipName);
+		}
+		// end else.
 	}
 
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.vocabulary.ContractOntology#getOntology()
+	 */
 	public OntModel getOntology() {
 
-		if (ontology == null) {
-			ontology = ModelFactory.createOntologyModel();
-			ontology.read(JavaVocabulary.class.getResource(
-					"/net/java/treaty/vocabulary/builtins/xml/xml.owl").toString());
+		/* Probably initialize the ontology. */
+		if (this.myOntology == null) {
+
+			this.myOntology = ModelFactory.createOntologyModel();
+			this.myOntology.read(JavaVocabulary.class.getResource(ONTOLOGY_LOCATION)
+					.toString());
 		}
-		return ontology;
+		// no else.
+
+		return this.myOntology;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ResourceLoader#load(java.net.URI, java.lang.String,
+	 * net.java.treaty.Connector)
+	 */
+	public Object load(URI type, String name, Connector connector)
+			throws ResourceLoaderException {
+
+		/* Check for the right name space. */
+		if (!type.toString().startsWith(NAMESPACE_NAME)) {
+
+			throw new ResourceLoaderException(
+					"This plugin cannot be used to instantiate resources of this type: "
+							+ type);
+		}
+		// no else.
+
+		Object result;
+
+		/* Try to load the resource. */
+		try {
+			result = connector.getOwner().getResource(name);
+		}
+		// end try.
+
+		catch (Exception x) {
+			throw new ResourceLoaderException("Cannot locate xml resource: " + name,
+					x);
+		}
+		// end catch.
+
+		return result;
 	}
 }
