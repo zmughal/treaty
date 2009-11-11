@@ -17,6 +17,7 @@ import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
 import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
 import net.java.treaty.eclipse.Constants;
+import net.java.treaty.eclipse.EclipseContractFactory;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.Logger;
@@ -154,7 +155,7 @@ public class UpdateJobExtensionPointsAdded extends Job {
 				Contract contract;
 
 				contract =
-						EclipseExtensionPoint.createContract(contractURL,
+						EclipseContractFactory.INSTANCE.createContract(contractURL,
 								eclipseExtensionPoint);
 
 				this.addContractToExtensionPoint(eclipseExtensionPoint, contract);
