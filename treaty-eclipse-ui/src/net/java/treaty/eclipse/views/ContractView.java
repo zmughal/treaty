@@ -98,6 +98,43 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	/**
 	 * <p>
+	 * Action to export {@link Contract}s and their results.
+	 * </p>
+	 * 
+	 * @author Jens Dietrich.
+	 */
+	private class ExportAction extends Action {
+
+		/** The {@link Exporter} of this {@link ExportAction}. */
+		private Exporter myExporter = null;
+
+		/**
+		 * <p>
+		 * Creates a new {@link ExportAction}.
+		 * </p>
+		 * 
+		 * @param exporter
+		 *          The {@link Exporter} of this {@link ExportAction}.
+		 */
+		ExportAction(Exporter exporter) {
+
+			super();
+
+			this.myExporter = exporter;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see org.eclipse.jface.action.Action#run()
+		 */
+		public void run() {
+
+			actionExport(this.myExporter);
+		}
+	}
+
+	/**
+	 * <p>
 	 * The content provider class is responsible for providing objects to the
 	 * view. It can wrap existing objects in adapters or simply return objects
 	 * as-is. These objects may be sensitive to the current input of the view, or
@@ -409,7 +446,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 */
 		private void addPluginNodes(TreeParent parent) {
 
-			for (EclipsePlugin plugin : plugins) {
+			for (EclipsePlugin plugin : myContractedPlugins) {
 				TreeParent node;
 				node = new TreeParent(plugin);
 
@@ -838,17 +875,41 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		}
 	}
 
+	/** {@link Action} to print the current stack trace. */
+	private Action myActionPrintStackTrace;
+
 	/**
 	 * The {@link Action} that can be used to refresh the {@link ContractView}
 	 * manually.
 	 */
-	private Action actionRefresh;
+	private Action myActionRefresh;
+
+	/** {@link Action} to display a {@link Contract}'s source code. */
+	private Action myActionShowContractSource;
+
+	/**
+	 * {@link Action} to verify all {@link Contract}s provided by this
+	 * {@link ContractView}.
+	 */
+	private Action myActionVerifyAllContracts;
+
+	/** {@link Action} to verify currently selected {@link Contract}s. */
+	private Action myActionVerifySelectedContracts;
+
+	/** {@link Action}s to export {@link Contract}s from the {@link ContractView}. */
+	private List<Action> myActionsExport;
+
+	/**
+	 * All {@link EclipsePlugin}s that have {@link EclipseExtensionPoint}s that
+	 * are contracted by {@link Contract}s.
+	 */
+	private Collection<EclipsePlugin> myContractedPlugins = null;
 
 	/**
 	 * The {@link TreeViewer} used to display the {@link Contract}s and their
 	 * {@link EclipsePlugin}s.
 	 */
-	private TreeViewer viewer;
+	private TreeViewer myViewer;
 
 	/**
 	 * <p>
@@ -859,24 +920,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-	 */
-	@Override
-	public void dispose() {
-
-		/* Remove disconnect from Contract Registry. */
-		EclipseContractRegistry.getInstance().removeContractRegistryListener(this);
-
-		/* Dispose all icons. */
-		for (Image icon : icons.values()) {
-			icon.dispose();
-		}
-
-		super.dispose();
-	}
-
 	/**
 	 * <p>
 	 * Passing the focus request to the viewer's control.
@@ -884,7 +927,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	 */
 	public void setFocus() {
 
-		this.viewer.getControl().setFocus();
+		this.myViewer.getControl().setFocus();
 	}
 
 	/*
@@ -904,6 +947,24 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				actionReloadContracts();
 			}
 		});
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+	 */
+	@Override
+	public void dispose() {
+
+		/* Remove disconnect from Contract Registry. */
+		EclipseContractRegistry.getInstance().removeContractRegistryListener(this);
+
+		/* Dispose all icons. */
+		for (Image icon : icons.values()) {
+			icon.dispose();
+		}
+
+		super.dispose();
 	}
 
 	/**
@@ -989,14 +1050,414 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	private void actionReloadContracts() {
 
 		/* Load the contracted plug-ins. */
-		this.plugins =
+		this.myContractedPlugins =
 				EclipseContractRegistry.getInstance().getContractedEclipsePlugins();
 
 		/* Update the viewer. */
-		this.viewer.setContentProvider(new ViewContentProvider());
-		this.viewer.setInput(getViewSite());
+		this.myViewer.setContentProvider(new ViewContentProvider());
+		this.myViewer.setInput(getViewSite());
 
 		this.switchActions(true);
+	}
+
+	/**
+	 * <p>
+	 * Runs the verification of all {@link Contract}s.
+	 * </p>
+	 */
+	private void actionVerifyAllContracts() {
+
+		/* Collect contracts. */
+		final List<Contract> contracts;
+		contracts = new ArrayList<Contract>();
+
+		for (EclipsePlugin eclipsePlugin : this.myContractedPlugins) {
+			contracts.addAll(eclipsePlugin.getInstantiatedContracts());
+		}
+		// no else.
+
+		this.verify(contracts, true);
+	}
+
+	/**
+	 * <p>
+	 * Runs the verification for the currently selected {@link Contract}s.
+	 * </p>
+	 */
+	private void actionVerifySelectedContracts() {
+
+		List<Contract> contracts;
+		contracts = this.getSelectedInstantiatedContracts();
+
+		if (contracts != null && !contracts.isEmpty()) {
+			this.verify(contracts, false);
+		}
+		// no else.
+	}
+
+	/**
+	 * <p>
+	 * A helper method that collects all instantiated {@link Contract}s of a given
+	 * {@link EclipseExtensionPoint} and adds them to a given {@link Collection}.
+	 * </p>
+	 * 
+	 * @param eclipseExtensionPoint
+	 *          The extension point whose {@link Contract}s shall be added.
+	 * @param contractList
+	 *          The {@link Collection} to that the {@link Contract}s shall be
+	 *          added.
+	 */
+	private void collectInstantiatedContracts(
+			EclipseExtensionPoint eclipseExtensionPoint,
+			Collection<Contract> contractList) {
+
+		for (EclipseExtension eclipseExtension : eclipseExtensionPoint
+				.getExtensions()) {
+			this.collectInstantiatedContract(eclipseExtension, contractList);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * A helper method that collects all instantiated {@link Contract}s of a given
+	 * {@link EclipseExtension} and adds them to a given {@link Collection}.
+	 * </p>
+	 * 
+	 * @param eclipseExtension
+	 *          The extension point whose {@link Contract}s shall be added.
+	 * @param contractList
+	 *          The {@link Collection} to that the {@link Contract}s shall be
+	 *          added.
+	 */
+	private void collectInstantiatedContract(EclipseExtension eclipseExtension,
+			Collection<Contract> contractList) {
+
+		for (Contract contract : eclipseExtension.getContracts()) {
+
+			if (contract != null && contract.isInstantiated()) {
+				contractList.add(contract);
+			}
+			// no else.
+
+			/* Probably set annotation here. */
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Contract} for a given {@link TreeObject}.
+	 * </p>
+	 * 
+	 * @param treeObject
+	 *          The {@link TreeObject} whose {@link Contract} shall be returned.
+	 * @return The {@link Contract} for a given {@link TreeObject}.
+	 */
+	private Contract findContract(TreeObject treeObject) {
+
+		Contract result;
+
+		Object adaptedObject;
+		adaptedObject = treeObject.getObject();
+
+		TreeObject parent;
+		parent = treeObject.getParent();
+
+		if (adaptedObject instanceof Contract) {
+			result = (Contract) adaptedObject;
+		}
+
+		else if (parent != null) {
+			result = this.findContract(parent);
+		}
+
+		else {
+			result = null;
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the currently in this {@link ContractView} selected
+	 * {@link Contract}.
+	 * </p>
+	 * 
+	 * @return The currently selected {@link Contract}.
+	 */
+	private Contract getSelectedContract() {
+
+		Contract result;
+
+		TreeItem[] selection;
+		selection = myViewer.getTree().getSelection();
+
+		if (selection == null || selection.length == 0) {
+			result = null;
+		}
+
+		else {
+			TreeObject treeObject;
+			treeObject = (TreeObject) selection[0].getData();
+
+			result = this.findContract(treeObject);
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the instantiated {@link Contract}s that are part of the currently
+	 * selected items in this {@link ContractView}.
+	 * </p>
+	 * 
+	 * @return The instantiated {@link Contract}s that are part of the currently
+	 *         selected items in this {@link ContractView}.
+	 */
+	private List<Contract> getSelectedInstantiatedContracts() {
+
+		List<Contract> result;
+		result = new ArrayList<Contract>();
+
+		Contract selectedContract;
+		selectedContract = this.getSelectedContract();
+
+		/* Probably use the selected contract. */
+		if (selectedContract != null) {
+
+			/* If the contract is instantiated, return it. */
+			if (selectedContract.isInstantiated()) {
+				result.add(selectedContract);
+			}
+
+			/* Else collect its instances. */
+			else {
+
+				EclipseExtensionPoint eclipseExtensionPoint;
+				eclipseExtensionPoint =
+						(EclipseExtensionPoint) selectedContract.getConsumer();
+
+				this.collectInstantiatedContracts(eclipseExtensionPoint, result);
+			}
+			// end else.
+		}
+
+		/* Else try to find selected contracts. */
+		else {
+
+			TreeItem[] selection;
+			selection = this.myViewer.getTree().getSelection();
+
+			/* Check if the selection is empty. */
+			if (selection != null && selection.length > 0) {
+
+				Object selectedObject;
+				selectedObject = ((TreeObject) selection[0].getData()).getObject();
+
+				TreeItem parent;
+				parent = selection[0].getParentItem();
+
+				if (selectedObject instanceof EclipseExtension) {
+					this.collectInstantiatedContract((EclipseExtension) selectedObject,
+							result);
+				}
+
+				else if (selectedObject instanceof EclipseExtensionPoint) {
+					this.collectInstantiatedContracts(
+							(EclipseExtensionPoint) selectedObject, result);
+				}
+
+				else if (selectedObject instanceof EclipsePlugin) {
+
+					EclipsePlugin eclipsePlugin;
+					eclipsePlugin = (EclipsePlugin) selectedObject;
+
+					if (parent != null
+							&& LABEL_INSTANCES.equals(parent.getData().toString())) {
+
+						/* Folder for instances selected. */
+						for (EclipseExtension eclipseExtension : eclipsePlugin
+								.getExtensions()) {
+							this.collectInstantiatedContract(eclipseExtension, result);
+						}
+						// end for.
+					}
+
+					else {
+
+						/* parent of extension points. */
+						for (EclipseExtensionPoint eclipseExtensionPoint : eclipsePlugin
+								.getExtensionPoints()) {
+							this.collectInstantiatedContracts(eclipseExtensionPoint, result);
+						}
+						// end for.
+					}
+					// end else.
+				}
+				// no else.
+			}
+			// no else (empty selection).
+		}
+		// end else.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the currently in the {@link ContractView} selected {@link Object}.
+	 * Please note that this method already returns the adapted {@link Object},
+	 * and not the {@link TreeObject}.
+	 * </p>
+	 * 
+	 * @return The currently selected {@link Object}.
+	 */
+	private Object getSelectedObject() {
+
+		Object result;
+
+		TreeItem[] selection;
+		selection = myViewer.getTree().getSelection();
+
+		if (selection == null || selection.length == 0) {
+			result = null;
+		}
+
+		else if (selection[0].getData() instanceof TreeObject) {
+			result = ((TreeObject) selection[0].getData()).getObject();
+		}
+
+		else {
+			result = selection[0].getData();
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Creates all {@link Action}s of the {@link ContractView}.
+	 * </p>
+	 */
+	private void makeActions() {
+
+		/* Action to print the stack trace. */
+		this.myActionPrintStackTrace = new Action() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.jface.action.Action#run()
+			 */
+			public void run() {
+
+				actionPrintStackTrace();
+			}
+		};
+
+		this.myActionPrintStackTrace
+				.setText("Display verification exception details.");
+		this.myActionPrintStackTrace
+				.setToolTipText("Displays the verification exception stack trace.");
+		this.myActionPrintStackTrace.setEnabled(false);
+
+		/* Action to refresh the ContractView. */
+		this.myActionRefresh = new Action() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.jface.action.Action#run()
+			 */
+			public void run() {
+
+				actionReloadContracts();
+			}
+		};
+
+		this.myActionRefresh.setText("Reset");
+		this.myActionRefresh
+				.setImageDescriptor(getImageDescriptor("icons/refresh.gif"));
+		this.myActionRefresh
+				.setToolTipText("Reloads all contracts and resets verification status of all contracts.");
+
+		/* Action to verify all contracts. */
+		this.myActionVerifyAllContracts = new Action() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.jface.action.Action#run()
+			 */
+			public void run() {
+
+				actionVerifyAllContracts();
+			}
+		};
+
+		this.myActionVerifyAllContracts.setText("Verify all contracts");
+		this.myActionVerifyAllContracts
+				.setImageDescriptor(getImageDescriptor("icons/verify_all.gif"));
+		this.myActionVerifyAllContracts
+				.setToolTipText("Run verification for all contracts.");
+
+		/* Action to verify selected contracts. */
+		this.myActionVerifySelectedContracts = new Action() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.jface.action.Action#run()
+			 */
+			public void run() {
+
+				actionVerifySelectedContracts();
+			}
+		};
+
+		this.myActionVerifySelectedContracts.setText("Verify selected contracts");
+		this.myActionVerifySelectedContracts
+				.setImageDescriptor(getImageDescriptor("icons/verify_sel.gif"));
+		this.myActionVerifySelectedContracts
+				.setToolTipText("Runs verification for selected contracts.");
+		this.myActionVerifySelectedContracts.setEnabled(false);
+
+		/* Action to show a contracts source code. */
+		this.myActionShowContractSource = new Action() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.jface.action.Action#run()
+			 */
+			public void run() {
+
+				actShowContractSource();
+			}
+		};
+
+		this.myActionShowContractSource.setEnabled(false);
+		this.myActionShowContractSource.setText("Display contract source");
+		this.myActionShowContractSource
+				.setToolTipText("Displays the source code of the contract.");
+
+		/* Actions to export contracts. */
+		this.myActionsExport = new ArrayList<Action>();
+
+		/* Create an export action for each exporter. */
+		for (Exporter exporter : this.getExporters()) {
+
+			Action exportAction;
+			exportAction = new ExportAction(exporter);
+
+			exportAction.setEnabled(true);
+			exportAction.setText(exporter.getName());
+			exportAction.setImageDescriptor(getImageDescriptor("icons/export.gif"));
+			exportAction
+					.setToolTipText("Export instantiated contracts and verification results (if available), exporter used: "
+							+ exporter.getName());
+
+			this.myActionsExport.add(exportAction);
+		}
+		// end for.
 	}
 
 	/**
@@ -1012,10 +1473,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	private void switchActions(boolean on) {
 
 		/* Probably verify and refresh. */
-		this.actVerifyAll.setEnabled(on);
-		this.actionRefresh.setEnabled(on);
+		this.myActionVerifyAllContracts.setEnabled(on);
+		this.myActionRefresh.setEnabled(on);
 
-		for (Action act : this.actsExport) {
+		for (Action act : this.myActionsExport) {
 			act.setEnabled(on);
 		}
 
@@ -1023,8 +1484,8 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		List<Contract> instantiatedConstracts;
 		instantiatedConstracts = getSelectedInstantiatedContracts();
 
-		this.actVerifySelected.setEnabled(on && instantiatedConstracts != null
-				&& !instantiatedConstracts.isEmpty());
+		this.myActionVerifySelectedContracts.setEnabled(on
+				&& instantiatedConstracts != null && !instantiatedConstracts.isEmpty());
 	}
 
 	/**
@@ -1194,13 +1655,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	private DrillDownAdapter drillDownAdapter;
 
-	private Action actVerifyAll;
-	private Action actVerifySelected;
-	private Action actPrintStackTrace;
-	private Action actShowContractSource;
-	private List<Action> actsExport;
-	// this is the model displayed - a list of plugins with contracts
-	private Collection<EclipsePlugin> plugins = null;
 	private Map<String, Image> icons = new HashMap<String, Image>();
 
 	private List<Exporter> exporters = null;
@@ -1390,6 +1844,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 					result = "success";
 				}
 
+				else if (status == VerificationResult.UNKNOWN) {
+					result = "unknown";
+				}
+
 				else {
 					result = "not verified";
 				}
@@ -1559,27 +2017,27 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	@Override
 	public void createPartControl(Composite parent) {
 
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		drillDownAdapter = new DrillDownAdapter(viewer);
+		myViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		drillDownAdapter = new DrillDownAdapter(myViewer);
 
-		viewer.getTree().setHeaderVisible(true);
+		myViewer.getTree().setHeaderVisible(true);
 
-		TreeColumn col2 = new TreeColumn(viewer.getTree(), SWT.LEFT);
+		TreeColumn col2 = new TreeColumn(myViewer.getTree(), SWT.LEFT);
 		col2.setText("plugin contracts");
 
-		Rectangle bounds = viewer.getTree().getDisplay().getBounds();
+		Rectangle bounds = myViewer.getTree().getDisplay().getBounds();
 		col2.setWidth(Math.max(600, bounds.width - 400));
 
-		TreeColumn col1 = new TreeColumn(viewer.getTree(), SWT.LEFT);
+		TreeColumn col1 = new TreeColumn(myViewer.getTree(), SWT.LEFT);
 		col1.setText("status");
 		col1.setWidth(150);
 
-		viewer.setLabelProvider(new ViewLabelProvider());
+		myViewer.setLabelProvider(new ViewLabelProvider());
 
-		viewer.setContentProvider(new DummyViewContentProvider());
-		viewer.setInput(getViewSite());
+		myViewer.setContentProvider(new DummyViewContentProvider());
+		myViewer.setInput(getViewSite());
 
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		myViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent e) {
 
@@ -1589,11 +2047,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 								&& obj instanceof PropertySupport
 								&& ((PropertySupport) obj)
 										.getProperty(Constants.VERIFICATION_EXCEPTION) != null;
-				actPrintStackTrace.setEnabled(f);
-				actShowContractSource.setEnabled(getSelectedContract() != null);
+				myActionPrintStackTrace.setEnabled(f);
+				myActionShowContractSource.setEnabled(getSelectedContract() != null);
 
 				List<Contract> iConstracts = getSelectedInstantiatedContracts();
-				actVerifySelected.setEnabled(iConstracts != null
+				myActionVerifySelectedContracts.setEnabled(iConstracts != null
 						&& !iConstracts.isEmpty());
 			}
 		});
@@ -1608,43 +2066,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		EclipseContractRegistry.getInstance().addContractRegistryListener(this);
 	}
 
-	private Object getSelectedObject() {
-
-		TreeItem[] sel = viewer.getTree().getSelection();
-		if (sel == null || sel.length == 0) {
-			return null;
-		}
-		else if (sel[0].getData() instanceof TreeObject) {
-			return ((TreeObject) sel[0].getData()).getObject();
-		}
-		else {
-			return sel[0].getData();
-		}
-	}
-
-	private Contract getSelectedContract() {
-
-		TreeItem[] sel = viewer.getTree().getSelection();
-		if (sel == null || sel.length == 0) {
-			return null;
-		}
-		TreeObject to = (TreeObject) sel[0].getData();
-		return findContract(to);
-	}
-
-	private Contract findContract(TreeObject to) {
-
-		Object obj = to.getObject();
-		TreeObject parent = to.getParent();
-		if (obj instanceof Contract) {
-			return (Contract) obj;
-		}
-		else if (parent != null) {
-			return findContract(parent);
-		}
-		return null;
-	}
-
 	private void hookContextMenu() {
 
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
@@ -1656,9 +2077,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				ContractView.this.fillContextMenu(manager);
 			}
 		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
+		Menu menu = menuMgr.createContextMenu(myViewer.getControl());
+		myViewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, myViewer);
 	}
 
 	private void contributeToActionBars() {
@@ -1670,25 +2091,25 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	private void fillLocalPullDown(IMenuManager manager) {
 
-		manager.add(actionRefresh);
+		manager.add(myActionRefresh);
 		manager.add(new Separator());
-		manager.add(actVerifyAll);
-		manager.add(actVerifySelected);
+		manager.add(myActionVerifyAllContracts);
+		manager.add(myActionVerifySelectedContracts);
 		manager.add(new Separator());
-		for (Action actExport : this.actsExport) {
+		for (Action actExport : this.myActionsExport) {
 			manager.add(actExport);
 		}
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
 
-		manager.add(actionRefresh);
-		manager.add(actVerifyAll);
-		manager.add(actVerifySelected);
-		manager.add(actPrintStackTrace);
-		manager.add(actShowContractSource);
+		manager.add(myActionRefresh);
+		manager.add(myActionVerifyAllContracts);
+		manager.add(myActionVerifySelectedContracts);
+		manager.add(myActionPrintStackTrace);
+		manager.add(myActionShowContractSource);
 		manager.add(new Separator());
-		for (Action actExport : this.actsExport) {
+		for (Action actExport : this.myActionsExport) {
 			manager.add(actExport);
 		}
 		manager.add(new Separator());
@@ -1699,108 +2120,15 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	private void fillLocalToolBar(IToolBarManager manager) {
 
-		manager.add(actionRefresh);
-		manager.add(actVerifyAll);
-		manager.add(actVerifySelected);
+		manager.add(myActionRefresh);
+		manager.add(myActionVerifyAllContracts);
+		manager.add(myActionVerifySelectedContracts);
 		manager.add(new Separator());
-		for (Action actExport : this.actsExport) {
+		for (Action actExport : this.myActionsExport) {
 			manager.add(actExport);
 		}
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
-	}
-
-	private void makeActions() {
-
-		actPrintStackTrace = new Action() {
-
-			public void run() {
-
-				actPrintStackTrace();
-			}
-		};
-		actPrintStackTrace.setText("display verification exception details");
-		actPrintStackTrace
-				.setToolTipText("Displays the verification exception stack trace");
-		actPrintStackTrace.setEnabled(false);
-
-		actionRefresh = new Action() {
-
-			public void run() {
-
-				actionReloadContracts();
-			}
-		};
-		actionRefresh.setText("reset");
-		actionRefresh.setImageDescriptor(getImageDescriptor("icons/refresh.gif"));
-		actionRefresh
-				.setToolTipText("Reloads all contracts and resets verification status of all contracts");
-
-		actVerifyAll = new Action() {
-
-			public void run() {
-
-				actVerifyAll();
-			}
-		};
-		actVerifyAll.setText("verify all");
-		actVerifyAll.setImageDescriptor(getImageDescriptor("icons/verify_all.gif"));
-		actVerifyAll.setToolTipText("run verification for all contracts");
-
-		actVerifySelected = new Action() {
-
-			public void run() {
-
-				actVerifySelected();
-			}
-		};
-		actVerifySelected.setText("verify selection");
-		actVerifySelected
-				.setImageDescriptor(getImageDescriptor("icons/verify_sel.gif"));
-		actVerifySelected
-				.setToolTipText("runs verification for selected contracts");
-		actVerifySelected.setEnabled(false);
-
-		actShowContractSource = new Action() {
-
-			public void run() {
-
-				actShowContractSource();
-			}
-		};
-		actShowContractSource.setEnabled(false);
-		actShowContractSource.setText("display contract source");
-		actShowContractSource
-				.setToolTipText("displays the XML source code of the contract");
-
-		class ExportAction extends Action {
-
-			private Exporter exporter = null;
-
-			ExportAction(Exporter x) {
-
-				super();
-				this.exporter = x;
-			}
-
-			public void run() {
-
-				actionExport(exporter);
-			}
-
-		}
-		;
-		this.actsExport = new ArrayList<Action>();
-		for (Exporter exporter : this.getExporters()) {
-			Action actExport = new ExportAction(exporter);
-			actExport.setEnabled(true);
-			actExport.setText(exporter.getName());
-			actExport.setImageDescriptor(getImageDescriptor("icons/export.gif"));
-			actExport
-					.setToolTipText("export instantiated contracts and verification results (if available), exporter used: "
-							+ exporter.getName());
-			actsExport.add(actExport);
-		}
 	}
 
 	private List<Exporter> getExporters() {
@@ -1826,7 +2154,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	/**
 	 * Print the verification exception stack trace.
 	 */
-	private void actPrintStackTrace() {
+	private void actionPrintStackTrace() {
 
 		Object obj = this.getSelectedObject();
 		if (obj != null
@@ -1843,95 +2171,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				}
 			}
 		}
-	}
-
-	private List<Contract> getSelectedInstantiatedContracts() {
-
-		List<Contract> contracts = new ArrayList<Contract>();
-		Contract c = this.getSelectedContract();
-		if (c != null) {
-			if (c.isInstantiated()) {
-				contracts.add(c);
-			}
-			else {
-				EclipseExtensionPoint xp = (EclipseExtensionPoint) c.getConsumer();
-				addIContract(xp, contracts);
-			}
-		}
-		else {
-			TreeItem[] sel = viewer.getTree().getSelection();
-			if (sel == null || sel.length == 0) {
-				return contracts;
-			}
-			Object obj = ((TreeObject) sel[0].getData()).getObject(); // selected
-			// object
-			TreeItem parent = sel[0].getParentItem();
-
-			if (obj instanceof EclipseExtension) {
-				addIContract((EclipseExtension) obj, contracts);
-			}
-			else if (obj instanceof EclipseExtensionPoint) {
-				addIContract((EclipseExtensionPoint) obj, contracts);
-			}
-			else if (obj instanceof EclipsePlugin) {
-				EclipsePlugin p = (EclipsePlugin) obj;
-				if (parent != null
-						&& LABEL_INSTANCES.equals(parent.getData().toString())) {
-					// folder for instances
-					for (EclipseExtension x : p.getExtensions()) {
-						addIContract(x, contracts);
-					}
-				}
-				else {
-					// parent of extension points
-					for (EclipseExtensionPoint xp : p.getExtensionPoints()) {
-						addIContract(xp, contracts);
-					}
-				}
-			}
-		}
-
-		return contracts;
-	}
-
-	private void addIContract(EclipseExtension x, List<Contract> contracts) {
-
-		for (Contract con : x.getContracts()) {
-			if (con != null && con.isInstantiated()) {
-				contracts.add(con);
-			}
-		}
-	}
-
-	private void addIContract(EclipseExtensionPoint xp, List<Contract> contracts) {
-
-		for (EclipseExtension x : xp.getExtensions()) {
-			addIContract(x, contracts);
-		}
-	}
-
-	/**
-	 * Run verification for selected contracts.
-	 */
-	private void actVerifySelected() {
-
-		List<Contract> contracts = getSelectedInstantiatedContracts();
-		if (contracts != null && !contracts.isEmpty()) {
-			verify(contracts, false);
-		}
-	}
-
-	/**
-	 * Run verification for all contracts.
-	 */
-	private void actVerifyAll() {
-
-		// collect contracts
-		final List<Contract> contracts = new ArrayList<Contract>();
-		for (EclipsePlugin p : plugins) {
-			contracts.addAll(p.getInstantiatedContracts());
-		}
-		verify(contracts, true);
 	}
 
 	private void reportVerificationResult(List<Contract> allContracts,
@@ -1956,11 +2195,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 			public void run() {
 
-				MessageDialog.openInformation(viewer.getControl().getShell(),
+				MessageDialog.openInformation(myViewer.getControl().getShell(),
 						"Verification result", m);
 			}
 		};
-		viewer.getControl().getDisplay().syncExec(r);
+		myViewer.getControl().getDisplay().syncExec(r);
 	}
 
 	// refreshes the tree labels
@@ -1970,10 +2209,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 			public void run() {
 
-				viewer.refresh(true);
+				myViewer.refresh(true);
 			}
 		};
-		viewer.getTree().getDisplay().asyncExec(r);
+		myViewer.getTree().getDisplay().asyncExec(r);
 	}
 
 	private Image getIcon(String name) {
