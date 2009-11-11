@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -11,11 +11,24 @@
 package net.java.treaty;
 
 /**
- * Possible verification outcomes.
+ * <p>
+ * This enumeration describes the possible verification outcomes for the
+ * verification of {@link Contract}s.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public enum VerificationResult {
-	FAILURE,SUCCESS,UNKNOWN
 
+	/** Verification has failed. */
+	FAILURE,
+
+	/** Verification succeeded. */
+	SUCCESS,
+
+	/**
+	 * Result is unknown. Probably the {@link Contract} that was verified has not
+	 * been instantiated yet.
+	 */
+	UNKNOWN
 }
