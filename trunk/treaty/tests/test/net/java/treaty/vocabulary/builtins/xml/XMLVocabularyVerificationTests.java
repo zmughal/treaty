@@ -54,7 +54,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test
 	public void testTypes1() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.SCHEMA, "/testdata/dateformat.xsd");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_XML_SCHEMA, "/testdata/dateformat.xsd");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -62,7 +62,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test
 	public void testTypes2() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.XML_INSTANCE, "/testdata/dateformat.xsd");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_XML_INSTANCE, "/testdata/dateformat.xsd");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -70,7 +70,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test(expected = VerificationException.class)
 	public void testTypes3() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.SCHEMA, "/testdata/dateformat1.xml");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_XML_SCHEMA, "/testdata/dateformat1.xml");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -78,7 +78,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test
 	public void testTypes4() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.XML_INSTANCE, "/testdata/dateformat1.xml");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_XML_INSTANCE, "/testdata/dateformat1.xml");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -86,7 +86,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test(expected = VerificationException.class)
 	public void testTypes5() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.SCHEMA, "/testdata/dateformat2.xml");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_XML_SCHEMA, "/testdata/dateformat2.xml");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -94,7 +94,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test
 	public void testTypes6() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.XML_INSTANCE, "/testdata/dateformat2.xml");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_XML_INSTANCE, "/testdata/dateformat2.xml");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -102,7 +102,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test(expected = VerificationException.class)
 	public void testTypes7() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.SCHEMA, "/testdata/dateformat3.xml");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_XML_SCHEMA, "/testdata/dateformat3.xml");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -110,7 +110,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test(expected = VerificationException.class)
 	public void testTypes8() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.XML_INSTANCE, "testdata/dateformat3.xml");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_XML_INSTANCE, "testdata/dateformat3.xml");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -118,7 +118,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test
 	public void testTypes9() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.DTD, "/testdata/peoplelist.dtd");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_DTD, "/testdata/peoplelist.dtd");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -126,7 +126,7 @@ public class XMLVocabularyVerificationTests {
 
 	@Test(expected = VerificationException.class)
 	public void testTypes10() throws Exception {
-		Resource r = this.getResource(XMLVocabulary.DTD, "/testdata/peoplelist.nodtd");
+		Resource r = this.getResource(XMLVocabulary.TYPE_NAME_DTD, "/testdata/peoplelist.nodtd");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
@@ -134,57 +134,57 @@ public class XMLVocabularyVerificationTests {
 
 	@Test
 	public void testRelationship1() throws Exception {
-		Resource r1 = this.getResource(XMLVocabulary.SCHEMA, "/testdata/dateformat.xsd");
-		Resource r2 = this.getResource(XMLVocabulary.XML_INSTANCE,"/testdata/dateformat1.xml");
+		Resource r1 = this.getResource(XMLVocabulary.TYPE_NAME_XML_SCHEMA, "/testdata/dateformat.xsd");
+		Resource r2 = this.getResource(XMLVocabulary.TYPE_NAME_XML_INSTANCE,"/testdata/dateformat1.xml");
 		RelationshipCondition rel = new RelationshipCondition();
 		rel.setResource1(r2);
 		rel.setResource2(r1);
-		rel.setRelationship(new URI(XMLVocabulary.INSTANTIATES));
+		rel.setRelationship(new URI(XMLVocabulary.RELATIONSHIP_NAME_INSTANTIATES_XML_SCHEMA));
 		VOC.check(rel);
 	}
 
 	@Test(expected = VerificationException.class)
 	public void testRelationship2() throws Exception {
 
-		Resource r1 = this.getResource(XMLVocabulary.SCHEMA, "/testdata/dateformat.xsd");
-		Resource r2 = this.getResource(XMLVocabulary.XML_INSTANCE,"/testdata/dateformat2.xml");
+		Resource r1 = this.getResource(XMLVocabulary.TYPE_NAME_XML_SCHEMA, "/testdata/dateformat.xsd");
+		Resource r2 = this.getResource(XMLVocabulary.TYPE_NAME_XML_INSTANCE,"/testdata/dateformat2.xml");
 		RelationshipCondition rel = new RelationshipCondition();
 		rel.setResource1(r2);
 		rel.setResource2(r1);
-		rel.setRelationship(new URI(XMLVocabulary.INSTANTIATES));
+		rel.setRelationship(new URI(XMLVocabulary.RELATIONSHIP_NAME_INSTANTIATES_XML_SCHEMA));
 		VOC.check(rel);
 	}
 
 	@Test(expected = VerificationException.class)
 	public void testRelationship3() throws Exception {
-		Resource r1 = this.getResource(XMLVocabulary.SCHEMA, "/testdata/dateformat.xsd");
-		Resource r2 = this.getResource(XMLVocabulary.XML_INSTANCE,"/testdata/dateformat3.xml");
+		Resource r1 = this.getResource(XMLVocabulary.TYPE_NAME_XML_SCHEMA, "/testdata/dateformat.xsd");
+		Resource r2 = this.getResource(XMLVocabulary.TYPE_NAME_XML_INSTANCE,"/testdata/dateformat3.xml");
 		RelationshipCondition rel = new RelationshipCondition();
 		rel.setResource1(r2);
 		rel.setResource2(r1);
-		rel.setRelationship(new URI(XMLVocabulary.INSTANTIATES));
+		rel.setRelationship(new URI(XMLVocabulary.RELATIONSHIP_NAME_INSTANTIATES_XML_SCHEMA));
 		VOC.check(rel);
 	}
 
 	@Test
 	public void testRelationshipDTD1() throws Exception {
-		Resource r1 = this.getResource(XMLVocabulary.DTD, "/testdata/peoplelist.dtd");
-		Resource r2 = this.getResource(XMLVocabulary.XML_INSTANCE,"/testdata/peoplelist1.xml");
+		Resource r1 = this.getResource(XMLVocabulary.TYPE_NAME_DTD, "/testdata/peoplelist.dtd");
+		Resource r2 = this.getResource(XMLVocabulary.TYPE_NAME_XML_INSTANCE,"/testdata/peoplelist1.xml");
 		RelationshipCondition rel = new RelationshipCondition();
 		rel.setResource1(r2);
 		rel.setResource2(r1);
-		rel.setRelationship(new URI(XMLVocabulary.INSTANTIATES_DTD));
+		rel.setRelationship(new URI(XMLVocabulary.RELATIONSHIP_NAME_INSTANTIATES_DTD));
 		VOC.check(rel);
 	}
 
 	@Test(expected = VerificationException.class)
 	public void testRelationshipDTD2() throws Exception {
-		Resource r1 = this.getResource(XMLVocabulary.DTD, "/testdata/peoplelist.dtd");
-		Resource r2 = this.getResource(XMLVocabulary.XML_INSTANCE,"/testdata/dateformat3.xml");
+		Resource r1 = this.getResource(XMLVocabulary.TYPE_NAME_DTD, "/testdata/peoplelist.dtd");
+		Resource r2 = this.getResource(XMLVocabulary.TYPE_NAME_XML_INSTANCE,"/testdata/dateformat3.xml");
 		RelationshipCondition rel = new RelationshipCondition();
 		rel.setResource1(r2);
 		rel.setResource2(r1);
-		rel.setRelationship(new URI(XMLVocabulary.INSTANTIATES_DTD));
+		rel.setRelationship(new URI(XMLVocabulary.RELATIONSHIP_NAME_INSTANTIATES_DTD));
 		VOC.check(rel);
 	}
 }
