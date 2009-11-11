@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -18,48 +18,70 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
+ * <p>
  * Provider for icons representing types in user interfaces. Extensions provide
  * concrete subclasses.
+ * </p>
  * 
  * @author Jens Dietrich
  */
-
 public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
 
 	/**
-	 * Get the icon
+	 * <p>
+	 * Returns the icon for a given type (as {@link URI}).
+	 * </p>
 	 * 
 	 * @param type
-	 *          the type
+	 *          The type (as {@link URI}) whose icon shall be returned.
 	 * @param isVariable
-	 *          whether the resource is a variable
-	 * @return
+	 *          Indicates whether or not the resource is a variable.
+	 * @return The icon for a given type (as {@link URI}).
 	 */
 	public Image getIcon(URI type, boolean isVariable) {
 
-		String t = type.toString();
-		ImageDescriptor d = null;
-		if (XMLVocabulary.SCHEMA.equals(t)) {
-			d =
+		String typeName;
+		typeName = type.toString();
+
+		ImageDescriptor imageDescriptor;
+		imageDescriptor = null;
+
+		if (XMLVocabulary.TYPE_NAME_XML_SCHEMA.equals(typeName)) {
+			imageDescriptor =
 					isVariable ? getImageDescriptor("icons/xsd_var.gif")
 							: getImageDescriptor("icons/xsd.gif");
 		}
-		else if (XMLVocabulary.XML_INSTANCE.equals(t)) {
-			d =
+
+		else if (XMLVocabulary.TYPE_NAME_XML_INSTANCE.equals(typeName)) {
+			imageDescriptor =
 					isVariable ? getImageDescriptor("icons/xml_var.gif")
 							: getImageDescriptor("icons/xml.gif");
 		}
-		else if (XMLVocabulary.DTD.equals(t)) {
-			d =
+
+		else if (XMLVocabulary.TYPE_NAME_DTD.equals(typeName)) {
+			imageDescriptor =
 					isVariable ? getImageDescriptor("icons/dtd_var.gif")
 							: getImageDescriptor("icons/dtd.gif");
 		}
-		if (d != null) {
-			return d.createImage();
+		// no else.
+
+		if (imageDescriptor != null) {
+			return imageDescriptor.createImage();
 		}
-		return null;
+
+		else {
+			return null;
+		}
 	}
 
+	/**
+	 * <p>
+	 * Returns an {@link ImageDescriptor} for a given path.
+	 * 
+	 * @param path
+	 *          The path for that an {@link ImageDescriptor} shall be returned.
+	 * @return An {@link ImageDescriptor} for a given path.
+	 */
 	private ImageDescriptor getImageDescriptor(String path) {
 
 		return AbstractUIPlugin
