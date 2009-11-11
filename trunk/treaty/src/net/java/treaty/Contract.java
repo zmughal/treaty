@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -16,25 +16,343 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <p>
  * Represents a contract between connectors (and therefore between components).
  * Used to represent both, contract templates and instantiated contracts. This
- * can be queried with isInstantiated().
+ * can be queried with {@link Contract#isInstantiated()}.
+ * </p>
  * 
  * @author Jens Dietrich
  */
-
 public class Contract extends PropertySupport implements ConditionContext,
 		Visitable {
 
-	private java.util.Map<String, Resource> supplierResources =
-			new java.util.LinkedHashMap<String, Resource>();
+	/** The resources of the consumer {@link Connector} of this {@link Contract}. */
 	private java.util.Map<String, Resource> consumerResources =
 			new java.util.LinkedHashMap<String, Resource>();
 
-	// these are other "external" resources, e.g. provided by additional contract
-	// plugins
-	private java.util.Map<String, Resource> externalResources =
+	/**
+	 * The resources of the probably existing legislator {@link Connector} of this
+	 * {@link Contract}.
+	 */
+	private java.util.Map<String, Resource> legislatorResources =
 			new java.util.LinkedHashMap<String, Resource>();
+
+	/** The resources of the supplier {@link Connector} of this {@link Contract}. */
+	private java.util.Map<String, Resource> supplierResources =
+			new java.util.LinkedHashMap<String, Resource>();
+
+	/**
+	 * <p>
+	 * Creates a new {@link Contract}.
+	 * </p>
+	 */
+	public Contract() {
+
+		super();
+	}
+
+	/**
+	 * <p>
+	 * Creates a new {@link Contract} for a given consumer (as a {@link Connector}
+	 * ) and a given {@link URL} as the {@link Contract}'s location.
+	 * </p>
+	 * 
+	 * @param consumer
+	 *          The consumer of this {@link Contract} (as a {@link Connector}).
+	 * @param connector2
+	 *          FIXME Claas: This argument is never used.
+	 * @param location
+	 *          The {@link URL} where the contract is located.
+	 */
+	public Contract(Connector consumer, Connector connector2, URL location) {
+
+		super();
+		this.location = location;
+		assert (consumer.getType() == ConnectorType.CONSUMER);
+		this.consumer = consumer;
+		assert (consumer.getType() == ConnectorType.SUPPLIER);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seenz.ac.massey.treaty.Contract#check(nz.ac.massey.treaty.verification.
+	 * VerificationReport, nz.ac.massey.treaty.verification.ConditionVerifier)
+	 */
+	public boolean check(VerificationReport report, Verifier verifier,
+			VerificationPolicy policy) {
+
+		boolean result;
+
+		report.setContract(this);
+		result = true;
+
+		/* FIXME Claas: No difference between if and else clause. */
+		if (policy == VerificationPolicy.DETAILED) {
+			for (AbstractCondition abstractCondition : this.constraints) {
+				result = result & abstractCondition.check(report, verifier, policy);
+			}
+			// end for.
+		}
+		else {
+			for (AbstractCondition abstractCondition : this.constraints) {
+				result = result && abstractCondition.check(report, verifier, policy);
+			}
+			// end for.
+		}
+		// end else.
+
+		if (result) {
+			report.log(this, VerificationResult.SUCCESS);
+		}
+
+		else {
+			report.log(this, VerificationResult.FAILURE,
+					"Some parts of this condition are not satisfied.");
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Sets the owner of this {@link Contract}. Each {@link Contract} is owned by
+	 * the {@link Connector} that provides the {@link Contract}.
+	 * </p>
+	 * 
+	 * @param owner
+	 *          The owner of this {@link Contract}.
+	 */
+	public void setOwner(Connector owner) {
+
+		this.owner = owner;
+
+		for (Resource resource : legislatorResources.values()) {
+			resource.setOwner(owner);
+		}
+	}
+
+	/**
+	 * <p>
+	 * Instantiates the {@link Contract} for a consumer.
+	 * </p>
+	 * 
+	 * @param consumer
+	 *          The consumer {@link Connector}.
+	 * @param loader
+	 *          The {@link ResourceManager} used.
+	 * @return A {@link List} of contracts. >1 if multiple instantiation contexts
+	 *         exist Post condition: all {@link Contract}s returned are
+	 *         instantiated
+	 * @throws TreatyException
+	 *           Thrown, if the binding fails.
+	 */
+	public List<Contract> bindConsumer(Connector consumer, ResourceManager loader)
+			throws TreatyException {
+
+		return this.bind(consumer, loader, Role.CONSUMER);
+	}
+
+	/**
+	 * <p>
+	 * Instantiate the {@link Contract} for a supplier.
+	 * </p>
+	 * 
+	 * @param supplier
+	 *          The supplier {@link Connector}.
+	 * @param loader
+	 *          The {@link ResourceManager} used.
+	 * @return A {@link List} of {@link Contract}s. >1 if multiple instantiation
+	 *         contexts exist Post condition: all {@link Contract}s returned are
+	 *         instantiated.
+	 * @throws TreatyException
+	 *           Thrown, if the binding fails.
+	 */
+	public List<Contract> bindSupplier(Connector supplier, ResourceManager loader)
+			throws TreatyException {
+
+		return this.bind(supplier, loader, Role.SUPPLIER);
+	}
+
+	/**
+	 * <p>
+	 * A helper method to bind this {@link Contract} to a {@link Connector}.
+	 * </p>
+	 * 
+	 * @param connector
+	 *          The {@link Connector} that shall be bound.
+	 * @param loader
+	 *          The {@link ResourceManager} used to load {@link Resource}s during
+	 *          {@link Contract} verification.
+	 * @param role
+	 *          The {@link Role} to that the {@link Connector} shall be bound.
+	 * @return A {@link List} of {@link Contract}s. >1 if multiple instantiation
+	 *         contexts exist Post condition: all {@link Contract}s returned are
+	 *         instantiated.
+	 * @throws TreatyException
+	 *           Thrown, if the binding fails.
+	 */
+	private List<Contract> bind(Connector connector, ResourceManager loader,
+			Role role) throws TreatyException {
+
+		String contextIdentifier;
+		contextIdentifier = null;
+
+		switch (role) {
+
+		case CONSUMER:
+			contextIdentifier = this.getConsumerContext();
+			break;
+
+		case SUPPLIER:
+			contextIdentifier = this.getSupplierContext();
+			break;
+
+		default:
+			contextIdentifier = this.getExternalContext();
+		}
+		// end switch.
+
+		List<InstantiationContext> contexts;
+		contexts = loader.getInstantiationContexts(connector, contextIdentifier);
+
+		List<Contract> result;
+		result = new ArrayList<Contract>(contexts.size());
+
+		/* Built instantiated contracts. */
+		for (InstantiationContext context : contexts) {
+
+			Contract contract;
+
+			contract = new Contract();
+			result.add(contract);
+
+			/* Set supplier and consumer. */
+			switch (role) {
+
+			case CONSUMER:
+				contract.setConsumer(connector);
+				contract.setSupplier(this.getSupplier());
+				break;
+
+			case SUPPLIER:
+				contract.setConsumer(this.getConsumer());
+				contract.setSupplier(connector);
+				break;
+
+			default:
+				contract.setConsumer(this.getConsumer());
+				contract.setSupplier(this.getSupplier());
+			}
+
+			/* Set owner, location and definition. */
+			contract.setOwner(this.getOwner());
+			contract.setLocation(this.getLocation());
+			contract.setDefinition(this);
+
+			/* Instantiate the consumer resources. */
+			if (role == Role.CONSUMER) {
+
+				for (Resource consumerResource : this.consumerResources.values()) {
+
+					/* Probably instantiate the resource. */
+					if (consumerResource.isInstantiated()) {
+						contract.addConsumerResource(consumerResource);
+					}
+
+					else {
+						Resource instance;
+						instance = consumerResource.instantiate(connector, context, loader);
+						contract.addConsumerResource(instance);
+					}
+				}
+				// end for.
+			}
+
+			else {
+				contract.consumerResources.putAll(this.consumerResources);
+			}
+
+			/* Instantiate the legislator resources. */
+			if (role == Role.LEGISLATOR) {
+
+				for (Resource legislatorResource : this.legislatorResources.values()) {
+
+					/* Probably instantiate the resource. */
+					if (legislatorResource.isInstantiated()) {
+						contract.addExternalResource(legislatorResource);
+					}
+
+					else {
+						Resource instance;
+						instance =
+								legislatorResource.instantiate(connector, context, loader);
+						contract.addExternalResource(instance);
+					}
+				}
+				// end for.
+			}
+
+			else {
+				contract.legislatorResources.putAll(this.legislatorResources);
+			}
+
+			/* Instantiate the supplier resources. */
+			if (role == Role.SUPPLIER) {
+
+				for (Resource supplierResource : this.supplierResources.values()) {
+					/* Probably instantiate the resource. */
+					if (supplierResource.isInstantiated()) {
+						contract.addSupplierResource(supplierResource);
+					}
+
+					else {
+						Resource instance;
+						instance = supplierResource.instantiate(connector, context, loader);
+						contract.addSupplierResource(instance);
+					}
+				}
+				// end for.
+			}
+
+			else {
+				contract.supplierResources.putAll(this.supplierResources);
+			}
+
+			/* Replace add all instantiated resources. */
+			for (AbstractCondition condition : this.constraints) {
+
+				switch (role) {
+
+				case CONSUMER:
+					contract.addCondition(condition
+							.replaceResources(contract.consumerResources));
+					break;
+
+				case LEGISLATOR:
+					contract.addCondition(condition
+							.replaceResources(contract.legislatorResources));
+					break;
+
+				case SUPPLIER:
+					contract.addCondition(condition
+							.replaceResources(contract.supplierResources));
+					break;
+
+				default:
+					contract.addCondition(condition);
+				}
+				// end switch.
+			}
+			// no else.
+
+			assert contract.isInstantiated();
+		}
+		// end for (iteration on contexts).
+
+		return result;
+	}
+
 	private java.util.List<AbstractCondition> constraints =
 			new java.util.ArrayList<AbstractCondition>();
 	// active elements
@@ -69,56 +387,6 @@ public class Contract extends PropertySupport implements ConditionContext,
 	// if this flag is true, it is generally not possible to check/verify these
 	// contracts
 	private boolean shadow = false;
-
-	/**
-	 * <p>
-	 * Creates a new {@link Contract}.
-	 * </p>
-	 */
-	public Contract() {
-
-		super();
-	}
-
-	/**
-	 * <p>
-	 * Creates a new {@link Contract} for a given consumer (as a {@link Connector}
-	 * ) and a given {@link URL} as the {@link Contract}'s location.
-	 * </p>
-	 * 
-	 * @param consumer
-	 *          The consumer of this {@link Contract} (as a {@link Connector}).
-	 * @param connector2
-	 *          FIXME Claas: This argument is never used.
-	 * @param location
-	 *          The {@link URL} where the contract is located.
-	 */
-	public Contract(Connector consumer, Connector connector2, URL location) {
-
-		super();
-		this.location = location;
-		assert (consumer.getType() == ConnectorType.CONSUMER);
-		this.consumer = consumer;
-		assert (consumer.getType() == ConnectorType.SUPPLIER);
-	}
-
-	/**
-	 * <p>
-	 * Sets the owner of this {@link Contract}. Each {@link Contract} is owned by
-	 * the {@link Connector} that provides the {@link Contract}.
-	 * </p>
-	 * 
-	 * @param owner
-	 *          The owner of this {@link Contract}.
-	 */
-	public void setOwner(Connector owner) {
-
-		this.owner = owner;
-
-		for (Resource resource : externalResources.values()) {
-			resource.setOwner(owner);
-		}
-	}
 
 	public String getConsumerContext() {
 
@@ -165,7 +433,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 	public void setExternalResources(
 			java.util.Map<String, Resource> externalResources) {
 
-		this.externalResources = externalResources;
+		this.legislatorResources = externalResources;
 	}
 
 	private String supplierContext = null;
@@ -224,7 +492,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 		this.checkId(r);
 		r.setOwner(owner);
-		this.externalResources.put(r.getId(), r);
+		this.legislatorResources.put(r.getId(), r);
 	}
 
 	public java.util.Collection<Resource> getConsumerResources() {
@@ -239,7 +507,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 	public java.util.Collection<Resource> getExternalResources() {
 
-		return externalResources.values();
+		return legislatorResources.values();
 	}
 
 	public Resource getResource(String id) {
@@ -249,7 +517,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 			r = this.supplierResources.get(id);
 		}
 		if (r == null) {
-			r = this.externalResources.get(id);
+			r = this.legislatorResources.get(id);
 		}
 		return r;
 
@@ -265,7 +533,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 			throw new InvalidContractException(
 					"A resource with this id is already registered as extension point resource: "
 							+ r.getId());
-		else if (this.externalResources.containsKey(r.getId()))
+		else if (this.legislatorResources.containsKey(r.getId()))
 			throw new InvalidContractException(
 					"A resource with this id is already registered as external resource: "
 							+ r.getId());
@@ -299,7 +567,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 				visitor.endVisitSupplierResources(this.supplierResources.values());
 			}
 			if (visitor.visitExternalResources(this.supplierResources.values())) {
-				for (Resource r : this.externalResources.values()) {
+				for (Resource r : this.legislatorResources.values()) {
 					r.accept(visitor);
 				}
 				visitor.endVisitExternalResources(this.supplierResources.values());
@@ -313,149 +581,6 @@ public class Contract extends PropertySupport implements ConditionContext,
 		}
 		visitor.endVisit(this);
 
-	}
-
-	/**
-	 * <p>
-	 * Instantiate the {@link Contract} for a supplier.
-	 * </p>
-	 * 
-	 * @param supplier
-	 *          the supplier
-	 * @param loader
-	 *          the resource loader used
-	 * @return a list of contracts. >1 if multiple instantiation contexts exist
-	 *         post condition: all contracts returned are instantiated
-	 */
-	public List<Contract> bindSupplier(Connector supplier, ResourceManager loader)
-			throws TreatyException {
-
-		return bind(supplier, loader, Role.SUPPLIER);
-	}
-
-	private List<Contract> bind(Connector connector, ResourceManager loader,
-			Role role) throws TreatyException {
-
-		String contextDef = null;
-		if (role == Role.CONSUMER)
-			contextDef = this.getConsumerContext();
-		else if (role == Role.SUPPLIER)
-			contextDef = this.getSupplierContext();
-		else if (role == Role.LEGISLATOR)
-			contextDef = this.getExternalContext();
-
-		List<InstantiationContext> contexts =
-				loader.getInstantiationContexts(connector, contextDef);
-		List<Contract> contracts = new ArrayList<Contract>(contexts.size()); // list,
-		// one
-		// per
-		// context
-
-		// built instantiated contracts
-		for (InstantiationContext context : contexts) {
-			Contract contract;
-
-			contract = new Contract();
-			contracts.add(contract);
-
-			/* Set supplier and consumer. */
-			if (role.equals(Role.CONSUMER)) {
-				contract.setConsumer(connector);
-				contract.setSupplier(this.getSupplier());
-			}
-
-			else if (role.equals(Role.SUPPLIER)) {
-				contract.setConsumer(this.getConsumer());
-				contract.setSupplier(connector);
-			}
-
-			else {
-				contract.setConsumer(this.getConsumer());
-				contract.setSupplier(this.getSupplier());
-			}
-
-			contract.setOwner(this.getOwner());
-			contract.setLocation(this.getLocation());
-			contract.setDefinition(this);
-
-			if (role == Role.CONSUMER) {
-				for (Resource r : this.consumerResources.values()) {
-					Resource instance = r.instantiate(connector, context, loader);
-					contract.addConsumerResource(instance);
-				}
-			}
-			else {
-				contract.consumerResources.putAll(this.consumerResources);
-			}
-			if (role == Role.LEGISLATOR) {
-				for (Resource r : this.externalResources.values()) {
-					Resource instance = r.instantiate(connector, context, loader);
-					contract.addExternalResource(instance);
-				}
-			}
-			else {
-				contract.externalResources.putAll(this.externalResources);
-			}
-			if (role == Role.SUPPLIER) {
-				for (Resource r : this.supplierResources.values()) {
-					Resource instance = r.instantiate(connector, context, loader);
-					contract.addSupplierResource(instance);
-				}
-			}
-			else {
-				contract.supplierResources.putAll(this.supplierResources);
-			}
-
-			for (AbstractCondition c : this.constraints) {
-				contract.addCondition(c.replaceResources(contract.supplierResources));
-			}
-
-			assert contract.isInstantiated();
-		}
-		return contracts;
-
-	}
-
-	/**
-	 * Instantiate the contract for a consumer.
-	 * 
-	 * @param consumer
-	 *          the consumer
-	 * @param loader
-	 *          the resource loader used
-	 * @return a list of contracts. >1 if multiple instantiation contexts exist
-	 *         post condition: all contracts returned are instantiated
-	 */
-	public List<Contract> bindConsumer(Connector consumer, ResourceManager loader)
-			throws TreatyException {
-
-		return bind(consumer, loader, Role.CONSUMER);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seenz.ac.massey.treaty.Contract#check(nz.ac.massey.treaty.verification.
-	 * VerificationReport, nz.ac.massey.treaty.verification.ConditionVerifier)
-	 */
-	public boolean check(VerificationReport report, Verifier verifier,
-			VerificationPolicy policy) {
-
-		report.setContract(this);
-		boolean result = true;
-		if (policy == VerificationPolicy.DETAILED) {
-			for (AbstractCondition p : this.constraints)
-				result = result & p.check(report, verifier, policy);
-		}
-		else {
-			for (AbstractCondition p : this.constraints)
-				result = result && p.check(report, verifier, policy);
-		}
-		if (result)
-			report.log(this, VerificationResult.SUCCESS);
-		else
-			report.log(this, VerificationResult.FAILURE,
-					"some parts of this condition are not satisfied");
-		return result;
 	}
 
 	/**
@@ -481,7 +606,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 			sc.supplierContext = this.supplierContext;
 			sc.consumerResources = this.consumerResources;
 			sc.supplierResources = this.supplierResources;
-			sc.externalResources = this.externalResources;
+			sc.legislatorResources = this.legislatorResources;
 			sc.constraints = new ArrayList<AbstractCondition>();
 			for (AbstractCondition c : constraints) {
 				Conjunction conj = (Conjunction) c;
