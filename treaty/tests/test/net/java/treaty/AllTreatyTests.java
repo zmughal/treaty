@@ -27,8 +27,8 @@ import test.net.java.treaty.xml.AllXmlTests;
  * @author Claas Wilke
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { AllContractRegistryTests.class, AllScriptTests.class,
-		AllVocabularyTests.class, AllXmlTests.class })
+@Suite.SuiteClasses( { ContractTests.class, AllContractRegistryTests.class,
+		AllScriptTests.class, AllVocabularyTests.class, AllXmlTests.class })
 public class AllTreatyTests {
 	/*
 	 * This class remains completely empty, being used only as a holder for the

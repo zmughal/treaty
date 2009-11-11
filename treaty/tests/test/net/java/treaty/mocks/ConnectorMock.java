@@ -8,7 +8,7 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package test.net.java.treaty.contractregistry;
+package test.net.java.treaty.mocks;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,30 +31,30 @@ public class ConnectorMock implements Connector {
 	private String myID;
 
 	/** The {@link Component} of this {@link ConnectorMock}. */
-	private ComponentMock myOwner;
+	private Component myOwner;
 
 	/** The {@link ConnectorType} of this {@link ConnectorMock}. */
 	private ConnectorType myType;
 
 	/**
 	 * <p>
-	 * Creates a new {@link ConnectorMock}.
+	 * Creates a new {@link Connector}.
 	 * </p>
 	 * 
 	 * @param id
-	 *          The ID of the {@link ConnectorMock}.
+	 *          The ID of the {@link Connector}.
 	 * @param owner
 	 *          The {@link Component} of the {@link ConnectorMock}.
 	 * @param type
 	 *          The {@link ConnectorType} of the {@link ConnectorMock}.
 	 */
-	public ConnectorMock(String id, ComponentMock owner, ConnectorType type) {
+	public ConnectorMock(String id, Component owner, ConnectorType type) {
 
 		this.myID = id;
 		this.myOwner = owner;
 		this.myType = type;
-		
-		this.myOwner.addConnector(this);
+
+		((ComponentMock) this.myOwner).addConnector(this);
 	}
 
 	/*
