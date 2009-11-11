@@ -32,6 +32,10 @@ import net.java.treaty.xml.XMLContractReader;
 
 import org.junit.Test;
 
+import test.net.java.treaty.mocks.ComponentMock;
+import test.net.java.treaty.mocks.ConnectorMock;
+import test.net.java.treaty.mocks.ResourceManagerMock;
+
 /**
  * <p>
  * Contains test cases to test the {@link ContractRegistry}.
@@ -1273,7 +1277,7 @@ public class ContractRegistryTests {
 		try {
 			File file;
 			file =
-					new File("tests/test/net/java/treaty/contractregistry/test.contract");
+					new File("tests/test/net/java/treaty/mocks/test01.contract");
 
 			location = file.toURI().toURL();
 
