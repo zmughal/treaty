@@ -51,17 +51,48 @@ public class CompositeVocabularyTests {
 		voc = null;
 	}
 
+	/**
+	 * <p>
+	 * Test the method {@link CompositeContractOntology#getOwnerAnnotation(URI)}.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 *           Thrown, if the test case fails.
+	 */
+	@Test
+	public void testOwnerAnnotations() throws Exception {
+
+		assertEquals("builtin-java", voc.getOwnerAnnotation(new URI(
+				JavaVocabulary.INSTANTIABLE_CLASS)));
+		assertEquals("builtin-java", voc.getOwnerAnnotation(new URI(
+				JavaVocabulary.IMPLEMENTS)));
+
+		assertEquals("builtin-owl", voc.getOwnerAnnotation(new URI(
+				OWLVocabulary.TYPE_NAME_ONTOLOGY)));
+
+		assertEquals("test", voc.getOwnerAnnotation(new URI(
+				"http://www.treaty.org/test#specialImplements")));
+	}
+
+	/**
+	 * <p>
+	 * A test case that tests that the {@link CompositeContractOntology} contains
+	 * the types of the basis vocabularies.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 *           Thrown, if the Test Case fails.
+	 */
 	@Test
 	public void testTypes() throws Exception {
 
 		Collection<URI> types = voc.getTypes();
 		assertEquals(5, types.size());
+
 		assertTrue(types.contains(new URI("http://www.treaty.org/java#JavaType")));
-		assertTrue(types
-				.contains(new URI("http://www.treaty.org/java#AbstractType")));
-		assertTrue(types.contains(new URI(
-				"http://www.treaty.org/java#InstantiableClass")));
-		assertTrue(types.contains(new URI("http://www.treaty.org/owl#OWLType")));
+		assertTrue(types.contains(new URI(JavaVocabulary.ABSTRACT_TYPE)));
+		assertTrue(types.contains(new URI(JavaVocabulary.INSTANTIABLE_CLASS)));
+		assertTrue(types.contains(new URI(OWLVocabulary.TYPE_NAME_ONTOLOGY)));
 		assertTrue(types.contains(new URI(
 				"http://www.treaty.org/test#JavaSpecialClass")));
 	}
@@ -121,26 +152,6 @@ public class CompositeVocabularyTests {
 		assertTrue(voc.getSuperProperties(subProp).contains(superProp));
 		assertEquals(1, voc.getSuperProperties(subProp).size());
 
-	}
-
-	/**
-	 * <p>
-	 * Test the method {@link CompositeContractOntology#getOwnerAnnotation(URI)}.
-	 * </p>
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void testOwnerAnnotations() throws Exception {
-
-		assertEquals("builtin-java", voc.getOwnerAnnotation(new URI(
-				"http://www.treaty.org/java#InstantiableClass")));
-		assertEquals("builtin-java", voc.getOwnerAnnotation(new URI(
-				"http://www.treaty.org/java#implements")));
-		assertEquals("builtin-owl", voc.getOwnerAnnotation(new URI(
-				"http://www.treaty.org/owl#OWLType")));
-		assertEquals("test", voc.getOwnerAnnotation(new URI(
-				"http://www.treaty.org/test#specialImplements")));
 	}
 
 	/**
