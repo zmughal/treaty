@@ -96,6 +96,54 @@ public class VerificationJob extends Job {
 
 	/**
 	 * <p>
+	 * Returns the {@link Contract}s of this {@link VerificationJob}.
+	 * </p>
+	 * 
+	 * @return The {@link Contract}s of this {@link VerificationJob}.
+	 */
+	public Collection<Contract> getContracts() {
+
+		return this.contracts;
+	}
+
+	/**
+	 * <p>
+	 * Returns all {@link Contract}s whose verification was done.
+	 * </p>
+	 * 
+	 * @return All {@link Contract}s whose verification was done.
+	 */
+	public List<Contract> getDoneContracts() {
+
+		return this.doneContracts;
+	}
+
+	/**
+	 * <p>
+	 * Returns all {@link Contract}s whose verification failed.
+	 * </p>
+	 * 
+	 * @return All {@link Contract}s whose verification failed.
+	 */
+	public List<Contract> getFailedContracts() {
+
+		return this.failedContracts;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link VerificationReport} of this {@link VerificationJob}.
+	 * </p>
+	 * 
+	 * @return The {@link VerificationReport} of this {@link VerificationJob}.
+	 */
+	public VerificationReport getVerificationReport() {
+
+		return this.verificationReport;
+	}
+
+	/**
+	 * <p>
 	 * Removes a {@link VerificationJobListener} from this {@link VerificationJob}
 	 * .
 	 * </p>
@@ -146,6 +194,7 @@ public class VerificationJob extends Job {
 
 			try {
 				this.loadResources(contract, verifier);
+				// no else.
 			}
 
 			catch (ResourceLoaderException e) {
@@ -201,6 +250,56 @@ public class VerificationJob extends Job {
 
 	/**
 	 * <p>
+	 * Combines the verification results for a given {@link Annotatable} and its
+	 * part (also {@link Annotatable}s).
+	 * </p>
+	 * 
+	 * @param annotable
+	 *          The {@link Annotatable} for that the results shall be combined.
+	 * @param part
+	 *          The part of that the result shall be combined.
+	 */
+	private void combineVerificationResults(Annotatable annotable,
+			Annotatable part) {
+
+		VerificationResult verificationResult;
+		verificationResult =
+				(VerificationResult) part.getProperty(VERIFICATION_RESULT);
+
+		if (verificationResult == null) {
+			verificationResult = VerificationResult.UNKNOWN;
+		}
+		// no else.
+
+		VerificationResult oldVerificationResult;
+		oldVerificationResult =
+				(VerificationResult) annotable.getProperty(VERIFICATION_RESULT);
+
+		if (oldVerificationResult == null) {
+			annotable.setProperty(VERIFICATION_RESULT, verificationResult);
+		}
+
+		else if (verificationResult == VerificationResult.FAILURE) {
+			annotable.setProperty(VERIFICATION_RESULT, VerificationResult.FAILURE);
+			/* Propagate failures. */
+		}
+
+		else if (verificationResult == VerificationResult.SUCCESS
+				&& oldVerificationResult == VerificationResult.SUCCESS) {
+			/* Keep successes. */
+		}
+
+		else if (verificationResult == VerificationResult.UNKNOWN
+				&& oldVerificationResult == VerificationResult.SUCCESS) {
+
+			/* Override successes with unknown, but not failures. */
+			annotable.setProperty(VERIFICATION_RESULT, VerificationResult.UNKNOWN);
+		}
+		// no else.
+	}
+
+	/**
+	 * <p>
 	 * A helper method that loads the {@link Resource}s required to verify a given
 	 * {@link Contract}.
 	 * </p>
@@ -217,19 +316,19 @@ public class VerificationJob extends Job {
 
 		/* Probably load consumer resources. */
 		for (Resource resource : contract.getConsumerResources()) {
-			this.loadResource(contract, loader, contract.getConsumer(), resource);
+			this.loadResource(loader, contract.getConsumer(), resource);
 		}
 		// end for.
 
 		/* Probably load supplier resources. */
 		for (Resource resource : contract.getSupplierResources()) {
-			this.loadResource(contract, loader, contract.getSupplier(), resource);
+			this.loadResource(loader, contract.getSupplier(), resource);
 		}
 		// end for.
 
 		/* Probably load external resources (from legislator plug-ins). */
 		for (Resource resource : contract.getExternalResources()) {
-			loadResource(contract, loader, resource.getOwner(), resource);
+			loadResource(loader, resource.getOwner(), resource);
 		}
 		// end for.
 	}
@@ -240,8 +339,6 @@ public class VerificationJob extends Job {
 	 * {@link ResourceLoader}.
 	 * </p>
 	 * 
-	 * @param c
-	 *          FIXME Claas: parameter c is never used.
 	 * @param loader
 	 *          The {@link ResourceLoader} used to load the {@link Resource}.
 	 * @param connector
@@ -250,8 +347,8 @@ public class VerificationJob extends Job {
 	 * @param resource
 	 *          The {@link Resource} that shall be loaded.
 	 */
-	private void loadResource(Contract c, ResourceLoader loader,
-			Connector connector, Resource resource) {
+	private void loadResource(ResourceLoader loader, Connector connector,
+			Resource resource) {
 
 		/* Check if the resource has been loaded already. */
 		if (resource.isProvided() && !resource.isLoaded()) {
@@ -274,6 +371,104 @@ public class VerificationJob extends Job {
 
 	/**
 	 * <p>
+	 * Resets the verification status of a given {@link AbstractCondition}.
+	 * </p>
+	 * 
+	 * @param condition
+	 *          The {@link AbstractCondition} whose verification status shall be
+	 *          reset.
+	 */
+	private void resetVerificationStatus(AbstractCondition condition) {
+
+		condition.removeProperty(VERIFICATION_RESULT);
+		condition.removeProperty(VERIFICATION_EXCEPTION);
+
+		if (condition instanceof ComplexCondition) {
+
+			ComplexCondition complexCondition;
+			complexCondition = (ComplexCondition) condition;
+
+			for (AbstractCondition part : complexCondition.getParts()) {
+				resetVerificationStatus(part);
+			}
+			// end for.
+		}
+		// no else.
+	}
+
+	/**
+	 * <p>
+	 * Resets the verification status of a given {@link Contract}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose verification status shall be reset.
+	 */
+	private void resetVerificationStatus(Contract contract) {
+
+		contract.removeProperty(VERIFICATION_RESULT);
+		contract.removeProperty(VERIFICATION_EXCEPTION);
+
+		for (AbstractCondition condition : contract.getConstraints()) {
+			resetVerificationStatus(condition);
+		}
+		// end for.
+
+		if (contract.getSupplier() != null) {
+			contract.getSupplier().removeProperty(VERIFICATION_RESULT);
+
+			if (contract.getSupplier().getOwner() != null) {
+				contract.getSupplier().getOwner().removeProperty(VERIFICATION_RESULT);
+			}
+			// no else.
+		}
+		// no else.
+
+		if (contract.getConsumer() != null) {
+			contract.getConsumer().removeProperty(VERIFICATION_RESULT);
+
+			if (contract.getConsumer().getOwner() != null) {
+				contract.getConsumer().getOwner().removeProperty(VERIFICATION_RESULT);
+			}
+			// no else.
+		}
+		// no else.
+
+		if (contract.getOwner() != null) {
+			contract.getOwner().removeProperty(VERIFICATION_RESULT);
+		}
+		// no else.
+	}
+
+	/**
+	 * <p>
+	 * Propagates the {@link VerificationResult} of a {@link Contract} to all
+	 * contained {@link AbstractCondition}s.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} for whose {@link AbstractCondition}s the
+	 *          {@link VerificationResult}s shall be propagated.
+	 */
+	private void propagateResults(Contract contract) {
+
+		for (AbstractCondition condition : contract.getConstraints()) {
+
+			this.combineVerificationResults(contract, condition);
+
+			this.combineVerificationResults(contract.getSupplier(), contract);
+			this.combineVerificationResults(contract.getSupplier().getOwner(),
+					contract.getSupplier());
+
+			this.combineVerificationResults(contract.getConsumer(), contract);
+			this.combineVerificationResults(contract.getConsumer().getOwner(),
+					contract.getSupplier());
+		}
+		// no else.
+	}
+
+	/**
+	 * <p>
 	 * Used to notify all register {@link VerificationJobListener}s.
 	 * </p>
 	 */
@@ -283,91 +478,5 @@ public class VerificationJob extends Job {
 			listener.verificationStatusChanged();
 		}
 		// end for.
-	}
-
-	private void combineResults(Annotatable a, Annotatable part) {
-
-		VerificationResult r =
-				(VerificationResult) part.getProperty(VERIFICATION_RESULT);
-		if (r == null) {
-			r = VerificationResult.UNKNOWN;
-		}
-		VerificationResult old =
-				(VerificationResult) a.getProperty(VERIFICATION_RESULT);
-		if (old == null) {
-			a.setProperty(VERIFICATION_RESULT, r);
-		}
-		else if (r == VerificationResult.FAILURE) {
-			a.setProperty(VERIFICATION_RESULT, VerificationResult.FAILURE);
-		}
-		else if (r == VerificationResult.SUCCESS
-				&& old == VerificationResult.SUCCESS) {
-			// keep success
-		}
-		else if (r == VerificationResult.UNKNOWN
-				&& old == VerificationResult.SUCCESS) {
-			a.setProperty(VERIFICATION_RESULT, VerificationResult.UNKNOWN);
-		}
-	}
-
-	private void propagateResults(Contract c) {
-
-		for (AbstractCondition part : c.getConstraints()) {
-			combineResults(c, part);
-			combineResults(c.getSupplier(), c);
-			combineResults(c.getSupplier().getOwner(), c.getSupplier());
-			combineResults(c.getConsumer(), c);
-			combineResults(c.getConsumer().getOwner(), c.getSupplier());
-		}
-
-	}
-
-	private void resetVerificationStatus(Contract c) {
-
-		c.removeProperty(VERIFICATION_RESULT);
-		c.removeProperty(VERIFICATION_EXCEPTION);
-
-		for (AbstractCondition cond : c.getConstraints()) {
-			resetVerificationStatus(cond);
-		}
-		c.getSupplier().removeProperty(VERIFICATION_RESULT);
-		c.getConsumer().removeProperty(VERIFICATION_RESULT);
-		if (c.getOwner() != null) {
-			c.getOwner().removeProperty(VERIFICATION_RESULT);
-		}
-		c.getSupplier().getOwner().removeProperty(VERIFICATION_RESULT);
-		c.getConsumer().getOwner().removeProperty(VERIFICATION_RESULT);
-	}
-
-	private void resetVerificationStatus(AbstractCondition c) {
-
-		c.removeProperty(VERIFICATION_RESULT);
-		c.removeProperty(VERIFICATION_EXCEPTION);
-		if (c instanceof ComplexCondition) {
-			ComplexCondition cc = (ComplexCondition) c;
-			for (AbstractCondition part : cc.getParts()) {
-				resetVerificationStatus(part);
-			}
-		}
-	}
-
-	public Collection<Contract> getContracts() {
-
-		return contracts;
-	}
-
-	public VerificationReport getVerReport() {
-
-		return verificationReport;
-	}
-
-	public List<Contract> getFailedContracts() {
-
-		return failedContracts;
-	}
-
-	public List<Contract> getDoneContracts() {
-
-		return doneContracts;
 	}
 }

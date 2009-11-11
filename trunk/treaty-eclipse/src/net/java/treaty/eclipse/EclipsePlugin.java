@@ -159,12 +159,12 @@ public class EclipsePlugin extends PropertySupport implements Component {
 
 	/**
 	 * <p>
-	 * Returns a {@link List} of instantiated {@link Contract}s (instantiated by
-	 * plug-ins providing extensions).
+	 * Returns a {@link List} of {@link Contract}s provided by this
+	 * {@link EclipseExtensionPoint} and instantiated by plug-ins providing
+	 * extensions.
 	 * </p>
 	 * 
-	 * @return A {@link List} of instantiated {@link Contract}s (instantiated by
-	 *         plug-ins providing extensions).
+	 * @return A {@link List} of {@link Contract}s.
 	 */
 	public List<Contract> getInstantiatedContracts() {
 
@@ -179,8 +179,7 @@ public class EclipsePlugin extends PropertySupport implements Component {
 
 				for (Contract contract : eclipseExtension.getContracts()) {
 
-					/* Check if the contract is instantiated. */
-					if (contract != null/* && c.isInstantiated() */) {
+					if (contract.isInstantiated()) {
 						result.add(contract);
 					}
 					// no else.
