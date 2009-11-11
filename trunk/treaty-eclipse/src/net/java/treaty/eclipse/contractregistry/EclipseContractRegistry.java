@@ -25,23 +25,15 @@ import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.Role;
-import net.java.treaty.VerificationReport;
 import net.java.treaty.contractregistry.ContractRegistry;
-import net.java.treaty.eclipse.ContractVerificationSchedulingRule;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.EclipseResourceManager;
-import net.java.treaty.eclipse.EclipseVerifier;
-import net.java.treaty.eclipse.jobs.VerificationJob;
-import net.java.treaty.eclipse.jobs.VerificationJobListener;
 
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IRegistryEventListener;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.MultiRule;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 
@@ -355,53 +347,6 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 
 		org.eclipse.core.runtime.Platform.getExtensionRegistry().removeListener(
 				this);
-	}
-
-	/**
-	 * FIXME Claas: Should this method be part of the
-	 * {@link EclipseContractRegistry}? I think it should be located in the
-	 * {@link EclipseVerifier} or a similar class.
-	 * 
-	 * <p>
-	 * Verifies a Collection of given {@link Contract}s for a given
-	 * {@link VerificationReport}, {@link VerificationJobListener} and
-	 * {@link IJobChangeListener}.
-	 * </p>
-	 * 
-	 * @param contracts
-	 *          The {@link Contract}s that shall be verified.
-	 * @param verificationReport
-	 *          The {@link VerificationReport} used to store the results.
-	 * @param verificationJobListener
-	 *          A {@link VerificationJobListener} that can be used to observe the
-	 *          progress.
-	 * @param jobChangeListener
-	 *          An {@link IJobChangeListener} that can be used to observe the
-	 *          progress.
-	 */
-	public void verify(Collection<Contract> contracts,
-			VerificationReport verificationReport,
-			VerificationJobListener verificationJobListener,
-			IJobChangeListener jobChangeListener) {
-
-		VerificationJob job;
-		job =
-				new VerificationJob("Treaty component verification", contracts,
-						verificationReport);
-
-		job.addVerificationJobListener(verificationJobListener);
-		job.addJobChangeListener(jobChangeListener);
-
-		ISchedulingRule combinedRule;
-		combinedRule = null;
-
-		for (Contract contract : contracts) {
-			MultiRule.combine(new ContractVerificationSchedulingRule(contract),
-					combinedRule);
-		}
-
-		job.setRule(combinedRule);
-		job.schedule();
 	}
 
 	/**

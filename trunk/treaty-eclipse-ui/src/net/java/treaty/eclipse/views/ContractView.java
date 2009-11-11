@@ -43,6 +43,7 @@ import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
+import net.java.treaty.eclipse.EclipseVerifier;
 import net.java.treaty.eclipse.Exporter;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
@@ -1649,8 +1650,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		}
 
 		/* Verify the contracts. */
-		EclipseContractRegistry.getInstance().verify(contracts, verReport,
-				vListener, jListener);
+		EclipseVerifier.verify(contracts, verReport, vListener, jListener);
 	}
 
 	private DrillDownAdapter drillDownAdapter;
