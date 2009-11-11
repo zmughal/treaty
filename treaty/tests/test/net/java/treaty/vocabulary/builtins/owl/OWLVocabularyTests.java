@@ -11,51 +11,124 @@
 package test.net.java.treaty.vocabulary.builtins.owl;
 
 import static org.junit.Assert.*;
+
 import java.net.URI;
 import java.util.Collection;
 import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
 import org.junit.Test;
 
 /**
- * Tests for the OWL vocabulary.
+ * <p>
+ * Tests for the {@link OWLVocabulary}.
+ * </p>
+ * 
  * @author jens dietrich
  */
 public class OWLVocabularyTests {
+
+	/**
+	 * <p>
+	 * Tests the method {@link OWLVocabulary#getTypes()}.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 *           Thrown, if the test case fails.
+	 */
 	@Test
 	public void testTypes() throws Exception {
-		OWLVocabulary jv = new OWLVocabulary();
-		Collection<URI> types = jv.getTypes();
-		assertEquals(1,types.size());
-		assertTrue(types.contains(new URI("http://www.treaty.org/owl#OWLType")));
+
+		OWLVocabulary vocabulary;
+		vocabulary = new OWLVocabulary();
+
+		Collection<URI> types;
+		types = vocabulary.getTypes();
+
+		assertNotNull(types);
+		assertEquals(1, types.size());
+		assertTrue(types.contains(new URI(OWLVocabulary.TYPE_NAME_ONTOLOGY)));
 	}
-	
+
+	/**
+	 * <p>
+	 * Tests the method {@link OWLVocabulary#getSubtypes(URI)}.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 *           Thrown, if the test case fails.
+	 */
 	@Test
-	public void testRelationships() throws Exception {
-		OWLVocabulary jv = new OWLVocabulary();
-		Collection<URI> types = jv.getRelationships();
-		assertEquals(0,types.size());
+	public void testGetSubtypes() throws Exception {
+
+		OWLVocabulary vocabulary;
+		vocabulary = new OWLVocabulary();
+
+		Collection<URI> types;
+		types = vocabulary.getSubtypes(new URI(OWLVocabulary.TYPE_NAME_ONTOLOGY));
+
+		assertNotNull(types);
+		assertEquals(0, types.size());
 	}
-	
+
+	/**
+	 * <p>
+	 * Tests the method {@link OWLVocabulary#getSupertypes(URI)}.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 *           Thrown, if the test case fails.
+	 */
 	@Test
-	public void testProperties() throws Exception {
-		OWLVocabulary jv = new OWLVocabulary();
-		Collection<URI> types = jv.getProperties();
-		assertEquals(0,types.size());
-	}
-	
-	@Test
-	public void testSubclasses() throws Exception {
-		OWLVocabulary jv = new OWLVocabulary();
-		Collection<URI> types = jv.getSubtypes(new URI("http://www.treaty.org/owl#OWLType"));
-		assertEquals(0,types.size());
-	}
-	
-	@Test
-	public void testSuperclasses() throws Exception {
-		OWLVocabulary jv = new OWLVocabulary();
-		Collection<URI> types = jv.getSupertypes(new URI("http://www.treaty.org/owl#OWLType"));
-		//list(types);
+	public void testGetSupertypes() throws Exception {
+
+		OWLVocabulary vocabulary;
+		vocabulary = new OWLVocabulary();
+
+		Collection<URI> types;
+		types = vocabulary.getSupertypes(new URI(OWLVocabulary.TYPE_NAME_ONTOLOGY));
+
+		assertNotNull(types);
 		assertTrue(types.contains(new URI("http://www.treaty.org#Resource")));
 	}
 
+	/**
+	 * <p>
+	 * Tests the method {@link OWLVocabulary#getProperties()}.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 *           Thrown, if the test case fails.
+	 */
+	@Test
+	public void testProperties() throws Exception {
+
+		OWLVocabulary vocabulary;
+		vocabulary = new OWLVocabulary();
+
+		Collection<URI> types;
+		types = vocabulary.getProperties();
+
+		assertNotNull(types);
+		assertEquals(0, types.size());
+	}
+
+	/**
+	 * <p>
+	 * Tests the method {@link OWLVocabulary#getRelationships()}.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 *           Thrown, if the test case fails.
+	 */
+	@Test
+	public void testRelationships() throws Exception {
+
+		OWLVocabulary vocabulary;
+		vocabulary = new OWLVocabulary();
+
+		Collection<URI> types;
+		types = vocabulary.getRelationships();
+
+		assertNotNull(types);
+		assertEquals(0, types.size());
+	}
 }
