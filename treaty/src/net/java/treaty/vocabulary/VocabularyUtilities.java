@@ -26,11 +26,7 @@ import net.java.treaty.ContractVocabulary;
  */
 public class VocabularyUtilities {
 	/**
-	 * Find types in the contract not defined in
-	 * the vocabulary.
-	 * @param c
-	 * @param v
-	 * @return
+	 * Find types in the contract not defined inthe vocabulary.
 	 */
 	public static Collection<URI> findUndefinedTypes(Contract c,ContractVocabulary v) {
 		final Collection<URI> coll = new HashSet<URI>();
@@ -47,11 +43,7 @@ public class VocabularyUtilities {
 	}
 	
 	/**
-	 * Find relationship types in the contract not defined in
-	 * the vocabulary.
-	 * @param c
-	 * @param v
-	 * @return
+	 * Find relationship types in the contract not defined in the vocabulary.
 	 */
 	public static Collection<URI> findUndefinedRelationships(Contract c,ContractVocabulary v) {
 		final Collection<URI> coll = new HashSet<URI>();
@@ -67,17 +59,13 @@ public class VocabularyUtilities {
 		c.accept(visitor);
 		return coll;
 	}
+	
 	/**
 	 * Check whether two types are valid domain and range types for a relationship.
-	 * @param voc
-	 * @param relationship
-	 * @param type1
-	 * @param type2
-	 * @throws TreatyException
 	 */
 	public void checkTypeSafety(ContractVocabulary voc, URI relationship, URI type1, URI type2) throws TreatyException {
 		URI domain = voc.getDomain(relationship);
-		URI range = voc.getDomain(relationship);
+		URI range = voc.getRange(relationship);
 		if (!(domain.equals(type1) || voc.getSupertypes(type1).contains(domain))) 
 			throw new TreatyException(""+type1+ " is not a valid domain type for " + relationship);
 		if (!(range.equals(type2) || voc.getSupertypes(type2).contains(range))) 
