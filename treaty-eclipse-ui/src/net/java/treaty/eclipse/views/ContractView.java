@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -43,14 +44,15 @@ import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
-import net.java.treaty.eclipse.EclipseVerifier;
 import net.java.treaty.eclipse.Exporter;
 import net.java.treaty.eclipse.ExporterRegistry;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
-import net.java.treaty.eclipse.jobs.VerificationJob;
-import net.java.treaty.eclipse.jobs.VerificationJobListener;
 import net.java.treaty.eclipse.ui.Activator;
+import net.java.treaty.eclipse.verification.EclipseVerificationReport;
+import net.java.treaty.eclipse.verification.EclipseVerifier;
+import net.java.treaty.eclipse.verification.VerificationJob;
+import net.java.treaty.eclipse.verification.VerificationJobListener;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -1504,45 +1506,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	private void verify(List<Contract> contracts, boolean disableActions) {
 
 		/* The {@link VerificationReport} of the verification. */
-		final VerificationReport verReport = new VerificationReport() {
-
-			/** The {@link Contract} of this {@link VerificationReport}. */
-			private Contract contract = null;
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.java.treaty.VerificationReport#getContract()
-			 */
-			public Contract getContract() {
-
-				return this.contract;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.java.treaty.VerificationReport#log(java.lang.Object,
-			 * net.java.treaty.VerificationResult, java.lang.String[])
-			 */
-			public void log(Object context, VerificationResult result,
-					String... remarks) {
-
-				if (context instanceof Annotatable) {
-					((Annotatable) context).setProperty(VERIFICATION_RESULT, result);
-				}
-				// no else.
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * net.java.treaty.VerificationReport#setContract(net.java.treaty.Contract
-			 * )
-			 */
-			public void setContract(Contract contract) {
-
-				this.contract = contract;
-			}
-		};
+		final VerificationReport verReport = new EclipseVerificationReport();
 
 		/* A {@link VerificationJobListener} used during verification. */
 		VerificationJobListener vListener = new VerificationJobListener() {
