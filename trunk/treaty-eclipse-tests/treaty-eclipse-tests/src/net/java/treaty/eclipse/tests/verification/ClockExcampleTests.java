@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
 
 /**
  * <p>
@@ -144,6 +145,30 @@ public class ClockExcampleTests {
 		}
 	}
 
+	/** The ID of the clock example {@link Bundle}. */
+	private static final String BUNDLE_CLOCK_EXAMPLE_ID =
+			"net.java.treaty.eclipse.example.clock";
+
+	/** The ID of the fancy date formatter {@link Bundle}. */
+	private static final String BUNDLE_FANCY_DATEFORMATTER_ID =
+			"net.java.treaty.eclipse.example.clock.fancydateformatter";
+
+	/** The ID of the lazy date formatter {@link IExtension}. */
+	private static final String BUNDLE_LAZY_DATEFORMATTER_ID =
+			"net.java.treaty.eclipse.example.clock.lazydateformatter";
+
+	/** The ID of the lazy date formatter {@link Bundle}. */
+	private static final String BUNDLE_LONG_DATEFORMATTER_ID =
+			"net.java.treaty.eclipse.example.clock.longdateformatter";
+
+	/** The ID of the lazy date formatter {@link Bundle}. */
+	private static final String BUNDLE_SHORT_DATEFORMATTER_ID =
+			"net.java.treaty.eclipse.example.clock.shortdateformatter";
+
+	/** The ID of the lazy date formatter {@link Bundle}. */
+	private static final String BUNDLE_TOOSHORT_DATEFORMATTER_ID =
+			"net.java.treaty.eclipse.example.clock.tooshortdateformatter";
+
 	/** The ID of the fancy date formatter {@link IExtension}. */
 	private static final String EXTENSION_FANCY_DATEFORMATTER_ID =
 			"net.java.treaty.eclipse.example.clock.fancydateformatter";
@@ -198,6 +223,48 @@ public class ClockExcampleTests {
 
 		/* Initialize the ContractRegistry. */
 		EclipseContractRegistry.getInstance();
+
+		/* Check if all required bundles exist. */
+		Bundle clockBundle;
+		clockBundle =
+				org.eclipse.core.runtime.Platform.getBundle(BUNDLE_CLOCK_EXAMPLE_ID);
+
+		Bundle fanzyDateFormatterBundle;
+		fanzyDateFormatterBundle =
+				org.eclipse.core.runtime.Platform
+						.getBundle(BUNDLE_FANCY_DATEFORMATTER_ID);
+
+		Bundle lazyDateFormatterBundle;
+		lazyDateFormatterBundle =
+				org.eclipse.core.runtime.Platform
+						.getBundle(BUNDLE_LAZY_DATEFORMATTER_ID);
+
+		Bundle longDateFormatterBundle;
+		longDateFormatterBundle =
+				org.eclipse.core.runtime.Platform
+						.getBundle(BUNDLE_LONG_DATEFORMATTER_ID);
+
+		Bundle shortDateFormatterBundle;
+		shortDateFormatterBundle =
+				org.eclipse.core.runtime.Platform
+						.getBundle(BUNDLE_SHORT_DATEFORMATTER_ID);
+
+		Bundle tooShortDateFormatterBundle;
+		tooShortDateFormatterBundle =
+				org.eclipse.core.runtime.Platform
+						.getBundle(BUNDLE_TOOSHORT_DATEFORMATTER_ID);
+
+		if (clockBundle == null || fanzyDateFormatterBundle == null
+				|| lazyDateFormatterBundle == null || longDateFormatterBundle == null
+				|| shortDateFormatterBundle == null
+				|| tooShortDateFormatterBundle == null) {
+
+			String msg;
+			msg = "Cannot find all required Bundles for testing. Testing failed.";
+
+			throw new RuntimeException(msg);
+		}
+		// no else.
 
 		IExtensionRegistry extensionRegistry;
 		extensionRegistry =

@@ -20,7 +20,7 @@ import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -218,6 +218,18 @@ public class EclipseContractRegistryTest {
 
 	/**
 	 * <p>
+	 * Reinitializes the {@link EclipseContractRegistry} after finishing testing.
+	 * To avoid side effects in other test classes.
+	 * </p>
+	 */
+	@AfterClass
+	public static void tearDown() {
+
+		EclipseContractRegistry.reinitialize();
+	}
+
+	/**
+	 * <p>
 	 * A helper method that stops the execution of this test class for the given
 	 * number of seconds. (Internally uses {@link Thread#sleep(long)} but catches
 	 * the {@link InterruptedException} as well.
@@ -236,16 +248,6 @@ public class EclipseContractRegistryTest {
 
 			fail(msg);
 		}
-	}
-
-	/**
-	 * <p>
-	 * Resets the tested {@link EclipseContractRegistry} after every test case.
-	 * </p>
-	 */
-	@After
-	public void tearDown() {
-
 	}
 
 	/**
