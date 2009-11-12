@@ -205,6 +205,17 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 
 	/**
 	 * <p>
+	 * Reinitializes the {@link EclipseContractRegistry}.
+	 * </p>
+	 */
+	public static void reinitialize() {
+
+		EclipseContractRegistry.clear();
+		myInstance.init();
+	}
+
+	/**
+	 * <p>
 	 * Returns the Singleton Instance of the {@link EclipseContractRegistry}.
 	 * </p>
 	 * 
