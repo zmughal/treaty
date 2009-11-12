@@ -8,7 +8,7 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.eclipse.jobs;
+package net.java.treaty.eclipse.verification;
 
 import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;
 import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
@@ -28,7 +28,6 @@ import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.VerificationPolicy;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
-import net.java.treaty.eclipse.EclipseVerifier;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
