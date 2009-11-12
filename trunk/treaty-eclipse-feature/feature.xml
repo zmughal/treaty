@@ -30,28 +30,7 @@ Treaty for Eclipse also contains an example application that uses complex contra
          unpack="false"/>
 
    <plugin
-         id="net.java.treaty.eclipse.vocabulary.java"
-         download-size="10"
-         install-size="10"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="net.java.treaty.eclipse.vocabulary.junit"
-         download-size="10"
-         install-size="10"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.java.treaty.eclipse.vocabulary.xml"
-         download-size="10"
-         install-size="10"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.java.treaty.eclipse.vocabulary.owl"
          download-size="10"
          install-size="10"
          version="0.0.0"
