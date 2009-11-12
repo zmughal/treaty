@@ -32,6 +32,13 @@ public interface Constants {
 	static final String CONTRACT_LOCATION_SUFFIX = ".contract";
 
 	/**
+	 * The ID of the {@link IExtensionPoint} that can be used to register
+	 * {@link Exporter}s.
+	 */
+	static final String EXPORTER_EXTENSION_POINT_ID =
+			"net.java.treaty.eclipse.exporter";
+
+	/**
 	 * The prefix of the location where {@link Contract}s are located inside the
 	 * same plug-in, whose {@link IExtensionPoint} they contract. Generally
 	 * speaking, this leads to the folder inside the plug-in, where the

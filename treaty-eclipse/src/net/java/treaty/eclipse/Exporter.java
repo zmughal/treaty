@@ -12,58 +12,55 @@ package net.java.treaty.eclipse;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.osgi.framework.Bundle;
 
 import net.java.treaty.Contract;
 
+import org.eclipse.core.runtime.IExtension;
+
 /**
- * Export instantiated contracts, including verification results.
+ * <p>
+ * The {@link Exporter} is responsible to export instantiated contracts,
+ * including verification results.
+ * </p>
+ * 
+ * TODO Claas: The {@link Exporter} instance map should be updated dynamically,
+ * when {@link IExtension}s providing {@link Exporter}s are added or removed.
+ * 
  * @author Jens Dietrich
  */
-
 public abstract class Exporter {
-	private static List<Exporter> INSTANCES = null;
-	public static List<Exporter> getInstances() {
-		synchronized (Exporter.class) {
-			if (INSTANCES==null) {
-				INSTANCES=new ArrayList<Exporter>();
-				IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
-				IExtensionPoint xp = registry.getExtensionPoint("net.java.treaty.eclipse.exporter");
-				for (IExtension x:xp.getExtensions()) {
-					String pluginId = x.getContributor().getName();
-					try {
-						IConfigurationElement[] attributes = x.getConfigurationElements();
-						for (int j=0;j<attributes.length;j++) {
-							IConfigurationElement p = attributes[j];
-							String loc = p.getAttribute("class");	
-							Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(pluginId);
-							if (bundle!=null && loc!=null) {
-								Class<Exporter> clazz = bundle.loadClass(loc);
-								Exporter exporter = clazz.newInstance();
-								INSTANCES.add(exporter);
-							}
-						}
-					}
-					catch (Exception e) {
-						Logger.error("Error loading vocabulary from "+pluginId,e);
-					}	
-				}
-			}
-			return INSTANCES;
-		}
-	}
-	public abstract void export(Collection<Contract> contracts, File file) throws IOException;
+
+	/**
+	 * <p>
+	 * Exports a given {@link Collection} of {@link Contract}s into a given
+	 * {@link File}.
+	 * </p>
+	 * 
+	 * @param contracts
+	 *          The {@link Contract}s that shall be exported.
+	 * @param file
+	 *          The {@link File} into that the {@link Contract}s shall be
+	 *          exported.
+	 * @throws IOException
+	 *           Thrown, if an IOException during export occurs.
+	 */
+	public abstract void export(Collection<Contract> contracts, File file)
+			throws IOException;
+
+	/**
+	 * <p>
+	 * Returns the name of this {@link Exporter}.
+	 * </p>
+	 * 
+	 * @return The name of this {@link Exporter}.
+	 */
+	public abstract String getName();
+
 	public abstract boolean exportToFolder();
+
 	// this is only used if exportToFolder() returns false
 	public abstract String[] getFilterExtensions();
+
 	public abstract String[] getFilterNames();
-	
-	public abstract String getName();
 }
