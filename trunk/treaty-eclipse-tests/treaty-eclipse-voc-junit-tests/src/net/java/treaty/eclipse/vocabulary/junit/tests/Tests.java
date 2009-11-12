@@ -19,12 +19,15 @@ import net.java.treaty.VerificationException;
 import net.java.treaty.eclipse.EclipseConnector;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipsePlugin;
-import net.java.treaty.eclipse.EclipseVerifier;
+import net.java.treaty.eclipse.verification.EclipseVerifier;
 import net.java.treaty.eclipse.vocabulary.junit.Activator;
 import net.java.treaty.eclipse.vocabulary.junit.JUnitVocabulary;
+
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.Bundle;
 
 /**
