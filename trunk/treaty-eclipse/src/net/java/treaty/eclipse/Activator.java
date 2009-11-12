@@ -59,6 +59,7 @@ public class Activator extends Plugin {
 
 		EclipseContractRegistry.getInstance().tearDown();
 		VocabularyRegistry.INSTANCE.tearDown();
+		ExporterRegistry.INSTANCE.tearDown();
 
 		plugin = null;
 		super.stop(context);

@@ -45,6 +45,7 @@ import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.EclipseVerifier;
 import net.java.treaty.eclipse.Exporter;
+import net.java.treaty.eclipse.ExporterRegistry;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.jobs.VerificationJob;
@@ -1443,8 +1444,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		/* Actions to export contracts. */
 		this.myActionsExport = new ArrayList<Action>();
 
+		/* TODO Claas: this should happen dynamically as well. */
 		/* Create an export action for each exporter. */
-		for (Exporter exporter : this.getExporters()) {
+		for (Exporter exporter : ExporterRegistry.INSTANCE.getExporters()) {
 
 			Action exportAction;
 			exportAction = new ExportAction(exporter);
@@ -1657,7 +1659,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	private Map<String, Image> icons = new HashMap<String, Image>();
 
-	private List<Exporter> exporters = null;
 	// strings
 	private static final String LABEL_INSTANCES = "contract instances";
 
@@ -2129,14 +2130,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		}
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
-	}
-
-	private List<Exporter> getExporters() {
-
-		if (exporters == null) {
-			exporters = Exporter.getInstances();
-		}
-		return exporters;
 	}
 
 	private void actShowContractSource() {
