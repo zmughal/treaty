@@ -30,7 +30,11 @@ import org.osgi.framework.Bundle;
  * </p>
  * 
  * @author Jens Dietrich
+ * @deprecated The {@link XMLVocabulary} plug-in ant its tests have been
+ *             deprecated since the Treaty core now supports a built-in XML
+ *             vocabulary itself.
  */
+@Deprecated
 public class Tests {
 
 	private XMLVocabulary VOC = null;

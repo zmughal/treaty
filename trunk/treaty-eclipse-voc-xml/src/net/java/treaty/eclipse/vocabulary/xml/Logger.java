@@ -12,37 +12,49 @@ package net.java.treaty.eclipse.vocabulary.xml;
 
 import org.eclipse.core.runtime.Status;
 
-
 /**
  * Log utility.
- * @author Jens Dietrich
+ * 
+ * @deprecated The {@link XMLVocabulary} plug-in has been deprecated since the
+ *             Treaty core now supports a built-in XML vocabulary itself.
  */
-
+@Deprecated
 public class Logger {
-	   public static void info(String msg) {
-		      info(msg, null);
-	   }
-	   public static void info(String msg, Throwable e) {
-	      log(msg,e,Status.INFO);
-	   }
-	   
-	   public static void warn(String msg) {
-		      warn(msg, null);
-	   }
-	   public static void warn(String msg, Throwable e) {
-	      log(msg,e,Status.WARNING);
-	   }
-	   
-	   public static void error(String msg) {
-		      error(msg, null);
-	   }
-	   public static void error(String msg, Throwable e) {
-	      log(msg,e,Status.ERROR);
-	   }
-	   
-	   public static void log(String msg, Throwable e,int status) {
-		      Activator.getDefault().getLog().log(new Status(status, Activator.PLUGIN_ID, Status.OK, msg, e));
-	   }
 
+	public static void info(String msg) {
+
+		info(msg, null);
+	}
+
+	public static void info(String msg, Throwable e) {
+
+		log(msg, e, Status.INFO);
+	}
+
+	public static void warn(String msg) {
+
+		warn(msg, null);
+	}
+
+	public static void warn(String msg, Throwable e) {
+
+		log(msg, e, Status.WARNING);
+	}
+
+	public static void error(String msg) {
+
+		error(msg, null);
+	}
+
+	public static void error(String msg, Throwable e) {
+
+		log(msg, e, Status.ERROR);
+	}
+
+	public static void log(String msg, Throwable e, int status) {
+
+		Activator.getDefault().getLog().log(
+				new Status(status, Activator.PLUGIN_ID, Status.OK, msg, e));
+	}
 
 }
