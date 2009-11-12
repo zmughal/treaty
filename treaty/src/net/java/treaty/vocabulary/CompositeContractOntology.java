@@ -25,6 +25,7 @@ import net.java.treaty.RelationshipCondition;
 import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationException;
+
 import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -55,10 +56,183 @@ public class CompositeContractOntology extends ContractOntology {
 	private Set<CompositeContractOntologyListener> myListeners =
 			new HashSet<CompositeContractOntologyListener>();
 
-	private List<ContractVocabulary> vocabularyContributions =
+	/** The composite ontology of all added {@link ContractVocabulary}s. */
+	private OntModel myOntology = ModelFactory.createOntologyModel();
+
+	/**
+	 * All {@link ContractVocabulary}s that are part of the
+	 * {@link CompositeContractOntology}.
+	 */
+	private List<ContractVocabulary> myVocabularyContributions =
 			new ArrayList<ContractVocabulary>();
 
-	private OntModel ontology = ModelFactory.createOntologyModel();;
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.ExistsCondition)
+	 */
+	public void check(ExistsCondition condition) throws VerificationException {
+
+		ContractVocabulary vocabulary;
+
+		synchronized (this) {
+			vocabulary =
+					this.findVocabularyForType(condition.getResource().getType());
+		}
+		vocabulary.check(condition);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.PropertyCondition)
+	 */
+	public void check(PropertyCondition condition) throws VerificationException {
+
+		ContractVocabulary vocabulary;
+
+		vocabulary = this.findVocabularyForProperty(condition.getOperator());
+		vocabulary.check(condition);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.RelationshipCondition)
+	 */
+	public void check(RelationshipCondition condition)
+			throws VerificationException {
+
+		ContractVocabulary vocabulary;
+
+		vocabulary =
+				this.findVocabularyForRelationship(condition.getRelationship());
+		vocabulary.check(condition);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.vocabulary.ContractOntology#getOntology()
+	 */
+	public OntModel getOntology() {
+
+		return myOntology;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ResourceLoader#load(java.net.URI, java.lang.String,
+	 * net.java.treaty.Connector)
+	 */
+	public Object load(URI type, String name, Connector connector)
+			throws ResourceLoaderException {
+
+		/* Try to find a vocabulary that supports the given type. */
+		for (ContractVocabulary vocabulary : this.myVocabularyContributions) {
+
+			/* Probably Try to load the type's instance. */
+			try {
+
+				if (vocabulary.getTypes().contains(type)) {
+					return vocabulary.load(type, name, connector);
+				}
+				// no else.
+			}
+			// end try.
+
+			catch (TreatyException e) {
+				throw new ResourceLoaderException(e);
+			}
+		}
+		// end for.
+
+		/* If no result has been returned yet, throw an exception. */
+		throw new ResourceLoaderException(
+				"No vocabulary found to load resource of type " + type);
+	}
+
+	/**
+	 * <p>
+	 * Adds a new {@link ContractVocabulary} to the
+	 * {@link CompositeContractOntology}.
+	 * </p>
+	 * 
+	 * @param vocabulary
+	 *          The {@link ContractVocabulary} that shall be added.
+	 * @param owner
+	 *          The owner of this {@link ContractVocabulary}. An unique ID (as a
+	 *          {@link String}) should be used here.
+	 * @throws TreatyException
+	 *           Thrown if adding the {@link ContractVocabulary} fails.
+	 */
+	public void add(ContractVocabulary vocabulary, String owner)
+			throws TreatyException {
+
+		/* Check whether any types or predicates are defined twice. */
+		for (URI typeUri : vocabulary.getTypes()) {
+
+			for (ContractVocabulary part : this.myVocabularyContributions) {
+
+				if (part.getTypes().contains(typeUri)) {
+					reportDuplicateDef("type", typeUri, vocabulary, part);
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// end for.
+
+		for (URI propertyUri : vocabulary.getProperties()) {
+
+			for (ContractVocabulary part : this.myVocabularyContributions) {
+
+				if (part.getProperties().contains(propertyUri)) {
+					reportDuplicateDef("property", propertyUri, vocabulary, part);
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// end for.
+
+		for (URI relationshipUri : vocabulary.getRelationships()) {
+
+			for (ContractVocabulary part : this.myVocabularyContributions) {
+
+				if (part.getRelationships().contains(relationshipUri)) {
+					reportDuplicateDef("relationship", relationshipUri, vocabulary, part);
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// end for.
+
+		this.myVocabularyContributions.add(vocabulary);
+
+		/* We accept non ontologies here to support "lightweight" plug-ins. */
+		if (vocabulary instanceof ContractOntology) {
+
+			ContractOntology contractOntology;
+			contractOntology = (ContractOntology) vocabulary;
+
+			this.myOntology.addSubModel(contractOntology.getOntology());
+
+			/* Add annotations to ontology. */
+			AnnotationProperty annotationProperty;
+			annotationProperty =
+					contractOntology.getOntology().createAnnotationProperty(OWNER);
+			this.addOwnerAnnotation(contractOntology.getOntology(),
+					annotationProperty, contractOntology.getTypes(), owner);
+			this.addOwnerAnnotation(contractOntology.getOntology(),
+					annotationProperty, contractOntology.getRelationships(), owner);
+			this.addOwnerAnnotation(contractOntology.getOntology(),
+					annotationProperty, contractOntology.getProperties(), owner);
+		}
+
+		else {
+			/* TODO Log a warning. */
+		}
+
+		this.notifyListeners();
+	}
 
 	/**
 	 * <p>
@@ -72,228 +246,6 @@ public class CompositeContractOntology extends ContractOntology {
 	public void addListener(CompositeContractOntologyListener listener) {
 
 		this.myListeners.add(listener);
-	}
-
-	/**
-	 * <p>
-	 * Notifies all {@link CompositeContractOntologyListener}s that the
-	 * {@link CompositeContractOntology}'s state has been changed.
-	 * </p>
-	 */
-	public void notifyListeners() {
-
-		for (CompositeContractOntologyListener listener : this.myListeners) {
-			listener.update();
-		}
-		// end for.
-	}
-
-	/**
-	 * <p>
-	 * Removes a {@link CompositeContractOntologyListener} to this
-	 * {@link CompositeContractOntology}.
-	 * </p>
-	 * 
-	 * @param listener
-	 *          The {@link CompositeContractOntologyListener} that shall be
-	 *          removed.
-	 */
-	public void removeListener(CompositeContractOntologyListener listener) {
-
-		this.myListeners.remove(listener);
-	}
-
-	public void add(ContractVocabulary voc, String owner) throws TreatyException {
-
-		// check whether types or predicates are defined twice
-		for (URI uri : voc.getTypes()) {
-			for (ContractVocabulary part : vocabularyContributions) {
-				if (part.getTypes().contains(uri)) {
-					reportDuplicateDef("type", uri, voc, part);
-				}
-			}
-		}
-		for (URI uri : voc.getProperties()) {
-			for (ContractVocabulary part : vocabularyContributions) {
-				if (part.getProperties().contains(uri)) {
-					reportDuplicateDef("property", uri, voc, part);
-				}
-			}
-		}
-		for (URI uri : voc.getRelationships()) {
-			for (ContractVocabulary part : vocabularyContributions) {
-				if (part.getRelationships().contains(uri)) {
-					reportDuplicateDef("relationship", uri, voc, part);
-				}
-			}
-		}
-
-		this.vocabularyContributions.add(voc);
-
-		// we accept non ontologies here to support "lightweight" plugins
-		// TODO log warning
-		if (voc instanceof ContractOntology) {
-			ContractOntology ont = (ContractOntology) voc;
-			this.ontology.addSubModel(ont.getOntology());
-
-			// add annotations to ontology
-			AnnotationProperty ann =
-					ont.getOntology().createAnnotationProperty(OWNER);
-			addOwnerAnnotation(ont.getOntology(), ann, ont.getTypes(), owner);
-			addOwnerAnnotation(ont.getOntology(), ann, ont.getRelationships(), owner);
-			addOwnerAnnotation(ont.getOntology(), ann, ont.getProperties(), owner);
-		}
-
-		this.notifyListeners();
-	}
-
-	public boolean remove(ContractOntology voc) throws TreatyException {
-
-		boolean result = this.vocabularyContributions.remove(voc);
-
-		// we accept non ontologies here to support "lightweight" plugins
-		// TODO log warning
-		if (voc instanceof ContractOntology) {
-			this.ontology.removeSubModel(((ContractOntology) voc).getOntology());
-		}
-
-		this.notifyListeners();
-
-		return result;
-	}
-
-	private void addOwnerAnnotation(OntModel model, AnnotationProperty ann,
-			Collection<URI> resources, String owner) {
-
-		for (URI uri : resources) {
-			model.add(model.getResource(uri.toString()), ann, owner);
-		}
-	}
-
-	// can be overridden, e.g. just logging warning might be enough
-	protected void reportDuplicateDef(String kind, URI resource,
-			ContractVocabulary voc, ContractVocabulary part) throws TreatyException {
-
-		StringBuffer b =
-				new StringBuffer().append("Attempt to redefine ").append(kind).append(
-						" ").append(resource).append(" in ").append(voc).append(
-						" - this is already defined in ").append(part);
-		throw new TreatyException(b.toString());
-	}
-
-	public List<ContractVocabulary> getVocabularyContributions() {
-
-		return vocabularyContributions;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.Verifier#check(net.java.treaty.RelationshipCondition)
-	 */
-	public void check(RelationshipCondition condition)
-			throws VerificationException {
-
-		ContractVocabulary voc = null;
-		voc = this.findVocabularyForRelationship(condition.getRelationship());
-		voc.check(condition);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.Verifier#check(net.java.treaty.PropertyCondition)
-	 */
-	public void check(PropertyCondition condition) throws VerificationException {
-
-		ContractVocabulary voc = null;
-		voc = this.findVocabularyForProperty(condition.getOperator());
-		voc.check(condition);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.Verifier#check(net.java.treaty.ExistsCondition)
-	 */
-	public void check(ExistsCondition condition) throws VerificationException {
-
-		ContractVocabulary voc = null;
-		synchronized (this) {
-			voc = this.findVocabularyForType(condition.getResource().getType());
-		}
-		voc.check(condition);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ResourceLoader#load(java.net.URI, java.lang.String,
-	 * net.java.treaty.Connector)
-	 */
-	public Object load(URI type, String name, Connector connector)
-			throws ResourceLoaderException {
-
-		for (ContractVocabulary voc : vocabularyContributions) {
-			try {
-				if (voc.getTypes().contains(type)) {
-					return voc.load(type, name, connector); // this may throw an exception
-				}
-			} catch (TreatyException e) {
-				throw new ResourceLoaderException(e);
-			}
-		}
-		throw new ResourceLoaderException(
-				"No vocabulary found to load resource of type " + type);
-	}
-
-	private ContractVocabulary findVocabularyForProperty(URI uri)
-			throws VerificationException {
-
-		for (ContractVocabulary voc : vocabularyContributions) {
-			try {
-				if (voc.getProperties().contains(uri)) {
-					return voc;
-				}
-			} catch (TreatyException e) {
-				throw new VerificationException(e);
-			}
-		}
-		throw new VerificationException(
-				"No vocabulary found to check condition with property " + uri);
-	}
-
-	private ContractVocabulary findVocabularyForRelationship(URI uri)
-			throws VerificationException {
-
-		for (ContractVocabulary voc : vocabularyContributions) {
-			try {
-				if (voc.getRelationships().contains(uri)) {
-					return voc;
-				}
-			} catch (TreatyException e) {
-				throw new VerificationException(e);
-			}
-		}
-		throw new VerificationException(
-				"No vocabulary found to check condition with relationship " + uri);
-	}
-
-	private ContractVocabulary findVocabularyForType(URI uri)
-			throws VerificationException {
-
-		for (ContractVocabulary voc : vocabularyContributions) {
-			try {
-				if (voc.getTypes().contains(uri)) {
-					return voc;
-				}
-			} catch (TreatyException e) {
-				throw new VerificationException(e);
-			}
-		}
-		throw new VerificationException("No vocabulary found for type " + uri);
-	}
-
-	@Override
-	public OntModel getOntology() {
-
-		return ontology;
 	}
 
 	/**
@@ -312,7 +264,7 @@ public class CompositeContractOntology extends ContractOntology {
 
 		AnnotationProperty annotationProperty;
 		annotationProperty =
-				ontology.getAnnotationProperty(CompositeContractOntology.OWNER);
+				myOntology.getAnnotationProperty(CompositeContractOntology.OWNER);
 
 		if (annotationProperty == null) {
 			result = null;
@@ -320,8 +272,7 @@ public class CompositeContractOntology extends ContractOntology {
 
 		else {
 			Resource resource;
-			resource =
-					ontology.getResource(resourceURI.toString());
+			resource = myOntology.getResource(resourceURI.toString());
 
 			if (resource == null) {
 				result = null;
@@ -345,5 +296,252 @@ public class CompositeContractOntology extends ContractOntology {
 		// end else.
 
 		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns all {@link ContractVocabulary}s that are part of the
+	 * {@link CompositeContractOntology}.
+	 * </p>
+	 * 
+	 * @return All {@link ContractVocabulary}s that are part of the
+	 *         {@link CompositeContractOntology}.
+	 */
+	public List<ContractVocabulary> getVocabularyContributions() {
+
+		return this.myVocabularyContributions;
+	}
+
+	/**
+	 * <p>
+	 * Notifies all {@link CompositeContractOntologyListener}s that the
+	 * {@link CompositeContractOntology}'s state has been changed.
+	 * </p>
+	 */
+	public void notifyListeners() {
+
+		for (CompositeContractOntologyListener listener : this.myListeners) {
+			listener.update();
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Removes a {@link ContractVocabulary} from this
+	 * {@link CompositeContractOntology}.
+	 * </p>
+	 * 
+	 * @param vocabulary
+	 *          The {@link ContractVocabulary} that shall be removed.
+	 * @return <code>true</code> if the given {@link ContractVocabulary} has been
+	 *         removed.
+	 * @throws TreatyException
+	 *           Thrown, if the removal fails caused by an {@link Exception}.
+	 */
+	public boolean remove(ContractVocabulary vocabulary) throws TreatyException {
+
+		boolean result;
+		result = this.myVocabularyContributions.remove(vocabulary);
+
+		/* We accept non ontologies here to support "lightweight" plug-ins. */
+		if (vocabulary instanceof ContractOntology) {
+			this.myOntology.removeSubModel(((ContractOntology) vocabulary)
+					.getOntology());
+		}
+
+		else {
+			/* TODO Log a warning. */
+		}
+
+		this.notifyListeners();
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Removes a {@link CompositeContractOntologyListener} to this
+	 * {@link CompositeContractOntology}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link CompositeContractOntologyListener} that shall be
+	 *          removed.
+	 */
+	public void removeListener(CompositeContractOntologyListener listener) {
+
+		this.myListeners.remove(listener);
+	}
+
+	/**
+	 * <p>
+	 * This method reports that a given resource (as a {@link URI}) already exists
+	 * an throws a {@link TreatyException}.
+	 * </p>
+	 * 
+	 * <p>
+	 * This method can be overridden, e.g. just logging warning might be enough.
+	 * </p>
+	 * 
+	 * @param kind
+	 *          The kind of the duplicate definition.
+	 * @param resource
+	 *          The resource (as a {@link URI}) of the duplicate definition.
+	 * @param vocabulary
+	 *          The {@link ContractVocabulary} that contains both definitions.
+	 * @param part
+	 *          The {@link ContractVocabulary} (part) that provides the duplicate
+	 *          definition.
+	 * @throws TreatyException
+	 *           Thrown to report the duplicate.
+	 */
+	protected void reportDuplicateDef(String kind, URI resource,
+			ContractVocabulary vocabulary, ContractVocabulary part)
+			throws TreatyException {
+
+		StringBuffer b =
+				new StringBuffer().append("Attempt to redefine ").append(kind).append(
+						" ").append(resource).append(" in ").append(vocabulary).append(
+						" - this is already defined in ").append(part);
+		throw new TreatyException(b.toString());
+	}
+
+	/**
+	 * <p>
+	 * Adds a given {@link AnnotationProperty} to a given {@link Collection} of
+	 * resources (as {@link URI}) in a given {@link OntModel}.
+	 * </p>
+	 * 
+	 * @param model
+	 *          The {@link OntModel} to that the {@link AnnotationProperty} shall
+	 *          be added.
+	 * @param annotation
+	 *          The {@link AnnotationProperty} that shall be added.
+	 * @param resources
+	 *          The resources (as {@link URI}s) to that the
+	 *          {@link AnnotationProperty} shall bed added.
+	 * @param owner
+	 *          The owner value that shall be annotated.
+	 */
+	private void addOwnerAnnotation(OntModel model,
+			AnnotationProperty annotation, Collection<URI> resources, String owner) {
+
+		for (URI resourceUri : resources) {
+			model.add(model.getResource(resourceUri.toString()), annotation, owner);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Tries to find a {@link ContractVocabulary} (part) for a given property (as
+	 * a {@link URI}).
+	 * </p>
+	 * 
+	 * @param uri
+	 *          The {@link URI} of the property.
+	 * @return The found {@link ContractVocabulary} containing the property.
+	 * @throws VerificationException
+	 *           Thrown, if no {@link ContractVocabulary} containing the property
+	 *           can be found.
+	 */
+	private ContractVocabulary findVocabularyForProperty(URI uri)
+			throws VerificationException {
+
+		for (ContractVocabulary vocabulary : this.myVocabularyContributions) {
+
+			try {
+				if (vocabulary.getProperties().contains(uri)) {
+					return vocabulary;
+				}
+				// no else.
+			}
+
+			catch (TreatyException e) {
+				throw new VerificationException(e);
+			}
+			// end catch.
+		}
+		// end for.
+
+		/* If no result has been returned yet, throw an exception. */
+		throw new VerificationException(
+				"No vocabulary found to check condition with property " + uri);
+	}
+
+	/**
+	 * <p>
+	 * Tries to find a {@link ContractVocabulary} (part) for a given relationship
+	 * (as a {@link URI}).
+	 * </p>
+	 * 
+	 * @param uri
+	 *          The {@link URI} of the relationship.
+	 * @return The found {@link ContractVocabulary} containing the relationship.
+	 * @throws VerificationException
+	 *           Thrown, if no {@link ContractVocabulary} containing the
+	 *           relationship can be found.
+	 */
+	private ContractVocabulary findVocabularyForRelationship(URI uri)
+			throws VerificationException {
+
+		for (ContractVocabulary vocabulary : this.myVocabularyContributions) {
+
+			try {
+
+				if (vocabulary.getRelationships().contains(uri)) {
+					return vocabulary;
+				}
+				// no else.
+			}
+
+			catch (TreatyException e) {
+				throw new VerificationException(e);
+			}
+			// end catch.
+		}
+		// end for.
+
+		/* If no result has been returned yet, throw an exception. */
+		throw new VerificationException(
+				"No vocabulary found to check condition with relationship " + uri);
+	}
+
+	/**
+	 * <p>
+	 * Tries to find a {@link ContractVocabulary} (part) for a given type (as a
+	 * {@link URI}).
+	 * </p>
+	 * 
+	 * @param uri
+	 *          The {@link URI} of the type.
+	 * @return The found {@link ContractVocabulary} containing the type.
+	 * @throws VerificationException
+	 *           Thrown, if no {@link ContractVocabulary} containing the type can
+	 *           be found.
+	 */
+	private ContractVocabulary findVocabularyForType(URI uri)
+			throws VerificationException {
+
+		for (ContractVocabulary vocabulary : this.myVocabularyContributions) {
+
+			try {
+
+				if (vocabulary.getTypes().contains(uri)) {
+					return vocabulary;
+				}
+				// no else.
+			}
+
+			catch (TreatyException e) {
+				throw new VerificationException(e);
+			}
+			// end catch.
+		}
+		// end for.
+
+		/* If no result has been returned yet, throw an exception. */
+		throw new VerificationException("No vocabulary found for type " + uri);
 	}
 }
