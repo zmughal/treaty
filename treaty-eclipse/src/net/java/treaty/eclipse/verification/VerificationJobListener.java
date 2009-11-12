@@ -8,7 +8,7 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.eclipse.jobs;
+package net.java.treaty.eclipse.verification;
 
 /**
  * Interface for listener for verification.
