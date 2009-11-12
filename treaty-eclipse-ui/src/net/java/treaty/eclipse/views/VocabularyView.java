@@ -359,17 +359,6 @@ public class VocabularyView extends ViewPart implements
 
 		/**
 		 * <p>
-		 * Initializes the model from the ContractVocabularyRegistry.
-		 * </p>
-		 */
-		private void initialize() {
-
-			invisibleRoot = new TreeParent("");
-			addNodes(invisibleRoot, VocabularyRegistry.INSTANCE.getOntology());
-		}
-
-		/**
-		 * <p>
 		 * Adds the node for a given {@link OntModel} and its children nodes to a
 		 * given {@link TreeParent}.
 		 * </p>
@@ -428,7 +417,11 @@ public class VocabularyView extends ViewPart implements
 		 */
 		private void addNodes(TreeParent parent, OntClass ontClass, int level) {
 
-			if (level <= MAX_TREE_DEPTH) {
+			/*
+			 * Only adapt elements that have an owner annotation. Otherwise, the
+			 * element is a core element of RDF itself and should not be displayed.
+			 */
+			if (level <= MAX_TREE_DEPTH && this.hasOwnerAnnotation(ontClass)) {
 
 				Iterator<OntClass> subClassIterator;
 				subClassIterator = ontClass.listSubClasses(true);
@@ -473,7 +466,11 @@ public class VocabularyView extends ViewPart implements
 		 */
 		private void addNodes(TreeParent parent, OntProperty ontProperty, int level) {
 
-			if (level <= MAX_TREE_DEPTH) {
+			/*
+			 * Only adapt elements that have an owner annotation. Otherwise, the
+			 * element is a core element of RDF itself and should not be displayed.
+			 */
+			if (level <= MAX_TREE_DEPTH && this.hasOwnerAnnotation(ontProperty)) {
 
 				Iterator<? extends OntProperty> subPropertyIterator;
 				subPropertyIterator = ontProperty.listSubProperties(true);
@@ -500,6 +497,50 @@ public class VocabularyView extends ViewPart implements
 				// end else.
 			}
 			// no else.
+		}
+
+		/**
+		 * <p>
+		 * Initializes the model from the ContractVocabularyRegistry.
+		 * </p>
+		 */
+		private void initialize() {
+
+			invisibleRoot = new TreeParent("");
+			addNodes(invisibleRoot, VocabularyRegistry.INSTANCE.getOntology());
+		}
+
+		/**
+		 * <p>
+		 * A helper method that checks if a given {@link Resource} has an owner
+		 * annotation.
+		 * </p>
+		 * 
+		 * @param resource
+		 *          The {@link Resource} that shall be checked.
+		 * @return <code>true</code> if the given {@link Resource} has an owner
+		 *         annotation.
+		 */
+		private boolean hasOwnerAnnotation(Resource resource) {
+
+			boolean result;
+
+			try {
+				URI resourceURI;
+				resourceURI = new URI(resource.getURI());
+
+				String ownerAnnotation;
+				ownerAnnotation =
+						VocabularyRegistry.INSTANCE.getOwnerAnnotation(resourceURI);
+
+				result = ownerAnnotation != null && ownerAnnotation.length() > 0;
+			}
+
+			catch (URISyntaxException e) {
+				result = false;
+			}
+
+			return result;
 		}
 	}
 
