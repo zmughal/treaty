@@ -23,63 +23,83 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.junit.*;
 import org.osgi.framework.Bundle;
+
 /**
  * Tests for Java vocabulary.
+ * 
  * @author Jens Dietrich
+ * @deprecated The {@link OWLVocabulary} plug-in and its tests have been
+ *             deprecated since the Treaty core now supports a built-in OWL
+ *             vocabulary itself.
  */
+@Deprecated
 public class Tests {
+
 	private OWLVocabulary VOC = null;
 	private EclipsePlugin plugin = null;
 	private EclipseConnector connector = null;
+
 	@Before
 	public void setUp() throws Exception {
+
 		VOC = new OWLVocabulary();
 		String id = Activator.PLUGIN_ID;
 		Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(id);
 		plugin = new EclipsePlugin(bundle);
-		IExtensionRegistry registry = org.eclipse.core.runtime.Platform.getExtensionRegistry();
-		IExtension x = registry.getExtension("net.java.treaty.eclipse.vocabulary.owl");
-		connector = new EclipseExtension(plugin,x);
+		IExtensionRegistry registry =
+				org.eclipse.core.runtime.Platform.getExtensionRegistry();
+		IExtension x =
+				registry.getExtension("net.java.treaty.eclipse.vocabulary.owl");
+		connector = new EclipseExtension(plugin, x);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+
 		VOC = null;
 		plugin = null;
 		connector = null;
 	}
-	
-	private Resource getResource(String type,String name) throws Exception {
+
+	private Resource getResource(String type, String name) throws Exception {
+
 		Resource r = new Resource();
 		r.setType(new URI(type));
-		r.setName(name);		
+		r.setName(name);
 		String id = Activator.PLUGIN_ID;
 		Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(id);
-		// note: load does not work, Bundle#getEntry does not load resources from fragments
+		// note: load does not work, Bundle#getEntry does not load resources from
+		// fragments
 		// but getResource does
-		// this seems to contradict http://www.eclipsezone.com/eclipse/forums/t101557.rhtml
+		// this seems to contradict
+		// http://www.eclipsezone.com/eclipse/forums/t101557.rhtml
 		Object value = bundle.getResource(name);
 		r.setValue(value);
 		return r;
 	}
-	
+
 	@Test
 	public void testTypes1() throws Exception {
-		Resource r = this.getResource(VOC.ONTOLOGY,"/testdata/owl.owl");
+
+		Resource r = this.getResource(VOC.ONTOLOGY, "/testdata/owl.owl");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
 	}
+
 	@Test(expected = VerificationException.class)
 	public void testTypes2() throws Exception {
-		Resource r = this.getResource(VOC.ONTOLOGY,"/testdata/owl-i-1.owl");
+
+		Resource r = this.getResource(VOC.ONTOLOGY, "/testdata/owl-i-1.owl");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);
 	}
+
 	@Test(expected = VerificationException.class)
 	public void testTypes3() throws Exception {
-		Resource r = this.getResource(VOC.ONTOLOGY,"/testdata/doesnotexist.owl");
+
+		Resource r = this.getResource(VOC.ONTOLOGY, "/testdata/doesnotexist.owl");
 		ExistsCondition c = new ExistsCondition();
 		c.setResource(r);
 		VOC.check(c);

@@ -16,39 +16,52 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import org.osgi.framework.Bundle;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLOntologyManager;
-import net.java.treaty.*;
+
+import net.java.treaty.Connector;
+import net.java.treaty.ContractVocabulary;
+import net.java.treaty.ExistsCondition;
+import net.java.treaty.PropertyCondition;
+import net.java.treaty.RelationshipCondition;
+import net.java.treaty.Resource;
+import net.java.treaty.ResourceLoaderException;
+import net.java.treaty.VerificationException;
 import net.java.treaty.eclipse.EclipsePlugin;
 
+import org.osgi.framework.Bundle;
 
 /**
- * Contributes the OWL vocabulary.
- * TODO: separate types for OWLLite, OWL-DL, OWL Full, instantiation relationship.
+ * Contributes the OWL vocabulary. TODO: separate types for OWLLite, OWL-DL, OWL
+ * Full, instantiation relationship.
+ * 
  * @author Jens Dietrich
+ * @deprecated The {@link OWLVocabulary} plug-in has been deprecated since the
+ *             Treaty core now supports a built-in OWL vocabulary itself.
  */
-
-public class OWLVocabulary implements  ContractVocabulary {
+@Deprecated
+public class OWLVocabulary implements ContractVocabulary {
 
 	public static final String NS = "http://www.treaty.org/owl#";
 	// types
-	public static final String ONTOLOGY = NS+"Ontology";
+	public static final String ONTOLOGY = NS + "Ontology";
 
 	// registry
-	private Collection<URI> predicates = Collections.unmodifiableCollection(new ArrayList<URI>());
+	private Collection<URI> predicates =
+			Collections.unmodifiableCollection(new ArrayList<URI>());
 	private Collection<URI> types = null;
-	
+
 	public OWLVocabulary() {
+
 		super();
 	}
 
 	public Collection<URI> getContributedPredicates() {
+
 		return predicates;
 	}
 
 	public Collection<URI> getContributedTypes() {
-		if (types==null) {
+
+		if (types == null) {
 			types = new ArrayList<URI>();
 			try {
 				types.add(new URI(ONTOLOGY));
@@ -59,43 +72,54 @@ public class OWLVocabulary implements  ContractVocabulary {
 		return types;
 	}
 
+	public void check(RelationshipCondition condition)
+			throws VerificationException {
 
-	public void check(RelationshipCondition condition) throws VerificationException {
-		throw new VerificationException("This vocabulary does not define relationship conditions");
+		throw new VerificationException(
+				"This vocabulary does not define relationship conditions");
 	}
-	
-	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException {
-		if (!type.toString().startsWith(NS)) 
-			throw new ResourceLoaderException("This plugin cannot be used to instantiate resources of this type: " + type);
+
+	public Object load(URI type, String name, Connector connector)
+			throws ResourceLoaderException {
+
+		if (!type.toString().startsWith(NS))
+			throw new ResourceLoaderException(
+					"This plugin cannot be used to instantiate resources of this type: "
+							+ type);
 		try {
 			// check whether this is a OWL resource - try to parse it
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			EclipsePlugin plugin = (EclipsePlugin) connector.getOwner();
 			Bundle bundle = plugin.getBundle();
 			return bundle.getEntry(name);
-		}
-		catch (Exception x) {
-			Logger.error("Error loading ontology " + name + " from plugin " + connector.getOwner().getId());
-			throw new ResourceLoaderException("Error loading ontology " + name + " from plugin " + connector.getOwner().getId(),x);
+		} catch (Exception x) {
+			Logger.error("Error loading ontology " + name + " from plugin "
+					+ connector.getOwner().getId());
+			throw new ResourceLoaderException("Error loading ontology " + name
+					+ " from plugin " + connector.getOwner().getId(), x);
 		}
 	}
-	
-	public void check(PropertyCondition relationshipCondition) throws VerificationException {
-		throw new VerificationException("This vocabulary does not define property conditions");
+
+	public void check(PropertyCondition relationshipCondition)
+			throws VerificationException {
+
+		throw new VerificationException(
+				"This vocabulary does not define property conditions");
 	}
 
 	public void check(ExistsCondition condition) throws VerificationException {
+
 		Resource resource = condition.getResource();
 		assert resource.isInstantiated();
 		assert resource.isLoaded();
 		if (ONTOLOGY.equals(resource.getType().toString())) {
-			URL url = (URL)resource.getValue();
+			URL url = (URL) resource.getValue();
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			try {
 				manager.loadOntologyFromPhysicalURI(url.toURI());
-			} 
-			catch (Exception x) {
-				throw new VerificationException("The resource " + url + " cannot be parsed as ontology",x);
+			} catch (Exception x) {
+				throw new VerificationException("The resource " + url
+						+ " cannot be parsed as ontology", x);
 			}
 		}
 	}

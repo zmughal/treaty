@@ -9,10 +9,22 @@
  */
 
 package net.java.treaty.eclipse.vocabulary.java.tests;
+
+import net.java.treaty.eclipse.vocabulary.java.JavaVocabulary;
+
 /**
  * Sample class used in test cases.
+ * 
  * @author Jens Dietrich
+ * @deprecated The {@link JavaVocabulary} plug-in and its tests have been
+ *             deprecated since the Treaty core now supports a built-in Java
+ *             vocabulary itself.
  */
-public class Class4 implements Interface1{
-	public Class4(){super();}
+@Deprecated
+public class Class4 implements Interface1 {
+
+	public Class4() {
+
+		super();
+	}
 }

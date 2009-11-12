@@ -46,8 +46,10 @@ import com.sun.msv.reader.dtd.DTDReader;
  * DTD,XPATH and XSLT is missing. TODO
  * 
  * @author Jens Dietrich
+ * @deprecated The {@link XMLVocabulary} plug-in has been deprecated since the
+ *             Treaty core now supports a built-in XML vocabulary itself.
  */
-
+@Deprecated
 public class XMLVocabulary extends ContractOntology implements
 		ContractVocabulary {
 

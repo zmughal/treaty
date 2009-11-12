@@ -5,7 +5,11 @@ import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
+ * 
+ * @deprecated The {@link XMLVocabulary} plug-in has been deprecated since the
+ *             Treaty core now supports a built-in XML vocabulary itself.
  */
+@Deprecated
 public class Activator extends Plugin {
 
 	// The plug-in ID

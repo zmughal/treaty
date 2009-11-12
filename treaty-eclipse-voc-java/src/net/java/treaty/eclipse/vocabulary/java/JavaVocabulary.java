@@ -20,30 +20,36 @@ import org.osgi.framework.Bundle;
 import net.java.treaty.*;
 import net.java.treaty.eclipse.EclipsePlugin;
 
-
 /**
+ * <p>
  * Contributes the Java vocabulary. Warning: this is not complete.
+ * </p>
+ * 
  * @author Jens Dietrich
+ * @deprecated The {@link JavaVocabulary} plug-in has been deprecated since the
+ *             Treaty core now supports a built-in Java vocabulary itself.
  */
-
-public class JavaVocabulary implements  ContractVocabulary {
+@Deprecated
+public class JavaVocabulary implements ContractVocabulary {
 
 	public static final String NS = "http://www.treaty.org/java#";
 	// types
-	public static final String ABSTRACT_TYPE = NS+"AbstractType";
-	public static final String INSTANTIABLE_CLASS = NS+"InstantiableClass";
+	public static final String ABSTRACT_TYPE = NS + "AbstractType";
+	public static final String INSTANTIABLE_CLASS = NS + "InstantiableClass";
 	// relationships
-	public static final String IMPLEMENTS = NS+"implements";
+	public static final String IMPLEMENTS = NS + "implements";
 	// registry
 	private Collection<URI> predicates = null;
 	private Collection<URI> types = null;
-	
+
 	public JavaVocabulary() {
+
 		super();
 	}
 
 	public Collection<URI> getContributedPredicates() {
-		if (predicates==null) {
+
+		if (predicates == null) {
 			predicates = new ArrayList<URI>();
 			try {
 				predicates.add(new URI(IMPLEMENTS));
@@ -55,7 +61,8 @@ public class JavaVocabulary implements  ContractVocabulary {
 	}
 
 	public Collection<URI> getContributedTypes() {
-		if (types==null) {
+
+		if (types == null) {
 			types = new ArrayList<URI>();
 			try {
 				types.add(new URI(ABSTRACT_TYPE));
@@ -67,73 +74,83 @@ public class JavaVocabulary implements  ContractVocabulary {
 		return types;
 	}
 
-	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException  {
-		if (!type.toString().startsWith(NS)) 
-			throw new ResourceLoaderException("This plugin cannot be used to instantiate resources of this type: " + type);
-		Bundle b = ((EclipsePlugin)connector.getOwner()).getBundle();
+	public Object load(URI type, String name, Connector connector)
+			throws ResourceLoaderException {
+
+		if (!type.toString().startsWith(NS))
+			throw new ResourceLoaderException(
+					"This plugin cannot be used to instantiate resources of this type: "
+							+ type);
+		Bundle b = ((EclipsePlugin) connector.getOwner()).getBundle();
 		try {
-			
+
 			// note: we remove postfixes starting with : and /
-			// in Eclipse, this is done in 
+			// in Eclipse, this is done in
 			// org.eclipse.core.internal.registry.ConfigurationElement
-			
+
 			String className = name;
 			String executable = null;
 			int i = name.indexOf(':');
 			if (i != -1) {
 				executable = name.substring(0, i).trim();
 				// initData = prop.substring(i + 1).trim();
-			} else
+			}
+			else
 				executable = name;
 
 			i = executable.indexOf('/');
 			if (i != -1) {
 				// contributorName = executable.substring(0, i).trim();
 				className = executable.substring(i + 1).trim();
-			} else
+			}
+			else
 				className = executable;
-			
+
 			Class clazz = b.loadClass(className);
-			
+
 			/**
 			 * analyse class types
 			 */
 			/*
-			if (IExecutableExtensionFactory.class.isAssignableFrom(clazz)) {
-				System.out.println("class " + clazz + " implements " + IExecutableExtensionFactory.class.getName());
-			}
-			else if (IExecutableExtension.class.isAssignableFrom(clazz)) {
-				System.out.println("class " + clazz + " implements " + IExecutableExtension.class.getName());
-			}
-			else {
-				System.out.println("class " + clazz + " does not implement " + IExecutableExtension.class.getName()+"[Factory]");
-			}
-			*/
-			
+			 * if (IExecutableExtensionFactory.class.isAssignableFrom(clazz)) {
+			 * System.out.println("class " + clazz + " implements " +
+			 * IExecutableExtensionFactory.class.getName()); } else if
+			 * (IExecutableExtension.class.isAssignableFrom(clazz)) {
+			 * System.out.println("class " + clazz + " implements " +
+			 * IExecutableExtension.class.getName()); } else {
+			 * System.out.println("class " + clazz + " does not implement " +
+			 * IExecutableExtension.class.getName()+"[Factory]"); }
+			 */
+
 			if (ABSTRACT_TYPE.equals(type)) {
 				if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
 					return true;
-				else 
-					throw new ResourceLoaderException("This class can be loaded but is not abstract: " + name);
+				else
+					throw new ResourceLoaderException(
+							"This class can be loaded but is not abstract: " + name);
 			}
 			else if (INSTANTIABLE_CLASS.equals(type)) {
 				try {
 					clazz.newInstance();
-				}
-				catch (Exception x) {
-					throw new ResourceLoaderException("This class can be loaded but not instantiated: " + name);
+				} catch (Exception x) {
+					throw new ResourceLoaderException(
+							"This class can be loaded but not instantiated: " + name);
 				}
 			}
-			else 
+			else
 				return clazz;
 		} catch (ClassNotFoundException e) {
-			throw new ResourceLoaderException("Cannot load class " + name + " with classloader from plugin " + b.getBundleId());
-			
+			throw new ResourceLoaderException("Cannot load class " + name
+					+ " with classloader from plugin " + b.getBundleId());
+
 		}
-		throw new ResourceLoaderException("Cannot load resource " + name + " of type " + type);
+		throw new ResourceLoaderException("Cannot load resource " + name
+				+ " of type " + type);
 	}
 
-	public void check(RelationshipCondition condition) throws VerificationException {
+	public void check(RelationshipCondition condition)
+			throws VerificationException {
+
 		String rel = condition.getRelationship().toString();
 		Resource res1 = condition.getResource1();
 		Resource res2 = condition.getResource2();
@@ -142,59 +159,74 @@ public class JavaVocabulary implements  ContractVocabulary {
 		assert res2.isInstantiated();
 		assert res2.isLoaded();
 		if (IMPLEMENTS.equals(rel)) {
-			Class class1 = (Class)res1.getValue();
-			checkInstantiableClass(res1,class1);
-			Class class2 = (Class)res2.getValue();
-			checkAbstractType(res2,class2);
-			if (class2.isAssignableFrom(class1)) {}
-			else throw new VerificationException("condition not satisfied + " + condition);
+			Class class1 = (Class) res1.getValue();
+			checkInstantiableClass(res1, class1);
+			Class class2 = (Class) res2.getValue();
+			checkAbstractType(res2, class2);
+			if (class2.isAssignableFrom(class1)) {
+			}
+			else
+				throw new VerificationException("condition not satisfied + "
+						+ condition);
 		}
-		else 
+		else
 			throw new VerificationException("predicate not supported + " + rel);
 	}
 
-	public void check(PropertyCondition relationshipCondition) throws VerificationException {
-		throw new VerificationException("This vocabulary does not define property conditions");
+	public void check(PropertyCondition relationshipCondition)
+			throws VerificationException {
+
+		throw new VerificationException(
+				"This vocabulary does not define property conditions");
 	}
-	
+
 	public void check(ExistsCondition condition) throws VerificationException {
+
 		Resource resource = condition.getResource();
 		assert resource.isInstantiated();
 		assert resource.isLoaded();
-		Class clazz = (Class)resource.getValue();
+		Class clazz = (Class) resource.getValue();
 		if (ABSTRACT_TYPE.equals(resource.getType().toString())) {
-			checkAbstractType(resource,clazz);
+			checkAbstractType(resource, clazz);
 		}
 		else if (INSTANTIABLE_CLASS.equals(resource.getType().toString())) {
-			checkInstantiableClass(resource,clazz);
+			checkInstantiableClass(resource, clazz);
 		}
 	}
-	
-	private void checkAbstractType(Resource r,Class clazz) throws VerificationException {
+
+	private void checkAbstractType(Resource r, Class clazz)
+			throws VerificationException {
+
 		if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
 			return;
-		else 
-			throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an abstract java type");
+		else
+			throw new VerificationException("The value of resource " + r + " is "
+					+ clazz + " - this is not an abstract java type");
 	}
-	
-	private void checkInstantiableClass(Resource r,Class clazz) throws VerificationException {
+
+	private void checkInstantiableClass(Resource r, Class clazz)
+			throws VerificationException {
+
 		try {
 			if (Modifier.isAbstract(clazz.getModifiers())) {
-				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is an abstract (and not an instantiable) java type");
+				throw new VerificationException("The value of resource " + r + " is "
+						+ clazz
+						+ " - this is an abstract (and not an instantiable) java type");
 			}
 			if (clazz.isInterface()) {
-				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is an interface and not an instantiable java type");
+				throw new VerificationException("The value of resource " + r + " is "
+						+ clazz
+						+ " - this is an interface and not an instantiable java type");
 			}
-			Constructor constructor = clazz.getConstructor(new Class[]{});
-			if (constructor==null || !Modifier.isPublic(constructor.getModifiers())) {
-				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an instantiable java type");
+			Constructor constructor = clazz.getConstructor(new Class[] {});
+			if (constructor == null || !Modifier.isPublic(constructor.getModifiers())) {
+				throw new VerificationException("The value of resource " + r + " is "
+						+ clazz + " - this is not an instantiable java type");
 			}
-		}
-		catch (Exception x) {
-			throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an instantiable java type");
+		} catch (Exception x) {
+			throw new VerificationException("The value of resource " + r + " is "
+					+ clazz + " - this is not an instantiable java type");
 		}
 	}
-	
-	
 
 }
