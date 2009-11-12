@@ -8,26 +8,22 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.eclipse.tests;
-
-import net.java.treaty.eclipse.tests.contractregistry.AllContractRegistryTests;
-import net.java.treaty.eclipse.tests.verification.AllVerificationTests;
+package net.java.treaty.eclipse.tests.verification;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 /**
  * <p>
- * Provides a JUnit Test Suite containing all JUnit test cases of the Treaty
- * Eclipse implementation.
+ * Provides a JUnit Test Suite containing all JUnit test cases of the package
+ * <code>net.java.treaty.eclipse.verification</code> and its subpackages.
  * </p>
  * 
  * @author Claas Wilke
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { AllContractRegistryTests.class,
-		AllVerificationTests.class })
-public class AllTreatyEclipseTests {
+@Suite.SuiteClasses( { ClockExcampleTests.class })
+public class AllVerificationTests {
 	/*
 	 * This class remains completely empty, being used only as a holder for the
 	 * above annotations.
