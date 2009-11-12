@@ -19,7 +19,6 @@ import java.util.Map;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.TreatyException;
 import net.java.treaty.vocabulary.CompositeContractOntology;
-import net.java.treaty.vocabulary.ContractOntology;
 import net.java.treaty.vocabulary.builtins.BasicOpVocabulary;
 import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
 import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
@@ -340,14 +339,9 @@ public class VocabularyRegistry extends CompositeContractOntology implements
 
 			ContractVocabulary vocabulary;
 
-			/*
-			 * FIXME Claas: Currently this cast is not type safe. Nevertheless, all
-			 * existing implementations extend ContractOntology. Should'nt we enforce
-			 * this constraint for all vocabularies?
-			 */
 			/* Remove the vocabulary. */
 			try {
-				this.remove((ContractOntology) this.externalVocabularies.get(extension
+				this.remove(this.externalVocabularies.get(extension
 						.getUniqueIdentifier()));
 			}
 
