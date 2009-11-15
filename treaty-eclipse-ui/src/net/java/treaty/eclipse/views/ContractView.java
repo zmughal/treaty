@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -450,13 +451,18 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 */
 		private void addPluginNodes(TreeParent parent) {
 
-			for (EclipsePlugin plugin : myContractedPlugins) {
+			List<EclipsePlugin> eclipsePlugins;
+			eclipsePlugins = new ArrayList<EclipsePlugin>(myContractedPlugins);
+			Collections.sort(eclipsePlugins);
+
+			for (EclipsePlugin plugin : eclipsePlugins) {
 				TreeParent node;
 				node = new TreeParent(plugin);
 
 				parent.addChild(node);
 				this.addExtensionPointNodes(node, plugin);
 			}
+			// end for.
 		}
 
 		/**
@@ -505,8 +511,12 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		private void addDefinedContractNodes(TreeParent parent,
 				EclipseExtensionPoint eclipseExtensionPoint) {
 
+			List<Contract> contracts;
+			contracts = new ArrayList<Contract>(eclipseExtensionPoint.getContracts());
+			Collections.sort(contracts);
+
 			/* Iterate through all contracts of the extension point. */
-			for (Contract contract : eclipseExtensionPoint.getContracts()) {
+			for (Contract contract : contracts) {
 
 				TreeParent node;
 				node = new TreeParent(contract);
@@ -520,11 +530,16 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				parent.addChild(node);
 
 				/* Add children nodes for all extensions that instantiate the contract. */
-				for (EclipseExtension eclipseExtensions : eclipseExtensionPoint
-						.getExtensions()) {
+				List<EclipseExtension> eclipseExtensions;
+				eclipseExtensions =
+						new ArrayList<EclipseExtension>(eclipseExtensionPoint
+								.getExtensions());
+				Collections.sort(eclipseExtensions);
+
+				for (EclipseExtension eclipseExtension : eclipseExtensions) {
 					// TreeParent node2 = new TreeParent(x.getOwner());
 					// node.addChild(node2);
-					this.addContractedExtensionNodes(node, eclipseExtensions);
+					this.addContractedExtensionNodes(node, eclipseExtension);
 				}
 				// end for (extensions).
 			}
@@ -540,19 +555,23 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * 
 		 * @param parent
 		 *          The {@link TreeParent} to which the nodes shall be added.
-		 * @param eclipseExtesnsion
+		 * @param eclipseExtension
 		 *          The {@link EclipseExtension} whose {@link Contracts} s shall be
 		 *          added.
 		 */
 		private void addContractedExtensionNodes(TreeParent parent,
-				EclipseExtension eclipseExtesnsion) {
+				EclipseExtension eclipseExtension) {
 
 			TreeParent node;
-			node = new TreeParent(eclipseExtesnsion);
+			node = new TreeParent(eclipseExtension);
 
 			parent.addChild(node);
 
-			for (Contract contract : eclipseExtesnsion.getContracts()) {
+			List<Contract> contracts;
+			contracts = new ArrayList<Contract>(eclipseExtension.getContracts());
+			Collections.sort(contracts);
+
+			for (Contract contract : contracts) {
 				TreeParent node2;
 				node2 = new TreeParent(contract);
 
@@ -1706,76 +1725,142 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang
 		 * .Object, int)
 		 */
-		public String getColumnText(Object n, int col) {
+		public String getColumnText(Object node, int column) {
 
-			if (!(n instanceof TreeObject)) {
-				return col == 0 ? n.toString() : "";
-			}
+			String result;
 
-			Object obj = ((TreeObject) n).getObject();
-			if (col == 1)
-				return getStatus(obj);
-
-			if (obj instanceof EclipseExtensionPoint) {
-				return ((Connector) obj).getId();
-			}
-			else if (obj instanceof EclipseExtension) {
-				EclipseExtension x = (EclipseExtension) obj;
-				StringBuffer b =
-						new StringBuffer().append(x.getOwner().getId()).append('/');
-				String id = x.getId();
-				if (id == null) {
-					b.append("anonymous extension");
+			if (!(node instanceof TreeObject)) {
+				if (column == 0) {
+					result = node.toString();
 				}
+
 				else {
-					b.append(x.getId());
+					result = "";
 				}
-				return b.toString();
 			}
-			else if (obj instanceof Component) {
-				return ((Component) obj).getId();
-			}
-			else if (obj instanceof Contract) {
-				Contract c = (Contract) obj;
-				URL url = c.getLocation();
-				if (url == null) {
-					return "a contract";
+
+			else {
+				Object adaptedObject;
+				adaptedObject = ((TreeObject) node).getObject();
+
+				if (column == 1) {
+					return this.getStatus(adaptedObject);
 				}
+
 				else {
-					// check whether contract has been provided by third party
-					if (c.getOwner() != null && !c.getConsumer().equals(c.getOwner())) {
-						Connector conn = c.getOwner();
-						Component comp = conn.getOwner();
-						String id = comp.getId();
-						return id + url.getPath();
+
+					if (adaptedObject instanceof EclipseExtensionPoint) {
+						result = ((Connector) adaptedObject).getId();
 					}
-					return url.getPath(); // context is defined by parent node
+
+					else if (adaptedObject instanceof EclipseExtension) {
+						EclipseExtension eclipseExtension;
+						eclipseExtension = (EclipseExtension) adaptedObject;
+
+						StringBuffer buffer;
+						buffer = new StringBuffer();
+						buffer.append(eclipseExtension.getOwner().getId()).append('/');
+
+						String id;
+						id = eclipseExtension.getId();
+
+						if (id == null) {
+							buffer.append("Anonymous Extension");
+						}
+
+						else {
+							buffer.append(eclipseExtension.getId());
+						}
+
+						result = buffer.toString();
+					}
+
+					else if (adaptedObject instanceof Component) {
+						result = ((Component) adaptedObject).getId();
+					}
+
+					else if (adaptedObject instanceof Contract) {
+						Contract contract;
+						contract = (Contract) adaptedObject;
+
+						URL contractUrl;
+						contractUrl = contract.getLocation();
+
+						if (contractUrl == null) {
+							return "A Contract";
+						}
+
+						else {
+							/*
+							 * Check whether or not the contract has been provided by third
+							 * party.
+							 */
+							if (contract.getOwner() != null
+									&& !contract.getConsumer().equals(contract.getOwner())) {
+								Connector connector;
+								connector = contract.getOwner();
+
+								Component component;
+								component = connector.getOwner();
+
+								String componentID;
+								componentID = component.getId();
+
+								result = componentID + contractUrl.getPath();
+							}
+
+							/* Else the context is defined by parent node. */
+							else {
+								result = contractUrl.getPath();
+							}
+						}
+						// end else (contractURL != null).
+					}
+
+					else if (adaptedObject instanceof Resource) {
+						Resource resource;
+						resource = (Resource) adaptedObject;
+
+						result = this.toString(resource);
+					}
+
+					else if (adaptedObject instanceof KeyValueNode) {
+						KeyValueNode keyValueNode;
+						keyValueNode = (KeyValueNode) adaptedObject;
+
+						result = keyValueNode.key + ": " + keyValueNode.value;
+					}
+
+					else if (adaptedObject instanceof RelationshipCondition) {
+						result = this.toString((RelationshipCondition) adaptedObject);
+					}
+
+					else if (adaptedObject instanceof PropertyCondition) {
+						result = this.toString((PropertyCondition) adaptedObject);
+					}
+
+					else if (adaptedObject instanceof ExistsCondition) {
+						result = this.toString((ExistsCondition) adaptedObject);
+					}
+
+					else if (adaptedObject instanceof ComplexCondition) {
+						result = ((ComplexCondition) adaptedObject).getConnective();
+					}
+
+					else if (adaptedObject instanceof Negation) {
+						result = "not";
+					}
+
+					else {
+						return adaptedObject.toString();
+					}
+					// end else (instanceof check).
 				}
+				// end else (column != 1).
 			}
-			else if (obj instanceof Resource) {
-				Resource r = (Resource) obj;
-				return toString(r);
-			}
-			else if (obj instanceof KeyValueNode) {
-				KeyValueNode kvn = (KeyValueNode) obj;
-				return kvn.key + ": " + kvn.value;
-			}
-			else if (obj instanceof RelationshipCondition) {
-				return toString((RelationshipCondition) obj);
-			}
-			else if (obj instanceof PropertyCondition) {
-				return toString((PropertyCondition) obj);
-			}
-			else if (obj instanceof ExistsCondition) {
-				return toString((ExistsCondition) obj);
-			}
-			else if (obj instanceof ComplexCondition) {
-				return ((ComplexCondition) obj).getConnective();
-			}
-			else if (obj instanceof Negation) {
-				return "not";
-			}
-			return obj.toString();
+			// end else (node is TreeObject).
+
+			return result;
 		}
 
 		/**
