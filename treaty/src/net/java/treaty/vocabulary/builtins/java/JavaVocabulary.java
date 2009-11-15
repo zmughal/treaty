@@ -20,147 +20,346 @@ import net.java.treaty.vocabulary.ContractOntology;
 
 /**
  * Contributes the Java vocabulary. Warning: this is not complete.
+ * 
  * @author Jens Dietrich
  */
 
 public class JavaVocabulary extends ContractOntology {
 
-	public static final String NS = "http://www.treaty.org/java#";
-	// types
-	public static final String ABSTRACT_TYPE = NS+"AbstractType";
-	public static final String INSTANTIABLE_CLASS = NS+"InstantiableClass";
-	// relationships
-	public static final String IMPLEMENTS = NS+"implements";
-	// ontology
-	private OntModel ontology = null;
+	/** The name space of the {@link JavaVocabulary}. */
+	public static final String NAMESPACE = "http://www.treaty.org/java#";
 
-	
+	/** The relationship <code>implements</code> of the {@link JavaVocabulary}. */
+	public static final String RELATIONSHIP_IMPLEMENTS = NAMESPACE + "implements";
+
+	/** The type <code>AbstractType</code> of the {@link JavaVocabulary}. */
+	public static final String TYPE_ABSTRACT_TYPE = NAMESPACE + "AbstractType";
+
+	/** The type <code>InstantiableClass</code> of the {@link JavaVocabulary}. */
+	public static final String TYPE_INSTANTIABLE_CLASS =
+			NAMESPACE + "InstantiableClass";
+
+	/** The location of the {@link JavaVocabulary}'s ontology. */
+	private static final String ONTOLOGY_LOCATION =
+			"/net/java/treaty/vocabulary/builtins/java/java.owl";
+
+	/** The {@link OntModel} of the {@link JavaVocabulary}. */
+	private OntModel myOntology = null;
+
+	/**
+	 * <p>
+	 * Creates a new {@link JavaVocabulary}.
+	 * </p>
+	 */
 	public JavaVocabulary() {
+
 		super();
 	}
 
-	public Object load(URI type, String name, Connector connector) throws ResourceLoaderException  {
-		if (!type.toString().startsWith(NS)) 
-			throw new ResourceLoaderException("This vocabulary cannot be used to instantiate resources of this type: " + type);
-		
-		Component c = connector.getOwner();
-		
-		try {
-			
-			// note: we remove postfixes starting with : and /
-			// in Eclipse, this is done in 
-			// org.eclipse.core.internal.registry.ConfigurationElement
-			
-			String className = name;
-			String executable = null;
-			int i = name.indexOf(':');
-			if (i != -1) {
-				executable = name.substring(0, i).trim();
-				// initData = prop.substring(i + 1).trim();
-			} else
-				executable = name;
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.ExistsCondition)
+	 */
+	public void check(ExistsCondition condition) throws VerificationException {
 
-			i = executable.indexOf('/');
-			if (i != -1) {
-				// contributorName = executable.substring(0, i).trim();
-				className = executable.substring(i + 1).trim();
-			} else
-				className = executable;
-			
-			Class clazz = c.loadClass(className);
-			
-			//analyse class types
-			if (ABSTRACT_TYPE.equals(type)) {
-				if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
-					return true;
-				else 
-					throw new ResourceLoaderException("This class can be loaded but is not abstract: " + name);
+		Resource resource;
+		resource = condition.getResource();
+
+		/* Check preconditions. */
+		assert resource.isInstantiated();
+		assert resource.isLoaded();
+
+		Class<?> clazz;
+		clazz = (Class<?>) resource.getValue();
+
+		/* Handle type that shall be checked. */
+		if (TYPE_ABSTRACT_TYPE.equals(resource.getType().toString())) {
+			checkAbstractType(resource, clazz);
+		}
+
+		else if (TYPE_INSTANTIABLE_CLASS.equals(resource.getType().toString())) {
+			checkInstantiableClass(resource, clazz);
+		}
+
+		/* Else throw an exception. */
+		else {
+			throw new VerificationException("Unknown type of resource " + resource
+					+ " cannot be checked using the JavaVocabulary.");
+		}
+		// end else.
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.PropertyCondition)
+	 */
+	public void check(PropertyCondition relationshipCondition)
+			throws VerificationException {
+
+		throw new VerificationException(
+				"This Vocabulary does not define PropertyConditions.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.RelationshipCondition)
+	 */
+	public void check(RelationshipCondition condition)
+			throws VerificationException {
+
+		String relationshipName;
+		relationshipName = condition.getRelationship().toString();
+
+		Resource resource1;
+		resource1 = condition.getResource1();
+
+		Resource resource2;
+		resource2 = condition.getResource2();
+
+		/* Check preconditions. */
+		assert resource1.isInstantiated();
+		assert resource1.isLoaded();
+		assert resource2.isInstantiated();
+		assert resource2.isLoaded();
+
+		if (RELATIONSHIP_IMPLEMENTS.equals(relationshipName)) {
+
+			/* Check if class1 is instantiable. */
+			Class<?> class1;
+			class1 = (Class<?>) resource1.getValue();
+			this.checkInstantiableClass(resource1, class1);
+
+			/* Check if class2 is abstract. */
+			Class<?> class2 = (Class<?>) resource2.getValue();
+			this.checkAbstractType(resource2, class2);
+
+			/* Check implements relationship. */
+			if (class2.isAssignableFrom(class1)) {
+				/* Success. Do nothing. */
 			}
-			else if (INSTANTIABLE_CLASS.equals(type)) {
+
+			/* Else throw an exception. */
+			else {
+				throw new VerificationException("Condition was not satisfied: "
+						+ condition);
+			}
+			// end else.
+		}
+
+		/* Else throw an exception. */
+		else {
+			throw new VerificationException(
+					"Predicate not supported by JavaVocabulary: " + relationshipName);
+		}
+		// end else.
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.vocabulary.ContractOntology#getOntology()
+	 */
+	public OntModel getOntology() {
+
+		/* Probably initialize the ontology. */
+		if (this.myOntology == null) {
+			this.myOntology = ModelFactory.createOntologyModel();
+			this.myOntology.read(JavaVocabulary.class.getResource(ONTOLOGY_LOCATION)
+					.toString());
+		}
+
+		return this.myOntology;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ResourceLoader#load(java.net.URI, java.lang.String,
+	 * net.java.treaty.Connector)
+	 */
+	public Object load(URI type, String name, Connector connector)
+			throws ResourceLoaderException {
+
+		/* Check if the given type belongs to this vocabulary at all. */
+		if (!type.toString().startsWith(NAMESPACE)) {
+			throw new ResourceLoaderException(
+					"This vocabulary cannot be used to instantiate resources of this type: "
+							+ type);
+		}
+		// no else.
+
+		Component component;
+		component = connector.getOwner();
+
+		/* Try to load the class. */
+		try {
+
+			String className;
+			className = name;
+
+			String executable = null;
+
+			/*
+			 * Note: we remove postfixes starting with : and / in Eclipse, this is
+			 * done in org.eclipse.core.internal.registry.ConfigurationElement.
+			 */
+
+			int index = name.indexOf(':');
+
+			if (index != -1) {
+				executable = name.substring(0, index).trim();
+				// initData = prop.substring(i + 1).trim();
+			}
+
+			else {
+				executable = name;
+			}
+
+			index = executable.indexOf('/');
+
+			if (index != -1) {
+				// contributorName = executable.substring(0, i).trim();
+				className = executable.substring(index + 1).trim();
+			}
+			else {
+				className = executable;
+			}
+
+			Class<?> clazz;
+			clazz = component.loadClass(className);
+
+			/* Analyze class types. */
+			if (TYPE_ABSTRACT_TYPE.equals(type)) {
+				if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
+					return true;
+				}
+
+				else {
+					throw new ResourceLoaderException(
+							"This class can be loaded but is not abstract: " + name);
+				}
+			}
+
+			else if (TYPE_INSTANTIABLE_CLASS.equals(type)) {
+
 				try {
 					clazz.newInstance();
 				}
-				catch (Exception x) {
-					throw new ResourceLoaderException("This class can be loaded but not instantiated: " + name);
+
+				catch (Exception e) {
+					throw new ResourceLoaderException(
+							"This class can be loaded but not instantiated: " + name);
 				}
+				// end catch.
 			}
-			else 
+
+			else {
 				return clazz;
-		} catch (ClassNotFoundException e) {
-			throw new ResourceLoaderException("Cannot load class " + name + " with classloader from component " + c.getId());	
+			}
 		}
-		throw new ResourceLoaderException("Cannot load resource " + name + " of type " + type);
+		// end try.
+
+		catch (ClassNotFoundException e) {
+			throw new ResourceLoaderException("Cannot load class " + name
+					+ " with classloader from component " + component.getId());
+		}
+		// end catch.
+
+		throw new ResourceLoaderException("Cannot load Resource " + name
+				+ " of Type " + type);
 	}
 
-	public void check(RelationshipCondition condition) throws VerificationException {
-		String rel = condition.getRelationship().toString();
-		Resource res1 = condition.getResource1();
-		Resource res2 = condition.getResource2();
-		assert res1.isInstantiated();
-		assert res1.isLoaded();
-		assert res2.isInstantiated();
-		assert res2.isLoaded();
-		if (IMPLEMENTS.equals(rel)) {
-			Class class1 = (Class)res1.getValue();
-			checkInstantiableClass(res1,class1);
-			Class class2 = (Class)res2.getValue();
-			checkAbstractType(res2,class2);
-			if (class2.isAssignableFrom(class1)) {}
-			else throw new VerificationException("condition not satisfied + " + condition);
-		}
-		else 
-			throw new VerificationException("predicate not supported + " + rel);
-	}
+	/**
+	 * <p>
+	 * A helper method that checks if a given {@link Class} is an abstract
+	 * {@link Class} or an interface.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} whose value represents the {@link Class} that
+	 *          shall be checked.
+	 * @param clazz
+	 *          The {@link Class} that shall be checked.
+	 * @throws VerificationException
+	 *           Thrown, if the {@link Class} is neither an interface nor an
+	 *           abstract {@link Class} or the given {@link Class} is
+	 *           <code>null</code>.
+	 */
+	private void checkAbstractType(Resource resource, Class<?> clazz)
+			throws VerificationException {
 
-	public void check(PropertyCondition relationshipCondition) throws VerificationException {
-		throw new VerificationException("This vocabulary does not define property conditions");
-	}
-	
-	public void check(ExistsCondition condition) throws VerificationException {
-		Resource resource = condition.getResource();
-		assert resource.isInstantiated();
-		assert resource.isLoaded();
-		Class clazz = (Class)resource.getValue();
-		if (ABSTRACT_TYPE.equals(resource.getType().toString())) {
-			checkAbstractType(resource,clazz);
+		if (clazz == null) {
+			throw new VerificationException("The value of the Resource " + resource
+					+ " was null.");
 		}
-		else if (INSTANTIABLE_CLASS.equals(resource.getType().toString())) {
-			checkInstantiableClass(resource,clazz);
-		}
-	}
-	
-	private void checkAbstractType(Resource r,Class clazz) throws VerificationException {
-		if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
+
+		else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
 			return;
-		else 
-			throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an abstract java type");
-	}
-	
-	private void checkInstantiableClass(Resource r,Class clazz) throws VerificationException {
-		try {
-			if (Modifier.isAbstract(clazz.getModifiers())) {
-				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is an abstract (and not an instantiable) java type");
-			}
-			if (clazz.isInterface()) {
-				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is an interface and not an instantiable java type");
-			}
-			Constructor constructor = clazz.getConstructor(new Class[]{});
-			if (constructor==null || !Modifier.isPublic(constructor.getModifiers())) {
-				throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an instantiable java type");
-			}
 		}
-		catch (Exception x) {
-			throw new VerificationException("The value of resource "+r+" is " + clazz + " - this is not an instantiable java type");
+
+		else {
+			throw new VerificationException("The value of the Resource " + resource
+					+ " is " + clazz + " - this is not an abstract Java Type.");
 		}
 	}
 
-	@Override
-	public OntModel getOntology() {
-		if (ontology==null) {
-			ontology = ModelFactory.createOntologyModel();
-			ontology.read(JavaVocabulary.class.getResource("/net/java/treaty/vocabulary/builtins/java/java.owl").toString());
-		}
-		return ontology;
-	}
+	/**
+	 * <p>
+	 * A helper method that checks if a given {@link Class} is an instantiable
+	 * {@link Class}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} whose value the {@link Class} is that shall
+	 *          be checked.
+	 * @param clazz
+	 *          The {@link Class} that shall be checked.
+	 * @throws VerificationException
+	 *           Thrown, if the given {@link Class} is no instantiable
+	 *           {@link Class} or if the given {@link Class} is <code>null</code>.
+	 */
+	private void checkInstantiableClass(Resource resource, Class<?> clazz)
+			throws VerificationException {
 
+		if (clazz == null) {
+			throw new VerificationException("The value of Resource " + resource
+					+ " was null.");
+		}
+
+		else {
+
+			/* Try to check if the class is instantiable. */
+			try {
+
+				if (Modifier.isAbstract(clazz.getModifiers())) {
+					throw new VerificationException("The value of Resource " + resource
+							+ " is " + clazz + " - This is not an instantiable Java Type.");
+				}
+
+				else if (clazz.isInterface()) {
+					throw new VerificationException("The value of Resource " + resource
+							+ " is " + clazz + " - This is not an instantiable Java Type.");
+				}
+
+				else {
+					Constructor<?> constructor;
+					constructor = clazz.getConstructor(new Class[0]);
+
+					if (constructor == null
+							|| !Modifier.isPublic(constructor.getModifiers())) {
+						throw new VerificationException("The value of Resource " + resource
+								+ " is " + clazz + " - This is not an instantiable Java Type.");
+					}
+					// no else.
+				}
+				// end else.
+			}
+			// end try.
+
+			catch (Exception e) {
+				throw new VerificationException("The value of Resource " + resource
+						+ " is " + clazz + " - This is not an instantiable Java Type.");
+			}
+			// end catch.
+		}
+		// end else (class not null).
+	}
 }

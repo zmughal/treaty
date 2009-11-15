@@ -63,9 +63,9 @@ public class CompositeVocabularyTests {
 	public void testOwnerAnnotations() throws Exception {
 
 		assertEquals("builtin-java", voc.getOwnerAnnotation(new URI(
-				JavaVocabulary.INSTANTIABLE_CLASS)));
+				JavaVocabulary.TYPE_INSTANTIABLE_CLASS)));
 		assertEquals("builtin-java", voc.getOwnerAnnotation(new URI(
-				JavaVocabulary.IMPLEMENTS)));
+				JavaVocabulary.RELATIONSHIP_IMPLEMENTS)));
 
 		assertEquals("builtin-owl", voc.getOwnerAnnotation(new URI(
 				OWLVocabulary.TYPE_NAME_ONTOLOGY)));
@@ -90,8 +90,8 @@ public class CompositeVocabularyTests {
 		assertEquals(5, types.size());
 
 		assertTrue(types.contains(new URI("http://www.treaty.org/java#JavaType")));
-		assertTrue(types.contains(new URI(JavaVocabulary.ABSTRACT_TYPE)));
-		assertTrue(types.contains(new URI(JavaVocabulary.INSTANTIABLE_CLASS)));
+		assertTrue(types.contains(new URI(JavaVocabulary.TYPE_ABSTRACT_TYPE)));
+		assertTrue(types.contains(new URI(JavaVocabulary.TYPE_INSTANTIABLE_CLASS)));
 		assertTrue(types.contains(new URI(OWLVocabulary.TYPE_NAME_ONTOLOGY)));
 		assertTrue(types.contains(new URI(
 				"http://www.treaty.org/test#JavaSpecialClass")));
