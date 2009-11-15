@@ -18,6 +18,7 @@ import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
 import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
 import net.java.treaty.eclipse.Constants;
+import net.java.treaty.eclipse.EclipseContractFactory;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.Logger;
@@ -186,9 +187,9 @@ public class UpdateJobExtensionsAdded extends Job {
 
 								/* Add the contract to the resgistry. */
 								Contract legislatorContract;
-								legislatorContract = new Contract();
-								legislatorContract.setLocation(contractUrl);
-								legislatorContract.setOwner(legislatorExtension);
+								legislatorContract =
+										EclipseContractFactory.INSTANCE.createContract(contractUrl,
+												legislatorExtension);
 
 								EclipseContractRegistry.getInstance().updateContract(
 										UpdateType.ADD_CONTRACT, legislatorContract,
