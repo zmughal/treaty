@@ -38,6 +38,9 @@ public class EclipseAdapterFactory {
 	private static EclipseAdapterFactory myInstance;
 
 	/**
+	 * TODO Claas: Caching here can probably cause problems in long living
+	 * environments.
+	 * 
 	 * The already adapted {@link EclipsePlugin}s of this
 	 * {@link EclipseAdapterFactory}.
 	 */
@@ -45,6 +48,9 @@ public class EclipseAdapterFactory {
 			new WeakHashMap<Bundle, EclipsePlugin>();
 
 	/**
+	 * TODO Claas: Caching here can probably cause problems in long living
+	 * environments.
+	 * 
 	 * The already adapted {@link EclipseExtensionPoint}s of this
 	 * {@link EclipseAdapterFactory} identified by their unique identifier.
 	 */
@@ -52,11 +58,14 @@ public class EclipseAdapterFactory {
 			new HashMap<String, EclipseExtensionPoint>();
 
 	/**
+	 * TODO Claas: Caching here can probably cause problems in long living
+	 * environments.
+	 * 
 	 * The already adapted {@link EclipseExtension}s of this
-	 * {@link EclipseAdapterFactory} identified by their unique identifier.
+	 * {@link EclipseAdapterFactory} identified by their {@link IExtension}.
 	 */
-	private Map<String, EclipseExtension> myEclipseExtensions =
-			new HashMap<String, EclipseExtension>();
+	private Map<IExtension, EclipseExtension> myEclipseExtensions =
+			new HashMap<IExtension, EclipseExtension>();
 
 	/**
 	 * <p>
@@ -173,8 +182,8 @@ public class EclipseAdapterFactory {
 		EclipseExtension result;
 
 		/* Probably use a cached result. */
-		if (this.myEclipseExtensions.containsKey(extension.getUniqueIdentifier())) {
-			result = this.myEclipseExtensions.get(extension.getUniqueIdentifier());
+		if (this.myEclipseExtensions.containsKey(extension)) {
+			result = this.myEclipseExtensions.get(extension);
 		}
 
 		else {
@@ -190,7 +199,7 @@ public class EclipseAdapterFactory {
 			result = new EclipseExtension(eclipsePlugin, extension);
 
 			/* Cache the result. */
-			this.myEclipseExtensions.put(extension.getUniqueIdentifier(), result);
+			this.myEclipseExtensions.put(extension, result);
 		}
 		// end else.
 
