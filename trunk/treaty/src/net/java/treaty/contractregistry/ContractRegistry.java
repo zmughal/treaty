@@ -10,6 +10,7 @@
 
 package net.java.treaty.contractregistry;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -198,7 +199,18 @@ public class ContractRegistry {
 		case CONSUMER:
 
 			if (this.myConsumerContracts.containsKey(connector)) {
-				result.addAll(this.myConsumerContracts.get(connector));
+
+				try {
+					result.addAll(this.myConsumerContracts.get(connector));
+				}
+
+				catch (ConcurrentModificationException e) {
+					/*
+					 * FIXME Claas: Probably log this problem. Else remove try after
+					 * debugging.
+					 */
+					e.printStackTrace();
+				}
 			}
 			// no else.
 
@@ -209,7 +221,18 @@ public class ContractRegistry {
 			result = new LinkedHashSet<Contract>();
 
 			if (this.mySupplierContracts.containsKey(connector)) {
-				result.addAll(this.mySupplierContracts.get(connector));
+
+				try {
+					result.addAll(this.mySupplierContracts.get(connector));
+				}
+
+				catch (ConcurrentModificationException e) {
+					/*
+					 * FIXME Claas: Probably log this problem. Else remove try after
+					 * debugging.
+					 */
+					e.printStackTrace();
+				}
 			}
 			// no else.
 
@@ -220,7 +243,18 @@ public class ContractRegistry {
 			result = new LinkedHashSet<Contract>();
 
 			if (this.myLegislatorContracts.containsKey(connector)) {
-				result.addAll(this.myLegislatorContracts.get(connector));
+
+				try {
+					result.addAll(this.myLegislatorContracts.get(connector));
+				}
+
+				catch (ConcurrentModificationException e) {
+					/*
+					 * FIXME Claas: Probably log this problem. Else remove try after
+					 * debugging.
+					 */
+					e.printStackTrace();
+				}
 			}
 			// no else.
 
