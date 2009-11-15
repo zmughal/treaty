@@ -11,26 +11,40 @@
 package net.java.treaty;
 
 /**
- * This interface abstracts from extension points (consuming) and extensions (providing).  
+ * <p>
+ * This interface abstracts from {@link ConnectorType#CONSUMER}s (extension
+ * points) and {@link ConnectorType#SUPPLIER}s (extensions).
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public interface Connector extends Annotatable {
+
 	/**
-	 * Indicates the connector type.
-	 * @return
-	 */
-	ConnectorType getType();
-	/**
-	 * Get the connector id.
-	 * For instance, this could be the id of the eclipse extension point or extension.
-	 * @return
+	 * <p>
+	 * Returns the {@link Connector}s ID. For instance, this could be the ID of
+	 * the eclipse extension point or extension wrapped by this {@link Connector}.
+	 * </p>
+	 * 
+	 * @return The {@link Connector}s ID.
 	 */
 	String getId();
+
 	/**
-	 * Get the component that owns this connector.
-	 * @return
+	 * <p>
+	 * Returns the {@link Component} owning this {@link Connector}.
+	 * </p>
+	 * 
+	 * @return The {@link Component} owning this {@link Connector}.
 	 */
 	Component getOwner();
 
+	/**
+	 * <p>
+	 * Returns the {@link ConnectorType} of this {@link Connector}.
+	 * </p>
+	 * 
+	 * @return The {@link ConnectorType} of this {@link Connector}.
+	 */
+	ConnectorType getType();
 }
