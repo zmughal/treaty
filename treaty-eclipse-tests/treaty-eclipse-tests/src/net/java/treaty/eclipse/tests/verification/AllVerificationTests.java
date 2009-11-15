@@ -16,13 +16,13 @@ import org.junit.runners.Suite;
 /**
  * <p>
  * Provides a JUnit Test Suite containing all JUnit test cases of the package
- * <code>net.java.treaty.eclipse.verification</code> and its subpackages.
+ * <code>net.java.treaty.eclipse.verification</code> and its sub-packages.
  * </p>
  * 
  * @author Claas Wilke
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { ClockExcampleTests.class })
+@Suite.SuiteClasses( { ClockExampleTests.class, SystemExampleTests.class })
 public class AllVerificationTests {
 	/*
 	 * This class remains completely empty, being used only as a holder for the

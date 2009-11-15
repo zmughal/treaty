@@ -45,7 +45,7 @@ import org.osgi.framework.Bundle;
  * 
  * @author Claas Wilke
  */
-public class ClockExcampleTests {
+public class ClockExampleTests {
 
 	/**
 	 * <p>
@@ -145,6 +145,18 @@ public class ClockExcampleTests {
 		}
 	}
 
+	/**
+	 * The length of the pause between to loops during searching a
+	 * {@link Contract} for testing.
+	 */
+	private static final int CONTRACT_SEARCH_PAUSE_LENGTH = 100;
+
+	/**
+	 * The number of total loops to search a {@link Contract} for testing before
+	 * fail of the test case.
+	 */
+	private static final int CONTRACT_SEARCH_TOTAL_LOOPS = 100;
+
 	/** The ID of the clock example {@link Bundle}. */
 	private static final String BUNDLE_CLOCK_EXAMPLE_ID =
 			"net.java.treaty.eclipse.example.clock";
@@ -215,7 +227,7 @@ public class ClockExcampleTests {
 
 	/**
 	 * <p>
-	 * Initializes all test cases of the {@link ClockExcampleTests}.
+	 * Initializes all test cases of the {@link ClockExampleTests}.
 	 * </p>
 	 */
 	@BeforeClass
@@ -328,7 +340,7 @@ public class ClockExcampleTests {
 
 			/* Wait some time to improve CPU performance. */
 			try {
-				Thread.sleep(100);
+				Thread.sleep(CONTRACT_SEARCH_PAUSE_LENGTH);
 			}
 
 			catch (InterruptedException e) {
@@ -337,7 +349,7 @@ public class ClockExcampleTests {
 			// end catch.
 
 			loops++;
-			if (loops > 50) {
+			if (loops > CONTRACT_SEARCH_TOTAL_LOOPS) {
 				fail("Contract for test was not available. Test failed.");
 			}
 			// no else.
@@ -401,7 +413,7 @@ public class ClockExcampleTests {
 
 			/* Wait some time to improve CPU performance. */
 			try {
-				Thread.sleep(100);
+				Thread.sleep(CONTRACT_SEARCH_PAUSE_LENGTH);
 			}
 
 			catch (InterruptedException e) {
@@ -410,7 +422,7 @@ public class ClockExcampleTests {
 			// end catch.
 
 			loops++;
-			if (loops > 50) {
+			if (loops > CONTRACT_SEARCH_TOTAL_LOOPS) {
 				fail("Contract for test was not available. Test failed.");
 			}
 			// no else.
@@ -474,7 +486,7 @@ public class ClockExcampleTests {
 
 			/* Wait some time to improve CPU performance. */
 			try {
-				Thread.sleep(100);
+				Thread.sleep(CONTRACT_SEARCH_PAUSE_LENGTH);
 			}
 
 			catch (InterruptedException e) {
@@ -483,7 +495,7 @@ public class ClockExcampleTests {
 			// end catch.
 
 			loops++;
-			if (loops > 50) {
+			if (loops > CONTRACT_SEARCH_TOTAL_LOOPS) {
 				fail("Contract for test was not available. Test failed.");
 			}
 			// no else.
@@ -547,7 +559,7 @@ public class ClockExcampleTests {
 
 			/* Wait some time to improve CPU performance. */
 			try {
-				Thread.sleep(100);
+				Thread.sleep(CONTRACT_SEARCH_PAUSE_LENGTH);
 			}
 
 			catch (InterruptedException e) {
@@ -556,7 +568,7 @@ public class ClockExcampleTests {
 			// end catch.
 
 			loops++;
-			if (loops > 50) {
+			if (loops > CONTRACT_SEARCH_TOTAL_LOOPS) {
 				fail("Contract for test was not available. Test failed.");
 			}
 			// no else.
@@ -620,7 +632,7 @@ public class ClockExcampleTests {
 
 			/* Wait some time to improve CPU performance. */
 			try {
-				Thread.sleep(100);
+				Thread.sleep(CONTRACT_SEARCH_PAUSE_LENGTH);
 			}
 
 			catch (InterruptedException e) {
@@ -629,7 +641,7 @@ public class ClockExcampleTests {
 			// end catch.
 
 			loops++;
-			if (loops > 50) {
+			if (loops > CONTRACT_SEARCH_TOTAL_LOOPS) {
 				fail("Contract for test was not available. Test failed.");
 			}
 			// no else.
