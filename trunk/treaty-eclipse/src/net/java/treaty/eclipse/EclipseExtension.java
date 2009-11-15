@@ -10,6 +10,7 @@
 
 package net.java.treaty.eclipse;
 
+import net.java.treaty.Component;
 import net.java.treaty.ConnectorType;
 
 import org.eclipse.core.runtime.IExtension;
@@ -21,7 +22,8 @@ import org.eclipse.core.runtime.IExtension;
  * 
  * @author Jens Dietrich
  */
-public class EclipseExtension extends EclipseConnector {
+public class EclipseExtension extends EclipseConnector implements
+		Comparable<EclipseExtension> {
 
 	/** The wrapped {@link IExtension} of this {@link EclipseExtension}. */
 	private IExtension extension = null;
@@ -56,6 +58,56 @@ public class EclipseExtension extends EclipseConnector {
 		// no else.
 
 		this.setOwner(owner);
+	}
+
+	/**
+	 * <p>
+	 * {@link EclipseExtension} are compared by their owning {@link Component} and
+	 * their ID.
+	 * </p>
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(EclipseExtension eclipseExtension) {
+
+		int result;
+		result = 0;
+
+		/* Probably compare the owners' IDs. */
+		if (this.getOwner() != null && eclipseExtension.getOwner() != null) {
+
+			result =
+					this.getOwner().getId()
+							.compareTo(eclipseExtension.getOwner().getId());
+		}
+
+		else if (this.getOwner() != null) {
+			result = 1;
+		}
+
+		else if (eclipseExtension.getOwner() != null) {
+			result = 1;
+		}
+		// no else.
+
+		/* Probably compare the extensions' IDs. */
+		if (result == 0) {
+
+			if (this.getId() != null && eclipseExtension.getId() != null) {
+				result = this.getId().compareTo(eclipseExtension.getId());
+			}
+
+			else if (this.getId() != null) {
+				result = 1;
+			}
+
+			else if (eclipseExtension.getId() != null) {
+				result = -1;
+			}
+		}
+		// no else.
+
+		return result;
 	}
 
 	public ConnectorType getType() {
