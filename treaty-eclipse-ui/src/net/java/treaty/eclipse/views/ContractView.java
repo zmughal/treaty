@@ -898,6 +898,493 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		}
 	}
 
+	/**
+	 * <p>
+	 * Used to provide the labels for the {@link TreeViewer}.
+	 * </p>
+	 * 
+	 * @author Jens Dietrich
+	 */
+	private class ViewLabelProvider implements ITableLabelProvider {
+	
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.
+		 * jface.viewers.ILabelProviderListener)
+		 */
+		public void addListener(ILabelProviderListener arg0) {
+	
+			/* Do nothing. */
+		}
+	
+		/*
+		 * (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
+		 */
+		public void dispose() {
+	
+			/* Do nothing. */
+		}
+	
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang
+		 * .Object, int)
+		 */
+		public Image getColumnImage(Object node, int column) {
+	
+			Image result;
+			result = null;
+	
+			if (node instanceof TreeObject) {
+	
+				Object adaptedObject;
+				adaptedObject = ((TreeObject) node).getObject();
+	
+				if (column == 1) {
+					result = this.getStatusIcon(adaptedObject);
+				}
+	
+				else {
+	
+					if (adaptedObject instanceof Connector) {
+						Connector connector;
+						connector = (Connector) adaptedObject;
+	
+						if (connector.getType() == ConnectorType.SUPPLIER) {
+							result = getIcon("extension.gif");
+						}
+	
+						else if (connector.getType() == ConnectorType.CONSUMER) {
+							result = getIcon("extensionpoint.gif");
+						}
+						// no else.
+					}
+	
+					else if (adaptedObject instanceof Component) {
+						result = getIcon("plugin.gif");
+					}
+	
+					else if (adaptedObject instanceof Contract) {
+						result = getIcon("contract.gif");
+					}
+	
+					else if (adaptedObject instanceof AbstractCondition
+							&& !(adaptedObject instanceof ComplexCondition)) {
+						result = getIcon("constraint.gif");
+					}
+	
+					else if (adaptedObject instanceof Resource) {
+						boolean isVariable;
+						isVariable = ((Resource) adaptedObject).getName() == null;
+	
+						Image icon;
+						icon =
+								IconProvider.findIcon(((Resource) adaptedObject).getType(),
+										isVariable);
+	
+						if (icon != null) {
+							result = icon;
+						}
+	
+						/* Probably use a default image. */
+						else {
+	
+							if (isVariable) {
+								result = getIcon("variable.png");
+							}
+	
+							else {
+								getIcon("constant.png");
+							}
+						}
+						// end else.
+					}
+	
+					else if (adaptedObject instanceof KeyValueNode
+							&& (((KeyValueNode) adaptedObject).key.equals("relationship"))) {
+	
+						/* (Relationship). */
+						result = getIcon("link.gif");
+					}
+	
+					else if (node instanceof TreeParent) {
+						return PlatformUI.getWorkbench().getSharedImages().getImage(
+								ISharedImages.IMG_OBJ_FOLDER);
+					}
+					// no else.
+				}
+				// end else (column != 1).
+			}
+			// no else (node is no TreeObject, return null).
+	
+			return result;
+		}
+	
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang
+		 * .Object, int)
+		 */
+		public String getColumnText(Object node, int column) {
+	
+			String result;
+	
+			if (!(node instanceof TreeObject)) {
+				if (column == 0) {
+					result = node.toString();
+				}
+	
+				else {
+					result = "";
+				}
+			}
+	
+			else {
+				Object adaptedObject;
+				adaptedObject = ((TreeObject) node).getObject();
+	
+				if (column == 1) {
+					return this.getStatus(adaptedObject);
+				}
+	
+				else {
+	
+					if (adaptedObject instanceof EclipseExtensionPoint) {
+						result = ((Connector) adaptedObject).getId();
+					}
+	
+					else if (adaptedObject instanceof EclipseExtension) {
+						EclipseExtension eclipseExtension;
+						eclipseExtension = (EclipseExtension) adaptedObject;
+	
+						StringBuffer buffer;
+						buffer = new StringBuffer();
+						buffer.append(eclipseExtension.getOwner().getId()).append('/');
+	
+						String id;
+						id = eclipseExtension.getId();
+	
+						if (id == null) {
+							buffer.append("Anonymous Extension");
+						}
+	
+						else {
+							buffer.append(eclipseExtension.getId());
+						}
+	
+						result = buffer.toString();
+					}
+	
+					else if (adaptedObject instanceof Component) {
+						result = ((Component) adaptedObject).getId();
+					}
+	
+					else if (adaptedObject instanceof Contract) {
+						Contract contract;
+						contract = (Contract) adaptedObject;
+	
+						URL contractUrl;
+						contractUrl = contract.getLocation();
+	
+						if (contractUrl == null) {
+							return "A Contract";
+						}
+	
+						else {
+							/*
+							 * Check whether or not the contract has been provided by third
+							 * party.
+							 */
+							if (contract.getOwner() != null
+									&& !contract.getConsumer().equals(contract.getOwner())) {
+								Connector connector;
+								connector = contract.getOwner();
+	
+								Component component;
+								component = connector.getOwner();
+	
+								String componentID;
+								componentID = component.getId();
+	
+								result = componentID + contractUrl.getPath();
+							}
+	
+							/* Else the context is defined by parent node. */
+							else {
+								result = contractUrl.getPath();
+							}
+						}
+						// end else (contractURL != null).
+					}
+	
+					else if (adaptedObject instanceof Resource) {
+						Resource resource;
+						resource = (Resource) adaptedObject;
+	
+						result = this.toString(resource);
+					}
+	
+					else if (adaptedObject instanceof KeyValueNode) {
+						KeyValueNode keyValueNode;
+						keyValueNode = (KeyValueNode) adaptedObject;
+	
+						result = keyValueNode.key + ": " + keyValueNode.value;
+					}
+	
+					else if (adaptedObject instanceof RelationshipCondition) {
+						result = this.toString((RelationshipCondition) adaptedObject);
+					}
+	
+					else if (adaptedObject instanceof PropertyCondition) {
+						result = this.toString((PropertyCondition) adaptedObject);
+					}
+	
+					else if (adaptedObject instanceof ExistsCondition) {
+						result = this.toString((ExistsCondition) adaptedObject);
+					}
+	
+					else if (adaptedObject instanceof ComplexCondition) {
+						result = ((ComplexCondition) adaptedObject).getConnective();
+					}
+	
+					else if (adaptedObject instanceof Negation) {
+						result = "not";
+					}
+	
+					else {
+						return adaptedObject.toString();
+					}
+					// end else (instanceof check).
+				}
+				// end else (column != 1).
+			}
+			// end else (node is TreeObject).
+	
+			return result;
+		}
+	
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang
+		 * .Object, java.lang.String)
+		 */
+		public boolean isLabelProperty(Object arg0, String arg1) {
+	
+			/* Do nothing. */
+			return false;
+		}
+	
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse
+		 * .jface.viewers.ILabelProviderListener)
+		 */
+		public void removeListener(ILabelProviderListener arg0) {
+	
+			/* Do nothing. */
+		}
+	
+		/**
+		 * <p>
+		 * Returns the verification status of a given {@link Object} as a
+		 * {@link String}.
+		 * </p>
+		 * 
+		 * @param object
+		 *          The {@link Object} whose status shall be returned.
+		 * @return The verification status as a {@link String}.
+		 */
+		private String getStatus(Object object) {
+	
+			String result;
+			result = "";
+	
+			if (object instanceof Annotatable) {
+	
+				Annotatable annotatable;
+				Object status;
+	
+				annotatable = (Annotatable) object;
+				status = annotatable.getProperty(VERIFICATION_RESULT);
+	
+				if (status == VerificationResult.FAILURE) {
+					result = "failure";
+				}
+	
+				else if (status == VerificationResult.SUCCESS) {
+					result = "success";
+				}
+	
+				else if (status == VerificationResult.UNKNOWN) {
+					result = "unknown";
+				}
+	
+				else {
+					result = "not verified";
+				}
+				// no else.
+			}
+			return result;
+		}
+	
+		/**
+		 * <p>
+		 * Returns a {@link String} representation of a given
+		 * {@link ExistsCondition}.
+		 * </p>
+		 * 
+		 * @param condition
+		 *          The {@link ExistsCondition} whose {@link String} representation
+		 *          shall be returned.
+		 * @return A {@link String} representation of a given
+		 *         {@link ExistsCondition}.
+		 */
+		private String toString(ExistsCondition condition) {
+	
+			StringBuffer buf = new StringBuffer();
+			buf.append(toString(condition.getResource()));
+			buf.append(" must exist");
+			return buf.toString();
+		}
+	
+		/**
+		 * <p>
+		 * Returns a {@link String} representation of a given
+		 * {@link PropertyCondition}.
+		 * </p>
+		 * 
+		 * @param condition
+		 *          The {@link PropertyCondition} whose {@link String}
+		 *          representation shall be returned.
+		 * @return A {@link String} representation of a given
+		 *         {@link PropertyCondition}.
+		 */
+		private String toString(PropertyCondition condition) {
+	
+			StringBuffer buf = new StringBuffer();
+			buf.append(toString(condition.getResource()));
+			buf.append(' ');
+	
+			Iterator<String> propertyNameIterator;
+			propertyNameIterator = condition.getPropertyNames();
+	
+			while (propertyNameIterator.hasNext()) {
+				buf.append(condition.getProperty(propertyNameIterator.next()));
+				buf.append(' ');
+			}
+			// end while
+	
+			buf.append(' ');
+			buf.append(condition.getOperator().toString());
+			buf.append(' ');
+			buf.append(condition.getValue());
+			return buf.toString();
+		}
+	
+		/**
+		 * <p>
+		 * Returns a {@link String} representation of a given
+		 * {@link RelationshipCondition}.
+		 * </p>
+		 * 
+		 * @param condition
+		 *          The {@link RelationshipCondition} whose {@link String}
+		 *          representation shall be returned.
+		 * @return A {@link String} representation of a given
+		 *         {@link RelationshipCondition}.
+		 */
+		private String toString(RelationshipCondition condition) {
+	
+			StringBuffer buf = new StringBuffer();
+			buf.append(toString(condition.getResource1()));
+			buf.append(' ');
+			String p = condition.getRelationship().toString();
+			p = p.substring(p.lastIndexOf('#') + 1); // last token
+			buf.append(p);
+			buf.append(' ');
+			buf.append(toString(condition.getResource2()));
+			return buf.toString();
+		}
+	
+		/**
+		 * <p>
+		 * Returns a {@link String} representation of a given {@link Resource}.
+		 * </p>
+		 * 
+		 * @param resource
+		 *          The {@link Resource} whose {@link String} representation shall
+		 *          be returned.
+		 * @return A {@link String} representation of a given {@link Resource}.
+		 */
+		private String toString(Resource resource) {
+	
+			if (resource.getName() != null) {
+				boolean loadProblem =
+						resource.getValue() == null
+								&& resource.getProperty(VERIFICATION_EXCEPTION) != null;
+				return loadProblem ? "!" + resource.getName() : resource.getName();
+			}
+			else {
+				return resource.getId();
+			}
+		}
+	
+		/**
+		 * <p>
+		 * Returns the status icon (verification result) of a given node.
+		 * </p>
+		 * 
+		 * @param node
+		 *          The node whose {@link Image} shall be returned.
+		 * @return The status icon (verification result) of a given node.
+		 */
+		private Image getStatusIcon(Object node) {
+	
+			Image result;
+			result = null;
+	
+			if (node instanceof Annotatable) {
+				Annotatable annotatable;
+				annotatable = (Annotatable) node;
+	
+				Object status;
+				status = annotatable.getProperty(VERIFICATION_RESULT);
+	
+				// if (c instanceof Constraint && !((Constraint)c).isInstantiated()) {
+				// return getIcon("status_notinstantiated.gif"); }
+	
+				if (status == VerificationResult.FAILURE) {
+					result = getIcon("status_failure.gif");
+				}
+	
+				else if (status == VerificationResult.SUCCESS) {
+					result = getIcon("status_success.gif");
+				}
+	
+				else {
+					result = getIcon("status_open.gif");
+				}
+				// end else.
+			}
+			// no else.
+	
+			return result;
+		}
+	}
+
+	/**
+	 * A boolean that specifies whether or not the {@link ContractView} has been
+	 * updated after the {@link EclipseContractRegistry} changed for the last
+	 * time.
+	 */
+	private boolean isUpdated;
+
 	/** {@link Action} to print the current stack trace. */
 	private Action myActionPrintStackTrace;
 
@@ -943,35 +1430,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	}
 
-	/**
-	 * <p>
-	 * Passing the focus request to the viewer's control.
-	 * </p>
-	 */
-	public void setFocus() {
-
-		this.myViewer.getControl().setFocus();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.contractregistry.ContractRegistryListener#update()
-	 */
-	public void update() {
-
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see java.lang.Runnable#run()
-			 */
-			public void run() {
-
-				actionReloadContracts();
-			}
-		});
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
@@ -988,6 +1446,42 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		}
 
 		super.dispose();
+	}
+
+	/**
+	 * <p>
+	 * Passing the focus request to the viewer's control.
+	 * </p>
+	 */
+	public void setFocus() {
+
+		this.myViewer.getControl().setFocus();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.contractregistry.ContractRegistryListener#update()
+	 */
+	public void update() {
+
+		/* Set the flag before doing anything. */
+		this.isUpdated = false;
+
+		/*
+		 * Each update causes a thread. But each thread that is executed afterwards
+		 * the flag has been set to true again will not do anything.
+		 */
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			public void run() {
+
+				actionReloadContracts();
+			}
+		});
 	}
 
 	/**
@@ -1070,17 +1564,27 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	 * version of the current {@link Contract} model.
 	 * </p>
 	 */
-	private void actionReloadContracts() {
+	private synchronized void actionReloadContracts() {
 
-		/* Load the contracted plug-ins. */
-		this.myContractedPlugins =
-				EclipseContractRegistry.getInstance().getContractedEclipsePlugins();
+		if (!this.isUpdated) {
 
-		/* Update the viewer. */
-		this.myViewer.setContentProvider(new ViewContentProvider());
-		this.myViewer.setInput(getViewSite());
+			/*
+			 * It is very important that this flag is set before the contracts are
+			 * updated to avoid unwanted side effects.
+			 */
+			this.isUpdated = true;
 
-		this.switchActions(true);
+			/* Load the contracted plug-ins. */
+			this.myContractedPlugins =
+					EclipseContractRegistry.getInstance().getContractedEclipsePlugins();
+
+			/* Update the viewer. */
+			this.myViewer.setContentProvider(new ViewContentProvider());
+			this.myViewer.setInput(getViewSite());
+
+			this.switchActions(true);
+		}
+		// no else.
 	}
 
 	/**
@@ -1709,352 +2213,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			return element == ROOT;
 		}
 	};
-
-	/**
-	 * <p>
-	 * Used to provide the labels for the {@link TreeViewer}.
-	 * </p>
-	 * 
-	 * @author Jens Dietrich
-	 */
-	private class ViewLabelProvider implements ITableLabelProvider {
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang
-		 * .Object, int)
-		 */
-		public String getColumnText(Object node, int column) {
-
-			String result;
-
-			if (!(node instanceof TreeObject)) {
-				if (column == 0) {
-					result = node.toString();
-				}
-
-				else {
-					result = "";
-				}
-			}
-
-			else {
-				Object adaptedObject;
-				adaptedObject = ((TreeObject) node).getObject();
-
-				if (column == 1) {
-					return this.getStatus(adaptedObject);
-				}
-
-				else {
-
-					if (adaptedObject instanceof EclipseExtensionPoint) {
-						result = ((Connector) adaptedObject).getId();
-					}
-
-					else if (adaptedObject instanceof EclipseExtension) {
-						EclipseExtension eclipseExtension;
-						eclipseExtension = (EclipseExtension) adaptedObject;
-
-						StringBuffer buffer;
-						buffer = new StringBuffer();
-						buffer.append(eclipseExtension.getOwner().getId()).append('/');
-
-						String id;
-						id = eclipseExtension.getId();
-
-						if (id == null) {
-							buffer.append("Anonymous Extension");
-						}
-
-						else {
-							buffer.append(eclipseExtension.getId());
-						}
-
-						result = buffer.toString();
-					}
-
-					else if (adaptedObject instanceof Component) {
-						result = ((Component) adaptedObject).getId();
-					}
-
-					else if (adaptedObject instanceof Contract) {
-						Contract contract;
-						contract = (Contract) adaptedObject;
-
-						URL contractUrl;
-						contractUrl = contract.getLocation();
-
-						if (contractUrl == null) {
-							return "A Contract";
-						}
-
-						else {
-							/*
-							 * Check whether or not the contract has been provided by third
-							 * party.
-							 */
-							if (contract.getOwner() != null
-									&& !contract.getConsumer().equals(contract.getOwner())) {
-								Connector connector;
-								connector = contract.getOwner();
-
-								Component component;
-								component = connector.getOwner();
-
-								String componentID;
-								componentID = component.getId();
-
-								result = componentID + contractUrl.getPath();
-							}
-
-							/* Else the context is defined by parent node. */
-							else {
-								result = contractUrl.getPath();
-							}
-						}
-						// end else (contractURL != null).
-					}
-
-					else if (adaptedObject instanceof Resource) {
-						Resource resource;
-						resource = (Resource) adaptedObject;
-
-						result = this.toString(resource);
-					}
-
-					else if (adaptedObject instanceof KeyValueNode) {
-						KeyValueNode keyValueNode;
-						keyValueNode = (KeyValueNode) adaptedObject;
-
-						result = keyValueNode.key + ": " + keyValueNode.value;
-					}
-
-					else if (adaptedObject instanceof RelationshipCondition) {
-						result = this.toString((RelationshipCondition) adaptedObject);
-					}
-
-					else if (adaptedObject instanceof PropertyCondition) {
-						result = this.toString((PropertyCondition) adaptedObject);
-					}
-
-					else if (adaptedObject instanceof ExistsCondition) {
-						result = this.toString((ExistsCondition) adaptedObject);
-					}
-
-					else if (adaptedObject instanceof ComplexCondition) {
-						result = ((ComplexCondition) adaptedObject).getConnective();
-					}
-
-					else if (adaptedObject instanceof Negation) {
-						result = "not";
-					}
-
-					else {
-						return adaptedObject.toString();
-					}
-					// end else (instanceof check).
-				}
-				// end else (column != 1).
-			}
-			// end else (node is TreeObject).
-
-			return result;
-		}
-
-		/**
-		 * <p>
-		 * Returns the verification status of a given {@link Object} as a
-		 * {@link String}.
-		 * </p>
-		 * 
-		 * @param object
-		 *          The {@link Object} whose status shall be returned.
-		 * @return The verification status as a {@link String}.
-		 */
-		private String getStatus(Object object) {
-
-			String result;
-			result = "";
-
-			if (object instanceof Annotatable) {
-
-				Annotatable annotatable;
-				Object status;
-
-				annotatable = (Annotatable) object;
-				status = annotatable.getProperty(VERIFICATION_RESULT);
-
-				if (status == VerificationResult.FAILURE) {
-					result = "failure";
-				}
-
-				else if (status == VerificationResult.SUCCESS) {
-					result = "success";
-				}
-
-				else if (status == VerificationResult.UNKNOWN) {
-					result = "unknown";
-				}
-
-				else {
-					result = "not verified";
-				}
-				// no else.
-			}
-			return result;
-		}
-
-		private String toString(RelationshipCondition c) {
-
-			StringBuffer buf = new StringBuffer();
-			buf.append(toString(c.getResource1()));
-			buf.append(' ');
-			String p = c.getRelationship().toString();
-			p = p.substring(p.lastIndexOf('#') + 1); // last token
-			buf.append(p);
-			buf.append(' ');
-			buf.append(toString(c.getResource2()));
-			return buf.toString();
-		}
-
-		private String toString(PropertyCondition c) {
-
-			StringBuffer buf = new StringBuffer();
-			buf.append(toString(c.getResource()));
-			buf.append(' ');
-
-			Iterator<String> propertyNameIterator;
-			propertyNameIterator = c.getPropertyNames();
-
-			while (propertyNameIterator.hasNext()) {
-				buf.append(c.getProperty(propertyNameIterator.next()));
-				buf.append(' ');
-			}
-			// end while
-
-			buf.append(' ');
-			buf.append(c.getOperator().toString());
-			buf.append(' ');
-			buf.append(c.getValue());
-			return buf.toString();
-		}
-
-		private String toString(ExistsCondition c) {
-
-			StringBuffer buf = new StringBuffer();
-			buf.append(toString(c.getResource()));
-			buf.append(" must exist");
-			return buf.toString();
-		}
-
-		private String toString(Resource r) {
-
-			if (r.getName() != null) {
-				boolean loadProblem =
-						r.getValue() == null
-								&& r.getProperty(VERIFICATION_EXCEPTION) != null;
-				return loadProblem ? "!" + r.getName() : r.getName();
-			}
-			else {
-				return r.getId();
-			}
-		}
-
-		// get the load/verification status icon
-		private Image getStatusIcon(Object n) {
-
-			if (n instanceof Annotatable) {
-				Annotatable c = (Annotatable) n;
-				Object status = c.getProperty(VERIFICATION_RESULT);
-				/**
-				 * if (c instanceof Constraint && !((Constraint)c).isInstantiated()) {
-				 * return getIcon("status_notinstantiated.gif"); }
-				 */
-				if (status == VerificationResult.FAILURE) {
-					return getIcon("status_failure.gif");
-				}
-				else if (status == VerificationResult.SUCCESS) {
-					return getIcon("status_success.gif");
-				}
-				else {
-					return getIcon("status_open.gif");
-				}
-			}
-			return null;
-		}
-
-		public Image getColumnImage(Object n, int col) {
-
-			if (!(n instanceof TreeObject)) {
-				return null;
-			}
-
-			Object obj = ((TreeObject) n).getObject();
-			if (col == 1) {
-				return getStatusIcon(obj);
-			}
-			if (obj instanceof Connector) {
-				Connector c = (Connector) obj;
-				if (c.getType() == ConnectorType.SUPPLIER) {
-					return getIcon("extension.gif");
-				}
-				else if (c.getType() == ConnectorType.CONSUMER) {
-					return getIcon("extensionpoint.gif");
-				}
-			}
-			else if (obj instanceof Component) {
-				return getIcon("plugin.gif");
-			}
-			else if (obj instanceof Contract) {
-				return getIcon("contract.gif");
-			}
-			else if (obj instanceof AbstractCondition
-					&& !(obj instanceof ComplexCondition)) {
-				return getIcon("constraint.gif");
-			}
-			else if (obj instanceof Resource) {
-				boolean var = ((Resource) obj).getName() == null;
-				Image icon = IconProvider.findIcon(((Resource) obj).getType(), var);
-				if (icon != null) {
-					return icon;
-				}
-				else {
-					return var ? getIcon("variable.png") : getIcon("constant.png");
-				}
-			}
-			else if (obj instanceof KeyValueNode
-					&& (((KeyValueNode) obj).key.equals("relationship"))) { // relationships
-				return getIcon("link.gif");
-			}
-
-			else if (n instanceof TreeParent) {
-				return PlatformUI.getWorkbench().getSharedImages().getImage(
-						ISharedImages.IMG_OBJ_FOLDER);
-			}
-
-			return null;
-		}
-
-		public void addListener(ILabelProviderListener arg0) {
-
-		}
-
-		public boolean isLabelProperty(Object arg0, String arg1) {
-
-			return false;
-		}
-
-		public void removeListener(ILabelProviderListener arg0) {
-
-		}
-
-		public void dispose() {
-
-		}
-
-	}
 
 	/**
 	 * <p>
