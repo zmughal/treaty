@@ -27,36 +27,61 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  */
 public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
 
-	/**
-	 * Get the icon
-	 * 
-	 * @param type
-	 *          the type
-	 * @param isVariable
-	 *          whether the resource is a variable
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.views.IconProvider#getIcon(java.net.URI,
+	 * boolean)
 	 */
 	public Image getIcon(URI type, boolean isVariable) {
 
-		String t = type.toString();
-		ImageDescriptor d = null;
+		Image result;
 
-		if (JavaVocabulary.INSTANTIABLE_CLASS.equals(t)) {
-			d =
-					isVariable ? getImageDescriptor("icons/class_var.gif")
-							: getImageDescriptor("icons/class.gif");
+		String typeURI;
+		typeURI = type.toString();
+
+		ImageDescriptor imageDescriptor = null;
+
+		if (JavaVocabulary.TYPE_INSTANTIABLE_CLASS.equals(typeURI)) {
+
+			if (isVariable) {
+				imageDescriptor = this.getImageDescriptor("icons/class_var.gif");
+			}
+
+			else {
+				imageDescriptor = this.getImageDescriptor("icons/class.gif");
+			}
 		}
-		else if (JavaVocabulary.ABSTRACT_TYPE.equals(t)) {
-			d =
-					isVariable ? getImageDescriptor("icons/interface_var.gif")
-							: getImageDescriptor("icons/interface.gif");
+		else if (JavaVocabulary.TYPE_ABSTRACT_TYPE.equals(typeURI)) {
+
+			if (isVariable) {
+				imageDescriptor = this.getImageDescriptor("icons/interface_var.gif");
+			}
+
+			else {
+				imageDescriptor = this.getImageDescriptor("icons/interface.gif");
+			}
 		}
-		if (d != null) {
-			return d.createImage();
+
+		if (imageDescriptor != null) {
+			result = imageDescriptor.createImage();
 		}
-		return null;
+
+		else {
+			result = null;
+		}
+
+		return result;
 	}
 
+	/**
+	 * <p>
+	 * Returns the {@link ImageDescriptor} for a given path.
+	 * </p>
+	 * 
+	 * @param path
+	 *          The path whose {@link ImageDescriptor} shall be returned.
+	 * @return The {@link ImageDescriptor} for a given path.
+	 */
 	private ImageDescriptor getImageDescriptor(String path) {
 
 		return AbstractUIPlugin
