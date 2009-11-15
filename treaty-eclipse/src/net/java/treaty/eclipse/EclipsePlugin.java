@@ -28,7 +28,8 @@ import org.osgi.framework.Bundle;
  * @author Jens Dietrich
  */
 
-public class EclipsePlugin extends PropertySupport implements Component {
+public class EclipsePlugin extends PropertySupport implements Component,
+		Comparable<EclipsePlugin> {
 
 	/** The {@link EclipseExtensionPoint}s of this {@link EclipsePlugin}. */
 	private LinkedHashSet<EclipseExtensionPoint> extensionPoints =
@@ -54,6 +55,34 @@ public class EclipsePlugin extends PropertySupport implements Component {
 		super();
 
 		this.bundle = bundle;
+	}
+
+	/**
+	 * <p>
+	 * {@link EclipsePlugin}s are compared by their ID.
+	 * </p>
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(EclipsePlugin eclipsePlugin) {
+
+		int result;
+		result = 0;
+
+		if (this.getId() != null && eclipsePlugin.getId() != null) {
+			result = this.getId().compareTo(eclipsePlugin.getId());
+		}
+
+		else if (this.getId() != null) {
+			result = 1;
+		}
+
+		else if (eclipsePlugin.getId() != null) {
+			result = 1;
+		}
+		// no else.
+
+		return result;
 	}
 
 	/*
