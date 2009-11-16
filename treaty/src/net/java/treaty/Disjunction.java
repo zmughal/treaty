@@ -39,7 +39,7 @@ public class Disjunction extends ComplexCondition {
 
 		Disjunction result = new Disjunction();
 
-		for (AbstractCondition condition : this.parts) {
+		for (AbstractCondition condition : this.myParts) {
 			result.addCondition(condition.replaceResources(resources));
 		}
 
@@ -55,18 +55,18 @@ public class Disjunction extends ComplexCondition {
 
 		boolean result;
 
-		if (this.parts == null) {
+		if (this.myParts == null) {
 			result = false;
 		}
 
-		else if (this.parts.size() == 0) {
+		else if (this.myParts.size() == 0) {
 			result = true;
 		}
 
 		else {
 			result = false;
 
-			for (AbstractCondition part : this.parts) {
+			for (AbstractCondition part : this.myParts) {
 
 				if (part.isInstantiated()) {
 					result = true;
@@ -85,7 +85,7 @@ public class Disjunction extends ComplexCondition {
 
 		boolean f = visitor.visit(this);
 		if (f) {
-			for (AbstractCondition p : parts)
+			for (AbstractCondition p : myParts)
 				p.accept(visitor);
 		}
 		visitor.endVisit(this);
@@ -96,7 +96,7 @@ public class Disjunction extends ComplexCondition {
 
 		if (policy == VerificationPolicy.DETAILED) {
 			boolean result = false;
-			for (AbstractCondition p : parts)
+			for (AbstractCondition p : myParts)
 				result = result | p.check(report, verifier, policy);
 			if (result)
 				report.log(this, VerificationResult.SUCCESS);
@@ -107,7 +107,7 @@ public class Disjunction extends ComplexCondition {
 		}
 		else {
 			boolean result = false;
-			for (AbstractCondition p : parts)
+			for (AbstractCondition p : myParts)
 				result = result || p.check(report, verifier, policy);
 			if (result)
 				report.log(this, VerificationResult.SUCCESS);

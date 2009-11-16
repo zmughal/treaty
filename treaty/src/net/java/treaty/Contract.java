@@ -13,7 +13,10 @@ package net.java.treaty;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -27,16 +30,74 @@ import java.util.List;
 public class Contract extends PropertySupport implements ConditionContext,
 		Visitable, Comparable<Contract> {
 
+	/**
+	 * A flag indicating that {@link Contract}s refer types and predicates that
+	 * are unknown. This is used when vocabularies are defined in a modular
+	 * manner. It is then possible that {@link Contract}s are loaded, but the
+	 * referenced variables are not available if this flag is <code>true</code>,
+	 * it is generally not possible to check/verify this {@link Contract}.
+	 */
+	private boolean isShadow = false;
+
+	/**
+	 * Contains all {@link AbstractCondition}s that belong to this
+	 * {@link Contract} after the {@link Contract} has been read.
+	 */
+	private List<AbstractCondition> myConstraints =
+			new ArrayList<AbstractCondition>();
+
+	/**
+	 * The {@link Connector} playing the {@link Role#CONSUMER} role in this
+	 * {@link Contract}.
+	 */
+	private Connector myConsumer = null;
+
+	/**
+	 * Consumer Context. Defines how instantiation is done - this is mainly useful
+	 * for supplier resources. These are the resources that are usually
+	 * instantiated.
+	 */
+	private String myConsumerContext = null;
+
 	/** The resources of the consumer {@link Connector} of this {@link Contract}. */
-	private java.util.Map<String, Resource> myConsumerResources =
-			new java.util.LinkedHashMap<String, Resource>();
+	private Map<String, Resource> myConsumerResources =
+			new LinkedHashMap<String, Resource>();
+
+	/**
+	 * A {@link Contract} can probably have another {@link Contract} as
+	 * definition, e.g. a {@link Contract} this {@link Contract} has been
+	 * instantiated of.
+	 */
+	private Contract myDefinition = null;
+
+	/**
+	 * External (legislator) Context. Defines how instantiation is done - this is
+	 * mainly useful for supplier resources. These are the resources that are
+	 * usually instantiated.
+	 */
+	private String myExternalContext = null;
 
 	/**
 	 * The resources of the probably existing legislator {@link Connector} of this
 	 * {@link Contract}.
 	 */
-	private java.util.Map<String, Resource> myLegislatorResources =
-			new java.util.LinkedHashMap<String, Resource>();
+	private Map<String, Resource> myLegislatorResources =
+			new LinkedHashMap<String, Resource>();
+
+	/** The physical location of the {@link Contract}. */
+	private URL myLocation = null;
+
+	/**
+	 * Actions (as {@link URI}s) that will be executed depending on the failed
+	 * outcome of verification.
+	 */
+	private List<URI> myOnVerificationFailsActions = new ArrayList<URI>();
+
+	/**
+	 * Actions (as {@link URI}s) that will be executed depending on the
+	 * successfull outcome of verification.
+	 */
+	private List<URI> myOnVerificationSucceedsActions = new ArrayList<URI>();
 
 	/**
 	 * The owner of this {@link Contract}. The owner is set when the
@@ -45,9 +106,29 @@ public class Contract extends PropertySupport implements ConditionContext,
 	 */
 	private Connector myOwner = null;
 
+	/**
+	 * The {@link Connector} playing the {@link Role#SUPPLIER} role in this
+	 * {@link Contract}.
+	 */
+	private Connector mySupplier = null;
+
+	/**
+	 * Supplier Context. Defines how instantiation is done - this is mainly useful
+	 * for supplier resources. These are the resources that are usually
+	 * instantiated.
+	 */
+	private String mySupplierContext = null;
+
 	/** The resources of the supplier {@link Connector} of this {@link Contract}. */
-	private java.util.Map<String, Resource> mySupplierResources =
-			new java.util.LinkedHashMap<String, Resource>();
+	private Map<String, Resource> mySupplierResources =
+			new LinkedHashMap<String, Resource>();
+
+	/**
+	 * Contains all events (as {@link URI}s) that trigger the verification of this
+	 * {@link Contract}, such as life cycle events (installed, // activated,
+	 * updated, ...).
+	 */
+	private List<URI> myTriggers = new ArrayList<URI>();
 
 	/**
 	 * <p>
@@ -75,10 +156,82 @@ public class Contract extends PropertySupport implements ConditionContext,
 	public Contract(Connector consumer, Connector connector2, URL location) {
 
 		super();
-		this.location = location;
+		this.myLocation = location;
 		assert (consumer.getType() == ConnectorType.CONSUMER);
-		this.consumer = consumer;
+		this.myConsumer = consumer;
 		assert (consumer.getType() == ConnectorType.SUPPLIER);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Visitable#accept(net.java.treaty.ContractVisitor)
+	 */
+	public void accept(ContractVisitor visitor) {
+
+		boolean willVisitorEnter;
+		willVisitorEnter = visitor.visit(this);
+
+		/* Probably visit the elements of this Contract. */
+		if (willVisitorEnter) {
+
+			/* Probably visit consumer resources. */
+			if (visitor.visitConsumerResources(this.myConsumerResources.values())) {
+
+				for (Resource resource : this.myConsumerResources.values()) {
+					resource.accept(visitor);
+				}
+
+				visitor.endVisitConsumerResources(this.myConsumerResources.values());
+			}
+			// no else.
+
+			/* Probably visit supplier resources. */
+			if (visitor.visitSupplierResources(this.mySupplierResources.values())) {
+
+				for (Resource resource : this.mySupplierResources.values()) {
+					resource.accept(visitor);
+				}
+
+				visitor.endVisitSupplierResources(this.mySupplierResources.values());
+			}
+			// no else.
+
+			/* Probably visit legislator resources. */
+
+			if (visitor.visitExternalResources(this.mySupplierResources.values())) {
+
+				for (Resource r : this.myLegislatorResources.values()) {
+					r.accept(visitor);
+				}
+
+				visitor.endVisitExternalResources(this.mySupplierResources.values());
+			}
+			// no else.
+
+			/* Probably visit the conditions of this Contract. */
+			if (visitor.visitConditions(this.myConstraints)) {
+
+				for (AbstractCondition condition : getConstraints()) {
+					condition.accept(visitor);
+				}
+
+				visitor.endVisitConditions(this.myConstraints);
+			}
+			// no else.
+		}
+		// no else (visitor will not enter).
+
+		visitor.endVisit(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seenz.ac.massey.treaty.ConditionOwner#addCondition(nz.ac.massey.treaty.
+	 * AbstractCondition)
+	 */
+	public void addCondition(AbstractCondition condition) {
+
+		this.myConstraints.add(condition);
 	}
 
 	/**
@@ -169,6 +322,135 @@ public class Contract extends PropertySupport implements ConditionContext,
 		return result;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+
+		if (this.myLocation == null) {
+			return super.toString();
+		}
+
+		else {
+			return new StringBuffer().append(super.toString()).append('(').append(
+					this.myLocation).append(')').toString();
+		}
+	}
+
+	/**
+	 * <p>
+	 * Adds a consumer {@link Resource} to this {@link Contract}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} that shall be added.
+	 * @throws InvalidContractException
+	 *           Thrown if a given {@link Resource} has already been added to this
+	 *           {@link Contract}.
+	 */
+	public void addConsumerResource(Resource resource)
+			throws InvalidContractException {
+
+		this.checkId(resource);
+
+		// FIXME Claas: Either this check is wrong or at least its message.
+		if (!resource.isInstantiated()) {
+			throw new InvalidContractException(
+					"External resources cannot be variables");
+		}
+		// no else.
+
+		resource.setOwner(this.myConsumer);
+		this.myConsumerResources.put(resource.getId(), resource);
+	}
+
+	/**
+	 * <p>
+	 * Adds a external (legislator) {@link Resource} to this {@link Contract}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} that shall be added.
+	 * @throws InvalidContractException
+	 *           Thrown if a given {@link Resource} has already been added to this
+	 *           {@link Contract}.
+	 */
+	public void addExternalResource(Resource resource)
+			throws InvalidContractException {
+
+		this.checkId(resource);
+
+		resource.setOwner(this.myOwner);
+		this.myLegislatorResources.put(resource.getId(), resource);
+	}
+
+	/**
+	 * <p>
+	 * Adds an action (as {@link URI}s) that will be executed depending on the
+	 * failed outcome of verification.
+	 * </p>
+	 * 
+	 * @param uri
+	 *          The action (as a {@link URI}) that shall be added.
+	 */
+	public void addOnVerificationFailsAction(URI uri)
+			throws InvalidContractException {
+
+		this.myOnVerificationFailsActions.add(uri);
+	}
+
+	/**
+	 * <p>
+	 * Adds an action (as {@link URI}s) that will be executed depending on the
+	 * successful outcome of verification.
+	 * </p>
+	 * 
+	 * @param uri
+	 *          The action (as a {@link URI}) that shall be added.
+	 */
+	public void addOnVerificationSucceedsAction(URI uri)
+			throws InvalidContractException {
+
+		this.myOnVerificationSucceedsActions.add(uri);
+	}
+
+	/**
+	 * <p>
+	 * Adds a supplier {@link Resource} to this {@link Contract}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} that shall be added.
+	 * @throws InvalidContractException
+	 *           Thrown if a given {@link Resource} has already been added to this
+	 *           {@link Contract}.
+	 */
+	public void addSupplierResource(Resource resource)
+			throws InvalidContractException {
+
+		this.checkId(resource);
+
+		resource.setOwner(this.mySupplier);
+		this.mySupplierResources.put(resource.getId(), resource);
+	}
+
+	/**
+	 * <p>
+	 * Adds a tigger to this {@link Contract}. Triggers describe all events (as
+	 * {@link URI}s) that trigger the verification of this {@link Contract}, such
+	 * as life cycle events (installed, activated, updated, ...).
+	 * </p>
+	 * 
+	 * @param uri
+	 *          The {@link URI} of the Trigger that shall be added.
+	 */
+	public void addTrigger(URI uri) throws InvalidContractException {
+
+		this.myTriggers.add(uri);
+	}
+
 	/**
 	 * <p>
 	 * Instantiates the {@link Contract} for a consumer.
@@ -229,13 +511,13 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 			/* FIXME Claas: No difference between if and else clause. */
 			if (policy == VerificationPolicy.DETAILED) {
-				for (AbstractCondition abstractCondition : this.constraints) {
+				for (AbstractCondition abstractCondition : this.myConstraints) {
 					result = result & abstractCondition.check(report, verifier, policy);
 				}
 				// end for.
 			}
 			else {
-				for (AbstractCondition abstractCondition : this.constraints) {
+				for (AbstractCondition abstractCondition : this.myConstraints) {
 					result = result && abstractCondition.check(report, verifier, policy);
 				}
 				// end for.
@@ -260,6 +542,249 @@ public class Contract extends PropertySupport implements ConditionContext,
 		}
 
 		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns all {@link AbstractCondition}s that belong to this {@link Contract}
+	 * after the {@link Contract} has been read.
+	 * </p>
+	 * 
+	 * @return All {@link AbstractCondition}s that belong to this {@link Contract}
+	 *         .
+	 */
+	public List<AbstractCondition> getConstraints() {
+
+		return this.myConstraints;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Connector} playing the {@link Role#CONSUMER} role in
+	 * this {@link Contract}.
+	 * </p>
+	 * 
+	 * @return The {@link Connector} playing the {@link Role#CONSUMER} role in
+	 *         this {@link Contract}.
+	 */
+	public Connector getConsumer() {
+
+		return this.myConsumer;
+	}
+
+	/**
+	 * <p>
+	 * Returns the Consumer Context. Defines how instantiation is done - this is
+	 * mainly useful for supplier resources. These are the resources that are
+	 * usually instantiated.
+	 * </p>
+	 * 
+	 * @return The Consumer Context.
+	 */
+	public String getConsumerContext() {
+
+		return this.myConsumerContext;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Resource}s of the consumer {@link Connector} of this
+	 * {@link Contract}.
+	 * </p>
+	 * 
+	 * @param The
+	 *          {@link Resource}s of the consumer {@link Connector} of this
+	 *          {@link Contract}.
+	 */
+	public Collection<Resource> getConsumerResources() {
+
+		return this.myConsumerResources.values();
+	}
+
+	/**
+	 * <p>
+	 * Returns the definition of this {@link Contract}. A {@link Contract} can
+	 * probably have another {@link Contract} as definition, e.g. a
+	 * {@link Contract} this {@link Contract} has been instantiated of.
+	 * </p>
+	 * 
+	 * @return The definition of this {@link Contract}.
+	 */
+	public Contract getDefinition() {
+
+		return this.myDefinition;
+	}
+
+	/**
+	 * <p>
+	 * Returns the external (legislator) Context. Defines how instantiation is
+	 * done - this is mainly useful for supplier resources. These are the
+	 * resources that are usually instantiated.
+	 * </p>
+	 * 
+	 * @return The external Context.
+	 */
+	public String getExternalContext() {
+
+		return this.myExternalContext;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Resource}s of the legislator {@link Connector} of this
+	 * {@link Contract}.
+	 * </p>
+	 * 
+	 * @param The
+	 *          {@link Resource}s of the legislator {@link Connector} of this
+	 *          {@link Contract}.
+	 */
+	public Collection<Resource> getExternalResources() {
+
+		return this.myLegislatorResources.values();
+	}
+
+	/**
+	 * <p>
+	 * Returns the physical location of the {@link Contract}.
+	 * </p>
+	 * 
+	 * @return The physical location of the {@link Contract}.
+	 */
+	public URL getLocation() {
+
+		return this.myLocation;
+	}
+
+	/**
+	 * <p>
+	 * Returns the actions (as {@link URI}s) that will be executed depending on
+	 * the failed outcome of verification.
+	 * </p>
+	 * 
+	 * @return The actions (as a {@link URI})s.
+	 */
+	public List<URI> getOnVerificationFailsActions() {
+
+		return this.myOnVerificationFailsActions;
+	}
+
+	/**
+	 * <p>
+	 * Returns the actions (as {@link URI}s) that will be executed depending on
+	 * the successful outcome of verification.
+	 * </p>
+	 * 
+	 * @return The actions (as a {@link URI})s.
+	 */
+	public List<URI> getOnVerificationSucceedsActions() {
+
+		return this.myOnVerificationSucceedsActions;
+	}
+
+	/**
+	 * <p>
+	 * Returns the owning {@link Connector} of this {@link Contract}. The owner is
+	 * usually the {@link Connector} that provides the {@link Contract}
+	 * definition. This can be any of the {@link Connector}s playing the
+	 * {@link Role#CONSUMER}, {@link Role#SUPPLIER} or {@link Role#LEGISLATOR}
+	 * role in this {@link Contract}.
+	 * </p>
+	 * 
+	 * @return The owning {@link Connector} of this {@link Contract}.
+	 */
+	public Connector getOwner() {
+
+		return this.myOwner;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Resource} for a given ID. The {@link Resource} could be
+	 * a {@link Resource} of the {@link Connector} playing the
+	 * {@link Role#CONSUMER}, {@link Role#SUPPLIER} or the {@link Role#LEGISLATOR}
+	 * role in this {@link Contract}.
+	 * </p>
+	 * 
+	 * @param id
+	 *          The ID of the {@link Resource} that shall be returned.
+	 * @return The {@link Resource} for a given ID or <code>null</code> if the
+	 *         given ID does not exists.
+	 */
+	public Resource getResource(String id) {
+
+		Resource result;
+
+		result = this.myConsumerResources.get(id);
+
+		if (result == null) {
+			result = this.mySupplierResources.get(id);
+		}
+		// no else.
+
+		if (result == null) {
+			result = this.myLegislatorResources.get(id);
+		}
+		// no else.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Connector} playing the {@link Role#SUPPLIER} role in
+	 * this {@link Contract}.
+	 * </p>
+	 * 
+	 * @return The {@link Connector} playing the {@link Role#SUPPLIER} role in
+	 *         this {@link Contract}.
+	 */
+	public Connector getSupplier() {
+
+		return this.mySupplier;
+	}
+
+	/**
+	 * <p>
+	 * Returns the Supplier Context. Defines how instantiation is done - this is
+	 * mainly useful for supplier resources. These are the resources that are
+	 * usually instantiated.
+	 * </p>
+	 * 
+	 * @return The Supplier Context.
+	 */
+	public String getSupplierContext() {
+
+		return this.mySupplierContext;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Resource}s of the supplier {@link Connector} of this
+	 * {@link Contract}.
+	 * </p>
+	 * 
+	 * @param The
+	 *          {@link Resource}s of the supllier {@link Connector} of this
+	 *          {@link Contract}.
+	 */
+	public Collection<Resource> getSupplierResources() {
+
+		return this.mySupplierResources.values();
+	}
+
+	/**
+	 * <p>
+	 * Returns the triggers of this {@link Contract}. Triggers describe all events
+	 * (as {@link URI}s) that trigger the verification of this {@link Contract},
+	 * such as life cycle events (installed, activated, updated, ...).
+	 * </p>
+	 * 
+	 * @reuslt The {@link URI}s of the Triggers that shall be set.
+	 */
+	public java.util.List<URI> getTriggers() {
+
+		return this.myTriggers;
 	}
 
 	/**
@@ -294,6 +819,234 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 	/**
 	 * <p>
+	 * Returns a flag indicating that {@link Contract}s refer types and predicates
+	 * that are unknown. This is used when vocabularies are defined in a modular
+	 * manner. It is then possible that {@link Contract}s are loaded, but the
+	 * referenced variables are not available if this flag is <code>true</code>,
+	 * it is generally not possible to check/verify this {@link Contract}.
+	 * </p>
+	 * 
+	 * @return <code>true</code> if this {@link Contract} is shadow.
+	 */
+	public boolean isShadow() {
+
+		return this.isShadow;
+	}
+
+	/**
+	 * <p>
+	 * Convert the {@link Contract} to an equivalent, more compact form. This is
+	 * not yet fully recursive, it just removes top-level conjunction in order to
+	 * flatten the structure.
+	 * </p>
+	 * 
+	 * @return An equivalent {@link Contract} in a probably more compact form.
+	 */
+	public Contract pack() {
+
+		Contract result;
+		result = this;
+
+		boolean hasOnlyConjunctions;
+		hasOnlyConjunctions = true;
+
+		for (AbstractCondition constraint : myConstraints) {
+			hasOnlyConjunctions =
+					hasOnlyConjunctions && (constraint instanceof Conjunction);
+		}
+
+		/*
+		 * Probably remove top-level conjunctions (the contract becomes the
+		 * conjunction itself.
+		 */
+		if (hasOnlyConjunctions) {
+
+			result = new Contract();
+
+			result.myConsumer = this.myConsumer;
+			result.mySupplier = this.mySupplier;
+			result.myOwner = this.myOwner;
+			result.myConsumerContext = this.myConsumerContext;
+			result.myExternalContext = this.myExternalContext;
+			result.mySupplierContext = this.mySupplierContext;
+			result.myConsumerResources = this.myConsumerResources;
+			result.mySupplierResources = this.mySupplierResources;
+			result.myLegislatorResources = this.myLegislatorResources;
+			result.myConstraints = new ArrayList<AbstractCondition>();
+
+			for (AbstractCondition condition : myConstraints) {
+				Conjunction conjunction = (Conjunction) condition;
+
+				for (AbstractCondition conjunctionPart : conjunction.getParts()) {
+					result.myConstraints.add(conjunctionPart);
+				}
+				// end for.
+			}
+			// end for.
+		}
+		// no else.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Sets the {@link Connector} playing the {@link Role#CONSUMER} role in this
+	 * {@link Contract}.
+	 * </p>
+	 * 
+	 * @param consumer
+	 *          The {@link Connector} playing the {@link Role#CONSUMER} role in
+	 *          this {@link Contract}.
+	 */
+	public void setConsumer(Connector consumer) {
+
+		this.myConsumer = consumer;
+
+		for (Resource resources : this.myConsumerResources.values()) {
+			resources.setOwner(consumer);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Sets the Consumer Context. Defines how instantiation is done - this is
+	 * mainly useful for supplier resources. These are the resources that are
+	 * usually instantiated.
+	 * </p>
+	 * 
+	 * @param consumerContext
+	 *          The Consumer Context to be set.
+	 */
+	public void setConsumerContext(String consumerContext) {
+
+		this.myConsumerContext = consumerContext;
+	}
+
+	/**
+	 * <p>
+	 * Sets the {@link Resource}s (variables) of the consumer {@link Connector} of
+	 * this {@link Contract}.
+	 * </p>
+	 * 
+	 * @param consumerResources
+	 *          The consumer {@link Resource}s as a given {@link Map} identified
+	 *          by their name.
+	 */
+	public void setConsumerResources(Map<String, Resource> consumerResources) {
+
+		this.myConsumerResources = consumerResources;
+	}
+
+	/**
+	 * <p>
+	 * Sets the definition of this {@link Contract}. A {@link Contract} can
+	 * probably have another {@link Contract} as definition, e.g. a
+	 * {@link Contract} this {@link Contract} has been instantiated of.
+	 * </p>
+	 * 
+	 * @param definition
+	 *          The definition of this {@link Contract}.
+	 */
+	public void setDefinition(Contract definition) {
+
+		assert (this.isInstantiated() || definition == null);
+
+		this.myDefinition = definition;
+	}
+
+	/**
+	 * <p>
+	 * Sets the external (legislator) Context. Defines how instantiation is done -
+	 * this is mainly useful for supplier resources. These are the resources that
+	 * are usually instantiated.
+	 * </p>
+	 * 
+	 * @param externalContext
+	 *          The external Context to be set.
+	 */
+	public void setExternalContext(String externalContext) {
+
+		this.myExternalContext = externalContext;
+	}
+
+	/**
+	 * <p>
+	 * Sets the {@link Resource}s (variables) of the legislator {@link Connector}
+	 * of this {@link Contract}.
+	 * </p>
+	 * 
+	 * @param externalResources
+	 *          The legislator {@link Resource}s as a given {@link Map} identified
+	 *          by their name.
+	 */
+	public void setExternalResources(Map<String, Resource> externalResources) {
+
+		this.myLegislatorResources = externalResources;
+	}
+
+	/**
+	 * <p>
+	 * Sets a flag indicating that {@link Contract}s refer types and predicates
+	 * that are unknown. This is used when vocabularies are defined in a modular
+	 * manner. It is then possible that {@link Contract}s are loaded, but the
+	 * referenced variables are not available if this flag is <code>true</code>,
+	 * it is generally not possible to check/verify this {@link Contract}.
+	 * </p>
+	 * 
+	 * @param isShadowContract
+	 *          Use <code>true</code> if this {@link Contract} is shadow.
+	 */
+	public void setIsShadow(boolean isShadowContract) {
+
+		this.isShadow = isShadowContract;
+	}
+
+	/**
+	 * <p>
+	 * Sets the physical location of the {@link Contract}.
+	 * </p>
+	 * 
+	 * @param location
+	 *          The physical location of this {@link Contract} (as a {@link URL}).
+	 */
+	public void setLocation(URL location) {
+
+		this.myLocation = location;
+	}
+
+	/**
+	 * <p>
+	 * Sets the actions (as {@link URI}s) that will be executed depending on the
+	 * failed outcome of verification.
+	 * </p>
+	 * 
+	 * @param onVerificationFailsActions
+	 *          The actions (as a {@link URI})s that shall be set.
+	 */
+	public void setOnVerificationFailsActions(List<URI> onVerificationFailsActions) {
+
+		this.myOnVerificationFailsActions = onVerificationFailsActions;
+	}
+
+	/**
+	 * <p>
+	 * Sets the actions (as {@link URI}s) that will be executed depending on the
+	 * successful outcome of verification.
+	 * </p>
+	 * 
+	 * @param onVerificationSucceedsActions
+	 *          The actions (as a {@link URI})s that shall be set.
+	 */
+	public void setOnVerificationSucceedsActions(
+			List<URI> onVerificationSucceedsActions) {
+
+		this.myOnVerificationSucceedsActions = onVerificationSucceedsActions;
+	}
+
+	/**
+	 * <p>
 	 * Sets the owner of this {@link Contract}. Each {@link Contract} is owned by
 	 * the {@link Connector} that provides the {@link Contract}.
 	 * </p>
@@ -308,6 +1061,71 @@ public class Contract extends PropertySupport implements ConditionContext,
 		for (Resource resource : myLegislatorResources.values()) {
 			resource.setOwner(owner);
 		}
+	}
+
+	/**
+	 * <p>
+	 * Sets the {@link Connector} playing the {@link Role#SUPPLIER} role in this
+	 * {@link Contract}.
+	 * </p>
+	 * 
+	 * @param supplier
+	 *          The {@link Connector} playing the {@link Role#SUPPLIER} role in
+	 *          this {@link Contract}.
+	 */
+	public void setSupplier(Connector supplier) {
+
+		this.mySupplier = supplier;
+
+		for (Resource resource : this.mySupplierResources.values()) {
+			resource.setOwner(supplier);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Sets the Supplier Context. Defines how instantiation is done - this is
+	 * mainly useful for supplier resources. These are the resources that are
+	 * usually instantiated.
+	 * </p>
+	 * 
+	 * @param supplierContext
+	 *          The Supplier Context to be set.
+	 */
+	public void setSupplierContext(String supplierContext) {
+
+		this.mySupplierContext = supplierContext;
+	}
+
+	/**
+	 * <p>
+	 * Sets the {@link Resource}s (variables) of the supplier {@link Connector} of
+	 * this {@link Contract}.
+	 * </p>
+	 * 
+	 * @param supplierResources
+	 *          The supplier {@link Resource}s as a given {@link Map} identified
+	 *          by their name.
+	 */
+	public void setSupplierResources(Map<String, Resource> supplierResources) {
+
+		this.mySupplierResources = supplierResources;
+	}
+
+	/**
+	 * <p>
+	 * Sets the triggers of this {@link Contract}. Triggers describe all events
+	 * (as {@link URI}s) that trigger the verification of this {@link Contract},
+	 * such as life cycle events (installed, activated, updated, ...).
+	 * </p>
+	 * 
+	 * @param triggers
+	 *          The {@link URI}s of the Triggers that shall be added.
+	 */
+	public void setTriggers(List<URI> triggers) {
+
+		this.myTriggers = triggers;
 	}
 
 	/**
@@ -456,7 +1274,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 			}
 
 			/* Replace add all instantiated resources. */
-			for (AbstractCondition condition : this.constraints) {
+			for (AbstractCondition condition : this.myConstraints) {
 
 				switch (role) {
 
@@ -489,379 +1307,37 @@ public class Contract extends PropertySupport implements ConditionContext,
 		return result;
 	}
 
-	private java.util.List<AbstractCondition> constraints =
-			new java.util.ArrayList<AbstractCondition>();
-	// active elements
-	// events and actions are represented as URIs - framework implementations
-	// have to provide the semantics for them
-
-	// events triggering verification, such as life cycle events (installed,
-	// activated, updated, ..)
-	private java.util.List<URI> triggers = new java.util.ArrayList<URI>();
-
-	// actions that will be executed depending on the outcome of verification
-	private java.util.List<URI> onVerificationFailsActions =
-			new java.util.ArrayList<URI>();
-	private java.util.List<URI> onVerificationSucceedsActions =
-			new java.util.ArrayList<URI>();
-
-	private Connector consumer = null;
-	private Connector supplier = null;
-
-	private URL location = null; // the physical location of the contract
-	// contexts - they define how instantiation is done - this is mainly useful
-	// for supplier resources -
-	// these are the resources that are usually instantiated
-	private String consumerContext = null;
-	// this is the definition of instantiated contracts
-	private Contract definition = null;
-	// flag indicating that contracts refer types and predicates that are unknown
-	// this is used when vocabularies are defined in a modular manner
-	// it is then possible that contracts are loaded, but the referenced variables
-	// are not available
-	// if this flag is true, it is generally not possible to check/verify these
-	// contracts
-	private boolean shadow = false;
-
-	public String getConsumerContext() {
-
-		return consumerContext;
-	}
-
-	public void setConsumerContext(String consumerContext) {
-
-		this.consumerContext = consumerContext;
-	}
-
-	public String getSupplierContext() {
-
-		return supplierContext;
-	}
-
-	public void setSupplierContext(String supplierContext) {
-
-		this.supplierContext = supplierContext;
-	}
-
-	public String getExternalContext() {
-
-		return externalContext;
-	}
-
-	public void setExternalContext(String externalContext) {
-
-		this.externalContext = externalContext;
-	}
-
-	public void setSupplierResources(
-			java.util.Map<String, Resource> supplierResources) {
-
-		this.mySupplierResources = supplierResources;
-	}
-
-	public void setConsumerResources(
-			java.util.Map<String, Resource> consumerResources) {
-
-		this.myConsumerResources = consumerResources;
-	}
-
-	public void setExternalResources(
-			java.util.Map<String, Resource> externalResources) {
-
-		this.myLegislatorResources = externalResources;
-	}
-
-	private String supplierContext = null;
-	private String externalContext = null;
-
-	public Connector getOwner() {
-
-		return myOwner;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seenz.ac.massey.treaty.ConditionOwner#addCondition(nz.ac.massey.treaty.
-	 * AbstractCondition)
+	/**
+	 * <p>
+	 * Checks whether or not a given {@link Resource} has already been added to
+	 * this {@link Contract}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} that shall be checked.
+	 * @throws InvalidContractException
+	 *           Thrown if a given {@link Resource} has already been added to this
+	 *           {@link Contract}.
 	 */
-	public void addCondition(AbstractCondition c) {
+	private void checkId(Resource resource) throws InvalidContractException {
 
-		this.constraints.add(c);
-	}
-
-	public void addSupplierResource(Resource r) throws InvalidContractException {
-
-		this.checkId(r);
-		r.setOwner(this.supplier);
-		this.mySupplierResources.put(r.getId(), r);
-	}
-
-	public void addConsumerResource(Resource r) throws InvalidContractException {
-
-		this.checkId(r);
-		if (!r.isInstantiated())
-			throw new InvalidContractException(
-					"External resources cannot be variables");
-		r.setOwner(this.consumer);
-		this.myConsumerResources.put(r.getId(), r);
-	}
-
-	public void addTrigger(URI uri) throws InvalidContractException {
-
-		this.triggers.add(uri);
-	}
-
-	public void addOnVerificationFailsAction(URI uri)
-			throws InvalidContractException {
-
-		this.onVerificationFailsActions.add(uri);
-	}
-
-	public void addOnVerificationSucceedsAction(URI uri)
-			throws InvalidContractException {
-
-		this.onVerificationSucceedsActions.add(uri);
-	}
-
-	public void addExternalResource(Resource r) throws InvalidContractException {
-
-		this.checkId(r);
-		r.setOwner(myOwner);
-		this.myLegislatorResources.put(r.getId(), r);
-	}
-
-	public java.util.Collection<Resource> getConsumerResources() {
-
-		return myConsumerResources.values();
-	}
-
-	public java.util.Collection<Resource> getSupplierResources() {
-
-		return mySupplierResources.values();
-	}
-
-	public java.util.Collection<Resource> getExternalResources() {
-
-		return myLegislatorResources.values();
-	}
-
-	public Resource getResource(String id) {
-
-		Resource r = this.myConsumerResources.get(id);
-		if (r == null) {
-			r = this.mySupplierResources.get(id);
-		}
-		if (r == null) {
-			r = this.myLegislatorResources.get(id);
-		}
-		return r;
-
-	}
-
-	private void checkId(Resource r) throws InvalidContractException {
-
-		if (this.myConsumerResources.containsKey(r.getId()))
+		if (this.myConsumerResources.containsKey(resource.getId())) {
 			throw new InvalidContractException(
 					"A resource with this id is already registered as extension resource: "
-							+ r.getId());
-		else if (this.mySupplierResources.containsKey(r.getId()))
+							+ resource.getId());
+		}
+
+		else if (this.mySupplierResources.containsKey(resource.getId())) {
 			throw new InvalidContractException(
 					"A resource with this id is already registered as extension point resource: "
-							+ r.getId());
-		else if (this.myLegislatorResources.containsKey(r.getId()))
+							+ resource.getId());
+		}
+
+		else if (this.myLegislatorResources.containsKey(resource.getId())) {
 			throw new InvalidContractException(
 					"A resource with this id is already registered as external resource: "
-							+ r.getId());
-	}
-
-	public java.util.List<AbstractCondition> getConstraints() {
-
-		return constraints;
-	}
-
-	/**
-	 * Accept a contract visitor.
-	 * 
-	 * @param visitor
-	 *          a visitor
-	 */
-	public void accept(ContractVisitor visitor) {
-
-		boolean f = visitor.visit(this);
-		if (f) {
-			if (visitor.visitConsumerResources(this.myConsumerResources.values())) {
-				for (Resource r : this.myConsumerResources.values()) {
-					r.accept(visitor);
-				}
-				visitor.endVisitConsumerResources(this.myConsumerResources.values());
-			}
-			if (visitor.visitSupplierResources(this.mySupplierResources.values())) {
-				for (Resource r : this.mySupplierResources.values()) {
-					r.accept(visitor);
-				}
-				visitor.endVisitSupplierResources(this.mySupplierResources.values());
-			}
-			if (visitor.visitExternalResources(this.mySupplierResources.values())) {
-				for (Resource r : this.myLegislatorResources.values()) {
-					r.accept(visitor);
-				}
-				visitor.endVisitExternalResources(this.mySupplierResources.values());
-			}
-			if (visitor.visitConditions(this.constraints)) {
-				for (AbstractCondition c : getConstraints()) {
-					c.accept(visitor);
-				}
-				visitor.endVisitConditions(this.constraints);
-			}
+							+ resource.getId());
 		}
-		visitor.endVisit(this);
-
+		// no else (success).
 	}
-
-	/**
-	 * Convert the contract to an equivalent, more compact form. This is not yet
-	 * fully recursive, it just removes top-level conjunction in order to flatten
-	 * the structure.
-	 * 
-	 * @return a contract
-	 */
-	public Contract pack() {
-
-		boolean f = true;
-		for (AbstractCondition c : constraints) {
-			f = f && (c instanceof Conjunction);
-		}
-		if (f) {
-			Contract sc = new Contract();
-			sc.consumer = this.consumer;
-			sc.supplier = this.supplier;
-			sc.myOwner = this.myOwner;
-			sc.consumerContext = this.consumerContext;
-			sc.externalContext = this.externalContext;
-			sc.supplierContext = this.supplierContext;
-			sc.myConsumerResources = this.myConsumerResources;
-			sc.mySupplierResources = this.mySupplierResources;
-			sc.myLegislatorResources = this.myLegislatorResources;
-			sc.constraints = new ArrayList<AbstractCondition>();
-			for (AbstractCondition c : constraints) {
-				Conjunction conj = (Conjunction) c;
-				for (AbstractCondition cp : conj.getParts()) {
-					sc.constraints.add(cp);
-				}
-			}
-			return sc;
-		}
-		else {
-			return this;
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see nz.ac.massey.treaty.IContract#getConsumer()
-	 */
-	public Connector getConsumer() {
-
-		return consumer;
-	}
-
-	public void setConsumer(Connector consumer) {
-
-		this.consumer = consumer;
-		for (Resource r : myConsumerResources.values()) {
-			r.setOwner(consumer);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see nz.ac.massey.treaty.IContract#getSupplier()
-	 */
-	public Connector getSupplier() {
-
-		return supplier;
-	}
-
-	public void setSupplier(Connector supplier) {
-
-		this.supplier = supplier;
-		for (Resource r : mySupplierResources.values()) {
-			r.setOwner(supplier);
-		}
-	}
-
-	public URL getLocation() {
-
-		return location;
-	}
-
-	public void setLocation(URL location) {
-
-		this.location = location;
-	}
-
-	@Override
-	public String toString() {
-
-		if (this.location == null)
-			return super.toString();
-		else {
-			return new StringBuffer().append(super.toString()).append('(').append(
-					this.location).append(')').toString();
-		}
-	}
-
-	public Contract getDefinition() {
-
-		return definition;
-	}
-
-	public void setDefinition(Contract def) {
-
-		assert (isInstantiated() || def == null);
-		this.definition = def;
-	}
-
-	public void setTriggers(java.util.List<URI> triggers) {
-
-		this.triggers = triggers;
-	}
-
-	public void setOnVerificationFailsActions(
-			java.util.List<URI> onVerificationFailsActions) {
-
-		this.onVerificationFailsActions = onVerificationFailsActions;
-	}
-
-	public void setOnVerificationSucceedsActions(
-			java.util.List<URI> onVerificationSucceedsActions) {
-
-		this.onVerificationSucceedsActions = onVerificationSucceedsActions;
-	}
-
-	public java.util.List<URI> getTriggers() {
-
-		return triggers;
-	}
-
-	public java.util.List<URI> getOnVerificationFailsActions() {
-
-		return onVerificationFailsActions;
-	}
-
-	public java.util.List<URI> getOnVerificationSucceedsActions() {
-
-		return onVerificationSucceedsActions;
-	}
-
-	public boolean isShadow() {
-
-		return shadow;
-	}
-
-	public void setShadow(boolean isShadowContract) {
-
-		this.shadow = isShadowContract;
-	}
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -11,17 +11,22 @@
 package net.java.treaty;
 
 /**
- * Objects that have 1:M associations with conditions.
+ * <p>
+ * A {@link ConditionContext} can be used to describe Objects that have 1:M
+ * associations with conditions.
+ * </p>
+ * 
  * @author Jens Dietrich
- * @version 0.1 <27/04/2008>
- * @since 0.1
  */
-
 public interface ConditionContext {
-	/**
-	 * Add a condition to this context.
-	 * @param c
-	 */
-	public abstract void addCondition(AbstractCondition c);
 
+	/**
+	 * <p>
+	 * Adds an {@link AbstractCondition} to this {@link ConditionContext}.
+	 * </p>
+	 * 
+	 * @param condition
+	 *          The {@link AbstractCondition} that shall be added.
+	 */
+	public abstract void addCondition(AbstractCondition condition);
 }

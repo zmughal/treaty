@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -11,10 +11,13 @@
 package net.java.treaty;
 
 /**
- * Describes roles components can have. Components can consume services and resources, and can provide them.  
+ * <p>
+ * Describes the different roles {@link Connector}s can have. Components can
+ * consume services and resources, and can supply them via {@link Connector}s.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public enum ConnectorType {
-	CONSUMER,SUPPLIER
+	CONSUMER, SUPPLIER
 }
