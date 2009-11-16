@@ -12,6 +12,7 @@ package net.java.treaty.eclipse;
 
 import net.java.treaty.Contract;
 import net.java.treaty.ContractVocabulary;
+import net.java.treaty.eclipse.exporter.Exporter;
 
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;

@@ -11,6 +11,7 @@
 package net.java.treaty.eclipse;
 
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
+import net.java.treaty.eclipse.exporter.ExporterRegistry;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
