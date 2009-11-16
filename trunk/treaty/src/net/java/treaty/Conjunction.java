@@ -33,6 +33,28 @@ public class Conjunction extends ComplexCondition {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.Visitable#accept(net.java.treaty.ContractVisitor)
+	 */
+	public void accept(ContractVisitor visitor) {
+
+		boolean visitSuccessfull;
+		visitSuccessfull = visitor.visit(this);
+
+		/* Probably visit all parts as well. */
+		if (visitSuccessfull) {
+
+			for (AbstractCondition condition : this.myParts) {
+				condition.accept(visitor);
+			}
+			// end for.
+		}
+		// no else.
+
+		visitor.endVisit(this);
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.Constraint#check(net.java.treaty.VerificationReport,
 	 * net.java.treaty.Verifier, net.java.treaty.VerificationPolicy)
 	 */
@@ -46,7 +68,7 @@ public class Conjunction extends ComplexCondition {
 
 			result = true;
 
-			for (AbstractCondition abstractCondition : this.parts) {
+			for (AbstractCondition abstractCondition : this.myParts) {
 				result = result & abstractCondition.check(report, verifier, policy);
 			}
 			// end for.
@@ -66,7 +88,7 @@ public class Conjunction extends ComplexCondition {
 
 			result = true;
 
-			for (AbstractCondition abstractCondition : this.parts) {
+			for (AbstractCondition abstractCondition : this.myParts) {
 				result = result & abstractCondition.check(report, verifier, policy);
 			}
 			// end for.
@@ -88,37 +110,27 @@ public class Conjunction extends ComplexCondition {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.ComplexCondition#getConnective()
+	 */
+	public String getConnective() {
+	
+		return "and";
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.AbstractCondition#replaceResources(java.util.Map)
 	 */
 	public AbstractCondition replaceResources(Map<String, Resource> resources) {
 
-		Conjunction result = new Conjunction();
+		Conjunction result;
+		result = new Conjunction();
 
-		for (AbstractCondition condition : this.parts) {
+		for (AbstractCondition condition : this.myParts) {
 			result.addCondition(condition.replaceResources(resources));
 		}
+		// end for.
 
 		return result;
 	}
-
-	public void accept(ContractVisitor visitor) {
-
-		boolean f = visitor.visit(this);
-		if (f) {
-			for (AbstractCondition p : parts)
-				p.accept(visitor);
-		}
-		visitor.endVisit(this);
-	}
-
-	/**
-	 * Get the name of the logical connective used.
-	 * 
-	 * @return
-	 */
-	public String getConnective() {
-
-		return "and";
-	}
-
 }

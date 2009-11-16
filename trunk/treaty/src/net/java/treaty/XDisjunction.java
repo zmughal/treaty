@@ -39,7 +39,7 @@ public class XDisjunction extends ComplexCondition {
 
 		XDisjunction result = new XDisjunction();
 
-		for (AbstractCondition condition : this.parts) {
+		for (AbstractCondition condition : this.myParts) {
 			result.addCondition(condition.replaceResources(resources));
 		}
 
@@ -55,17 +55,17 @@ public class XDisjunction extends ComplexCondition {
 	
 		boolean result;
 	
-		if (this.parts == null) {
+		if (this.myParts == null) {
 			result = false;
 		}
 	
-		else if (this.parts.size() == 0) {
+		else if (this.myParts.size() == 0) {
 			result = true;
 		}
 	
 		else {
 			result = false;
-			for (AbstractCondition part : this.parts) {
+			for (AbstractCondition part : this.myParts) {
 				if (part.isInstantiated()) {
 					result = true;
 					break;
@@ -83,7 +83,7 @@ public class XDisjunction extends ComplexCondition {
 
 		boolean f = visitor.visit(this);
 		if (f) {
-			for (AbstractCondition p : parts)
+			for (AbstractCondition p : myParts)
 				p.accept(visitor);
 		}
 		visitor.endVisit(this);
@@ -93,7 +93,7 @@ public class XDisjunction extends ComplexCondition {
 			VerificationPolicy policy) {
 
 		int okcount = 0;
-		for (AbstractCondition p : parts) {
+		for (AbstractCondition p : myParts) {
 			okcount = okcount + (p.check(report, verifier, policy) ? 1 : 0);
 		}
 		if (okcount == 1)

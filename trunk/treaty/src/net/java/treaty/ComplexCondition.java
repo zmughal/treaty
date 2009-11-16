@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -14,39 +14,90 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ *<p>
  * Abstract superclass for complex conditions (conjunction, disjunction etc).
+ * </p>
+ * 
  * @author Jens Dietrich
  */
+public abstract class ComplexCondition extends AbstractCondition implements
+		ConditionContext {
 
-public abstract class ComplexCondition extends AbstractCondition implements ConditionContext {
+	/** All parts ({@link AbstractCondition}s) of this {@link ComplexCondition}. */
+	protected List<AbstractCondition> myParts =
+			new ArrayList<AbstractCondition>();
 
+	/**
+	 * <p>
+	 * Creates a new {@link ComplexCondition}.
+	 * </p>
+	 */
 	public ComplexCondition() {
+
 		super();
 	}
-	
-	protected List<AbstractCondition> parts = new ArrayList<AbstractCondition>();
 
-	public void addCondition(AbstractCondition c) {
-		this.parts.add(c);
-	}
-
-	public List<AbstractCondition> getParts() {
-		return parts;
-	}
 	/**
-	 * Get the name of the logical connective used.
-	 * @return
+	 * <p>
+	 * Adds a given {@link AbstractCondition} to this {@link ComplexCondition}.
+	 * </p>
+	 * 
+	 * @param condition
+	 *          The {@link AbstractCondition} that shall be added.
 	 */
-	public abstract String getConnective() ;
-	
-	public boolean isInstantiated() {
-		for (AbstractCondition part:parts) {
-			if (!part.isInstantiated()) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
+	public void addCondition(AbstractCondition condition) {
 
+		this.myParts.add(condition);
+	}
+
+	/**
+	 * <p>
+	 * Checks whether or not this {@link ComplexCondition} is instantiated. A
+	 * {@link ComplexCondition} is instantiated if all its
+	 * {@link AbstractCondition}s are instantiated.
+	 * </p>
+	 * 
+	 * @return <code>true</code> if this {@link ComplexCondition} is instantiated.
+	 */
+	public boolean isInstantiated() {
+
+		boolean result;
+		result = true;
+
+		for (AbstractCondition condition : this.myParts) {
+
+			if (!condition.isInstantiated()) {
+				result = false;
+				break;
+			}
+			// no else.
+		}
+		// end for.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the name of the logical connective used for this
+	 * {@link ComplexCondition}.
+	 * </p>
+	 * 
+	 * @return The name of the logical connective used for this
+	 *         {@link ComplexCondition}.
+	 */
+	public abstract String getConnective();
+
+	/**
+	 * <p>
+	 * Returns all parts (the {@link AbstractCondition}s of this
+	 * {@link ComplexCondition}).
+	 * </p>
+	 * 
+	 * @return The {@link AbstractCondition}s of this {@link ComplexCondition}
+	 */
+	public List<AbstractCondition> getParts() {
+
+		return this.myParts;
+	}
 }

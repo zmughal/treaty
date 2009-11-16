@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -12,41 +12,57 @@ package net.java.treaty;
 
 import java.util.Iterator;
 
-
 /**
- * Interface for a general-purpose annotation mechanism.  
+ * <p>
+ * Interface for a general-purpose annotation mechanism.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
-
 public interface Annotatable {
 
 	/**
-	 * Add a new property.public boolean isInstantiated()
+	 * <p>
+	 * Returns the annotation for a given key.
+	 * </p>
+	 * 
 	 * @param key
-	 * @param value
-	 */
-	public abstract void setProperty(String key, Object value);
-
-	/**
-	 * Removes a property.
-	 * @param key
-	 * @return the value of the removed annotation or null if there is no such property
-	 */
-	public abstract Object removeProperty(String key);
-
-	/**
-	 * Get the annotation for a given key.
-	 * @param key
-	 * @return
+	 *          The key whose value shall be returned.
+	 * @return The annotation for a given key.
 	 */
 	public abstract Object getProperty(String key);
 
 	/**
-	 * Get the property keys.
-	 * @return an iterator
+	 * <p>
+	 * Returns the keys of all properties currently set for this
+	 * {@link Annotatable}.
+	 * </p>
+	 * 
+	 * @return The names of all properties as an {@link Iterator}.
 	 */
 	public abstract Iterator<String> getPropertyNames();
 
-	
+	/**
+	 * <p>
+	 * Removes a property with a given key.
+	 * </p>
+	 * 
+	 * @param key
+	 *          The key of the property that shall be remove.
+	 * @return The value of the removed annotation or <code>null</code> if there
+	 *         is no such property.
+	 */
+	public abstract Object removeProperty(String key);
+
+	/**
+	 * <p>
+	 * Adds a new property with a given key and value.
+	 * </p>
+	 * 
+	 * @param key
+	 *          The key of the property that shall be set.
+	 * @param value
+	 *          The value of the property that shall be set.
+	 */
+	public abstract void setProperty(String key, Object value);
 }
