@@ -38,6 +38,7 @@ import net.java.treaty.PropertyCondition;
 import net.java.treaty.PropertySupport;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
+import net.java.treaty.Role;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.contractregistry.ContractRegistryListener;
@@ -45,10 +46,11 @@ import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
-import net.java.treaty.eclipse.Exporter;
-import net.java.treaty.eclipse.ExporterRegistry;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
+import net.java.treaty.eclipse.exporter.Exporter;
+import net.java.treaty.eclipse.exporter.ExporterRegistry;
+import net.java.treaty.eclipse.exporter.ExporterRegistryListener;
 import net.java.treaty.eclipse.ui.Activator;
 import net.java.treaty.eclipse.verification.EclipseVerificationReport;
 import net.java.treaty.eclipse.verification.EclipseVerifier;
@@ -99,7 +101,102 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  * 
  * @author Jens Dietrich
  */
-public class ContractView extends ViewPart implements ContractRegistryListener {
+public class ContractView extends ViewPart implements ContractRegistryListener,
+		ExporterRegistryListener {
+
+	/**
+	 * <p>
+	 * The {@link DummyViewContentProvider} is used during startup until the
+	 * {@link ContractView} has been initialized.
+	 * </p>
+	 * 
+	 * @author Jens Dietrich
+	 */
+	private class DummyViewContentProvider implements IStructuredContentProvider,
+			ITreeContentProvider {
+
+		/** The root {@link Object}. */
+		private Object ROOT = new Object();
+
+		/** The initial message. */
+		private String INITIALIZING = "Initializing, please wait ...";
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java
+		 * .lang.Object)
+		 */
+		public Object[] getElements(Object inputElement) {
+
+			if (inputElement.equals(getViewSite())) {
+				return getChildren(ROOT);
+			}
+			// no else.
+
+			return getChildren(inputElement);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
+		 */
+		public void dispose() {
+
+			/* Do nothing. */
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface
+		 * .viewers.Viewer, java.lang.Object, java.lang.Object)
+		 */
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+
+			/* Do nothing. */
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.
+		 * Object)
+		 */
+		public Object[] getChildren(Object parent) {
+
+			if (parent == ROOT) {
+				return new String[] { INITIALIZING };
+			}
+
+			return new Object[] {};
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object
+		 * )
+		 */
+		public Object getParent(Object element) {
+
+			if (element == INITIALIZING)
+				return ROOT;
+
+			return null;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.
+		 * Object)
+		 */
+		public boolean hasChildren(Object element) {
+
+			return element == ROOT;
+		}
+	}
 
 	/**
 	 * <p>
@@ -616,19 +713,19 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 */
 		private void addContractContentNodes(TreeParent parent, Contract contract) {
 
-			Map<Resource, OwnerType> ownerTypes;
-			ownerTypes = new HashMap<Resource, OwnerType>();
+			Map<Resource, Role> ownerTypes;
+			ownerTypes = new HashMap<Resource, Role>();
 
 			for (Resource r : contract.getConsumerResources()) {
-				ownerTypes.put(r, OwnerType.extensionpoint);
+				ownerTypes.put(r, Role.CONSUMER);
 			}
 
 			for (Resource r : contract.getSupplierResources()) {
-				ownerTypes.put(r, OwnerType.extension);
+				ownerTypes.put(r, Role.SUPPLIER);
 			}
 
 			for (Resource r : contract.getExternalResources()) {
-				ownerTypes.put(r, OwnerType.thirdparty);
+				ownerTypes.put(r, Role.LEGISLATOR);
 			}
 
 			TreeParent contractRootNode = null;
@@ -707,7 +804,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 *          {@link Resource}.
 		 */
 		private void addResourceNode(TreeParent parent, Resource resource,
-				Map<Resource, OwnerType> ownerTypes) {
+				Map<Resource, Role> ownerTypes) {
 
 			if (resource == null) {
 				TreeObject node = new TreeObject(resource);
@@ -736,7 +833,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 *          The given {@link Resource}s and {@link OwnerType}s.
 		 */
 		private void addConditionNodes(TreeParent parent,
-				AbstractCondition condition, Map<Resource, OwnerType> ownerTypes) {
+				AbstractCondition condition, Map<Resource, Role> ownerTypes) {
 
 			if (condition instanceof RelationshipCondition) {
 
@@ -839,7 +936,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 *          A {@link Map} of {@link Resource}s and {@link OwnerType}s.
 		 */
 		private void addConditionPartNodes(TreeParent parent, Resource resource,
-				Map<Resource, OwnerType> ownerTypes) {
+				Map<Resource, Role> ownerTypes) {
 
 			parent.addChild(new TreeObject(new KeyValueNode("id", resource.getId())));
 			parent.addChild(new TreeObject(new KeyValueNode("type", resource
@@ -852,11 +949,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			// parent.addChild(new TreeObject(new
 			// KeyValueNode("value",""+r.getValue())));
 
-			OwnerType otype;
-			otype = ownerTypes.get(resource);
+			Role role;
+			role = ownerTypes.get(resource);
 
-			if (otype != null) {
-				parent.addChild(new TreeObject(new KeyValueNode("provided by", otype
+			if (role != null) {
+				parent.addChild(new TreeObject(new KeyValueNode("provided by", role
 						.toString())));
 			}
 
@@ -906,7 +1003,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	 * @author Jens Dietrich
 	 */
 	private class ViewLabelProvider implements ITableLabelProvider {
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -914,19 +1011,19 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * jface.viewers.ILabelProviderListener)
 		 */
 		public void addListener(ILabelProviderListener arg0) {
-	
+
 			/* Do nothing. */
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
 		 */
 		public void dispose() {
-	
+
 			/* Do nothing. */
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -934,82 +1031,82 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * .Object, int)
 		 */
 		public Image getColumnImage(Object node, int column) {
-	
+
 			Image result;
 			result = null;
-	
+
 			if (node instanceof TreeObject) {
-	
+
 				Object adaptedObject;
 				adaptedObject = ((TreeObject) node).getObject();
-	
+
 				if (column == 1) {
 					result = this.getStatusIcon(adaptedObject);
 				}
-	
+
 				else {
-	
+
 					if (adaptedObject instanceof Connector) {
 						Connector connector;
 						connector = (Connector) adaptedObject;
-	
+
 						if (connector.getType() == ConnectorType.SUPPLIER) {
 							result = getIcon("extension.gif");
 						}
-	
+
 						else if (connector.getType() == ConnectorType.CONSUMER) {
 							result = getIcon("extensionpoint.gif");
 						}
 						// no else.
 					}
-	
+
 					else if (adaptedObject instanceof Component) {
 						result = getIcon("plugin.gif");
 					}
-	
+
 					else if (adaptedObject instanceof Contract) {
 						result = getIcon("contract.gif");
 					}
-	
+
 					else if (adaptedObject instanceof AbstractCondition
 							&& !(adaptedObject instanceof ComplexCondition)) {
 						result = getIcon("constraint.gif");
 					}
-	
+
 					else if (adaptedObject instanceof Resource) {
 						boolean isVariable;
 						isVariable = ((Resource) adaptedObject).getName() == null;
-	
+
 						Image icon;
 						icon =
 								IconProvider.findIcon(((Resource) adaptedObject).getType(),
 										isVariable);
-	
+
 						if (icon != null) {
 							result = icon;
 						}
-	
+
 						/* Probably use a default image. */
 						else {
-	
+
 							if (isVariable) {
 								result = getIcon("variable.png");
 							}
-	
+
 							else {
 								getIcon("constant.png");
 							}
 						}
 						// end else.
 					}
-	
+
 					else if (adaptedObject instanceof KeyValueNode
 							&& (((KeyValueNode) adaptedObject).key.equals("relationship"))) {
-	
+
 						/* (Relationship). */
 						result = getIcon("link.gif");
 					}
-	
+
 					else if (node instanceof TreeParent) {
 						return PlatformUI.getWorkbench().getSharedImages().getImage(
 								ISharedImages.IMG_OBJ_FOLDER);
@@ -1019,10 +1116,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				// end else (column != 1).
 			}
 			// no else (node is no TreeObject, return null).
-	
+
 			return result;
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -1030,70 +1127,70 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * .Object, int)
 		 */
 		public String getColumnText(Object node, int column) {
-	
+
 			String result;
-	
+
 			if (!(node instanceof TreeObject)) {
 				if (column == 0) {
 					result = node.toString();
 				}
-	
+
 				else {
 					result = "";
 				}
 			}
-	
+
 			else {
 				Object adaptedObject;
 				adaptedObject = ((TreeObject) node).getObject();
-	
+
 				if (column == 1) {
 					return this.getStatus(adaptedObject);
 				}
-	
+
 				else {
-	
+
 					if (adaptedObject instanceof EclipseExtensionPoint) {
 						result = ((Connector) adaptedObject).getId();
 					}
-	
+
 					else if (adaptedObject instanceof EclipseExtension) {
 						EclipseExtension eclipseExtension;
 						eclipseExtension = (EclipseExtension) adaptedObject;
-	
+
 						StringBuffer buffer;
 						buffer = new StringBuffer();
 						buffer.append(eclipseExtension.getOwner().getId()).append('/');
-	
+
 						String id;
 						id = eclipseExtension.getId();
-	
+
 						if (id == null) {
 							buffer.append("Anonymous Extension");
 						}
-	
+
 						else {
 							buffer.append(eclipseExtension.getId());
 						}
-	
+
 						result = buffer.toString();
 					}
-	
+
 					else if (adaptedObject instanceof Component) {
 						result = ((Component) adaptedObject).getId();
 					}
-	
+
 					else if (adaptedObject instanceof Contract) {
 						Contract contract;
 						contract = (Contract) adaptedObject;
-	
+
 						URL contractUrl;
 						contractUrl = contract.getLocation();
-	
+
 						if (contractUrl == null) {
 							return "A Contract";
 						}
-	
+
 						else {
 							/*
 							 * Check whether or not the contract has been provided by third
@@ -1103,16 +1200,16 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 									&& !contract.getConsumer().equals(contract.getOwner())) {
 								Connector connector;
 								connector = contract.getOwner();
-	
+
 								Component component;
 								component = connector.getOwner();
-	
+
 								String componentID;
 								componentID = component.getId();
-	
+
 								result = componentID + contractUrl.getPath();
 							}
-	
+
 							/* Else the context is defined by parent node. */
 							else {
 								result = contractUrl.getPath();
@@ -1120,41 +1217,41 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 						}
 						// end else (contractURL != null).
 					}
-	
+
 					else if (adaptedObject instanceof Resource) {
 						Resource resource;
 						resource = (Resource) adaptedObject;
-	
+
 						result = this.toString(resource);
 					}
-	
+
 					else if (adaptedObject instanceof KeyValueNode) {
 						KeyValueNode keyValueNode;
 						keyValueNode = (KeyValueNode) adaptedObject;
-	
+
 						result = keyValueNode.key + ": " + keyValueNode.value;
 					}
-	
+
 					else if (adaptedObject instanceof RelationshipCondition) {
 						result = this.toString((RelationshipCondition) adaptedObject);
 					}
-	
+
 					else if (adaptedObject instanceof PropertyCondition) {
 						result = this.toString((PropertyCondition) adaptedObject);
 					}
-	
+
 					else if (adaptedObject instanceof ExistsCondition) {
 						result = this.toString((ExistsCondition) adaptedObject);
 					}
-	
+
 					else if (adaptedObject instanceof ComplexCondition) {
 						result = ((ComplexCondition) adaptedObject).getConnective();
 					}
-	
+
 					else if (adaptedObject instanceof Negation) {
 						result = "not";
 					}
-	
+
 					else {
 						return adaptedObject.toString();
 					}
@@ -1163,10 +1260,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				// end else (column != 1).
 			}
 			// end else (node is TreeObject).
-	
+
 			return result;
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -1174,11 +1271,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * .Object, java.lang.String)
 		 */
 		public boolean isLabelProperty(Object arg0, String arg1) {
-	
+
 			/* Do nothing. */
 			return false;
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * @see
@@ -1186,10 +1283,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * .jface.viewers.ILabelProviderListener)
 		 */
 		public void removeListener(ILabelProviderListener arg0) {
-	
+
 			/* Do nothing. */
 		}
-	
+
 		/**
 		 * <p>
 		 * Returns the verification status of a given {@link Object} as a
@@ -1201,30 +1298,30 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * @return The verification status as a {@link String}.
 		 */
 		private String getStatus(Object object) {
-	
+
 			String result;
 			result = "";
-	
+
 			if (object instanceof Annotatable) {
-	
+
 				Annotatable annotatable;
 				Object status;
-	
+
 				annotatable = (Annotatable) object;
 				status = annotatable.getProperty(VERIFICATION_RESULT);
-	
+
 				if (status == VerificationResult.FAILURE) {
 					result = "failure";
 				}
-	
+
 				else if (status == VerificationResult.SUCCESS) {
 					result = "success";
 				}
-	
+
 				else if (status == VerificationResult.UNKNOWN) {
 					result = "unknown";
 				}
-	
+
 				else {
 					result = "not verified";
 				}
@@ -1232,7 +1329,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			}
 			return result;
 		}
-	
+
 		/**
 		 * <p>
 		 * Returns a {@link String} representation of a given
@@ -1246,13 +1343,13 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 *         {@link ExistsCondition}.
 		 */
 		private String toString(ExistsCondition condition) {
-	
+
 			StringBuffer buf = new StringBuffer();
 			buf.append(toString(condition.getResource()));
 			buf.append(" must exist");
 			return buf.toString();
 		}
-	
+
 		/**
 		 * <p>
 		 * Returns a {@link String} representation of a given
@@ -1266,27 +1363,27 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 *         {@link PropertyCondition}.
 		 */
 		private String toString(PropertyCondition condition) {
-	
+
 			StringBuffer buf = new StringBuffer();
 			buf.append(toString(condition.getResource()));
 			buf.append(' ');
-	
+
 			Iterator<String> propertyNameIterator;
 			propertyNameIterator = condition.getPropertyNames();
-	
+
 			while (propertyNameIterator.hasNext()) {
 				buf.append(condition.getProperty(propertyNameIterator.next()));
 				buf.append(' ');
 			}
 			// end while
-	
+
 			buf.append(' ');
 			buf.append(condition.getOperator().toString());
 			buf.append(' ');
 			buf.append(condition.getValue());
 			return buf.toString();
 		}
-	
+
 		/**
 		 * <p>
 		 * Returns a {@link String} representation of a given
@@ -1300,7 +1397,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 *         {@link RelationshipCondition}.
 		 */
 		private String toString(RelationshipCondition condition) {
-	
+
 			StringBuffer buf = new StringBuffer();
 			buf.append(toString(condition.getResource1()));
 			buf.append(' ');
@@ -1311,7 +1408,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			buf.append(toString(condition.getResource2()));
 			return buf.toString();
 		}
-	
+
 		/**
 		 * <p>
 		 * Returns a {@link String} representation of a given {@link Resource}.
@@ -1323,7 +1420,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * @return A {@link String} representation of a given {@link Resource}.
 		 */
 		private String toString(Resource resource) {
-	
+
 			if (resource.getName() != null) {
 				boolean loadProblem =
 						resource.getValue() == null
@@ -1334,7 +1431,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 				return resource.getId();
 			}
 		}
-	
+
 		/**
 		 * <p>
 		 * Returns the status icon (verification result) of a given node.
@@ -1345,38 +1442,41 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		 * @return The status icon (verification result) of a given node.
 		 */
 		private Image getStatusIcon(Object node) {
-	
+
 			Image result;
 			result = null;
-	
+
 			if (node instanceof Annotatable) {
 				Annotatable annotatable;
 				annotatable = (Annotatable) node;
-	
+
 				Object status;
 				status = annotatable.getProperty(VERIFICATION_RESULT);
-	
+
 				// if (c instanceof Constraint && !((Constraint)c).isInstantiated()) {
 				// return getIcon("status_notinstantiated.gif"); }
-	
+
 				if (status == VerificationResult.FAILURE) {
 					result = getIcon("status_failure.gif");
 				}
-	
+
 				else if (status == VerificationResult.SUCCESS) {
 					result = getIcon("status_success.gif");
 				}
-	
+
 				else {
 					result = getIcon("status_open.gif");
 				}
 				// end else.
 			}
 			// no else.
-	
+
 			return result;
 		}
 	}
+
+	/** Label used to display contract instances in the {@link ContractView}. */
+	private static final String LABEL_INSTANCES = "Contract Instances";
 
 	/**
 	 * A boolean that specifies whether or not the {@link ContractView} has been
@@ -1407,13 +1507,23 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	private Action myActionVerifySelectedContracts;
 
 	/** {@link Action}s to export {@link Contract}s from the {@link ContractView}. */
-	private List<Action> myActionsExport;
+	private Map<Exporter, ExportAction> myActionsExport =
+			new HashMap<Exporter, ExportAction>();
+
+	/** The {@link MenuManager} of the context menu. */
+	private MenuManager myContextMenuManager;
 
 	/**
 	 * All {@link EclipsePlugin}s that have {@link EclipseExtensionPoint}s that
 	 * are contracted by {@link Contract}s.
 	 */
 	private Collection<EclipsePlugin> myContractedPlugins = null;
+
+	/** The {@link DrillDownAdapter} of this {@link ContractView}. */
+	private DrillDownAdapter myDrillDownAdapter;
+
+	/** The icons of this {@link ContractView} must be stored to be disposed. */
+	private Map<String, Image> myIcons = new HashMap<String, Image>();
 
 	/**
 	 * The {@link TreeViewer} used to display the {@link Contract}s and their
@@ -1437,15 +1547,56 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	@Override
 	public void dispose() {
 
-		/* Remove disconnect from Contract Registry. */
+		/* Disconnect from Contract Registry. */
 		EclipseContractRegistry.getInstance().removeContractRegistryListener(this);
 
+		/* Disconnect from ExporterRegistry. */
+		ExporterRegistry.INSTANCE.removeExporterRegistryListener(this);
+
 		/* Dispose all icons. */
-		for (Image icon : icons.values()) {
+		for (Image icon : myIcons.values()) {
 			icon.dispose();
 		}
 
 		super.dispose();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.eclipse.exporter.ExporterRegistryListener#exporterAdded
+	 * (net.java.treaty.eclipse.exporter.Exporter)
+	 */
+	public void exporterAdded(Exporter exporter) {
+
+		if (!this.myActionsExport.containsKey(exporter)) {
+
+			this.createExportAction(exporter);
+
+			/* Update the menus. */
+			this.hookContextMenu();
+			this.contributeToActionBars();
+		}
+		// no else (action already exists).
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.eclipse.exporter.ExporterRegistryListener#exporterRemoved
+	 * (net.java.treaty.eclipse.exporter.Exporter)
+	 */
+	public void exporterRemoved(Exporter exporter) {
+
+		if (this.myActionsExport.containsKey(exporter)) {
+
+			this.myActionsExport.remove(exporter);
+
+			/* Update the menus. */
+			this.hookContextMenu();
+			this.contributeToActionBars();
+		}
+		// no else (action already removed).
 	}
 
 	/**
@@ -1674,6 +1825,122 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	/**
 	 * <p>
+	 * Initializes the pull down menu and the tool bar according to the context
+	 * menu.
+	 * </p>
+	 */
+	private void contributeToActionBars() {
+
+		IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+		fillLocalToolBar(bars.getToolBarManager());
+	}
+
+	private void createExportAction(Exporter exporter) {
+
+		/* Probably create the action. */
+		if (!this.myActionsExport.containsKey(exporter)) {
+
+			ExportAction exportAction;
+			exportAction = new ExportAction(exporter);
+
+			exportAction.setEnabled(true);
+			exportAction.setText(exporter.getName());
+			exportAction.setImageDescriptor(getImageDescriptor("icons/export.gif"));
+			exportAction
+					.setToolTipText("Export instantiated contracts and verification results (if available), exporter used: "
+							+ exporter.getName());
+
+			this.myActionsExport.put(exporter, exportAction);
+		}
+		// no else (action already exists).
+	}
+
+	/**
+	 * <p>
+	 * Initializes the context menu with its {@link Action}s.
+	 * </p>
+	 * 
+	 * @param manager
+	 *          The {@link IMenuManager} of the context menu.
+	 */
+	private void fillContextMenu(IMenuManager manager) {
+
+		manager.add(this.myActionRefresh);
+		manager.add(this.myActionVerifyAllContracts);
+		manager.add(this.myActionVerifySelectedContracts);
+		manager.add(this.myActionPrintStackTrace);
+		manager.add(this.myActionShowContractSource);
+
+		manager.add(new Separator());
+
+		for (Action actExport : this.myActionsExport.values()) {
+			manager.add(actExport);
+		}
+
+		manager.add(new Separator());
+
+		this.myDrillDownAdapter.addNavigationActions(manager);
+
+		/* Other plug-ins can contribute there actions here. */
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+	}
+
+	/**
+	 * <p>
+	 * Initializes the pull down menu.
+	 * </p>
+	 * 
+	 * @param manager
+	 *          The {@link IMenuManager} used to initialize.
+	 */
+	private void fillLocalPullDown(IMenuManager manager) {
+
+		manager.add(this.myActionRefresh);
+
+		manager.add(new Separator());
+
+		manager.add(this.myActionVerifyAllContracts);
+		manager.add(this.myActionVerifySelectedContracts);
+
+		manager.add(new Separator());
+
+		for (Action actExport : this.myActionsExport.values()) {
+			manager.add(actExport);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * A helper method that fills the tool bar with icons for the {@link Action}s
+	 * of the {@link ContractView}.
+	 * </p>
+	 * 
+	 * @param toolBarManager
+	 *          The {@link IToolBarManager} to that the {@link Action}s shall be
+	 *          added.
+	 */
+	private void fillLocalToolBar(IToolBarManager toolBarManager) {
+
+		toolBarManager.add(this.myActionRefresh);
+		toolBarManager.add(this.myActionVerifyAllContracts);
+		toolBarManager.add(this.myActionVerifySelectedContracts);
+
+		toolBarManager.add(new Separator());
+
+		for (Action actExport : this.myActionsExport.values()) {
+			toolBarManager.add(actExport);
+		}
+		// end for.
+
+		toolBarManager.add(new Separator());
+
+		this.myDrillDownAdapter.addNavigationActions(toolBarManager);
+	}
+
+	/**
+	 * <p>
 	 * Returns the {@link Contract} for a given {@link TreeObject}.
 	 * </p>
 	 * 
@@ -1702,6 +1969,34 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		else {
 			result = null;
 		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Image} for a given name. Probably the {@link Image} will
+	 * be initialized.
+	 * </p>
+	 * 
+	 * @param name
+	 *          The name whose {@link Image} shall be returned.
+	 * @return The {@link Image} to the given name.
+	 */
+	private Image getIcon(String name) {
+
+		Image result;
+
+		String path;
+		path = "icons/" + name;
+
+		result = this.myIcons.get(path);
+
+		if (result == null) {
+			result = getImageDescriptor(path).createImage();
+			this.myIcons.put(path, result);
+		}
+		// no else.
 
 		return result;
 	}
@@ -1866,6 +2161,32 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 	/**
 	 * <p>
+	 * Initializes the context menu of this {@link ContractView}.
+	 * </p>
+	 */
+	private void hookContextMenu() {
+
+		this.myContextMenuManager = new MenuManager("#PopupMenu");
+		this.myContextMenuManager.setRemoveAllWhenShown(true);
+
+		this.myContextMenuManager.addMenuListener(new IMenuListener() {
+
+			public void menuAboutToShow(IMenuManager manager) {
+
+				ContractView.this.fillContextMenu(manager);
+			}
+		});
+
+		Menu menu;
+		menu =
+				this.myContextMenuManager.createContextMenu(this.myViewer.getControl());
+
+		this.myViewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(this.myContextMenuManager, this.myViewer);
+	}
+
+	/**
+	 * <p>
 	 * Creates all {@link Action}s of the {@link ContractView}.
 	 * </p>
 	 */
@@ -1966,24 +2287,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		this.myActionShowContractSource
 				.setToolTipText("Displays the source code of the contract.");
 
-		/* Actions to export contracts. */
-		this.myActionsExport = new ArrayList<Action>();
-
-		/* TODO Claas: this should happen dynamically as well. */
 		/* Create an export action for each exporter. */
 		for (Exporter exporter : ExporterRegistry.INSTANCE.getExporters()) {
 
-			Action exportAction;
-			exportAction = new ExportAction(exporter);
-
-			exportAction.setEnabled(true);
-			exportAction.setText(exporter.getName());
-			exportAction.setImageDescriptor(getImageDescriptor("icons/export.gif"));
-			exportAction
-					.setToolTipText("Export instantiated contracts and verification results (if available), exporter used: "
-							+ exporter.getName());
-
-			this.myActionsExport.add(exportAction);
+			this.createExportAction(exporter);
 		}
 		// end for.
 	}
@@ -2004,7 +2311,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		this.myActionVerifyAllContracts.setEnabled(on);
 		this.myActionRefresh.setEnabled(on);
 
-		for (Action act : this.myActionsExport) {
+		for (Action act : this.myActionsExport.values()) {
 			act.setEnabled(on);
 		}
 
@@ -2024,7 +2331,8 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	 * @param contracts
 	 *          The {@link Contract}s that shall be verified.
 	 * @param disableActions
-	 *          TODO
+	 *          Indicates whether or not the actions in the toolbars and menus
+	 *          shall be disabled.
 	 */
 	private void verify(List<Contract> contracts, boolean disableActions) {
 
@@ -2142,15 +2450,22 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		EclipseVerifier.verify(contracts, verReport, vListener, jListener);
 	}
 
-	private DrillDownAdapter drillDownAdapter;
-
-	private Map<String, Image> icons = new HashMap<String, Image>();
-
-	// strings
-	private static final String LABEL_INSTANCES = "contract instances";
-
-	enum OwnerType {
-		extension, extensionpoint, thirdparty
+	/**
+	 * <p>
+	 * Refreshes the tree labels of this {@link ContractView}.
+	 * </p>
+	 */
+	private void updateTree() {
+	
+		Runnable r = new Runnable() {
+	
+			public void run() {
+	
+				myViewer.refresh(true);
+			}
+		};
+	
+		this.myViewer.getTree().getDisplay().asyncExec(r);
 	}
 
 	class KeyValueNode {
@@ -2165,55 +2480,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 		}
 	}
 
-	class DummyViewContentProvider implements IStructuredContentProvider,
-			ITreeContentProvider {
-
-		private Object ROOT = new Object();
-		private String INITIALIZING = "initializing, please wait ..";
-
-		@Override
-		public Object[] getElements(Object inputElement) {
-
-			if (inputElement.equals(getViewSite())) {
-				return getChildren(ROOT);
-			}
-			return getChildren(inputElement);
-		}
-
-		@Override
-		public void dispose() {
-
-		}
-
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-
-		}
-
-		@Override
-		public Object[] getChildren(Object parent) {
-
-			if (parent == ROOT) {
-				return new String[] { INITIALIZING };
-			}
-			return new Object[] {};
-		}
-
-		@Override
-		public Object getParent(Object element) {
-
-			if (element == INITIALIZING)
-				return ROOT;
-			return null;
-		}
-
-		@Override
-		public boolean hasChildren(Object element) {
-
-			return element == ROOT;
-		}
-	};
-
 	/**
 	 * <p>
 	 * This is a call-back that will allow us to create the viewer and initialize
@@ -2226,7 +2492,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 	public void createPartControl(Composite parent) {
 
 		myViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		drillDownAdapter = new DrillDownAdapter(myViewer);
+		myDrillDownAdapter = new DrillDownAdapter(myViewer);
 
 		myViewer.getTree().setHeaderVisible(true);
 
@@ -2272,71 +2538,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 
 		/* Register as listener of the contract registry. */
 		EclipseContractRegistry.getInstance().addContractRegistryListener(this);
-	}
 
-	private void hookContextMenu() {
-
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-
-			public void menuAboutToShow(IMenuManager manager) {
-
-				ContractView.this.fillContextMenu(manager);
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(myViewer.getControl());
-		myViewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, myViewer);
-	}
-
-	private void contributeToActionBars() {
-
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(IMenuManager manager) {
-
-		manager.add(myActionRefresh);
-		manager.add(new Separator());
-		manager.add(myActionVerifyAllContracts);
-		manager.add(myActionVerifySelectedContracts);
-		manager.add(new Separator());
-		for (Action actExport : this.myActionsExport) {
-			manager.add(actExport);
-		}
-	}
-
-	private void fillContextMenu(IMenuManager manager) {
-
-		manager.add(myActionRefresh);
-		manager.add(myActionVerifyAllContracts);
-		manager.add(myActionVerifySelectedContracts);
-		manager.add(myActionPrintStackTrace);
-		manager.add(myActionShowContractSource);
-		manager.add(new Separator());
-		for (Action actExport : this.myActionsExport) {
-			manager.add(actExport);
-		}
-		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
-
-	private void fillLocalToolBar(IToolBarManager manager) {
-
-		manager.add(myActionRefresh);
-		manager.add(myActionVerifyAllContracts);
-		manager.add(myActionVerifySelectedContracts);
-		manager.add(new Separator());
-		for (Action actExport : this.myActionsExport) {
-			manager.add(actExport);
-		}
-		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
+		/* Register as listener of the ExporterRegistry. */
+		ExporterRegistry.INSTANCE.addExporterRegistryListener(this);
 	}
 
 	private void actShowContractSource() {
@@ -2400,29 +2604,5 @@ public class ContractView extends ViewPart implements ContractRegistryListener {
 			}
 		};
 		myViewer.getControl().getDisplay().syncExec(r);
-	}
-
-	// refreshes the tree labels
-	private void updateTree() {
-
-		Runnable r = new Runnable() {
-
-			public void run() {
-
-				myViewer.refresh(true);
-			}
-		};
-		myViewer.getTree().getDisplay().asyncExec(r);
-	}
-
-	private Image getIcon(String name) {
-
-		String path = "icons/" + name;
-		Image icon = icons.get(path);
-		if (icon == null) {
-			icon = getImageDescriptor(path).createImage();
-			icons.put(path, icon);
-		}
-		return icon;
 	}
 }
