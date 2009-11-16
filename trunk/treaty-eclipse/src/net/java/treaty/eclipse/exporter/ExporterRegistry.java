@@ -8,13 +8,16 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.eclipse;
+package net.java.treaty.eclipse.exporter;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import net.java.treaty.eclipse.Constants;
+import net.java.treaty.eclipse.Logger;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -42,6 +45,10 @@ public class ExporterRegistry implements IRegistryEventListener {
 	 */
 	private Map<String, Set<Exporter>> myExporters = null;
 
+	/** The {@link ExporterRegistryListener} of this {@link ExporterRegistry}. */
+	private Set<ExporterRegistryListener> myListeners =
+			new HashSet<ExporterRegistryListener>();
+
 	/**
 	 * <p>
 	 * Private constructor for singleton pattern.
@@ -59,7 +66,7 @@ public class ExporterRegistry implements IRegistryEventListener {
 	 * runtime.IExtension[])
 	 */
 	public void added(IExtension[] extensions) {
-	
+
 		for (IExtension extension : extensions) {
 			this.addExporters(extension);
 		}
@@ -73,7 +80,7 @@ public class ExporterRegistry implements IRegistryEventListener {
 	 * runtime.IExtensionPoint[])
 	 */
 	public void added(IExtensionPoint[] extensionPoints) {
-	
+
 		/* This method can be ignored, only listens to extensions. */
 	}
 
@@ -84,9 +91,19 @@ public class ExporterRegistry implements IRegistryEventListener {
 	 * .runtime.IExtension[])
 	 */
 	public void removed(IExtension[] extensions) {
-	
+
 		for (IExtension extension : extensions) {
-			this.myExporters.remove(extension.getUniqueIdentifier());
+
+			if (this.myExporters.containsKey(extension.getUniqueIdentifier())) {
+
+				for (Exporter exporter : this.myExporters.remove(extension
+						.getUniqueIdentifier())) {
+
+					this.notifiyRemovedExporter(exporter);
+				}
+				// end for.
+			}
+			// no else.
 		}
 		// end for.
 	}
@@ -98,8 +115,21 @@ public class ExporterRegistry implements IRegistryEventListener {
 	 * .runtime.IExtensionPoint[])
 	 */
 	public void removed(IExtensionPoint[] extensionPoints) {
-	
+
 		/* This method can be ignored, only listens to extensions. */
+	}
+
+	/**
+	 * <p>
+	 * Adds an {@link ExporterRegistryListener} to this {@link ExporterRegistry}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link ExporterRegistryListener} that shall be added.
+	 */
+	public void addExporterRegistryListener(ExporterRegistryListener listener) {
+
+		this.myListeners.add(listener);
 	}
 
 	/**
@@ -132,6 +162,23 @@ public class ExporterRegistry implements IRegistryEventListener {
 
 	/**
 	 * <p>
+	 * Removes an {@link ExporterRegistryListener} to this
+	 * {@link ExporterRegistry}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link ExporterRegistryListener} that shall be removed.
+	 * @return <code>true</code> if the {@link ExporterRegistryListener} has been
+	 *         removed successfully.
+	 */
+	public boolean removeExporterRegistryListener(
+			ExporterRegistryListener listener) {
+
+		return this.myListeners.remove(listener);
+	}
+
+	/**
+	 * <p>
 	 * This method can be called when this plug-in shall be de-activated.
 	 * Unregisters the {@link ExporterRegistry} as listener of the
 	 * ExtensionRegistry.
@@ -157,6 +204,9 @@ public class ExporterRegistry implements IRegistryEventListener {
 		Set<Exporter> exportersOfExtension;
 		exportersOfExtension = new HashSet<Exporter>();
 
+		Set<Exporter> newExportersOfExtension;
+		newExportersOfExtension = new HashSet<Exporter>();
+
 		String pluginId;
 		pluginId = extension.getContributor().getName();
 
@@ -178,7 +228,14 @@ public class ExporterRegistry implements IRegistryEventListener {
 					Exporter exporter;
 					exporter = (Exporter) clazz.newInstance();
 
-					exportersOfExtension.add(exporter);
+					/*
+					 * Add the exporter and probably store it for notify, if its a new
+					 * exporter.
+					 */
+					if (exportersOfExtension.add(exporter)) {
+						newExportersOfExtension.add(exporter);
+					}
+					// no else.
 				}
 				// no else.
 			}
@@ -187,6 +244,12 @@ public class ExporterRegistry implements IRegistryEventListener {
 			/* Store all exporters of this extension. */
 			this.myExporters.put(extension.getUniqueIdentifier(),
 					exportersOfExtension);
+
+			/* Notify all listeners of all newly added exporters. */
+			for (Exporter exporter : newExportersOfExtension) {
+				this.notifiyAddedExporter(exporter);
+			}
+			// end for.
 		}
 		// end try.
 
@@ -221,6 +284,40 @@ public class ExporterRegistry implements IRegistryEventListener {
 		/* Add exporter instances for each extension of the extension point. */
 		for (IExtension extension : extensionPoint.getExtensions()) {
 			this.addExporters(extension);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Notifies all registered {@link ExporterRegistryListener}s, that an
+	 * {@link Exporter} has been added to this {@link ExporterRegistry}.
+	 * </p>
+	 * 
+	 * @param exporter
+	 *          The {@link Exporter} that has been added.
+	 */
+	private void notifiyAddedExporter(Exporter exporter) {
+
+		for (ExporterRegistryListener listener : this.myListeners) {
+			listener.exporterAdded(exporter);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Notifies all registered {@link ExporterRegistryListener}s, that an
+	 * {@link Exporter} has been removed to this {@link ExporterRegistry}.
+	 * </p>
+	 * 
+	 * @param exporter
+	 *          The {@link Exporter} that has been removed.
+	 */
+	private void notifiyRemovedExporter(Exporter exporter) {
+
+		for (ExporterRegistryListener listener : this.myListeners) {
+			listener.exporterRemoved(exporter);
 		}
 		// end for.
 	}

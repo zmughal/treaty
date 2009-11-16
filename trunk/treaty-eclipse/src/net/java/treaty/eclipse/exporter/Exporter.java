@@ -8,7 +8,7 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.eclipse;
+package net.java.treaty.eclipse.exporter;
 
 import java.io.File;
 import java.io.IOException;
