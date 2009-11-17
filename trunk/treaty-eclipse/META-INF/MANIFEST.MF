@@ -1,14 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: treaty for eclipse
+Bundle-Name: Treaty for Eclipse
 Bundle-SymbolicName: net.java.treaty.eclipse;singleton:=true
-Bundle-Version: 1.2.0
+Bundle-Version: 1.3.0
 Bundle-Activator: net.java.treaty.eclipse.Activator
 Bundle-Vendor: Jens Dietrich
 Require-Bundle: org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- lib/treaty.jar,
  lib/jaxen-core.jar,
  lib/jaxen-jdom.jar,
  lib/saxpath.jar,
@@ -19,13 +18,14 @@ Bundle-ClassPath: .,
  lib/iri-0.7.jar,
  lib/xercesImpl-2.7.1.jar,
  lib/log4j-1.2.15.jar,
- lib/jena-2.6.2.jar,
  lib/antlr-3.1.1-runtime.jar,
  lib/dtdparser121.jar,
  lib/isorelax.jar,
  lib/msv.jar,
  lib/relaxngDatatype.jar,
- lib/xsdlib.jar
+ lib/xsdlib.jar,
+ lib/jena-2.6.2.jar,
+ lib/treaty.jar
 Export-Package: com.hp.hpl.jena.ontology,
  com.hp.hpl.jena.rdf.model,
  com.hp.hpl.jena.rdf.model.impl,
