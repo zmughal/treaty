@@ -20,57 +20,132 @@ import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.TreatyException;
 import net.java.treaty.ContractVocabulary;
+
 /**
+ * <p>
  * A set of vocabulary related utilities.
+ * </p>
+ * 
  * @author jens dietrich
  */
 public class VocabularyUtilities {
+
 	/**
-	 * Find types in the contract not defined inthe vocabulary.
+	 * <p>
+	 * Checks whether two types are valid domain and range types for a given
+	 * relationship.
+	 * </p>
+	 * 
+	 * @param voc
+	 *          The {@link ContractVocabulary} used.
+	 * @param relationship
+	 *          The relationship (as a {@link URI}) to be checked.
+	 * @param type1
+	 *          The first type (as a {@link URI}) to be checked.
+	 * @param type2
+	 *          The second type (as a {@link URI}) to be checked.
+	 * @throws TreatyException
+	 *           Thrown, if the check fails.
 	 */
-	public static Collection<URI> findUndefinedTypes(Contract c,ContractVocabulary v) {
-		final Collection<URI> coll = new HashSet<URI>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
-			@Override
-			public boolean visit(Resource resource) {
-				super.visit(resource);
-				coll.add(resource.getType());
-				return true;
-			}
-		};
-		c.accept(visitor);
-		return coll;
-	}
+	public static void checkTypeSafety(ContractVocabulary voc, URI relationship,
+			URI type1, URI type2) throws TreatyException {
 	
+		URI domain;
+		domain = voc.getDomain(relationship);
+	
+		URI range;
+		range = voc.getRange(relationship);
+	
+		if (!(domain.equals(type1) || voc.getSupertypes(type1).contains(domain))) {
+			throw new TreatyException("" + type1 + " is not a valid domain type for "
+					+ relationship);
+		}
+	
+		else if (!(range.equals(type2) || voc.getSupertypes(type2).contains(range))) {
+			throw new TreatyException("" + type2 + " is not a valid range type for "
+					+ relationship);
+		}
+		// no else (success).
+	}
+
 	/**
-	 * Find relationship types in the contract not defined in the vocabulary.
+	 * <p>
+	 * Finds relationship types in a given {@link Contract} that are not defined
+	 * in a given {@link ContractVocabulary}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose relationships shall be checked.
+	 * @param vocabulary
+	 *          The {@link ContractVocabulary} whose relationships shall be
+	 *          checked.
 	 */
-	public static Collection<URI> findUndefinedRelationships(Contract c,ContractVocabulary v) {
-		final Collection<URI> coll = new HashSet<URI>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
-			@Override
+	public static Collection<URI> findUndefinedRelationships(Contract c,
+			ContractVocabulary v) {
+
+		final Collection<URI> result;
+		result = new HashSet<URI>();
+
+		ContractVisitor visitor;
+		visitor = new AbstractContractVisitor() {
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * RelationshipCondition)
+			 */
 			public boolean visit(RelationshipCondition rel) {
+
 				super.visit(rel);
-				coll.add(rel.getRelationship());
+
+				result.add(rel.getRelationship());
+
 				return true;
 			}
-
 		};
-		c.accept(visitor);
-		return coll;
-	}
-	
-	/**
-	 * Check whether two types are valid domain and range types for a relationship.
-	 */
-	public void checkTypeSafety(ContractVocabulary voc, URI relationship, URI type1, URI type2) throws TreatyException {
-		URI domain = voc.getDomain(relationship);
-		URI range = voc.getRange(relationship);
-		if (!(domain.equals(type1) || voc.getSupertypes(type1).contains(domain))) 
-			throw new TreatyException(""+type1+ " is not a valid domain type for " + relationship);
-		if (!(range.equals(type2) || voc.getSupertypes(type2).contains(range))) 
-			throw new TreatyException(""+type2+ " is not a valid range type for " + relationship);
-	}
-	
 
+		c.accept(visitor);
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Find types in a given {@link Contract} not defined in the given
+	 * {@link ContractVocabulary}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose types shall be checked.
+	 * @param vocabulary
+	 *          The {@link ContractVocabulary} whose types shall be checked.
+	 */
+	public static Collection<URI> findUndefinedTypes(Contract contract,
+			ContractVocabulary vocabulary) {
+
+		final Collection<URI> result;
+		result = new HashSet<URI>();
+
+		ContractVisitor visitor;
+
+		visitor = new AbstractContractVisitor() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.AbstractContractVisitor#visit(net.java.treaty.Resource)
+			 */
+			public boolean visit(Resource resource) {
+
+				super.visit(resource);
+				result.add(resource.getType());
+
+				return true;
+			}
+		};
+
+		contract.accept(visitor);
+
+		return result;
+	}
 }
