@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -10,35 +10,64 @@
 
 package net.java.treaty;
 
-
 /**
- * Algorithm used to check conditions.
- * Implementing classes provide the semantics for relationships and are usually provided by
- * extensions of the validation extension point.
+ * <p>
+ * Algorithm used to check conditions. Implementing classes provide the
+ * semantics for relationships and are usually provided by extensions of the
+ * validation extension point.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public interface Verifier {
+
+	/**
+	 * @deprecated This enumeration is deprecated. Use {@link VerificationPolicy}
+	 *             instead.
+	 * 
+	 *             TODO Claas: Remove this enumeration when all dependencies have
+	 *             been removed.
+	 */
 	public enum Policy {
 		DETAILED, FAST
 	}
-	/**
-	 * Check a relationship condition. 
-	 * @param a condition
-	 * @throws VerificationException thrown only if verification fails
-	 */
-	public void check(RelationshipCondition relationshipCondition) throws VerificationException; 
-	/**
-	 * Check a property condition. 
-	 * @param a condition
-	 * @throws VerificationException thrown only if verification fails
-	 */
-	public void check(PropertyCondition relationshipCondition) throws VerificationException;
-	/**
-	 * Check an exists condition. 
-	 * @param a condition
-	 * @throws VerificationException thrown only if verification fails
-	 */
-	public void check(ExistsCondition relationshipCondition) throws VerificationException;
 
+	/**
+	 * <p>
+	 * Checks a {@link RelationshipCondition}.
+	 * </p>
+	 * 
+	 * @param relationshipCondition
+	 *          The {@link RelationshipCondition} that shall be checked.
+	 * @throws VerificationException
+	 *           Thrown only if the verification fails.
+	 */
+	public void check(RelationshipCondition relationshipCondition)
+			throws VerificationException;
+
+	/**
+	 * <p>
+	 * Checks a {@link PropertyCondition}.
+	 * </p>
+	 * 
+	 * @param propertyCondition
+	 *          The {@link PropertyCondition} that shall be checked.
+	 * @throws VerificationException
+	 *           Thrown only if the verification fails.
+	 */
+	public void check(PropertyCondition propertyCondition)
+			throws VerificationException;
+
+	/**
+	 * <p>
+	 * Checks an {@link ExistsCondition}.
+	 * </p>
+	 * 
+	 * @param existsCondition
+	 *          The {@link ExistsCondition} that shall be checked.
+	 * @throws VerificationException
+	 *           Thrown only if the verification fails.
+	 */
+	public void check(ExistsCondition existsCondition)
+			throws VerificationException;
 }

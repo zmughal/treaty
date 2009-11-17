@@ -13,21 +13,27 @@ package net.java.treaty;
 import java.io.InputStream;
 
 /**
- * Interface to read contracts from streams.
+ * <p>
+ * Interface to read {@link Contract}s from streams.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
+public interface ContractReader {
 
-public interface ContractReader  {
-	
 	/**
-	 * Read a contract from an input stream.
-	 * @param in an input stream
-	 * @param voc a vocabulary
-	 * @return
+	 * <p>
+	 * Reads a {@link ContractReaderException} from an {@link InputStream}.
+	 * </p>
+	 * 
+	 * @param in
+	 *          The {@link InputStream} used to read the {@link Contract}.
+	 * @param vocabulary
+	 *          The {@link ContractVocabulary} used to read the {@link Contract}.
+	 * @return The read {@link Contract}.
 	 * @throws TreatyException
+	 *           Thrown, if the reading procedures fails.
 	 */
-	public Contract read (InputStream in,ContractVocabulary voc) throws TreatyException;
-
-	
-
+	public Contract read(InputStream in, ContractVocabulary vocabulary)
+			throws TreatyException;
 }

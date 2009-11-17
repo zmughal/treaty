@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -40,6 +40,24 @@ public class RelationshipCondition extends AbstractCondition {
 	public RelationshipCondition() {
 
 		super();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Visitable#accept(net.java.treaty.ContractVisitor)
+	 */
+	public void accept(ContractVisitor visitor) {
+
+		boolean willVisitChildren;
+		willVisitChildren = visitor.visit(this);
+
+		if (willVisitChildren) {
+			this.getResource1().accept(visitor);
+			this.getResource2().accept(visitor);
+		}
+		// no else.
+
+		visitor.endVisit(this);
 	}
 
 	/*
@@ -145,51 +163,102 @@ public class RelationshipCondition extends AbstractCondition {
 		return result;
 	}
 
-	public URI getRelationship() {
-
-		return myRelationshipType;
-	}
-
-	public void setRelationship(URI relationship) {
-
-		this.myRelationshipType = relationship;
-	}
-
-	public Resource getResource1() {
-
-		return myResource1;
-	}
-
-	public void setResource1(Resource resource1) {
-
-		this.myResource1 = resource1;
-	}
-
-	public Resource getResource2() {
-
-		return myResource2;
-	}
-
-	public void setResource2(Resource resource2) {
-
-		this.myResource2 = resource2;
-	}
-
-	public void accept(ContractVisitor visitor) {
-
-		boolean f = visitor.visit(this);
-		if (f) {
-			this.getResource1().accept(visitor);
-			this.getResource2().accept(visitor);
-		}
-		visitor.endVisit(this);
-
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
 	public String toString() {
 
 		return new StringBuffer().append("aCondition(").append(
 				this.myRelationshipType).append('(').append(this.myResource1).append(
 				',').append(this.myResource2).append("))").toString();
+	}
+
+	/**
+	 * <p>
+	 * Returns the relationship (as an {@link URI}) of this
+	 * {@link RelationshipCondition}.
+	 * </p>
+	 * 
+	 * @return The relationship (as an {@link URI}) of this
+	 *         {@link RelationshipCondition}.
+	 */
+	public URI getRelationship() {
+
+		return this.myRelationshipType;
+	}
+
+	/**
+	 * <p>
+	 * Returns the first related {@link Resource} of this
+	 * {@link RelationshipCondition}.
+	 * </p>
+	 * 
+	 * @return The first related {@link Resource} of this
+	 *         {@link RelationshipCondition}.
+	 */
+	public Resource getResource1() {
+
+		return this.myResource1;
+	}
+
+	/**
+	 * <p>
+	 * Returns the second related {@link Resource} of this
+	 * {@link RelationshipCondition}.
+	 * </p>
+	 * 
+	 * @return The second related {@link Resource} of this
+	 *         {@link RelationshipCondition}.
+	 */
+	public Resource getResource2() {
+
+		return this.myResource2;
+	}
+
+	/**
+	 * <p>
+	 * Sets the relationship (as an {@link URI}) of this
+	 * {@link RelationshipCondition}.
+	 * </p>
+	 * 
+	 * @param relationship
+	 *          The relationship (as an {@link URI}) of this
+	 *          {@link RelationshipCondition}.
+	 */
+	public void setRelationship(URI relationship) {
+
+		this.myRelationshipType = relationship;
+	}
+
+	/**
+	 * <p>
+	 * Sets the first related {@link Resource} of this
+	 * {@link RelationshipCondition}.
+	 * </p>
+	 * 
+	 * @param resource1
+	 *          The first related {@link Resource} of this
+	 *          {@link RelationshipCondition}.
+	 */
+	public void setResource1(Resource resource1) {
+
+		this.myResource1 = resource1;
+	}
+
+	/**
+	 * <p>
+	 * Sets the second related {@link Resource} of this
+	 * {@link RelationshipCondition}.
+	 * </p>
+	 * 
+	 * @param resource1
+	 *          The second related {@link Resource} of this
+	 *          {@link RelationshipCondition}.
+	 */
+	public void setResource2(Resource resource2) {
+
+		this.myResource2 = resource2;
 	}
 }

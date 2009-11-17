@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -11,11 +11,22 @@
 package net.java.treaty;
 
 /**
- * Interface for objects that accept a contract visitor.
- * Implements the GangOf4 visitor pattern.
+ * <p>
+ * Interface for objects that accept a {@link ContractVisitor}. Implements the
+ * <i>GangOf4 Visitor Pattern</i>.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public interface Visitable {
+
+	/**
+	 * <p>
+	 * Accepts a {@link ContractVisitor}.
+	 * </p>
+	 * 
+	 * @param visitor
+	 *          The {@link ContractVisitor} that shall be accepted.
+	 */
 	public void accept(ContractVisitor visitor);
 }

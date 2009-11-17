@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -16,214 +16,174 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * <p>
  * Utility to pretty print a contract.
+ * </p>
  * 
  * @author Jens Dietrich
  */
-
 public class ContractPrinter implements ContractVisitor {
 
-	private PrintStream out = System.out;
+	/** The current offset of whitespaces used during printing. */
 	private int offset = 0;
+	/** The {@link PrintStream} used for output of the {@link Contract}. */
+	private PrintStream out = System.out;
 
+	/**
+	 * <p>
+	 * Creates a new {@link ContractPrinter}.
+	 * </p>
+	 */
 	public ContractPrinter() {
 
 		super();
 	}
 
+	/**
+	 * <p>
+	 * Creates a new {@link ContractPrinter} with a given {@link PrintStream} used
+	 * for output.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 */
 	public ContractPrinter(PrintStream out) {
 
 		super();
 		this.out = out;
 	}
 
+	/**
+	 * <p>
+	 * Prints a given {@link Contract} using this {@link ContractPrinter}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} that shall be printed.
+	 */
 	public void print(Contract contract) {
 
 		contract.accept(this);
 	}
 
-	public boolean visit(Contract contract) {
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Conjunction)
+	 */
+	public void endVisit(Conjunction condition) {
 
-		out.println("A CONTRACT {");
-		out.print("url=");
-		out.print(contract.getLocation());
-		ios();
-		return true;
+		this.decrementOffset();
 	}
 
-	private void ios() {
-
-		this.offset = offset + 1;
-	}
-
-	private void dos() {
-
-		this.offset = offset - 1;
-	}
-
-	private void pos() {
-
-		for (int i = 0; i < offset; i++)
-			out.print(" ");
-	}
-
-	public boolean visit(Resource resource) {
-
-		pos();
-		out.print(resource.isInstantiated() ? "" : "?");
-		out.print(resource.isInstantiated() ? resource.getName() : resource
-				.getRef());
-		out.print(":");
-		out.println(resource.getType());
-		return true;
-	}
-
-	public boolean visitSupplierResources(Collection<Resource> resources) {
-
-		out.println("extension resources:");
-		ios();
-		return true;
-	}
-
-	public boolean visitConsumerResources(Collection<Resource> resources) {
-
-		out.println("extension point resources:");
-		ios();
-		return true;
-	}
-
-	public boolean visitExternalResources(Collection<Resource> resources) {
-
-		out.println("external resources:");
-		ios();
-		return true;
-	}
-
-	public boolean visitConditions(List<AbstractCondition> name) {
-
-		out.println("conditions:");
-		ios();
-		return true;
-	}
-
-	public boolean visit(Conjunction condition) {
-
-		out.println("and");
-		ios();
-		return true;
-	}
-
-	public boolean visit(Disjunction condition) {
-
-		out.println("or");
-		ios();
-		return true;
-	}
-
-	public boolean visit(XDisjunction condition) {
-
-		out.println("xor");
-		ios();
-		return true;
-	}
-
-	public boolean visit(Negation condition) {
-
-		out.println("not");
-		ios();
-		return true;
-	}
-
-	public boolean visit(RelationshipCondition relationshipCondition) {
-
-		pos();
-		out.println("condition");
-		ios();
-		pos();
-		out.print("condition: ");
-		out.println(relationshipCondition.getRelationship());
-		pos();
-		out.print("resource1: ");
-		visit(relationshipCondition.getResource1());
-		pos();
-		out.print("resource2: ");
-		visit(relationshipCondition.getResource2());
-		dos();
-		return true;
-	}
-
-	public boolean visit(PropertyCondition condition) {
-
-		out.println(condition);
-		return true;
-	}
-
-	public boolean visit(ExistsCondition condition) {
-
-		out.println(condition);
-		return true;
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Contract)
+	 */
 	public void endVisit(Contract contract) {
 
-		dos();
+		this.decrementOffset();
+
 		out.println("}");
 	}
 
-	public void endVisit(Resource resource) {
-
-	}
-
-	public void endVisitSupplierResources(Collection<Resource> resources) {
-
-		dos();
-	}
-
-	public void endVisitExternalResources(Collection<Resource> resources) {
-
-		dos();
-	}
-
-	public void endVisitConsumerResources(Collection<Resource> resources) {
-
-		dos();
-	}
-
-	public void endVisit(Conjunction condition) {
-
-		dos();
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Disjunction)
+	 */
 	public void endVisit(Disjunction condition) {
 
-		dos();
+		this.decrementOffset();
 	}
 
-	public void endVisit(XDisjunction condition) {
-
-		dos();
-	}
-
-	public void endVisit(Negation condition) {
-
-		dos();
-	}
-
-	public void endVisit(RelationshipCondition relationshipCondition) {
-
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.ExistsCondition)
+	 */
 	public void endVisit(ExistsCondition condition) {
 
+		/* Remains empty. */
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Negation)
+	 */
+	public void endVisit(Negation condition) {
+
+		this.decrementOffset();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.PropertyCondition)
+	 */
 	public void endVisit(PropertyCondition condition) {
 
+		/* Remains empty. */
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.RelationshipCondition
+	 * )
+	 */
+	public void endVisit(RelationshipCondition relationshipCondition) {
+
+		/* Remains empty. */
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Resource)
+	 */
+	public void endVisit(Resource resource) {
+
+		/* Remains empty. */
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.XDisjunction)
+	 */
+	public void endVisit(XDisjunction condition) {
+
+		this.decrementOffset();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitConditions(java.util.Collection)
+	 */
 	public void endVisitConditions(Collection<AbstractCondition> conditions) {
 
-		dos();
+		this.decrementOffset();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitConsumerResources(java.util.Collection
+	 * )
+	 */
+	public void endVisitConsumerResources(Collection<Resource> resources) {
+
+		this.decrementOffset();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitExternalResources(java.util.Collection
+	 * )
+	 */
+	public void endVisitExternalResources(Collection<Resource> resources) {
+
+		this.decrementOffset();
 	}
 
 	/*
@@ -232,6 +192,7 @@ public class ContractPrinter implements ContractVisitor {
 	 */
 	public void endVisitOnFailureAction(URI uri) {
 
+		/* Remains empty. */
 	}
 
 	/*
@@ -240,6 +201,18 @@ public class ContractPrinter implements ContractVisitor {
 	 */
 	public void endVisitOnSuccessAction(URI uri) {
 
+		/* Remains empty. */
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#endVisitSupplierResources(java.util.Collection
+	 * )
+	 */
+	public void endVisitSupplierResources(Collection<Resource> resources) {
+
+		this.decrementOffset();
 	}
 
 	/*
@@ -248,6 +221,190 @@ public class ContractPrinter implements ContractVisitor {
 	 */
 	public void endVisitTrigger(URI uri) {
 
+		/* Remains empty. */
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Contract)
+	 */
+	public boolean visit(Contract contract) {
+
+		out.println("A CONTRACT {");
+		out.print("url=");
+		out.print(contract.getLocation());
+
+		this.incrementOffset();
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Conjunction)
+	 */
+	public boolean visit(Conjunction condition) {
+
+		out.println("and");
+
+		this.incrementOffset();
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Disjunction)
+	 */
+	public boolean visit(Disjunction condition) {
+
+		out.println("or");
+
+		this.incrementOffset();
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.ExistsCondition)
+	 */
+	public boolean visit(ExistsCondition condition) {
+
+		out.println(condition);
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Negation)
+	 */
+	public boolean visit(Negation condition) {
+
+		out.println("not");
+
+		this.incrementOffset();
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visit(net.java.treaty.PropertyCondition)
+	 */
+	public boolean visit(PropertyCondition condition) {
+
+		out.println(condition);
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visit(net.java.treaty.RelationshipCondition
+	 * )
+	 */
+	public boolean visit(RelationshipCondition relationshipCondition) {
+
+		this.printOffeset();
+
+		out.println("condition");
+
+		this.incrementOffset();
+		this.printOffeset();
+
+		out.print("condition: ");
+		out.println(relationshipCondition.getRelationship());
+
+		this.printOffeset();
+
+		out.print("resource1: ");
+		this.visit(relationshipCondition.getResource1());
+
+		this.printOffeset();
+
+		out.print("resource2: ");
+		this.visit(relationshipCondition.getResource2());
+
+		this.decrementOffset();
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Resource)
+	 */
+	public boolean visit(Resource resource) {
+
+		this.printOffeset();
+
+		out.print(resource.isInstantiated() ? "" : "?");
+		out.print(resource.isInstantiated() ? resource.getName() : resource
+				.getRef());
+		out.print(":");
+		out.println(resource.getType());
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.XDisjunction)
+	 */
+	public boolean visit(XDisjunction condition) {
+
+		out.println("xor");
+
+		this.incrementOffset();
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractVisitor#visitConditions(java.util.List)
+	 */
+	public boolean visitConditions(List<AbstractCondition> name) {
+
+		out.println("conditions:");
+
+		this.incrementOffset();
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visitConsumerResources(java.util.Collection
+	 * )
+	 */
+	public boolean visitConsumerResources(Collection<Resource> resources) {
+
+		out.println("extension point resources:");
+
+		this.incrementOffset();
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visitExternalResources(java.util.Collection
+	 * )
+	 */
+	public boolean visitExternalResources(Collection<Resource> resources) {
+
+		out.println("external resources:");
+
+		this.incrementOffset();
+
+		return true;
 	}
 
 	/*
@@ -257,6 +414,7 @@ public class ContractPrinter implements ContractVisitor {
 	public boolean visitOnFailureAction(URI uri) {
 
 		out.println(uri);
+
 		return false;
 	}
 
@@ -267,7 +425,23 @@ public class ContractPrinter implements ContractVisitor {
 	public boolean visitOnSuccessAction(URI uri) {
 
 		out.println(uri);
+
 		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.ContractVisitor#visitSupplierResources(java.util.Collection
+	 * )
+	 */
+	public boolean visitSupplierResources(Collection<Resource> resources) {
+
+		out.println("extension resources:");
+
+		incrementOffset();
+
+		return true;
 	}
 
 	/*
@@ -277,6 +451,41 @@ public class ContractPrinter implements ContractVisitor {
 	public boolean visitTrigger(URI uri) {
 
 		out.println(uri);
+
 		return false;
+	}
+
+	/**
+	 * <p>
+	 * Decrements the offset (used in a method to alter the offset width easily).
+	 * </p>
+	 */
+	private void decrementOffset() {
+
+		this.offset--;
+	}
+
+	/**
+	 * <p>
+	 * Increments the offset (used in a method to alter the offset width easily).
+	 * </p>
+	 */
+	private void incrementOffset() {
+
+		this.offset++;
+	}
+
+	/**
+	 * <p>
+	 * Prints the current offset of white spaces to the <code>out</code>
+	 * {@link PrintStream}.
+	 * </p>
+	 */
+	private void printOffeset() {
+
+		for (int i = 0; i < this.offset; i++) {
+			this.out.print(" ");
+		}
+		// end for.
 	}
 }
