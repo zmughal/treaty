@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -39,6 +39,61 @@ public class PropertyCondition extends AbstractCondition {
 	public PropertyCondition() {
 
 		super();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Visitable#accept(net.java.treaty.ContractVisitor)
+	 */
+	public void accept(ContractVisitor visitor) {
+
+		boolean willVisitChildren;
+		willVisitChildren = visitor.visit(this);
+
+		if (willVisitChildren) {
+			this.getResource().accept(visitor);
+		}
+		// no else.
+
+		visitor.endVisit(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Constraint#check(net.java.treaty.VerificationReport,
+	 * net.java.treaty.Verifier, net.java.treaty.VerificationPolicy)
+	 */
+	public boolean check(VerificationReport report, Verifier verifier,
+			VerificationPolicy policy) {
+
+		boolean result;
+
+		if (!this.getResource().isProvided()) {
+
+			report.log(this, VerificationResult.FAILURE, "Parameter "
+					+ this.getResource().getRef()
+					+ " is not provided for the first resource");
+			result = false;
+		}
+
+		else {
+
+			try {
+				verifier.check(this);
+				report.log(this, VerificationResult.SUCCESS);
+				result = true;
+			}
+			// end try.
+
+			catch (VerificationException x) {
+				report.log(this, VerificationResult.FAILURE, x.getMessage());
+				result = false;
+			}
+			// end catch.
+		}
+		// no else.
+
+		return result;
 	}
 
 	/*
@@ -85,75 +140,95 @@ public class PropertyCondition extends AbstractCondition {
 		return result;
 	}
 
-	public URI getOperator() {
-
-		return myOperator;
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+	
+		StringBuffer buffer;
+		buffer = new StringBuffer();
+	
+		buffer.append("aPropertyCondition(");
+		buffer.append(' ').append(this.myOperator.toString()).append(' ').append(
+				this.myValue);
+	
+		return buffer.toString();
 	}
 
+	/**
+	 * <p>
+	 * Returns the {@link URI} of the operator of this {@link PropertyCondition}.
+	 * </p>
+	 * 
+	 * @return The {@link URI} of the operator of this {@link PropertyCondition}.
+	 */
+	public URI getOperator() {
+
+		return this.myOperator;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link Resource} of this {@link PropertyCondition}.
+	 * </p>
+	 * 
+	 * @return The {@link Resource} of this {@link PropertyCondition}.
+	 */
+	public Resource getResource() {
+
+		return this.myResource;
+	}
+
+	/**
+	 * <p>
+	 * Returns the value of this {@link PropertyCondition}.
+	 * </p>
+	 * 
+	 * @return The value of this {@link PropertyCondition}.
+	 */
+	public Object getValue() {
+
+		return this.myValue;
+	}
+
+	/**
+	 * <p>
+	 * Sets the {@link URI} of the operator of this {@link PropertyCondition}.
+	 * </p>
+	 * 
+	 * @param operator
+	 *          The {@link URI} of the operator of this {@link PropertyCondition}.
+	 */
 	public void setOperator(URI operator) {
 
 		this.myOperator = operator;
 	}
 
-	public Resource getResource() {
-
-		return myResource;
-	}
-
-	public void setResource(Resource resource) {
-
-		this.myResource = resource;
-	}
-
-	public Object getValue() {
-
-		return myValue;
-	}
-
+	/**
+	 * <p>
+	 * Sets the value of this {@link PropertyCondition}.
+	 * </p>
+	 * 
+	 * @param value
+	 *          The value of this {@link PropertyCondition}.
+	 */
 	public void setValue(Object value) {
 
 		this.myValue = value;
 	}
 
-	public void accept(ContractVisitor visitor) {
+	/**
+	 * <p>
+	 * Sets the {@link Resource} of this {@link PropertyCondition}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} of this {@link PropertyCondition}.
+	 */
+	public void setResource(Resource resource) {
 
-		boolean f = visitor.visit(this);
-		if (f) {
-			this.getResource().accept(visitor);
-		}
-		visitor.endVisit(this);
+		this.myResource = resource;
 	}
-
-	public boolean check(VerificationReport report, Verifier verifier,
-			VerificationPolicy policy) {
-
-		boolean result = true;
-		if (!this.getResource().isProvided()) {
-			report.log(this, VerificationResult.FAILURE, "Parameter "
-					+ this.getResource().getRef()
-					+ " is not provided for the first resource");
-			result = false;
-		}
-		if (!result)
-			return false;
-		try {
-			verifier.check(this);
-			report.log(this, VerificationResult.SUCCESS);
-			return true;
-		} catch (VerificationException x) {
-			report.log(this, VerificationResult.FAILURE, x.getMessage());
-			return false;
-		}
-
-	}
-
-	public String toString() {
-
-		StringBuffer buf = new StringBuffer();
-		buf.append("aPropertyCondition(");
-		buf.append(' ').append(this.myOperator.toString()).append(' ').append(
-				this.myValue);
-		return buf.toString();
-	}
-
 }

@@ -28,6 +28,62 @@ public class ExistsCondition extends AbstractCondition {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.Visitable#accept(net.java.treaty.ContractVisitor)
+	 */
+	public void accept(ContractVisitor visitor) {
+
+		boolean willVisitChildren;
+		willVisitChildren = visitor.visit(this);
+
+		if (willVisitChildren) {
+			this.getResource().accept(visitor);
+		}
+		// no else.
+
+		visitor.endVisit(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Constraint#check(net.java.treaty.VerificationReport,
+	 * net.java.treaty.Verifier, net.java.treaty.VerificationPolicy)
+	 */
+	public boolean check(VerificationReport report, Verifier verifier,
+			VerificationPolicy policy) {
+
+		boolean result;
+		result = true;
+
+		if (!this.getResource().isProvided()) {
+
+			report.log(this, VerificationResult.FAILURE, "Parameter "
+					+ this.getResource().getRef() + " is not provided for the Resource.");
+			result = false;
+		}
+		// no else.
+
+		if (result) {
+
+			try {
+				verifier.check(this);
+				report.log(this, VerificationResult.SUCCESS);
+				result = true;
+			}
+			// end try.
+
+			catch (VerificationException x) {
+				report.log(this, VerificationResult.FAILURE, x.getMessage());
+				result = false;
+			}
+			// end catch.
+		}
+		// no else.
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.Constraint#isInstantiated()
 	 */
 	public boolean isInstantiated() {
@@ -60,6 +116,17 @@ public class ExistsCondition extends AbstractCondition {
 		return result;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+
+		return new StringBuffer().append("aCondition(").append(this.myResource)
+				.append(" exists)").toString();
+	}
+
 	/**
 	 * <p>
 	 * Returns the {@link Resource} of this {@link ExistsCondition}.
@@ -82,43 +149,5 @@ public class ExistsCondition extends AbstractCondition {
 	public void setResource(Resource resource) {
 
 		this.myResource = resource;
-	}
-
-	public void accept(ContractVisitor visitor) {
-
-		boolean f = visitor.visit(this);
-		if (f) {
-			this.getResource().accept(visitor);
-		}
-		visitor.endVisit(this);
-
-	}
-
-	public String toString() {
-
-		return new StringBuffer().append("aCondition(").append(this.myResource)
-				.append(" exists)").toString();
-	}
-
-	public boolean check(VerificationReport report, Verifier verifier,
-			VerificationPolicy policy) {
-
-		boolean result = true;
-		if (!this.getResource().isProvided()) {
-			report.log(this, VerificationResult.FAILURE, "Parameter "
-					+ this.getResource().getRef() + " is not provided for the resource");
-			result = false;
-		}
-		if (!result)
-			return false;
-		try {
-			verifier.check(this);
-			report.log(this, VerificationResult.SUCCESS);
-			return true;
-		} catch (VerificationException x) {
-			report.log(this, VerificationResult.FAILURE, x.getMessage());
-			return false;
-		}
-
 	}
 }

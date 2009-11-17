@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -12,27 +12,39 @@ package net.java.treaty;
 
 import java.net.URI;
 
-
-
 /**
- * Utility to load resources.
+ * <p>
+ * Utility to load {@link Resource}s.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public interface ResourceLoader {
+
 	/**
-	 * Load a resource. For instance, if the resource is a class this method will return the class
-	 * object loaded with the classloader of the component owning the connector.
-	 * After this method has been called successfully, the resource value will be !=null.
-	 * @param type a type
-	 * @param name the resource name, e.g. a class name
-	 * @param connector the connector, e.g. it may provide the classloader
-	 * @param checkType if true the type is checked
-	 * @return the object created for the name, e.g. an instance of java.lang.Class
-	 * @throws VerificationException
+	 * <p>
+	 * Loads a {@link Resource}. For instance, if the {@link Resource} is a
+	 * {@link Class} this method will return the {@link Class} object loaded with
+	 * the {@link ClassLoader} of the {@link Component} owning the
+	 * {@link Connector}. After this method has been called successfully, the
+	 * resource value will be <code>!= null</code>.
+	 * </p>
+	 * 
+	 * @param type
+	 *          The type (as a {@link URI}) of the {@link Resource} to be loaded.
+	 * @param name
+	 *          The {@link Resource}'s name, e.g. a {@link Class}' name.
+	 * @param connector
+	 *          The {@link Connector} owning the resource, e.g. it may provide the
+	 *          required {@link ClassLoader}.
+	 * @param checkType
+	 *          If <code>true</code> the given type of the {@link Resource} will
+	 *          be checked.
+	 * @return The {@link Object} created for the name, e.g. an instance of
+	 *         {@link Class}.
+	 * @throws ResourceLoaderException
+	 *           Thrown, if the loading process fails.
 	 */
-	public Object load(URI type,String name,Connector connector) throws ResourceLoaderException;
-
-
-	
+	public Object load(URI type, String name, Connector connector)
+			throws ResourceLoaderException;
 }

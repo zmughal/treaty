@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -14,87 +14,173 @@ import java.net.URI;
 import java.util.Collection;
 
 /**
- * Defines a vocabulary that can be used in contracts.
- * Describes the syntax (the types and their relationships) and the semantics (i.e., given two resources,
- * are they linked or not) of the vocabulary contributed. 
+ * <p>
+ * Defines a vocabulary that can be used in {@link Contract}s. Describes the
+ * syntax (the types and their relationships) and the semantics (i.e., given two
+ * resources, are they linked or not) of the vocabulary contributed.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public interface ContractVocabulary extends Verifier, ResourceLoader {
-	
+
 	/**
-	 * Get the types in the vocabulary.
-	 * @return a collection of types
-	 */
-	Collection<URI> getTypes() throws TreatyException;
-	/**
-	 * Get the relationships (aka object properties) in the vocabulary.
-	 * @return a collection of relationships
-	 */
-	Collection<URI> getRelationships() throws TreatyException;
-	/**
-	 * Get the properties (aka data properties) in the vocabulary.
-	 * @return a collection of types
-	 */
-	Collection<URI> getProperties() throws TreatyException;
-	/**
+	 * <p>
 	 * Checks whether a property or relationship is defined for a certain type.
 	 * Note that inheritance should be supported here.
+	 * </p>
+	 * 
 	 * @param relationshipOrProperty
+	 *          The {@link URI} of the relation or property that shall be checked.
 	 * @param domain
-	 * @return
+	 *          The domain for that the relation or property shall be checked.
+	 * @return <code>true</code> if the given relation or property is defined for
+	 *         the given domain.
+	 * @throws TreatyException
+	 *           Thrown, if the evaluation fails with an {@link Exception}.
 	 */
-	boolean checkDomain(URI relationshipOrProperty, URI domain) throws TreatyException;
+	boolean checkDomain(URI relationshipOrProperty, URI domain)
+			throws TreatyException;
+
 	/**
-	 * Checks whether a relationship can link to a certain type,
-	 * or a property can be of this type.
-	 * The types could be built-in XMLSChema types representing primitives.
-	 * Note that inheritance should be supported here.
+	 * <p>
+	 * Checks whether a relationship can link to a certain type, or a property can
+	 * be of this type. The types could be built-in XMLSChema types representing
+	 * primitives. Note that inheritance should be supported here.
+	 * </p>
+	 * 
 	 * @param relationshipOrProperty
+	 *          The relationship or property that shall be checked.
 	 * @param range
-	 * @return
+	 *          The range for that the relationship or property shall be checked.
+	 * @return <code>true</code> if the given relation or property can link to/is
+	 *         of the given range.
+	 * @throws TreatyException
+	 *           Thrown, if the evaluation fails with an {@link Exception}.
 	 */
-	boolean checkRange(URI relationshipOrProperty, URI range) throws TreatyException;
+	boolean checkRange(URI relationshipOrProperty, URI range)
+			throws TreatyException;
+
 	/**
-	 * Get the domain for a property.
+	 * <p>
+	 * Returns the domain for a given relationship or property (as its {@link URI}
+	 * ).
+	 * </p>
+	 * 
 	 * @param relationshipOrProperty
-	 * @return
+	 *          The {@link URI} of the relationship or property whose domain shall
+	 *          be returned.
+	 * @return The domain as a {@link URI}
+	 * @throws TreatyException
+	 *           Thrown if the given {@link URI} does lead to a valid relationship
+	 *           nor property.
 	 */
 	URI getDomain(URI relationshipOrProperty) throws TreatyException;
+
 	/**
-	 * Get the range for a property.
+	 * <p>
+	 * Returns the {@link URI}s of the properties of this
+	 * {@link ContractVocabulary}.
+	 * </p>
+	 * 
+	 * @return The properties of this {@link ContractVocabulary}.
+	 */
+	Collection<URI> getProperties() throws TreatyException;
+
+	/**
+	 * <p>
+	 * Returns the range for a given relationship or property (as its {@link URI}
+	 * ).
+	 * </p>
+	 * 
 	 * @param relationshipOrProperty
-	 * @return
+	 *          The {@link URI} of the relationship or property whose range shall
+	 *          be returned.
+	 * @return The range as a {@link URI}
+	 * @throws TreatyException
+	 *           Thrown if the given {@link URI} does lead to a valid relationship
+	 *           nor property.
 	 */
 	URI getRange(URI relationshipOrProperty) throws TreatyException;
+
 	/**
-	 * Get a collection of super types for a given type.
-	 * @param type
-	 * @return
+	 * <p>
+	 * Returns the {@link URI}s of the relationships of this
+	 * {@link ContractVocabulary}.
+	 * </p>
+	 * 
+	 * @return The relationships of this {@link ContractVocabulary}.
 	 */
-	Collection<URI> getSupertypes(URI type) throws TreatyException;
+	Collection<URI> getRelationships() throws TreatyException;
+
 	/**
-	 * Get a collection of sub types for a given type.
+	 * <p>
+	 * Returns the sub properties for a given property (as its {@link URI}).
+	 * </p>
+	 * 
 	 * @param type
-	 * @return
+	 *          The {@link URI} of the property whose sub properties shall be
+	 *          returned.
+	 * @return The sub properties as a {@link Collection} of {@link URI}
+	 * @throws TreatyException
+	 *           Thrown if the given {@link URI} does lead to a valid property.
+	 */
+	Collection<URI> getSubProperties(URI relationshipOrProperty)
+			throws TreatyException;
+
+	/**
+	 * TODO Claas: Recommend renaming this method into getSubTypes() (such as for
+	 * getSuperProperties).
+	 * 
+	 * <p>
+	 * Returns the sub types for a given type (as its {@link URI}).
+	 * </p>
+	 * 
+	 * @param type
+	 *          The {@link URI} of the type whose sub types shall be returned.
+	 * @return The sub types as a {@link Collection} of {@link URI}
+	 * @throws TreatyException
+	 *           Thrown if the given {@link URI} does lead to a valid type.
 	 */
 	Collection<URI> getSubtypes(URI type) throws TreatyException;
+
 	/**
-	 * Get a collection of super properties for a given relationship of property.
-	 * @param relationshipOrProperty
-	 * @return
+	 * <p>
+	 * Returns the super properties for a given property (as its {@link URI}).
+	 * </p>
+	 * 
+	 * @param type
+	 *          The {@link URI} of the property whose super properties shall be
+	 *          returned.
+	 * @return The super properties as a {@link Collection} of {@link URI}
+	 * @throws TreatyException
+	 *           Thrown if the given {@link URI} does lead to a valid property.
 	 */
-	Collection<URI> getSuperProperties(URI relationshipOrProperty) throws TreatyException;
+	Collection<URI> getSuperProperties(URI relationshipOrProperty)
+			throws TreatyException;
+
 	/**
-	 * Get a collection of sub properties for a given relationship of property.
-	 * @param relationshipOrProperty
-	 * @return
+	 * TODO Claas: Recommend renaming this method into getSuperTypes() (such as
+	 * for getSuperProperties).
+	 * 
+	 * <p>
+	 * Returns the super types for a given type (as its {@link URI}).
+	 * </p>
+	 * 
+	 * @param type
+	 *          The {@link URI} of the type whose super types shall be returned.
+	 * @return The super types as a {@link Collection} of {@link URI}
+	 * @throws TreatyException
+	 *           Thrown if the given {@link URI} does lead to a valid type.
 	 */
-	Collection<URI> getSubProperties(URI relationshipOrProperty) throws TreatyException;
+	Collection<URI> getSupertypes(URI type) throws TreatyException;
 
-
-
-	
-	
-
+	/**
+	 * <p>
+	 * Returns the {@link URI}s of the types of this {@link ContractVocabulary}.
+	 * </p>
+	 * 
+	 * @return The types of this {@link ContractVocabulary}.
+	 */
+	Collection<URI> getTypes() throws TreatyException;
 }

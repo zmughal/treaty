@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2008 - 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -10,6 +10,19 @@
 
 package net.java.treaty;
 
+/**
+ * <p>
+ * Using {@link InstantiationContext}s allows suppliers to define multiple
+ * extensions. I.e., there will be one {@link Contract} instance per
+ * {@link InstantiationContext}.
+ * </p>
+ * 
+ * @author Jens Dietrich
+ */
 public interface InstantiationContext {
-	static final InstantiationContext DEFAULT_CONTEXT = new InstantiationContext(){};
+
+	/** The default {@link InstantiationContext}. */
+	static final InstantiationContext DEFAULT_CONTEXT =
+			new InstantiationContext() {
+			};
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -33,6 +33,71 @@ public class XDisjunction extends ComplexCondition {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.Visitable#accept(net.java.treaty.ContractVisitor)
+	 */
+	public void accept(ContractVisitor visitor) {
+
+		boolean willVisitChildren;
+		willVisitChildren = visitor.visit(this);
+
+		if (willVisitChildren) {
+			for (AbstractCondition condition : this.myParts) {
+				condition.accept(visitor);
+			}
+			// end for.
+		}
+		// no else.
+
+		visitor.endVisit(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Constraint#check(net.java.treaty.VerificationReport,
+	 * net.java.treaty.Verifier, net.java.treaty.VerificationPolicy)
+	 */
+	public boolean check(VerificationReport report, Verifier verifier,
+			VerificationPolicy policy) {
+
+		int okCount;
+		okCount = 0;
+
+		/* Count the conditions that can be verified successfully. */
+		for (AbstractCondition condition : this.myParts) {
+			okCount = okCount + (condition.check(report, verifier, policy) ? 1 : 0);
+		}
+		// end for.
+
+		/* Check if exactly one condition has been verified successfully. */
+		if (okCount == 1) {
+			report.log(this, VerificationResult.SUCCESS);
+		}
+
+		else if (okCount == 0) {
+			report.log(this, VerificationResult.FAILURE,
+					"No part of this condition is satisfied.");
+		}
+
+		else {
+			report.log(this, VerificationResult.FAILURE,
+					"Too many parts of this condition are satisfied.");
+		}
+		// end else.
+
+		return okCount == 1;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ComplexCondition#getConnective()
+	 */
+	public String getConnective() {
+	
+		return "xor";
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.AbstractCondition#replaceResources(java.util.Map)
 	 */
 	public AbstractCondition replaceResources(Map<String, Resource> resources) {
@@ -52,17 +117,17 @@ public class XDisjunction extends ComplexCondition {
 	 */
 	@Override
 	public boolean isInstantiated() {
-	
+
 		boolean result;
-	
+
 		if (this.myParts == null) {
 			result = false;
 		}
-	
+
 		else if (this.myParts.size() == 0) {
 			result = true;
 		}
-	
+
 		else {
 			result = false;
 			for (AbstractCondition part : this.myParts) {
@@ -75,45 +140,7 @@ public class XDisjunction extends ComplexCondition {
 			// end for.
 		}
 		// end else.
-	
+
 		return result;
-	}
-
-	public void accept(ContractVisitor visitor) {
-
-		boolean f = visitor.visit(this);
-		if (f) {
-			for (AbstractCondition p : myParts)
-				p.accept(visitor);
-		}
-		visitor.endVisit(this);
-	}
-
-	public boolean check(VerificationReport report, Verifier verifier,
-			VerificationPolicy policy) {
-
-		int okcount = 0;
-		for (AbstractCondition p : myParts) {
-			okcount = okcount + (p.check(report, verifier, policy) ? 1 : 0);
-		}
-		if (okcount == 1)
-			report.log(this, VerificationResult.SUCCESS);
-		else if (okcount == 0)
-			report.log(this, VerificationResult.FAILURE,
-					"no part of this condition is satisfied");
-		else
-			report.log(this, VerificationResult.FAILURE,
-					"too many parts of this condition are satisfied");
-		return okcount == 1;
-	}
-
-	/**
-	 * Get the name of the logical connective used.
-	 * 
-	 * @return
-	 */
-	public String getConnective() {
-
-		return "xor";
 	}
 }

@@ -8,10 +8,35 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 package net.java.treaty;
+
 /**
- * Roles for connectors.
- * @author jens 
+ * TODO Claas: Recommend renaming into ConnectorContractRole or something like
+ * that.
+ * 
+ * <p>
+ * The different Roles {@link Connector}s can play in a {@link Contract}.
+ * </p>
+ * 
+ * @author Jens Dietrich
  */
 public enum Role {
-	SUPPLIER, CONSUMER, LEGISLATOR
+
+	/**
+	 * A {@link Connector} playing the {@link Role#CONSUMER} role consumes a
+	 * service or data.
+	 */
+	CONSUMER,
+
+	/**
+	 * A {@link Connector} playing the {@link Role#LEGISLATOR} role defines an
+	 * external {@link Contract} on other {@link Connector}s playing the
+	 * {@link Role#CONSUMER} and {@link Role#SUPPLIER} role.
+	 */
+	LEGISLATOR,
+
+	/**
+	 * A {@link Connector} playing the {@link Role#SUPPLIER} role provides a
+	 * service or data.
+	 */
+	SUPPLIER
 }

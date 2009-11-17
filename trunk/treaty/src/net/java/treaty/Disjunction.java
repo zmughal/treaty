@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -29,6 +29,85 @@ public class Disjunction extends ComplexCondition {
 	public Disjunction() {
 
 		super();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Visitable#accept(net.java.treaty.ContractVisitor)
+	 */
+	public void accept(ContractVisitor visitor) {
+
+		boolean willVisitChildren;
+		willVisitChildren = visitor.visit(this);
+
+		if (willVisitChildren) {
+
+			for (AbstractCondition condition : this.myParts) {
+				condition.accept(visitor);
+			}
+			// end for.
+		}
+		// no else.
+
+		visitor.endVisit(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Constraint#check(net.java.treaty.VerificationReport,
+	 * net.java.treaty.Verifier, net.java.treaty.VerificationPolicy)
+	 */
+	public boolean check(VerificationReport report, Verifier verifier,
+			VerificationPolicy policy) {
+
+		boolean result;
+		result = false;
+
+		/* FIXME Claas: No difference between if- and else-clause. */
+		if (policy == VerificationPolicy.DETAILED) {
+
+			for (AbstractCondition condition : this.myParts) {
+				result = result | condition.check(report, verifier, policy);
+			}
+
+			if (result) {
+				report.log(this, VerificationResult.SUCCESS);
+			}
+
+			else {
+				report.log(this, VerificationResult.FAILURE,
+						"no part of this condition is satisfied");
+			}
+			// end else.
+		}
+
+		else {
+
+			for (AbstractCondition condition : this.myParts) {
+				result = result | condition.check(report, verifier, policy);
+			}
+
+			if (result) {
+				report.log(this, VerificationResult.SUCCESS);
+			}
+
+			else {
+				report.log(this, VerificationResult.FAILURE,
+						"no part of this condition is satisfied");
+			}
+			// end else.
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ComplexCondition#getConnective()
+	 */
+	public String getConnective() {
+	
+		return "or";
 	}
 
 	/*
@@ -79,52 +158,5 @@ public class Disjunction extends ComplexCondition {
 		// end else.
 
 		return result;
-	}
-
-	public void accept(ContractVisitor visitor) {
-
-		boolean f = visitor.visit(this);
-		if (f) {
-			for (AbstractCondition p : myParts)
-				p.accept(visitor);
-		}
-		visitor.endVisit(this);
-	}
-
-	public boolean check(VerificationReport report, Verifier verifier,
-			VerificationPolicy policy) {
-
-		if (policy == VerificationPolicy.DETAILED) {
-			boolean result = false;
-			for (AbstractCondition p : myParts)
-				result = result | p.check(report, verifier, policy);
-			if (result)
-				report.log(this, VerificationResult.SUCCESS);
-			else
-				report.log(this, VerificationResult.FAILURE,
-						"no part of this condition is satisfied");
-			return result;
-		}
-		else {
-			boolean result = false;
-			for (AbstractCondition p : myParts)
-				result = result || p.check(report, verifier, policy);
-			if (result)
-				report.log(this, VerificationResult.SUCCESS);
-			else
-				report.log(this, VerificationResult.FAILURE,
-						"no part of this condition is satisfied");
-			return result;
-		}
-	}
-
-	/**
-	 * Get the name of the logical connective used.
-	 * 
-	 * @return
-	 */
-	public String getConnective() {
-
-		return "or";
 	}
 }

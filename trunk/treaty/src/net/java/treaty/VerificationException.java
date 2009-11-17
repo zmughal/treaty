@@ -12,25 +12,64 @@ package net.java.treaty;
 
 /**
  * Thrown if verification fails.
+ * 
  * @author Jens Dietrich
  */
 
 public class VerificationException extends Exception {
 
+	/** Generated serial ID used for serialization. */
+	private static final long serialVersionUID = 7175600360091860168L;
+
+	/**
+	 * <p>
+	 * Creates a new {@link VerificationException}.
+	 * </p>
+	 */
 	public VerificationException() {
+
 		super();
 	}
 
-	public VerificationException(String arg0) {
-		super(arg0);
+	/**
+	 * <p>
+	 * Creates a new {@link VerificationException} for a given message.
+	 * </p>
+	 * 
+	 * @param msg
+	 *          The message of the {@link VerificationException}.
+	 */
+	public VerificationException(String msg) {
+
+		super(msg);
 	}
 
-	public VerificationException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	/**
+	 * <p>
+	 * Creates a new {@link VerificationException} for a given {@link Throwable} .
+	 * </p>
+	 * 
+	 * @param cause
+	 *          The cause of the {@link VerificationException}.
+	 */
+	public VerificationException(Throwable cause) {
+
+		super(cause);
 	}
 
-	public VerificationException(Throwable arg0) {
-		super(arg0);
-	}
+	/**
+	 * <p>
+	 * Creates a new {@link VerificationException} for a given message and a given
+	 * {@link Throwable}.
+	 * </p>
+	 * 
+	 * @param msg
+	 *          The message of the {@link VerificationException}.
+	 * @param cause
+	 *          The cause of the {@link VerificationException}.
+	 */
+	public VerificationException(String msg, Throwable cause) {
 
+		super(msg, cause);
+	}
 }
