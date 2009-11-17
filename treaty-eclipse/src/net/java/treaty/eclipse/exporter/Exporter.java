@@ -16,16 +16,11 @@ import java.util.Collection;
 
 import net.java.treaty.Contract;
 
-import org.eclipse.core.runtime.IExtension;
-
 /**
  * <p>
  * The {@link Exporter} is responsible to export instantiated contracts,
  * including verification results.
  * </p>
- * 
- * TODO Claas: The {@link Exporter} instance map should be updated dynamically,
- * when {@link IExtension}s providing {@link Exporter}s are added or removed.
  * 
  * @author Jens Dietrich
  */
