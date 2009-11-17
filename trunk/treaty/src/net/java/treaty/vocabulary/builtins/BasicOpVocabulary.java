@@ -24,17 +24,68 @@ import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationException;
 
 /**
- * Vocabulary for basic operations.
+ * <p>
+ * Built-in {@link ContractVocabulary} for basic operations.
+ * </p>
  * 
- * @author jens
+ * @author Jens Dietrich
  */
 public class BasicOpVocabulary implements ContractVocabulary {
 
-	private URI default_domain, default_range;
+	/** The default domain of the {@link BasicOpVocabulary}. */
+	private URI default_domain;
 
-	private boolean definesProperty(URI uri) {
+	/** The default range of the {@link BasicOpVocabulary}. */
+	private URI default_range;
 
-		return BuiltInOperators.INSTANCE.getInstance(uri) != null;
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.ExistsCondition)
+	 */
+	public void check(ExistsCondition relationshipCondition)
+			throws VerificationException {
+
+		throw new VerificationException(
+				"The basic operations vocabularies does not define types.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.RelationshipCondition)
+	 */
+	public void check(RelationshipCondition relationshipCondition)
+			throws VerificationException {
+
+		throw new VerificationException(
+				"The basic operations vocabularies does not define relationships.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.Verifier#check(net.java.treaty.PropertyCondition)
+	 */
+	public void check(PropertyCondition condition) throws VerificationException {
+
+		URI operatorURI;
+		operatorURI = condition.getOperator();
+
+		BuiltInOperator operator;
+		operator = BuiltInOperators.INSTANCE.getInstance(operatorURI);
+
+		if (operator == null) {
+			throw new VerificationException(
+					"Cannot check condition, this is not a built in opperation: "
+							+ operator);
+		}
+		// no else.
+
+		Object resource;
+		resource = condition.getResource().getValue();
+
+		if (!operator.compare(resource, condition.getValue())) {
+			throw new VerificationException("Verification failed for " + condition);
+		}
+		// no else (success).
 	}
 
 	/*
@@ -45,8 +96,8 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	public boolean checkDomain(URI relationshipOrProperty, URI domain)
 			throws TreatyException {
 
-		return this.definesProperty(relationshipOrProperty); // does not matter if
-		// it is defined here
+		/* It does not matter if it is defined here. */
+		return this.definesProperty(relationshipOrProperty);
 	}
 
 	/*
@@ -57,8 +108,8 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	public boolean checkRange(URI relationshipOrProperty, URI range)
 			throws TreatyException {
 
-		return this.definesProperty(relationshipOrProperty); // does not matter if
-		// it is defined here
+		/* It does not matter if it is defined here. */
+		return this.definesProperty(relationshipOrProperty);
 	}
 
 	/*
@@ -67,15 +118,19 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 */
 	public URI getDomain(URI relationshipOrProperty) throws TreatyException {
 
-		try {
-			if (default_domain == null) {
-				// everything goes, types are not enforced for built-in ops
-				default_domain = new URI("http://www.w3.org/2002/07/owl#");
+		if (this.default_domain == null) {
+
+			try {
+				/* Everything goes, types are not enforced for built-in ops. */
+				this.default_domain = new URI("http://www.w3.org/2002/07/owl#");
+			} catch (URISyntaxException e) {
+				throw new TreatyException();
 			}
-			return default_domain;
-		} catch (URISyntaxException e) {
-			throw new TreatyException();
+			// end catch.
 		}
+		// no else.
+
+		return this.default_domain;
 	}
 
 	/*
@@ -93,15 +148,21 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 */
 	public URI getRange(URI relationshipOrProperty) throws TreatyException {
 
-		try {
-			if (default_range == null) {
-				// everything goes, types are not enforced for built-in ops
-				default_range = new URI("http://www.w3.org/2002/07/owl#");
+		if (this.default_range == null) {
+
+			try {
+				/* Everything goes, types are not enforced for built-in ops. */
+				this.default_range = new URI("http://www.w3.org/2002/07/owl#");
 			}
-			return default_range;
-		} catch (URISyntaxException e) {
-			throw new TreatyException();
+
+			catch (URISyntaxException e) {
+				throw new TreatyException();
+			}
+			// end catch.
 		}
+		// no else.
+
+		return this.default_range;
 	}
 
 	/*
@@ -162,44 +223,6 @@ public class BasicOpVocabulary implements ContractVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.treaty.Verifier#check(net.java.treaty.RelationshipCondition)
-	 */
-	public void check(RelationshipCondition relationshipCondition)
-			throws VerificationException {
-
-		throw new VerificationException(
-				"The basic operations vocabularies does not define relationships");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.Verifier#check(net.java.treaty.PropertyCondition)
-	 */
-	public void check(PropertyCondition condition) throws VerificationException {
-
-		URI uri = condition.getOperator();
-		BuiltInOperator op = BuiltInOperators.INSTANCE.getInstance(uri);
-		if (op == null)
-			throw new VerificationException(
-					"Cannot check condition, this is not a built in opperation: " + op);
-		Object res = condition.getResource().getValue();
-		if (!op.compare(res, condition.getValue()))
-			throw new VerificationException("verification failed for " + condition);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.Verifier#check(net.java.treaty.ExistsCondition)
-	 */
-	public void check(ExistsCondition relationshipCondition)
-			throws VerificationException {
-
-		throw new VerificationException(
-				"The basic operations vocabularies does not define types");
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see net.java.treaty.ResourceLoader#load(java.net.URI, java.lang.String,
 	 * net.java.treaty.Connector)
 	 */
@@ -207,6 +230,20 @@ public class BasicOpVocabulary implements ContractVocabulary {
 			throws ResourceLoaderException {
 
 		throw new ResourceLoaderException(
-				"The basic operations vocabularies does not define types");
+				"The basic operations vocabularies does not define types.");
+	}
+
+	/**
+	 * <p>
+	 * Checks, whether or not the {@link BasicOpVocabulary} defines a built-in
+	 * operator for the given {@link URI}.
+	 * </p>
+	 * 
+	 * @param uri
+	 *          The {@link URI} for that a built-in operator shall be found.
+	 */
+	private boolean definesProperty(URI uri) {
+
+		return BuiltInOperators.INSTANCE.getInstance(uri) != null;
 	}
 }

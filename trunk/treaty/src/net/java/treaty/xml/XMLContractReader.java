@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -15,7 +15,22 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import net.java.treaty.*;
+
+import net.java.treaty.ConditionContext;
+import net.java.treaty.Conjunction;
+import net.java.treaty.Contract;
+import net.java.treaty.ContractReader;
+import net.java.treaty.ContractReaderException;
+import net.java.treaty.ContractVocabulary;
+import net.java.treaty.Disjunction;
+import net.java.treaty.ExistsCondition;
+import net.java.treaty.InvalidContractException;
+import net.java.treaty.Negation;
+import net.java.treaty.PropertyCondition;
+import net.java.treaty.RelationshipCondition;
+import net.java.treaty.Resource;
+import net.java.treaty.TreatyException;
+import net.java.treaty.XDisjunction;
 import net.java.treaty.vocabulary.builtins.BuiltInOperators;
 
 import org.jdom.Document;
@@ -25,222 +40,502 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
 /**
- * Utility class used to read contracts from xml files.
+ * <p>
+ * Utility class used to read contracts from XML files.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
+public class XMLContractReader implements ContractReader {
 
-public class XMLContractReader implements ContractReader  {
-	
-	public XMLContractReader() {
-		super();
-	} 
 	/**
-	 * Read a contract from an input stream.
-	 * TODO: check contract read against vocabulary
+	 * <p>
+	 * Creates a new {@link XMLContractReader}.
+	 * </p>
 	 */
-	public Contract read (InputStream in,ContractVocabulary voc) throws TreatyException {
-		SAXBuilder builder = new SAXBuilder();
+	public XMLContractReader() {
+
+		super();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ContractReader#read(java.io.InputStream,
+	 * net.java.treaty.ContractVocabulary)
+	 */
+	public Contract read(InputStream in, ContractVocabulary voc)
+			throws TreatyException {
+
+		SAXBuilder builder;
+		builder = new SAXBuilder();
 		builder.setValidation(false);
+
 		try {
-			Document doc = builder.build(in);
-			return read(doc);
-		} catch (Exception e) {
+			Document document;
+			document = builder.build(in);
+
+			return read(document);
+		}
+
+		catch (Exception e) {
 			throw new ContractReaderException(e);
-		} 
+		}
+		// end catch.
 	}
-	private void log(String msg) {
-		System.out.println(msg);
-	}
+
+	/**
+	 * <p>
+	 * Creates an {@link XPath} for a given expression.
+	 * </p>
+	 * 
+	 * @param expression
+	 *          The expression as a {@link String}.
+	 * @return The created {@link XPath}
+	 * @throws JDOMException
+	 *           Thrown, if the {@link XPath} creation fails.
+	 */
 	private XPath createXPath(String expression) throws JDOMException {
-		XPath xpath =  XPath.newInstance(expression);
-		// xpath.addNamespace(SWRLX);
-		return xpath;
-	} 
-	private Contract read(Document doc) throws TreatyException,JDOMException {
-		Contract contract = new Contract();
-		
-		// read extension resources
-		List<Resource> resources = readResources(doc,"/contract/supplier/resource");
-		for (Resource r:resources) {
-			contract.addSupplierResource(r);
+
+		XPath result;
+		result = XPath.newInstance(expression);
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Reads a {@link Contract} from a given {@link Document}.
+	 * </p>
+	 * 
+	 * @param document
+	 *          The {@link Document} representing the {@link Contract}.
+	 * @return The read {@link Contract}.
+	 * @throws TreatyException
+	 *           Thrown if the reading process fails.
+	 * @throws JDOMException
+	 *           Thrown if the reading process fails.
+	 */
+	private Contract read(Document document) throws TreatyException,
+			JDOMException {
+
+		Contract result;
+		result = new Contract();
+
+		List<Resource> resources;
+		String context;
+
+		/* Read supplier resources. */
+		resources = this.readResources(document, "/contract/supplier/resource");
+
+		for (Resource resource : resources) {
+			result.addSupplierResource(resource);
 		}
-		String context = readContext(doc,"/contract/supplier/context");
-		if (context!=null) {
-			contract.setSupplierContext(context);
+		// end for.
+
+		context = this.readContext(document, "/contract/supplier/context");
+
+		if (context != null) {
+			result.setSupplierContext(context);
 		}
-		// read extension point resources
-		resources = readResources(doc,"/contract/consumer/resource");
-		for (Resource r:resources) {
-			contract.addConsumerResource(r);
+		// no else.
+
+		/* Read consumer resources. */
+		resources = this.readResources(document, "/contract/consumer/resource");
+
+		for (Resource resource : resources) {
+			result.addConsumerResource(resource);
 		}
-		context = readContext(doc,"/contract/consumer/context");
-		if (context!=null) {
-			contract.setConsumerContext(context);
+		// end for.
+
+		context = this.readContext(document, "/contract/consumer/context");
+
+		if (context != null) {
+			result.setConsumerContext(context);
 		}
-		// read third party resources
-		resources = readResources(doc,"/contract/external/resource");
-		for (Resource r:resources) {
-			contract.addExternalResource(r);
+		// no else.
+
+		/* Read legislator resources. */
+		resources = this.readResources(document, "/contract/external/resource");
+
+		for (Resource resource : resources) {
+			result.addExternalResource(resource);
 		}
-		context = readContext(doc,"/contract/supplier/context");
-		if (context!=null) {
-			contract.setExternalContext(context);
+		// end for.
+
+		context = readContext(document, "/contract/supplier/context");
+
+		if (context != null) {
+			result.setExternalContext(context);
 		}
-		
-		// read conditions
-		Element eConstraints = doc.getRootElement().getChild("constraints");
-		
+		// no else.
+
+		/* Read conditions. */
+		Element eConstraints;
+		eConstraints = document.getRootElement().getChild("constraints");
+
 		try {
-			readConditions(eConstraints,contract,contract);
-		}  catch (URISyntaxException e) {
+			this.readConditions(eConstraints, result, result);
+		}
+
+		catch (URISyntaxException e) {
 			throw new InvalidContractException(e);
 		}
-		
-		// read triggers
-		List<URI> uris = readURIs(doc,"/contract/trigger");
-		contract.setTriggers(uris);
-		
-		// read actions
-		uris = readURIs(doc,"/contract/onSuccess");
-		contract.setOnVerificationSucceedsActions(uris);	
-		
-		uris = readURIs(doc,"/contract/onFailure");
-		contract.setOnVerificationFailsActions(uris);
-		
-		return contract;
+		// end catch.
+
+		List<URI> uris;
+
+		/* Read triggers. */
+		uris = this.readURIs(document, "/contract/trigger");
+		result.setTriggers(uris);
+
+		/* Read actions. */
+		uris = this.readURIs(document, "/contract/onSuccess");
+		result.setOnVerificationSucceedsActions(uris);
+
+		uris = this.readURIs(document, "/contract/onFailure");
+		result.setOnVerificationFailsActions(uris);
+
+		return result;
 	}
 
-	private List<URI> readURIs(Document doc, String xpath) throws InvalidContractException, JDOMException {
-		XPath xp =  createXPath(xpath);
-		List<Element> nodes = xp.selectNodes(doc);
-		List<URI> uris = new ArrayList<URI>();
-		for (Element node:nodes) {
-			String uriAsString = node.getTextTrim();
-			try {
-				uris.add(new URI(uriAsString));
-			} catch (URISyntaxException e) {
-				throw new InvalidContractException("Invalid URI " + uriAsString);
-			}
-		}
-		return uris;
-	}
-	private String readContext(Document doc, String xpath) throws JDOMException {
-		XPath xp =  createXPath(xpath);
-		Element node = (Element)xp.selectSingleNode(doc);
-		if (node!=null) {
-			return node.getText();
-		}
-		return null;
-	}
-	private void readConditions(Element node, ConditionContext context, Contract contract) throws JDOMException, InvalidContractException, URISyntaxException {
-		
-		List<Element> nodes = node.getChildren();
-		for (Element e:nodes) {
-			if (e.getName().equals("property")){
-				PropertyCondition condition = new PropertyCondition();
-				String resourceRef = e.getAttributeValue("resource");
-				Resource resource = contract.getResource(resourceRef);
-				if (resource==null)
-					throw new InvalidContractException("Invalid resource reference in condition: " + resourceRef);
+	/**
+	 * <p>
+	 * Reads conditions from a given {@link Element} node and a given
+	 * {@link ConditionContext} into a given {@link Contract}.
+	 * </p>
+	 * 
+	 * @param node
+	 *          The node whose Conditions shall be read.
+	 * @param context
+	 *          The {@link ConditionContext}.
+	 * @param contract
+	 *          The {@link Contract} for that the Conditions shall be read.
+	 * @throws JDOMException
+	 *           Thrown, if reading fails.
+	 * @throws InvalidContractException
+	 *           Thrown, if reading fails.
+	 * @throws URISyntaxException
+	 *           Thrown, if reading fails.
+	 */
+	@SuppressWarnings("unchecked")
+	private void readConditions(Element node, ConditionContext context,
+			Contract contract) throws JDOMException, InvalidContractException,
+			URISyntaxException {
+
+		List<Element> nodes;
+		nodes = node.getChildren();
+
+		for (Element element : nodes) {
+
+			/* Probably read a property. */
+			if (element.getName().equals("property")) {
+
+				PropertyCondition condition;
+				condition = new PropertyCondition();
+
+				String resourceReference;
+				resourceReference = element.getAttributeValue("resource");
+
+				Resource resource;
+				resource = contract.getResource(resourceReference);
+
+				if (resource == null) {
+					throw new InvalidContractException(
+							"Invalid resource reference in condition: " + resourceReference);
+				}
+
 				condition.setResource(resource);
-				String operator = e.getAttributeValue("operator");
-				
-				// try to find out whether this is a URI or a predefined alias
-				URI op = BuiltInOperators.INSTANCE.getURI(operator);
-				if (op==null) {
+
+				String operator;
+				operator = element.getAttributeValue("operator");
+
+				/* try to find out whether this is a URI or a predefined alias. */
+				URI operatorURI;
+				operatorURI = BuiltInOperators.INSTANCE.getURI(operator);
+
+				if (operatorURI == null) {
+
 					try {
 						condition.setOperator(new URI(operator));
 					}
+
 					catch (Exception x) {
-						throw new InvalidContractException("Invalid operator symbol encountered: " + operator);
+						throw new InvalidContractException(
+								"Invalid operator symbol encountered: " + operator);
 					}
+					// end catch.
 				}
+
 				else {
-					condition.setOperator(op);
+					condition.setOperator(operatorURI);
 				}
-				String value = e.getAttributeValue("value");
+
+				String value;
+				value = element.getAttributeValue("value");
+
 				condition.setValue(value);
 				context.addCondition(condition);
 			}
-			else if (e.getName().equals("relationship")){
-				RelationshipCondition relationshipCondition = new RelationshipCondition();
-				
-				String resourceRef1 = e.getAttributeValue("resource1");
-				Resource resource1 = contract.getResource(resourceRef1);
-				if (resource1==null)
-					throw new InvalidContractException("Invalid resource reference at position 1 in condition: " + relationshipCondition);
+
+			/* Else probably read a relationship. */
+			else if (element.getName().equals("relationship")) {
+
+				RelationshipCondition relationshipCondition;
+				relationshipCondition = new RelationshipCondition();
+
+				String resourceReference1;
+				resourceReference1 = element.getAttributeValue("resource1");
+
+				Resource resource1;
+				resource1 = contract.getResource(resourceReference1);
+
+				if (resource1 == null) {
+					throw new InvalidContractException(
+							"Invalid resource reference at position 1 in condition: "
+									+ relationshipCondition);
+				}
+				// no else.
+
 				relationshipCondition.setResource1(resource1);
-				
-				String resourceRef2 = e.getAttributeValue("resource2");				
-				Resource resource2 = contract.getResource(resourceRef2);
-				if (resource2==null)
-					throw new InvalidContractException("Invalid resource reference at position 2 in condition: " + relationshipCondition);
+
+				String resourceReference2;
+				resourceReference2 = element.getAttributeValue("resource2");
+
+				Resource resource2;
+				resource2 = contract.getResource(resourceReference2);
+
+				if (resource2 == null) {
+					throw new InvalidContractException(
+							"Invalid resource reference at position 2 in condition: "
+									+ relationshipCondition);
+				}
+				// no else.
+
 				relationshipCondition.setResource2(resource2);
-				String relationship = e.getAttributeValue("type");
+
+				String relationship;
+				relationship = element.getAttributeValue("type");
+
 				relationshipCondition.setRelationship(new URI(relationship));
-				
+
 				context.addCondition(relationshipCondition);
 			}
-			else if (e.getName().equals("mustExist")){
-				ExistsCondition condition = new ExistsCondition();
-				
-				String resourceRef = e.getAttributeValue("resource");
-				Resource resource = contract.getResource(resourceRef);
-				if (resource==null)
-					throw new InvalidContractException("Invalid resource reference in must exist condition: " + condition);
+
+			/* Else probably read an exists condition. */
+			else if (element.getName().equals("mustExist")) {
+
+				ExistsCondition condition;
+				condition = new ExistsCondition();
+
+				String resourceReference;
+				resourceReference = element.getAttributeValue("resource");
+
+				Resource resource;
+				resource = contract.getResource(resourceReference);
+
+				if (resource == null) {
+					throw new InvalidContractException(
+							"Invalid resource reference in must exist condition: "
+									+ condition);
+				}
+
 				condition.setResource(resource);
-				
+
 				context.addCondition(condition);
 			}
-			else if (e.getName().equals("and")) {
-				Conjunction conjunction = new Conjunction();
-				readConditions(e,conjunction,contract);
+
+			/* Else probably read an and. */
+			else if (element.getName().equals("and")) {
+
+				Conjunction conjunction;
+				conjunction = new Conjunction();
+
+				this.readConditions(element, conjunction, contract);
+
 				context.addCondition(conjunction);
 			}
-			else if (e.getName().equals("or")) {
-				Disjunction disjunction = new Disjunction();
-				readConditions(e,disjunction,contract);
+
+			/* Else probably read an or. */
+			else if (element.getName().equals("or")) {
+
+				Disjunction disjunction;
+				disjunction = new Disjunction();
+
+				this.readConditions(element, disjunction, contract);
+
 				context.addCondition(disjunction);
 			}
-			else if (e.getName().equals("xor")) {
-				XDisjunction xdisjunction = new XDisjunction();
-				readConditions(e,xdisjunction,contract);
+
+			/* Else probably read an xor. */
+			else if (element.getName().equals("xor")) {
+
+				XDisjunction xdisjunction;
+				xdisjunction = new XDisjunction();
+
+				this.readConditions(element, xdisjunction, contract);
+
 				context.addCondition(xdisjunction);
 			}
-			else if (e.getName().equals("not")) {
-				Negation neg = new Negation();
-				readConditions(e,neg,contract);
-				context.addCondition(neg);
+
+			/* Else probably read a not. */
+			else if (element.getName().equals("not")) {
+
+				Negation negation;
+				negation = new Negation();
+
+				this.readConditions(element, negation, contract);
+
+				context.addCondition(negation);
 			}
+			// no else.
 		}
+		// end for (iteration on nodes).
 	}
-	private List<Resource> readResources(Document doc,String xpath) throws InvalidContractException, JDOMException{
-		XPath xp =  createXPath(xpath);
-		List<Element> nodes = xp.selectNodes(doc);
-		
-		List<Resource> resources = new ArrayList<Resource>();
-		for (Element node:nodes) {
-			Resource r = new Resource();
-			String id = node.getAttributeValue("id");
-			r.setId(id);
+
+	/**
+	 * <p>
+	 * Reads the context for a given XPath expression and a given {@link Document}
+	 * 
+	 * @param document
+	 *          The document whose {@link URI}s shall be read.
+	 * @param xpath
+	 *          The XPath expression as a String.
+	 * @return A {@link List} of read {@link URI}s.
+	 * @throws JDOMException
+	 *           Thrown, if reading fails.
+	 */
+	private String readContext(Document document, String xpath)
+			throws JDOMException {
+
+		String result;
+
+		XPath xPath;
+		xPath = this.createXPath(xpath);
+
+		Element node;
+		node = (Element) xPath.selectSingleNode(document);
+
+		if (node != null) {
+			result = node.getText();
+		}
+
+		else {
+			result = null;
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Read recourees for a given {@link Document} and a given XPath expression.
+	 * </p>
+	 * 
+	 * @param document
+	 *          The document whose {@link URI}s shall be read.
+	 * @param xpath
+	 *          The XPath expression as a String.
+	 * @return A {@link List} of read {@link Resource}s.
+	 * @throws InvalidContractException
+	 *           Thrown, if reading fails.
+	 * @throws JDOMException
+	 *           Thrown, if reading fails.
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Resource> readResources(Document document, String xpath)
+			throws InvalidContractException, JDOMException {
+
+		XPath xPath;
+		xPath = createXPath(xpath);
+
+		List<Element> nodes;
+		nodes = xPath.selectNodes(document);
+
+		List<Resource> resources;
+		resources = new ArrayList<Resource>();
+
+		for (Element node : nodes) {
+
+			Resource resource;
+			resource = new Resource();
+
+			String id;
+			id = node.getAttributeValue("id");
+			resource.setId(id);
+
 			String type = node.getChild("type").getText();
+
 			try {
-				r.setType(new URI(type));
-			} catch (URISyntaxException e) {
+				resource.setType(new URI(type));
+			}
+
+			catch (URISyntaxException e) {
 				throw new InvalidContractException("Invalid URI " + type);
 			}
-			String name = node.getChildText("name");
-			r.setName(name);
-			if (name==null) {
-				String ref = node.getChildText("ref");
-				r.setRef(ref);
+
+			String name;
+			name = node.getChildText("name");
+			resource.setName(name);
+
+			if (name == null) {
+				String reference;
+				reference = node.getChildText("ref");
+				resource.setRef(reference);
 			}
-			
-			resources.add(r);
+			// no else.
+
+			resources.add(resource);
 		}
+		// end for (iteration on nodes).
+
 		return resources;
 	}
 
-	
+	/**
+	 * <p>
+	 * Reads the {@link URI}s for a given XPath expression and a given
+	 * {@link Document}.
+	 * </p>
+	 * 
+	 * @param document
+	 *          The document whose {@link URI}s shall be read.
+	 * @param xpath
+	 *          The XPath expression as a String.
+	 * @return A {@link List} of read {@link URI}s.
+	 * @throws InvalidContractException
+	 *           Thrown, if reading fails.
+	 * @throws JDOMException
+	 *           Thrown, if reading fails.
+	 */
+	@SuppressWarnings("unchecked")
+	private List<URI> readURIs(Document document, String xpath)
+			throws InvalidContractException, JDOMException {
 
+		List<URI> result;
+
+		XPath xPath;
+		xPath = this.createXPath(xpath);
+
+		List<Element> nodes;
+		nodes = xPath.selectNodes(document);
+
+		result = new ArrayList<URI>();
+
+		for (Element node : nodes) {
+
+			String uriAsString;
+			uriAsString = node.getTextTrim();
+			try {
+				result.add(new URI(uriAsString));
+			}
+
+			catch (URISyntaxException e) {
+				throw new InvalidContractException("Invalid URI " + uriAsString);
+			}
+			// end catch.
+		}
+		// end for (iteration on nodes).
+
+		return result;
+	}
 }
