@@ -1204,6 +1204,13 @@ public class Contract extends PropertySupport implements ConditionContext,
 			contract.setLocation(this.getLocation());
 			contract.setDefinition(this);
 
+			/* Set triggers and actions. */
+			contract.setTriggers(this.getTriggers());
+			contract.setOnVerificationFailsActions(this
+					.getOnVerificationFailsActions());
+			contract.setOnVerificationSucceedsActions(this
+					.getOnVerificationSucceedsActions());
+
 			/* Instantiate the consumer resources. */
 			if (role == Role.CONSUMER) {
 
