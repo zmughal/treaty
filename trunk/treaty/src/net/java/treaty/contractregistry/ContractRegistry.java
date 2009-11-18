@@ -20,6 +20,7 @@ import java.util.Set;
 import net.java.treaty.Connector;
 import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
+import net.java.treaty.ContractLogger;
 import net.java.treaty.ResourceManager;
 import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
@@ -130,6 +131,15 @@ public class ContractRegistry {
 	 * a given {@link LifeCycleEvent} occurred.
 	 * </p>
 	 * 
+	 * <p>
+	 * <strong>Please note that this method will only return {@link Contract}s
+	 * that define the same trigger (see {@link Contract#getTriggers()}), the
+	 * {@link LifeCycleEvent} has as its type (see
+	 * {@link LifeCycleEvent#getType()}).</strong> If a {@link Contract} does not
+	 * defined any trigger, he will be returned anyway (support of deprecated
+	 * {@link Contract}s).
+	 * </p>
+	 * 
 	 * @return A {@link Set} of all {@link Contract}s that must be validated after
 	 *         a given {@link LifeCycleEvent} occurred.
 	 */
@@ -149,7 +159,12 @@ public class ContractRegistry {
 
 					for (Contract contract : this.myConsumerContracts.get(connector)) {
 
-						result.addAll(this.getInstantiatedContracts(contract));
+						/* Only add contracts that have the right trigger type. */
+						if (contract.getTriggers().size() == 0
+								|| contract.getTriggers().contains(lifeCycleEvent.getType())) {
+							result.addAll(this.getInstantiatedContracts(contract));
+						}
+						// no else.
 					}
 					// end for.
 				}
@@ -161,7 +176,12 @@ public class ContractRegistry {
 
 					for (Contract contract : this.mySupplierContracts.get(connector)) {
 
-						result.addAll(this.getInstantiatedContracts(contract));
+						/* Only add contracts that have the right trigger type. */
+						if (contract.getTriggers().size() == 0
+								|| contract.getTriggers().contains(lifeCycleEvent.getType())) {
+							result.addAll(this.getInstantiatedContracts(contract));
+						}
+						// no else.
 					}
 					// end for.
 				}
@@ -205,12 +225,11 @@ public class ContractRegistry {
 				}
 
 				catch (ConcurrentModificationException e) {
-					/*
-					 * FIXME Claas: Probably log this problem. Else remove try after
-					 * debugging.
-					 */
-					e.printStackTrace();
+					ContractLogger.LOGGER.error(
+							"Unexpected ConcurrentModificationException "
+									+ "in ContractRegsitry.", e);
 				}
+				// end catch.
 			}
 			// no else.
 
@@ -227,12 +246,11 @@ public class ContractRegistry {
 				}
 
 				catch (ConcurrentModificationException e) {
-					/*
-					 * FIXME Claas: Probably log this problem. Else remove try after
-					 * debugging.
-					 */
-					e.printStackTrace();
+					ContractLogger.LOGGER.error(
+							"Unexpected ConcurrentModificationException "
+									+ "in ContractRegsitry.", e);
 				}
+				// end catch.
 			}
 			// no else.
 
@@ -249,12 +267,11 @@ public class ContractRegistry {
 				}
 
 				catch (ConcurrentModificationException e) {
-					/*
-					 * FIXME Claas: Probably log this problem. Else remove try after
-					 * debugging.
-					 */
-					e.printStackTrace();
+					ContractLogger.LOGGER.error(
+							"Unexpected ConcurrentModificationException "
+									+ "in ContractRegsitry.", e);
 				}
+				// end catch.
 			}
 			// no else.
 
