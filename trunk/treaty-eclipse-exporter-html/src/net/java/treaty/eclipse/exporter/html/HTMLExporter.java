@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.eclipse.core.runtime.IExtensionPoint;
+
 import net.java.treaty.AbstractCondition;
 import net.java.treaty.AbstractContractVisitor;
 import net.java.treaty.Annotatable;
@@ -49,6 +51,7 @@ import net.java.treaty.VerificationResult;
 import net.java.treaty.XDisjunction;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseInstantiationContext;
+import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.exporter.Exporter;
 
 /**
@@ -60,8 +63,105 @@ import net.java.treaty.eclipse.exporter.Exporter;
  */
 public class HTMLExporter extends Exporter {
 
-	/** Udes to count the exceptions. */
+	/**
+	 * <p>
+	 * Represents the different styles that can be used to display HTML elements
+	 * like tables.
+	 * </p>
+	 * 
+	 * @author Jens Dietrich
+	 */
+	private enum Style {
+		PLAIN, TREE, TREE_FAILED, TREE_SUCCESS, CONSUMER, SUPPLIER
+	}
+
+	/** The treaty top-level domain. */
+	private static final String TREATY_NAMESPACE = "http://www.treaty.org/";
+
+	/** Used to count the exceptions. */
 	private int myExceptionCounter = 1;
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.exporter.Exporter#export(java.util.Collection,
+	 * java.io.File)
+	 */
+	public synchronized void export(Collection<Contract> contracts, File folder)
+			throws IOException {
+
+		/* Reset counter! */
+		myExceptionCounter = 1;
+
+		/* Group contract instances by contract definitions. */
+		Map<String, List<Contract>> contractsByExtensionPoint =
+				new TreeMap<String, List<Contract>>();
+		// Map<String,List<String>> atomicConditions = new
+		// HashMap<String,List<String>>();
+		// Map<String,List<String>> variableNames = new
+		// HashMap<String,List<String>>();
+
+		/* Sort contracts. */
+		for (Contract contract : contracts) {
+
+			String extensionPointId;
+			extensionPointId =
+					contract.getConsumer() == null ? "anonymous_xp" : contract
+							.getConsumer().getId();
+
+			List<Contract> contractInstances;
+			contractInstances = contractsByExtensionPoint.get(extensionPointId);
+
+			if (contractInstances == null) {
+				contractInstances = new ArrayList<Contract>();
+				contractsByExtensionPoint.put(extensionPointId, contractInstances);
+				// atomicConditions.put(xpId,this.getAtomicConditions(c));
+				// variableNames.put(xpId,this.getVariables(c));
+			}
+
+			contractInstances.add(contract);
+		}
+		// end for (sort iteration on contracts).
+
+		/* Create the index page. */
+		this.createIndexPage(folder, contractsByExtensionPoint);
+
+		/* Create pages for contracted extension points. */
+		for (String extensionPoint : contractsByExtensionPoint.keySet()) {
+			this.createResultsPage(folder, extensionPoint, contractsByExtensionPoint
+					.get(extensionPoint));
+		}
+		// end for.
+
+		/* Create the CSS file. */
+		this.copyCSS(folder);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.exporter.Exporter#exportToFolder()
+	 */
+	public boolean exportToFolder() {
+
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.exporter.Exporter#getFilterExtensions()
+	 */
+	public String[] getFilterExtensions() {
+
+		return new String[] {};
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.exporter.Exporter#getFilterNames()
+	 */
+	public String[] getFilterNames() {
+
+		return new String[] {};
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -74,186 +174,487 @@ public class HTMLExporter extends Exporter {
 
 	/**
 	 * <p>
-	 * Prints an HTML footer for a given {@link PrintStream}.
+	 * Copies the required style sheet file to a given folder.
 	 * </p>
 	 * 
-	 * @param out
-	 *          The {@link PrintStream} used for output.
+	 * @param folder
+	 *          The folder to that the style sheet file shall be copied.
+	 * @throws IOException
+	 *           Thrown, if the copy process fails.
 	 */
-	private void printHtmlFooter(PrintStream out) {
+	private void copyCSS(File folder) throws IOException {
 
-		out.println("</body>");
-		out.println("</html>");
+		InputStream inputStream;
+		inputStream = HTMLExporter.class.getResourceAsStream("/css/treaty.css");
+
+		File cssFolder;
+		cssFolder = new File(folder.getAbsoluteFile() + "/treaty.css");
+
+		OutputStream ouputStream;
+		ouputStream = new FileOutputStream(cssFolder);
+
+		byte[] buffer;
+		buffer = new byte[1024];
+
+		int length;
+
+		while ((length = inputStream.read(buffer)) > 0) {
+			ouputStream.write(buffer, 0, length);
+		}
+		// end while.
+
+		inputStream.close();
+		ouputStream.close();
 	}
 
 	/**
 	 * <p>
-	 * Prints an HTML header for a given {@link PrintStream} and a given title.
+	 * Creates and returns a {@link String} representing a hyper link to an anchor
+	 * for a given label and a given reference.
+	 * </p>
+	 * 
+	 * @param label
+	 *          The label of the created link.
+	 * @param link
+	 *          The reference of the created link.
+	 * @return The created link as a {@link String}.
+	 */
+	private String createAnchorLink(String label, String link) {
+
+		return new StringBuffer().append("<a href=\"#").append(link).append("\">")
+				.append(label).append("</a>").toString();
+	}
+
+	/**
+	 * <p>
+	 * Creates an index page for an overview of all verified {@link Contract}s and
+	 * {@link IExtensionPoint}s.
+	 * </p>
+	 * 
+	 * @param folder
+	 *          The folder into that all pages shall be exported.
+	 * @param contractsByXP
+	 *          The {@link Contract}s, mapped by their {@link IExtensionPoint}s
+	 *          IDs.
+	 * @throws IOException
+	 *           Thrown, if the page creation fails.
+	 */
+	private void createIndexPage(File folder,
+			Map<String, List<Contract>> contractsByXP) throws IOException {
+
+		List<String> extensionPointIDs;
+
+		extensionPointIDs = new ArrayList<String>();
+		extensionPointIDs.addAll(contractsByXP.keySet());
+
+		Collections.sort(extensionPointIDs);
+
+		File indexPageFile;
+		indexPageFile = new File(folder.getAbsolutePath() + "/index.html");
+
+		PrintStream out;
+		out = new PrintStream(new FileOutputStream(indexPageFile));
+
+		this.printHtmlHeader(out, "Verification Results");
+		this.printTableHeader(out, "Extension Point", "Contract Instances",
+				"Verification failed");
+
+		/* Iterate on the extension points. */
+		for (String xp : extensionPointIDs) {
+
+			List<Contract> contractInstances;
+			contractInstances = contractsByXP.get(xp);
+
+			int instanceCount;
+			instanceCount = contractInstances.size();
+
+			int failedCount = 0;
+			for (Contract instance : contractInstances) {
+
+				if (instance.getProperty(Constants.VERIFICATION_RESULT) == VerificationResult.FAILURE) {
+					failedCount = failedCount + 1;
+				}
+				// no else.
+			}
+			// end for (iteration on contracts).
+
+			this.printTableRow(out, createLink(xp, getFileName(xp)), instanceCount,
+					failedCount);
+		}
+		// end for (iteration on extension point ids).
+
+		this.printTableFooter(out);
+		this.printHtmlFooter(out);
+
+		out.close();
+	}
+
+	/**
+	 * <p>
+	 * Creates and returns a {@link String} representing a hyper link for a given
+	 * label and a given reference.
+	 * </p>
+	 * 
+	 * @param label
+	 *          The label of the created link.
+	 * @param link
+	 *          The reference of the created link.
+	 * @return The created link as a {@link String}.
+	 */
+	private String createLink(String label, String link) {
+
+		return new StringBuffer().append("<a href=\"").append(link).append("\">")
+				.append(label).append("</a>").toString();
+	}
+
+	/**
+	 * <p>
+	 * Creates a result page for a given extension point and a contract.
 	 * </p>
 	 * 
 	 * @param out
 	 *          The {@link PrintStream} used for output.
-	 * @param title
-	 *          The title of the HTML page.
+	 * @param folder
+	 *          The folder into that the page shall be created.
+	 * @param extensionPointID
+	 *          The ID of the {@link IExtensionPoint}.
+	 * @param contract
+	 *          The {@link Contract} whose result page shall be created.
+	 * @param noOfInstances
+	 *          The number of instances the {@link Contract} has.
+	 * @param instanceNo
+	 *          The number of this {@link Contract} instance.
 	 */
-	private void printHtmlHeader(PrintStream out, String title) {
+	private void createResultPage(PrintStream out, File folder,
+			String extensionPointID, Contract contract, int noOfInstances,
+			int instanceNo) {
 
-		out.println("<html>");
-		out.println("<head>");
-		out
-				.println("<link rel=\"StyleSheet\" href=\"treaty.css\" TYPE=\"text/css\" MEDIA=\"screen\">");
-		out.println("</head>");
-		out.println("<body>");
-		out.print("<h1>");
-		out.print(title);
-		out.println("</h1>");
+		this.createResultPage(out, folder, extensionPointID, contract,
+				noOfInstances, instanceNo, 0, 0);
 	}
 
-	private enum Style {
-		PLAIN, TREE, TREE_FAILED, TREE_SUCCESS, CONSUMER, SUPPLIER
-	}
+	/**
+	 * <p>
+	 * Creates a result page for a given extension point and a contract.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param folder
+	 *          The folder into that the page shall be created.
+	 * @param extensionPointID
+	 *          The ID of the {@link IExtensionPoint}.
+	 * @param contract
+	 *          The {@link Contract} whose result page shall be created.
+	 * @param noOfInstances
+	 *          The number of instances the {@link Contract} has.
+	 * @param instanceNo
+	 *          The number of this {@link Contract} instance.
+	 * @param noOfParts
+	 *          The number of parts the {@link Contract} has.
+	 * @param partNo
+	 *          The number of the current part.
+	 */
+	private void createResultPage(PrintStream out, File folder,
+			String extensionPointID, Contract contract, int noOfInstances,
+			int instanceNo, int noOfParts, int partNo) {
 
-	@Override
-	public synchronized void export(Collection<Contract> contracts, File folder)
-			throws IOException {
+		String instanceLabel;
+		instanceLabel =
+				"Contract instance " + (instanceNo + 1) + "/" + noOfInstances;
 
-		try {
-			myExceptionCounter = 1; // reset counter!
+		String supplierLabel;
+		supplierLabel = "supplier: " + getInstanceLabel(contract);
 
-			// group contract instances by contract def
-			Map<String, List<Contract>> contractsByXP =
-					new TreeMap<String, List<Contract>>();
-			// Map<String,List<String>> atomicConditions = new
-			// HashMap<String,List<String>>();
-			// Map<String,List<String>> variableNames = new
-			// HashMap<String,List<String>>();
+		String anchorName;
+		anchorName = partNo == 0 ? ("instance" + (instanceNo + 1)) : null;
 
-			// sort contracts
-			for (Contract c : contracts) {
-				String xpId =
-						c.getConsumer() == null ? "anonymous_xp" : c.getConsumer().getId();
-				List<Contract> instances = contractsByXP.get(xpId);
-				if (instances == null) {
-					instances = new ArrayList<Contract>();
-					contractsByXP.put(xpId, instances);
-					// atomicConditions.put(xpId,this.getAtomicConditions(c));
-					// variableNames.put(xpId,this.getVariables(c));
-				}
-				instances.add(c);
-			}
-			// index
-			createIndexPage(folder, contractsByXP);
-
-			// pages
-			for (String xp : contractsByXP.keySet()) {
-				createResultsPage(folder, xp, contractsByXP.get(xp));
-			}
-
-			// style
-			copyCSS(folder);
-
-		} catch (Exception x) {
-			net.java.treaty.eclipse.Logger.error("Error exporting", x);
+		/* Print a heading. */
+		if (noOfParts == 0) {
+			this
+					.printSubHeader(out, instanceLabel + ", " + supplierLabel, anchorName);
 		}
-	}
 
-	private void copyCSS(File folder) throws IOException {
+		else {
+			String partLabel;
+			partLabel = "part: " + (partNo + 1) + "/" + noOfParts;
 
-		InputStream in = HTMLExporter.class.getResourceAsStream("/css/treaty.css");
-		File f2 = new File(folder.getAbsoluteFile() + "/treaty.css");
-		OutputStream out = new FileOutputStream(f2);
-		byte[] buf = new byte[1024];
-		int len;
-		while ((len = in.read(buf)) > 0) {
-			out.write(buf, 0, len);
+			/* Print a heading (with or without anchor. */
+			if (partNo == 0) {
+				this.printSubHeader(out, instanceLabel + ", " + supplierLabel + ", "
+						+ partLabel, anchorName);
+			}
+
+			else {
+				this.printSubHeader(out, instanceLabel + ", " + supplierLabel + ", "
+						+ partLabel);
+			}
+			// end else.
 		}
-		in.close();
-		out.close();
+		// end else.
+
+		this.printSubSubHeader(out, "Resources");
+		this.printTableHeader(out, "id", "type", "owner", "name", "reference");
+
+		for (Resource resource : contract.getConsumerResources()) {
+			this.printTableRow(out, Style.CONSUMER, resource.getId(), resource
+					.getType().toString(), extensionPointID, resource.getName(), "n/a");
+		}
+		// end for (iteration on consumer resources).
+
+		for (Resource resource : contract.getExternalResources()) {
+			this.printTableRow(out, Style.CONSUMER, resource.getId(), resource
+					.getType().toString(), this.getOwner(resource), resource.getName(),
+					"n/a");
+		}
+		// end for (iteration on external resources).
+
+		for (Resource resource : contract.getSupplierResources()) {
+
+			String reference;
+			reference = resource.getRef();
+
+			if (resource.getContext() != null
+					&& resource.getContext() instanceof EclipseInstantiationContext) {
+
+				reference =
+						""
+								+ ((EclipseInstantiationContext) resource.getContext())
+										.getPath() + "/" + reference;
+			}
+			// no else.
+
+			this.printTableRow(out, Style.SUPPLIER, resource.getId(), resource
+					.getType().toString(), getOwner(resource), resource.getName(),
+					reference);
+		}
+		// end for (iteration on supplier resources).
+
+		this.printTableFooter(out);
+
+		VerificationResult verificationResult;
+		verificationResult =
+				(VerificationResult) contract
+						.getProperty(Constants.VERIFICATION_RESULT);
+
+		String verificationResultAsString;
+		verificationResultAsString =
+				verificationResult == null ? "unknown" : verificationResult.toString();
+
+		this.printSubSubHeader(out, "Verification Result: "
+				+ verificationResultAsString);
+
+		this.printContractTree(out, contract, folder);
 	}
 
-	private void createResultsPage(File folder, String xp,
+	/**
+	 * <p>
+	 * Creates a results page for a given extension point and a given {@link List}
+	 * of {@link Contract}s.
+	 * </p>
+	 * 
+	 * @param folder
+	 *          The folder into that the results page shall be created.
+	 * @param extensionPointID
+	 *          The ID of the {@link IExtensionPoint} for that the result page
+	 *          shall be created.
+	 * @param contracts
+	 *          The {@link Contract}s that shall be contained in the results page.
+	 * @throws FileNotFoundException
+	 *           Thrown, if the given folder does not exists.
+	 */
+	private void createResultsPage(File folder, String extensionPointID,
 			List<Contract> contracts) throws FileNotFoundException {
 
-		File file = new File(folder.getAbsolutePath() + "/" + getFileName(xp));
-		PrintStream out = new PrintStream(new FileOutputStream(file));
-		printHtmlHeader(out, "Verification results for extension point " + xp);
+		File resultPageFile;
+		resultPageFile =
+				new File(folder.getAbsolutePath() + "/" + getFileName(extensionPointID));
 
-		// overview
-		printSubHeader(out, "Overview");
-		printTableHeader(out, "extension", "result");
-		for (int i = 0; i < contracts.size(); i++) {
-			Contract c = contracts.get(i);
-			String x = getInstanceLabel(c);
-			String result = "" + c.getProperty(Constants.VERIFICATION_RESULT);
-			printTableRow(out, createiLink(x, "instance" + (i + 1)), result);
-		}
-		printTableFooter(out);
+		PrintStream out;
+		out = new PrintStream(new FileOutputStream(resultPageFile));
 
-		// details
-		for (int i = 0; i < contracts.size(); i++) {
-			Contract c = contracts.get(i);
-			createResultPage(out, folder, xp, c, contracts.size(), i);
+		this.printHtmlHeader(out, "Verification results for Extension Point "
+				+ extensionPointID);
+
+		/* Display Overview. */
+		this.printSubHeader(out, "Overview");
+		this.printTableHeader(out, "extension", "result");
+
+		for (int index = 0; index < contracts.size(); index++) {
+
+			Contract contract;
+			contract = contracts.get(index);
+
+			String instanceLabel;
+			instanceLabel = getInstanceLabel(contract);
+
+			String verificationResult;
+			verificationResult =
+					"" + contract.getProperty(Constants.VERIFICATION_RESULT);
+
+			this.printTableRow(out, createAnchorLink(instanceLabel, "instance"
+					+ (index + 1)), verificationResult);
 		}
-		printHtmlFooter(out);
+		// end for (iteration on contracts).
+
+		this.printTableFooter(out);
+
+		/* Display details. */
+		for (int index = 0; index < contracts.size(); index++) {
+
+			Contract contract;
+			contract = contracts.get(index);
+
+			this.createResultPage(out, folder, extensionPointID, contract, contracts
+					.size(), index);
+		}
+		// end for (iteration on contracts).
+
+		this.printHtmlFooter(out);
+
 		out.close();
 	}
 
-	private void createResultPage(PrintStream out, File folder, String xp,
-			Contract c, int noOfInstances, int instanceNo) {
+	/**
+	 * <p>
+	 * Returns the name of the created filed for a given extension point's ID.
+	 * </p>
+	 * 
+	 * @param extensionPointID
+	 *          The ID of the {@link IExtensionPoint}.
+	 * @return The file name of the {@link File} containing the results for the
+	 *         given {@link IExtensionPoint}.
+	 */
+	private String getFileName(String extensionPointID) {
 
-		createResultPage(out, folder, xp, c, noOfInstances, instanceNo, 0, 0);
+		return extensionPointID + ".html";
 	}
 
-	private void createResultPage(PrintStream out, File folder, String xp,
-			Contract c, int noOfInstances, int instanceNo, int noOfParts, int partNo) {
+	/**
+	 * <p>
+	 * Returns the label for a given {@link Contract} instance.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose label shall be returned.
+	 * @return The label of a given {@link Contract}.
+	 */
+	private String getInstanceLabel(Contract contract) {
 
-		String instLabel =
-				"Contract instance " + (instanceNo + 1) + "/" + noOfInstances;
-		String supplLabel = "supplier: " + getInstanceLabel(c);
-		String anch = partNo == 0 ? ("instance" + (instanceNo + 1)) : null;
-		if (noOfParts == 0) {
-			printSubHeader(out, instLabel + ", " + supplLabel, anch);
+		String result;
+
+		Connector connector;
+		connector = contract.getSupplier();
+
+		if (connector == null) {
+			result = "?";
 		}
+
 		else {
-			String partLabel = "part: " + (partNo + 1) + "/" + noOfParts;
-			if (partNo == 0)
-				printSubHeader(out, instLabel + ", " + supplLabel + ", " + partLabel,
-						anch);
-			else
-				printSubHeader(out, instLabel + ", " + supplLabel + ", " + partLabel);
+			result = connector.getOwner().getId();
 		}
-		printSubSubHeader(out, "Resources");
-		printTableHeader(out, "id", "type", "owner", "name", "reference");
+		// end else.
 
-		for (Resource r : c.getConsumerResources()) {
-			printTableRow(out, Style.CONSUMER, r.getId(), r.getType().toString(), xp,
-					r.getName(), "n/a");
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the owner of a given {@link Resource}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} whose owner shall be returned.
+	 * @return The Owner (an {@link Object}).
+	 */
+	private Object getOwner(Resource resource) {
+
+		Object result;
+		result = null;
+
+		Connector connector;
+		connector = resource.getOwner();
+
+		if (connector != null) {
+			result = connector.getOwner().getId();
+		}
+		// no else.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Converts a given {@link Resource} into a {@link String} representing the
+	 * {@link Resource}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} that shall be converted.
+	 * @return A {@link String} representing the {@link Resource}.
+	 */
+	private String getResourceAsString(Resource resource) {
+
+		StringBuffer buffer;
+		buffer = new StringBuffer();
+
+		if (resource.getRef() != null) {
+			buffer.append('?');
+			buffer.append(resource.getRef());
 		}
 
-		for (Resource r : c.getExternalResources()) {
-			printTableRow(out, Style.CONSUMER, r.getId(), r.getType().toString(),
-					this.getOwner(r), r.getName(), "n/a");
+		else if (resource.getName() != null) {
+			buffer.append(resource.getName());
+		}
+		// no else.
+
+		return buffer.toString();
+	}
+
+	/**
+	 * <p>
+	 * Returns the name of the given {@link Resource} or a default value, if the
+	 * name of the {@link Resource} is not set.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} whose name shall be returned,
+	 * @return The name or a default value, if the name of the {@link Resource} is
+	 *         not set.
+	 */
+	private String getResourceName(Resource resource) {
+
+		if (resource.getRef() != null && resource.getName() != null) {
+			return resource.getName();
 		}
 
-		for (Resource r : c.getSupplierResources()) {
-			String ref = r.getRef();
-			if (r.getContext() != null
-					&& r.getContext() instanceof EclipseInstantiationContext) {
-				ref =
-						"" + ((EclipseInstantiationContext) r.getContext()).getPath() + "/"
-								+ ref;
-			}
-			printTableRow(out, Style.SUPPLIER, r.getId(), r.getType().toString(),
-					getOwner(r), r.getName(), ref);
+		else {
+			return "?";
 		}
-		printTableFooter(out);
+		// end else.
+	}
 
-		VerificationResult result =
-				(VerificationResult) c.getProperty(Constants.VERIFICATION_RESULT);
-		String r = result == null ? "unknown" : result.toString();
-		printSubSubHeader(out, "Verification Result: " + r);
+	/**
+	 * <p>
+	 * Returns the short name of a given vocabulary elements type (e.g. a Type or
+	 * a Relationship) by probably removing the top-level domain from the given
+	 * URI.
+	 * </p>
+	 * 
+	 * @param uri
+	 *          The URI (as a {@link String}) that shall be shortened.
+	 * @return A probably shorter form of the given URI (as a {@link String}).
+	 */
+	private String getShortNameOfVocabularyElement(String uri) {
 
-		printContractTree(out, c, folder);
+		if (uri.startsWith(TREATY_NAMESPACE)) {
+			return uri.substring(TREATY_NAMESPACE.length());
+		}
+
+		else {
+			return uri;
+		}
+		// end else.
 	}
 
 	/**
@@ -315,6 +716,18 @@ public class HTMLExporter extends Exporter {
 
 			/*
 			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.ExistsCondition
+			 * )
+			 */
+			public void endVisit(ExistsCondition condition) {
+
+				// out.println("*** ending condition "+condition);
+				printTableFooter(outputStream);
+			}
+
+			/*
+			 * (non-Javadoc)
 			 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Negation)
 			 */
 			public void endVisit(Negation condition) {
@@ -352,7 +765,7 @@ public class HTMLExporter extends Exporter {
 			 */
 			public void endVisit(Resource resource) {
 
-				/* Do nothing to print resources. */
+				/* Do nothing to print end of resources. */
 			}
 
 			/*
@@ -368,12 +781,87 @@ public class HTMLExporter extends Exporter {
 
 			/*
 			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#endVisitConditions(java.util.Collection
+			 * )
+			 */
+			public void endVisitConditions(Collection<AbstractCondition> conditions) {
+
+				/* Do nothing. */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#endVisitConsumerResources(java.util
+			 * .Collection)
+			 */
+			public void endVisitConsumerResources(Collection<Resource> resources) {
+
+				/* TODO Probably do something here? */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#endVisitExternalResources(java.util
+			 * .Collection)
+			 */
+			public void endVisitExternalResources(Collection<Resource> resources) {
+
+				/* Do nothing. */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#endVisitOnFailureAction(java.net.URI)
+			 */
+			public void endVisitOnFailureAction(URI uri) {
+
+				/* TODO Probably do something here? */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#endVisitOnSuccessAction(java.net.URI)
+			 */
+			public void endVisitOnSuccessAction(URI uri) {
+
+				/* TODO Probably do something here? */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#endVisitSupplierResources(java.util
+			 * .Collection)
+			 */
+			public void endVisitSupplierResources(Collection<Resource> resources) {
+
+				/* TODO Probably do something here? */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see net.java.treaty.ContractVisitor#endVisitTrigger(java.net.URI)
+			 */
+			public void endVisitTrigger(URI uri) {
+
+				/* TODO Probably do something here? */
+			}
+
+			/*
+			 * (non-Javadoc)
 			 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Conjunction)
 			 */
 			public boolean visit(Conjunction condition) {
 
 				/* Print an and node for the conjunction. */
 				printStartTreeNode(outputStream, getStyle(condition), "and", condition);
+
+				/* Visit children. */
 				return true;
 			}
 
@@ -389,6 +877,7 @@ public class HTMLExporter extends Exporter {
 				}
 				// no else.
 
+				/* Visit children. */
 				return true;
 			}
 
@@ -401,7 +890,34 @@ public class HTMLExporter extends Exporter {
 				/* Print an or node for the disjunction. */
 				printStartTreeNode(outputStream, getStyle(condition), "or", condition);
 
+				/* Visit children. */
 				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#visit(net.java.treaty.ExistsCondition)
+			 */
+			public boolean visit(ExistsCondition e) {
+
+				printTableHeader(outputStream, getStyle(e));
+
+				String errorReference;
+				errorReference = this.createErrorRef(e);
+
+				if (errorReference == null) {
+					printTableRow(outputStream, e.getResource().getId() + " must exist");
+				}
+
+				else {
+					printTableRow(outputStream, e.getResource().getId() + " must exist",
+							errorReference);
+				}
+				// end else.
+
+				/* Don't visit children. */
+				return false;
 			}
 
 			/*
@@ -413,6 +929,7 @@ public class HTMLExporter extends Exporter {
 				/* Print a not node for the negation. */
 				printStartTreeNode(outputStream, getStyle(condition), "not", condition);
 
+				/* Visit children. */
 				return true;
 			}
 
@@ -458,6 +975,7 @@ public class HTMLExporter extends Exporter {
 									.getValue(), errorRef);
 				}
 
+				/* Don't visit children. */
 				return false;
 			}
 
@@ -488,6 +1006,7 @@ public class HTMLExporter extends Exporter {
 							relationshipCondition.getResource2().getId(), errorRef);
 				}
 
+				/* Don't visit children. */
 				return false;
 			}
 
@@ -497,7 +1016,7 @@ public class HTMLExporter extends Exporter {
 			 */
 			public boolean visit(Resource resource) {
 
-				/* Do nothing to print resources. */
+				/* Don't visit children. */
 				return false;
 			}
 
@@ -510,7 +1029,208 @@ public class HTMLExporter extends Exporter {
 
 				/* Print an xor node for the xdisjunction. */
 				printStartTreeNode(outputStream, getStyle(condition), "xor", condition);
+
+				/* Visit children. */
 				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see net.java.treaty.ContractVisitor#visitConditions(java.util.List)
+			 */
+			public boolean visitConditions(List<AbstractCondition> name) {
+
+				/* Visit children. */
+				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#visitConsumerResources(java.util.Collection
+			 * )
+			 */
+			public boolean visitConsumerResources(Collection<Resource> resources) {
+
+				/* TODO Probably do something here? */
+				return false;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#visitExternalResources(java.util.Collection
+			 * )
+			 */
+			public boolean visitExternalResources(Collection<Resource> resources) {
+
+				/* Don't visit children. */
+				return false;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see net.java.treaty.ContractVisitor#visitOnFailureAction(java.net.URI)
+			 */
+			public boolean visitOnFailureAction(URI uri) {
+
+				/* TODO Probably do something here? */
+				return false;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see net.java.treaty.ContractVisitor#visitOnSuccessAction(java.net.URI)
+			 */
+			public boolean visitOnSuccessAction(URI uri) {
+
+				/* TODO Probably do something here? */
+				return false;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * net.java.treaty.ContractVisitor#visitSupplierResources(java.util.Collection
+			 * )
+			 */
+			public boolean visitSupplierResources(Collection<Resource> resources) {
+
+				/* TODO Probably do something here? */
+				return false;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see net.java.treaty.ContractVisitor#visitTrigger(java.net.URI)
+			 */
+			public boolean visitTrigger(URI uri) {
+
+				/* TODO Probably do something here? */
+				return false;
+			}
+
+			/**
+			 * <p>
+			 * Creates the reference to the verification exception of a given
+			 * Constraint.
+			 * </p>
+			 * 
+			 * @param constraint
+			 *          The Constraint for that the error reference shall be created.
+			 * @return The reference to the verification exception of a given
+			 *         Constraint.
+			 */
+			private String createErrorRef(Constraint constraint) {
+
+				String result;
+
+				Exception verificationException;
+				verificationException =
+						(Exception) constraint
+								.getProperty(Constants.VERIFICATION_EXCEPTION);
+
+				if (verificationException != null) {
+
+					String detailsPageName;
+					detailsPageName = "_exception" + myExceptionCounter + ".html";
+
+					myExceptionCounter = myExceptionCounter + 1;
+
+					File errorPageFile;
+					errorPageFile =
+							new File(folder.getAbsolutePath() + "/" + detailsPageName);
+
+					PrintStream out;
+					out = null;
+
+					/* Try to create the error page. */
+					try {
+						out = new PrintStream(new FileOutputStream(errorPageFile));
+						printHtmlHeader(out, "Exception details");
+						printException(out, verificationException);
+						printHtmlFooter(out);
+
+						/* Link the page. */
+						StringBuffer buffer;
+
+						buffer = new StringBuffer();
+						buffer.append("<a href=\"");
+						buffer.append(detailsPageName);
+						buffer.append("\" target=\"_top\">");
+						buffer.append("exception details");
+						buffer.append("</a>");
+
+						result = buffer.toString();
+					}
+					// end try.
+
+					catch (FileNotFoundException e) {
+						Logger.error(
+								"Error during creating an VerificationException page.", e);
+
+						result = null;
+					}
+					// end catch.
+
+					finally {
+						out.close();
+					}
+					// end finaly.
+				}
+
+				/* No exception set. return null. */
+				else {
+					result = null;
+				}
+				// end else.
+
+				return result;
+			}
+
+			/**
+			 * <p>
+			 * Returns the used CSS style for a given Annotatable (Depends on its
+			 * verification result).
+			 * </p>
+			 * 
+			 * @param annotatable
+			 *          The Annotatable for that the Style shall be returned.
+			 * @return The Style for the Annotatable.
+			 */
+			private Style getStyle(Annotatable annotatable) {
+
+				Style result;
+
+				VerificationResult verificationResult;
+				verificationResult =
+						(VerificationResult) annotatable
+								.getProperty(Constants.VERIFICATION_RESULT);
+
+				if (verificationResult == null) {
+					result = Style.TREE;
+				}
+
+				else {
+
+					switch (verificationResult) {
+
+					case SUCCESS:
+						result = Style.TREE_SUCCESS;
+						break;
+
+					case FAILURE:
+						result = Style.TREE_FAILED;
+						break;
+
+					default:
+						result = Style.TREE;
+					}
+					// end switch.
+				}
+				// end else.
+
+				return result;
 			}
 
 			/**
@@ -529,355 +1249,96 @@ public class HTMLExporter extends Exporter {
 				return contract.getConstraints().size() > 1;
 			}
 
-			private String createErrorRef(Constraint c) {
-
-				Exception err =
-						(Exception) c.getProperty(Constants.VERIFICATION_EXCEPTION);
-				if (err != null) {
-					String details = "_exception" + myExceptionCounter + ".html";
-					myExceptionCounter = myExceptionCounter + 1;
-					File file = new File(folder.getAbsolutePath() + "/" + details);
-					PrintStream out = null;
-					try {
-						out = new PrintStream(new FileOutputStream(file));
-						printHtmlHeader(out, "Exception details");
-						printException(out, err);
-						printHtmlFooter(out);
-						// link
-						return new StringBuffer().append("<a href=\"").append(details)
-								.append("\" target=\"_top\">").append("exception details")
-								.append("</a>").toString();
-					} catch (FileNotFoundException e) {
-						// TODO
-						e.printStackTrace();
-					} finally {
-						out.close();
-					}
-
-				}
-				return null;
-			}
-
-			private Style getStyle(Annotatable a) {
-
-				VerificationResult result =
-						(VerificationResult) a.getProperty(Constants.VERIFICATION_RESULT);
-				if (result == null)
-					return Style.TREE;
-				else if (result == VerificationResult.SUCCESS)
-					return Style.TREE_SUCCESS;
-				else if (result == VerificationResult.FAILURE)
-					return Style.TREE_FAILED;
-				else
-					return Style.TREE;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.ExistsCondition
-			 * )
-			 */
-			public void endVisit(ExistsCondition condition) {
-
-				// out.println("*** ending condition "+condition);
-				printTableFooter(outputStream);
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * net.java.treaty.ContractVisitor#endVisitConditions(java.util.Collection
-			 * )
-			 */
-			public void endVisitConditions(Collection<AbstractCondition> conditions) {
-
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * net.java.treaty.ContractVisitor#endVisitExternalResources(java.util
-			 * .Collection)
-			 */
-			public void endVisitExternalResources(Collection<Resource> resources) {
-
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * net.java.treaty.ContractVisitor#visit(net.java.treaty.ExistsCondition)
-			 */
-			public boolean visit(ExistsCondition e) {
-
-				printTableHeader(outputStream, getStyle(e));
-				String errorRef = createErrorRef(e);
-				if (errorRef == null) {
-					printTableRow(outputStream, e.getResource().getId() + " must exist");
-				}
-				else {
-					printTableRow(outputStream, e.getResource().getId() + " must exist",
-							errorRef);
-				}
-				return false;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.java.treaty.ContractVisitor#visitConditions(java.util.List)
-			 */
-			public boolean visitConditions(List<AbstractCondition> name) {
-
-				return true;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * net.java.treaty.ContractVisitor#visitExternalResources(java.util.Collection
-			 * )
-			 */
-			public boolean visitExternalResources(Collection<Resource> resources) {
-
-				return false;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * net.java.treaty.ContractVisitor#endVisitOnFailureAction(java.net.URI)
-			 */
-			public void endVisitOnFailureAction(URI uri) {
-
-				// TODO Auto-generated method stub
-
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * net.java.treaty.ContractVisitor#endVisitOnSuccessAction(java.net.URI)
-			 */
-			public void endVisitOnSuccessAction(URI uri) {
-
-				// TODO Auto-generated method stub
-
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.java.treaty.ContractVisitor#endVisitTrigger(java.net.URI)
-			 */
-			public void endVisitTrigger(URI uri) {
-
-				// TODO Auto-generated method stub
-
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.java.treaty.ContractVisitor#visitOnFailureAction(java.net.URI)
-			 */
-			public boolean visitOnFailureAction(URI uri) {
-
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.java.treaty.ContractVisitor#visitOnSuccessAction(java.net.URI)
-			 */
-			public boolean visitOnSuccessAction(URI uri) {
-
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.java.treaty.ContractVisitor#visitTrigger(java.net.URI)
-			 */
-			public boolean visitTrigger(URI uri) {
-
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			public void endVisitConsumerResources(Collection<Resource> resources) {
-
-				// TODO Auto-generated method stub
-
-			}
-
-			public void endVisitSupplierResources(Collection<Resource> resources) {
-
-				// TODO Auto-generated method stub
-
-			}
-
-			public boolean visitConsumerResources(Collection<Resource> resources) {
-
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			public boolean visitSupplierResources(Collection<Resource> resources) {
-
-				// TODO Auto-generated method stub
-				return false;
-			}
-
 		};
 		contract.accept(contractVisitor);
 	}
 
-	private void printException(PrintStream out, Exception err) {
+	/**
+	 * <p>
+	 * Prints the end of a tree node to a given {@link PrintStream}.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param node
+	 *          The node to be printed.
+	 * 
+	 * @see HTMLExporter#printStartTreeNode(PrintStream, Style, String, Object)
+	 */
+	private void printEndTreeNode(PrintStream out, Object node) {
 
-		err.printStackTrace(out);
-	}
-
-	private Object getOwner(Resource r) {
-
-		Connector c = r.getOwner();
-		if (c == null)
-			return null;
-		else
-			return c.getOwner().getId();
-	}
-
-	private String getInstanceLabel(Contract c) {
-
-		Connector con = c.getSupplier();
-		if (con == null)
-			return "?";
-		else
-			return con.getOwner().getId();
-	}
-
-	private void printSubHeader(PrintStream out, String string) {
-
-		this.printSubHeader(out, string, null);
-	}
-
-	private void printSubHeader(PrintStream out, String string, String name) {
-
-		out.print("<h2>");
-		if (name != null) {
-			out.print("<a name=\"");
-			out.print(name);
-			out.print("\">");
-		}
-		out.print(string);
-		if (name != null) {
-			out.print("</a>");
-		}
-		out.println("</h2>");
-	}
-
-	private void printSubSubHeader(PrintStream out, String string) {
-
-		out.print("<h3>");
-		out.print(string);
-		out.println("</h3>");
-	}
-
-	private String getFileName(String xp) {
-
-		return xp + ".html";
-	}
-
-	private String createLink(String label, String link) {
-
-		return new StringBuffer().append("<a href=\"").append(link).append("\">")
-				.append(label).append("</a>").toString();
-	}
-
-	private String createiLink(String label, String link) {
-
-		return new StringBuffer().append("<a href=\"#").append(link).append("\">")
-				.append(label).append("</a>").toString();
-	}
-
-	private void createIndexPage(File folder,
-			Map<String, List<Contract>> contractsByXP) throws IOException {
-
-		List<String> extensionPoints = new ArrayList<String>();
-		extensionPoints.addAll(contractsByXP.keySet());
-		Collections.sort(extensionPoints);
-		File file = new File(folder.getAbsolutePath() + "/index.html");
-		PrintStream out = new PrintStream(new FileOutputStream(file));
-		printHtmlHeader(out, "Verification results");
-		printTableHeader(out, "extension point", "contract instances",
-				"verification failed");
-		for (String xp : extensionPoints) {
-			List<Contract> instances = contractsByXP.get(xp);
-			int instanceCount = instances.size();
-			int failedCount = 0;
-			for (Contract instance : instances) {
-				if (instance.getProperty(Constants.VERIFICATION_RESULT) == VerificationResult.FAILURE) {
-					failedCount = failedCount + 1;
-				}
-			}
-			printTableRow(out, createLink(xp, getFileName(xp)), instanceCount,
-					failedCount);
-		}
-		printTableFooter(out);
-		printHtmlFooter(out);
-		out.close();
-	}
-
-	private void printTableFooter(PrintStream out) {
-
+		out.println("</td></tr>");
 		out.println("</table>");
+		// debug
+		// out.println("--- end " + node + " ---");
 	}
 
-	private void printTableRow(PrintStream out, Style style, Object... entries) {
+	/**
+	 * <p>
+	 * Prints a given {@link Exception} to a given {@link PrintStream}.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param exception
+	 *          The {@link Exception} that shall be printed.
+	 */
+	private void printException(PrintStream out, Exception exception) {
 
-		out.print("<tr");
-		if (style == null) {
-			out.print(">");
-		}
-		else {
-			out.print(" class=\"");
-			out.print(style);
-			out.print("\">");
-		}
-		for (Object l : entries) {
-			out.print("<td>");
-			out.print(l);
-			out.print("</td>");
-		}
-		out.println("</tr>");
+		exception.printStackTrace(out);
 	}
 
-	private void printTableRow(PrintStream out, Object... entries) {
+	/**
+	 * <p>
+	 * Prints an HTML footer for a given {@link PrintStream}.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 */
+	private void printHtmlFooter(PrintStream out) {
 
-		this.printTableRow(out, Style.PLAIN, entries);
+		out.println("</body>");
+		out.println("</html>");
 	}
 
-	private void printTableHeader(PrintStream out, String... labels) {
+	/**
+	 * <p>
+	 * Prints an HTML header for a given {@link PrintStream} and a given title.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param title
+	 *          The title of the HTML page.
+	 */
+	private void printHtmlHeader(PrintStream out, String title) {
 
-		this.printTableHeader(out, Style.PLAIN, labels);
+		out.println("<html>");
+		out.println("<head>");
+		out
+				.println("<link rel=\"StyleSheet\" href=\"treaty.css\" TYPE=\"text/css\" MEDIA=\"screen\">");
+		out.println("</head>");
+		out.println("<body>");
+		out.print("<h1>");
+		out.print(title);
+		out.println("</h1>");
 	}
 
-	private void printTableHeader(PrintStream out, Style style, String... labels) {
-
-		out.print("<table cellspacing=\"0\" class=\"");
-		out.print(style);
-		out.println("\">");
-		if (labels.length > 0) {
-			out.print("<tr>");
-			for (String l : labels) {
-				out.print("<th>");
-				out.print(l);
-				out.print("</th>");
-			}
-			out.println("</tr>");
-		}
-	}
-
+	/**
+	 * <p>
+	 * Prints the begin of a tree node to a given {@link PrintStream}.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param style
+	 *          The {@link Style} used.
+	 * @param label
+	 *          The label of the node.
+	 * @param node
+	 *          The node to be printed.
+	 */
 	private void printStartTreeNode(PrintStream out, Style style, String label,
 			Object node) {
 
@@ -892,29 +1353,280 @@ public class HTMLExporter extends Exporter {
 		out.println("</td><td>");
 	}
 
-	private void printEndTreeNode(PrintStream out, Object node) {
+	/**
+	 * <p>
+	 * Prints a sub heading for a given string.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param string
+	 *          The string that shall be headed.
+	 */
+	private void printSubHeader(PrintStream out, String string) {
 
-		out.println("</td></tr>");
+		this.printSubHeader(out, string, null);
+	}
+
+	/**
+	 * <p>
+	 * Prints a sub heading for a given string and probably an anchor for a given
+	 * anchor name.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param string
+	 *          The string that shall be headed.
+	 * @param anchorName
+	 *          The name of the anchor belonging to the heading (can be
+	 *          <code>null</code>).
+	 */
+	private void printSubHeader(PrintStream out, String string, String anchorName) {
+
+		out.print("<h2>");
+
+		if (anchorName != null) {
+			out.print("<a name=\"");
+			out.print(anchorName);
+			out.print("\">");
+		}
+		// no else.
+
+		out.print(string);
+
+		if (anchorName != null) {
+			out.print("</a>");
+		}
+		// no else.
+
+		out.println("</h2>");
+	}
+
+	/**
+	 * <p>
+	 * Prints a sub sub heading for a given string.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param string
+	 *          The string that shall be headed.
+	 */
+	private void printSubSubHeader(PrintStream out, String string) {
+
+		out.print("<h3>");
+		out.print(string);
+		out.println("</h3>");
+	}
+
+	/**
+	 * <p>
+	 * Prints the footer of a table for a given {@link PrintStream}.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 */
+	private void printTableFooter(PrintStream out) {
+
 		out.println("</table>");
-		// debug
-		// out.println("--- end " + node + " ---");
 	}
 
-	public boolean exportToFolder() {
+	/**
+	 * <p>
+	 * Prints the header of a table for a given {@link PrintStream} and a given
+	 * array of labels.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param labels
+	 *          The labels of the table header.
+	 */
+	private void printTableHeader(PrintStream out, String... labels) {
 
-		return true;
+		this.printTableHeader(out, Style.PLAIN, labels);
 	}
 
-	public String[] getFilterExtensions() {
+	/**
+	 * <p>
+	 * Prints the header of a table for a given {@link PrintStream} and a given
+	 * array of labels.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param style
+	 *          The {@link Style} of the printed table.
+	 * @param labels
+	 *          The labels of the table header.
+	 */
+	private void printTableHeader(PrintStream out, Style style, String... labels) {
 
-		return new String[] {};
+		out.print("<table cellspacing=\"0\" class=\"");
+		out.print(style);
+		out.println("\">");
+
+		if (labels.length > 0) {
+			out.print("<tr>");
+
+			for (String l : labels) {
+				out.print("<th>");
+				out.print(l);
+				out.print("</th>");
+			}
+			// end for.
+
+			out.println("</tr>");
+		}
+		// no else.
 	}
 
-	public String[] getFilterNames() {
+	/**
+	 * <p>
+	 * Prints the header of a table row for a given {@link PrintStream} and a
+	 * given array of entries.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param entries
+	 *          The entries of the table row.
+	 */
+	private void printTableRow(PrintStream out, Object... entries) {
 
-		return new String[] {};
+		this.printTableRow(out, Style.PLAIN, entries);
 	}
 
+	/**
+	 * <p>
+	 * Prints the header of a table row for a given {@link PrintStream} and a
+	 * given array of entries.
+	 * </p>
+	 * 
+	 * @param out
+	 *          The {@link PrintStream} used for output.
+	 * @param style
+	 *          The {@link Style} of the printed table.
+	 * @param entries
+	 *          The entries of the table row.
+	 */
+	private void printTableRow(PrintStream out, Style style, Object... entries) {
+
+		out.print("<tr");
+
+		if (style == null) {
+			out.print(">");
+		}
+
+		else {
+			out.print(" class=\"");
+			out.print(style);
+			out.print("\">");
+		}
+
+		for (Object l : entries) {
+			out.print("<td>");
+			out.print(l);
+			out.print("</td>");
+		}
+		// end for.
+
+		out.println("</tr>");
+	}
+
+	/**
+	 * TODO Claas: This method is not used. It should be removed probably.
+	 * 
+	 * <p>
+	 * Returns a {@link List} containing the atomic conditions of a given
+	 * {@link Contract} as {@link String}s.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose atomic conditions shall be returned.
+	 * @return A {@link List} containing the atomic conditions of a given
+	 *         {@link Contract} as {@link String}s.
+	 */
+	private List<String> getAtomicConditions(Contract contract) {
+
+		final List<String> result;
+		result = new ArrayList<String>();
+
+		/* Use a visitor to create the result. */
+		ContractVisitor contractVisitor;
+		contractVisitor = new AbstractContractVisitor() {
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * ExistsCondition)
+			 */
+			public boolean visit(ExistsCondition c) {
+
+				result.add("must exist: " + getResourceAsString(c.getResource()));
+
+				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * PropertyCondition)
+			 */
+			public boolean visit(PropertyCondition propertyCondition) {
+
+				StringBuffer buffer;
+				buffer = new StringBuffer();
+
+				buffer.append(getResourceAsString(propertyCondition.getResource()));
+				buffer.append('.');
+				/*
+				 * FIXME Claas: probably this is wrong? Can PropertyConditions have
+				 * multiple properties?
+				 */
+				buffer.append(propertyCondition.getProperty(propertyCondition
+						.getPropertyNames().next()));
+				buffer.append(' ');
+				buffer.append(propertyCondition.getOperator());
+				buffer.append(propertyCondition.getValue());
+
+				result.add(buffer.toString());
+
+				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * RelationshipCondition)
+			 */
+			public boolean visit(RelationshipCondition c) {
+
+				StringBuffer buffer;
+				buffer = new StringBuffer();
+				buffer.append(getResourceAsString(c.getResource1()));
+				buffer.append(' ');
+				buffer.append(getShortNameOfVocabularyElement(c.getRelationship()
+						.toString()));
+				buffer.append(' ');
+				buffer.append(getResourceAsString(c.getResource2()));
+
+				result.add(buffer.toString());
+
+				return true;
+			}
+		};
+
+		contract.accept(contractVisitor);
+
+		return result;
+	}
+
+	/*
+	 * TODO Claas: This method is not used. It should be removed probably.
+	 */
 	private List<String> getExceptions(Contract contract) {
 
 		final List<String> exceptions = new ArrayList<String>();
@@ -956,170 +1668,9 @@ public class HTMLExporter extends Exporter {
 		return exceptions;
 	}
 
-	/**
-	 * <p>
-	 * Returns a {@link List} containing the atomic conditions of a given
-	 * {@link Contract} as {@link String}s.
-	 * 
-	 * @param contract
-	 *          The {@link Contract} whose atomic conditions shall be returned.
-	 * @return A {@link List} containing the atomic conditions of a given
-	 *         {@link Contract} as {@link String}s.
+	/*
+	 * TODO Claas: This method is not used. It should be removed probably.
 	 */
-	private List<String> getAtomicConditions(Contract contract) {
-
-		final List<String> result;
-		result = new ArrayList<String>();
-
-		/* Use a visitor to create the result. */
-		ContractVisitor contractVisitor;
-		contractVisitor = new AbstractContractVisitor() {
-
-			/*
-			 * (non-Javadoc)
-			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
-			 * ExistsCondition)
-			 */
-			public boolean visit(ExistsCondition c) {
-
-				result.add("must exist: " + print(c.getResource()));
-
-				return true;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
-			 * PropertyCondition)
-			 */
-			public boolean visit(PropertyCondition propertyCondition) {
-
-				StringBuffer buffer;
-				buffer = new StringBuffer();
-
-				buffer.append(print(propertyCondition.getResource()));
-				buffer.append('.');
-				/*
-				 * FIXME Claas: probably this is wrong? Can PropertyConditions have
-				 * multiple properties?
-				 */
-				buffer.append(propertyCondition.getProperty(propertyCondition
-						.getPropertyNames().next()));
-				buffer.append(' ');
-				buffer.append(propertyCondition.getOperator());
-				buffer.append(propertyCondition.getValue());
-
-				result.add(buffer.toString());
-
-				return true;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
-			 * RelationshipCondition)
-			 */
-			public boolean visit(RelationshipCondition c) {
-
-				StringBuffer buffer;
-				buffer = new StringBuffer();
-				buffer.append(print(c.getResource1()));
-				buffer.append(' ');
-				buffer.append(printShort(c.getRelationship().toString()));
-				buffer.append(' ');
-				buffer.append(print(c.getResource2()));
-
-				result.add(buffer.toString());
-
-				return true;
-			}
-		};
-
-		contract.accept(contractVisitor);
-
-		return result;
-	}
-
-	private List<String> getVariables(Contract contract) {
-
-		final List<String> list = new ArrayList<String>();
-		final Set<String> vars = new HashSet<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
-
-			@Override
-			public boolean visit(ExistsCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(PropertyCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(RelationshipCondition c) {
-
-				add(c.getResource1());
-				add(c.getResource2());
-				return true;
-			}
-
-			private void add(Resource r) {
-
-				if (r.getRef() != null && !vars.contains(r.getId())) {
-					list.add("variable " + print(r));
-					vars.add(r.getId());
-				}
-			}
-		};
-		contract.accept(visitor);
-		return list;
-	}
-
-	private List<String> getVariableBindings(Contract contract) {
-
-		final List<String> list = new ArrayList<String>();
-		final Set<String> vars = new HashSet<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
-
-			@Override
-			public boolean visit(ExistsCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(PropertyCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(RelationshipCondition c) {
-
-				add(c.getResource1());
-				add(c.getResource2());
-				return true;
-			}
-
-			private void add(Resource r) {
-
-				if (r.getRef() != null && !vars.contains(r.getId())) {
-					list.add(print2(r));
-					vars.add(r.getId());
-				}
-			}
-		};
-		contract.accept(visitor);
-		return list;
-	}
-
 	private List<String> getResults(Contract contract, final File folder) {
 
 		final List<String> list = new ArrayList<String>();
@@ -1181,40 +1732,89 @@ public class HTMLExporter extends Exporter {
 		return list;
 	}
 
-	private String printShort(String s) {
+	/*
+	 * TODO Claas: This method is not used. It should be removed probably.
+	 */
+	private List<String> getVariableBindings(Contract contract) {
 
-		String NAMESPACE = "http://www.treaty.org/";
-		if (s.startsWith(NAMESPACE))
-			return s.substring(NAMESPACE.length());
-		else
-			return s;
+		final List<String> list = new ArrayList<String>();
+		final Set<String> vars = new HashSet<String>();
+		ContractVisitor visitor = new AbstractContractVisitor() {
+
+			@Override
+			public boolean visit(ExistsCondition c) {
+
+				add(c.getResource());
+				return true;
+			}
+
+			@Override
+			public boolean visit(PropertyCondition c) {
+
+				add(c.getResource());
+				return true;
+			}
+
+			@Override
+			public boolean visit(RelationshipCondition c) {
+
+				add(c.getResource1());
+				add(c.getResource2());
+				return true;
+			}
+
+			private void add(Resource r) {
+
+				if (r.getRef() != null && !vars.contains(r.getId())) {
+					list.add(getResourceName(r));
+					vars.add(r.getId());
+				}
+			}
+		};
+		contract.accept(visitor);
+		return list;
 	}
 
-	private String print(Resource r) {
+	/*
+	 * TODO Claas: This method is not used. It should be removed probably.
+	 */
+	private List<String> getVariables(Contract contract) {
 
-		StringBuffer b = new StringBuffer();
-		if (r.getRef() != null) {
-			b.append('?');
-			b.append(r.getRef());
-		}
-		else if (r.getName() != null) {
-			b.append(r.getName());
-		}
-		/*
-		 * b.append('['); b.append(printShort(r.getType().toString()));
-		 * b.append(']');
-		 */
-		return b.toString();
+		final List<String> list = new ArrayList<String>();
+		final Set<String> vars = new HashSet<String>();
+		ContractVisitor visitor = new AbstractContractVisitor() {
+
+			@Override
+			public boolean visit(ExistsCondition c) {
+
+				add(c.getResource());
+				return true;
+			}
+
+			@Override
+			public boolean visit(PropertyCondition c) {
+
+				add(c.getResource());
+				return true;
+			}
+
+			@Override
+			public boolean visit(RelationshipCondition c) {
+
+				add(c.getResource1());
+				add(c.getResource2());
+				return true;
+			}
+
+			private void add(Resource r) {
+
+				if (r.getRef() != null && !vars.contains(r.getId())) {
+					list.add("variable " + getResourceAsString(r));
+					vars.add(r.getId());
+				}
+			}
+		};
+		contract.accept(visitor);
+		return list;
 	}
-
-	private String print2(Resource r) {
-
-		if (r.getRef() != null && r.getName() != null) {
-			return r.getName();
-		}
-		else {
-			return "?";
-		}
-	}
-
 }
