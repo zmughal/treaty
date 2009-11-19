@@ -237,6 +237,40 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 	/**
 	 * <p>
+	 * Represents nodes that consist of a key and a value.
+	 * </p>
+	 * 
+	 * @author Jens Dietrich
+	 */
+	private class KeyValueNode {
+
+		/** The key of this {@link KeyValueNode}. */
+		private String key = null;
+
+		/** The value of this {@link KeyValueNode}. */
+		private String value = null;
+
+		/**
+		 * <p>
+		 * Creates a new {@link KeyValueNode}.
+		 * </p>
+		 * 
+		 * @param key
+		 *          The key of this {@link KeyValueNode}.
+		 * @param value
+		 *          The value of this {@link KeyValueNode}.
+		 */
+		public KeyValueNode(String key, String value) {
+
+			super();
+
+			this.key = key;
+			this.value = value;
+		}
+	}
+
+	/**
+	 * <p>
 	 * The content provider class is responsible for providing objects to the
 	 * view. It can wrap existing objects in adapters or simply return objects
 	 * as-is. These objects may be sensitive to the current input of the view, or
@@ -1561,6 +1595,90 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		super.dispose();
 	}
 
+	/**
+	 * <p>
+	 * This is a call-back that will allow us to create the viewer and initialize
+	 * it.
+	 * </p>
+	 * 
+	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	public void createPartControl(Composite parent) {
+
+		this.myViewer =
+				new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		this.myDrillDownAdapter = new DrillDownAdapter(myViewer);
+
+		this.myViewer.getTree().setHeaderVisible(true);
+
+		TreeColumn column2;
+		column2 = new TreeColumn(myViewer.getTree(), SWT.LEFT);
+		column2.setText("plugin contracts");
+
+		Rectangle bounds;
+		bounds = myViewer.getTree().getDisplay().getBounds();
+		column2.setWidth(Math.max(600, bounds.width - 400));
+
+		TreeColumn column1;
+		column1 = new TreeColumn(myViewer.getTree(), SWT.LEFT);
+		column1.setText("status");
+		column1.setWidth(150);
+
+		this.myViewer.setLabelProvider(new ViewLabelProvider());
+
+		this.myViewer.setContentProvider(new DummyViewContentProvider());
+		this.myViewer.setInput(getViewSite());
+
+		this.myViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged
+			 * (org.eclipse.jface.viewers.SelectionChangedEvent)
+			 */
+			public void selectionChanged(SelectionChangedEvent e) {
+
+				Object selectedObject;
+				selectedObject = getSelectedObject();
+
+				/*
+				 * Probably enable actions to display source code and verification
+				 * exception of selection.
+				 */
+				boolean isActionAvailable =
+						selectedObject != null
+								&& selectedObject instanceof PropertySupport
+								&& ((PropertySupport) selectedObject)
+										.getProperty(Constants.VERIFICATION_EXCEPTION) != null;
+
+				myActionPrintStackTrace.setEnabled(isActionAvailable);
+				myActionShowContractSource.setEnabled(getSelectedContract() != null);
+
+				List<Contract> selectedInstantiatedConstracts;
+				selectedInstantiatedConstracts = getSelectedInstantiatedContracts();
+
+				myActionVerifySelectedContracts
+						.setEnabled(selectedInstantiatedConstracts != null
+								&& !selectedInstantiatedConstracts.isEmpty());
+			}
+		});
+
+		this.makeActions();
+		this.hookContextMenu();
+		this.contributeToActionBars();
+
+		/* Background initialization. */
+		this.actionReloadContracts();
+
+		/* Register as listener of the contract registry. */
+		EclipseContractRegistry.getInstance().addContractRegistryListener(this);
+
+		/* Register as listener of the ExporterRegistry. */
+		ExporterRegistry.INSTANCE.addExporterRegistryListener(this);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see
@@ -1718,6 +1836,20 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			/* Probably export the contracts. */
 			if (fileName != null) {
 				exporter.export(contracts, new File(fileName));
+
+				/* Show the result. */
+				/* FIXME Claas: Probably Exporters should work as jobs as well. */
+				Runnable runnable;
+				runnable = new Runnable() {
+
+					public void run() {
+
+						MessageDialog.openInformation(myViewer.getControl().getShell(),
+								"Contract Export", "Contract export finished successfully.");
+					}
+				};
+
+				myViewer.getControl().getDisplay().syncExec(runnable);
 			}
 			// no else.
 		}
@@ -1725,8 +1857,60 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 		catch (IOException e) {
 			Logger.error("Exception exporting contracts", e);
+
+			/* Show the result. */
+			final String msg;
+			msg = e.getMessage();
+
+			Runnable runnable;
+			runnable = new Runnable() {
+
+				public void run() {
+
+					MessageDialog.openInformation(myViewer.getControl().getShell(),
+							"Contract Export", "Contract export failed. Reason: " + msg);
+				}
+			};
+
+			myViewer.getControl().getDisplay().syncExec(runnable);
 		}
 		// end catch.
+	}
+
+	/**
+	 * <p>
+	 * Prints the verification exception stack trace. For the selected object in
+	 * the {@link ContractView}.
+	 * </p>
+	 */
+	private void actionPrintStackTrace() {
+
+		Object selectedObject;
+		selectedObject = this.getSelectedObject();
+
+		if (selectedObject != null
+				&& selectedObject instanceof PropertySupport
+				&& ((PropertySupport) selectedObject)
+						.getProperty(Constants.VERIFICATION_EXCEPTION) != null) {
+
+			Exception exception =
+					(Exception) ((PropertySupport) selectedObject)
+							.getProperty(Constants.VERIFICATION_EXCEPTION);
+
+			if (exception != null) {
+
+				try {
+					new ViewExceptionStackTraceDialog(new Shell(), exception).open();
+				}
+
+				catch (Exception e) {
+					Logger.error("Exception during display of VerificationException.", e);
+				}
+				// end catch.
+			}
+			// no else.
+		}
+		// no else.
 	}
 
 	/**
@@ -1754,6 +1938,34 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			this.myViewer.setInput(getViewSite());
 
 			this.switchActions(true);
+		}
+		// no else.
+	}
+
+	/**
+	 * <p>
+	 * Shows a dialog window to display the source code of a selected
+	 * {@link Contract}.
+	 * </p>
+	 */
+	private void actionShowContractSource() {
+
+		Contract contract;
+		contract = this.getSelectedContract();
+
+		if (contract != null) {
+			try {
+				URL contractURL;
+				contractURL = contract.getLocation();
+
+				new ViewContractSourceDialog(new Shell(), contractURL).open();
+			}
+
+			catch (Exception e) {
+				Logger.error("Error occurred during display of Contract source code.",
+						e);
+			}
+			// end catch.
 		}
 		// no else.
 	}
@@ -2298,7 +2510,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			 */
 			public void run() {
 
-				actShowContractSource();
+				actionShowContractSource();
 			}
 		};
 
@@ -2313,6 +2525,60 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			this.createExportAction(exporter);
 		}
 		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Displays the verification result for a given {@link List} of verified
+	 * {@link Contract}s and a given {@link List} of violated {@link Contract}s.
+	 * </p>
+	 * 
+	 * @param allContracts
+	 *          All {@link Contract}s that have been verified.
+	 * @param failedContracts
+	 *          All {@link Contract}s whose verification failed.
+	 */
+	private void reportVerificationResult(List<Contract> allContracts,
+			List<Contract> failedContracts) {
+
+		int totalContractCount;
+		totalContractCount = allContracts.size();
+
+		int failedContractCount;
+		failedContractCount = failedContracts.size();
+
+		String message = null;
+
+		if (failedContracts.size() == 0) {
+			message =
+					totalContractCount
+							+ " Contract instances have been verified successfully.";
+		}
+
+		else {
+			message =
+					totalContractCount
+							+ " Contract instances checked, verification has failed for "
+							+ failedContractCount
+							+ " Contract instances. Verification status annotations have "
+							+ "been added to the Contract View.";
+		}
+		// end else.
+
+		final String msg;
+		msg = message;
+
+		Runnable runnable;
+		runnable = new Runnable() {
+
+			public void run() {
+
+				MessageDialog.openInformation(myViewer.getControl().getShell(),
+						"Verification result", msg);
+			}
+		};
+
+		myViewer.getControl().getDisplay().syncExec(runnable);
 	}
 
 	/**
@@ -2486,143 +2752,5 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		};
 
 		this.myViewer.getTree().getDisplay().asyncExec(r);
-	}
-
-	class KeyValueNode {
-
-		String key, value = null;
-
-		public KeyValueNode(String key, String value) {
-
-			super();
-			this.key = key;
-			this.value = value;
-		}
-	}
-
-	/**
-	 * <p>
-	 * This is a call-back that will allow us to create the viewer and initialize
-	 * it.
-	 * </p>
-	 * 
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	public void createPartControl(Composite parent) {
-
-		myViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		myDrillDownAdapter = new DrillDownAdapter(myViewer);
-
-		myViewer.getTree().setHeaderVisible(true);
-
-		TreeColumn col2 = new TreeColumn(myViewer.getTree(), SWT.LEFT);
-		col2.setText("plugin contracts");
-
-		Rectangle bounds = myViewer.getTree().getDisplay().getBounds();
-		col2.setWidth(Math.max(600, bounds.width - 400));
-
-		TreeColumn col1 = new TreeColumn(myViewer.getTree(), SWT.LEFT);
-		col1.setText("status");
-		col1.setWidth(150);
-
-		myViewer.setLabelProvider(new ViewLabelProvider());
-
-		myViewer.setContentProvider(new DummyViewContentProvider());
-		myViewer.setInput(getViewSite());
-
-		myViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-			public void selectionChanged(SelectionChangedEvent e) {
-
-				Object obj = getSelectedObject();
-				boolean f =
-						obj != null
-								&& obj instanceof PropertySupport
-								&& ((PropertySupport) obj)
-										.getProperty(Constants.VERIFICATION_EXCEPTION) != null;
-				myActionPrintStackTrace.setEnabled(f);
-				myActionShowContractSource.setEnabled(getSelectedContract() != null);
-
-				List<Contract> iConstracts = getSelectedInstantiatedContracts();
-				myActionVerifySelectedContracts.setEnabled(iConstracts != null
-						&& !iConstracts.isEmpty());
-			}
-		});
-
-		makeActions();
-		hookContextMenu();
-		contributeToActionBars();
-
-		actionReloadContracts(); // background initialization
-
-		/* Register as listener of the contract registry. */
-		EclipseContractRegistry.getInstance().addContractRegistryListener(this);
-
-		/* Register as listener of the ExporterRegistry. */
-		ExporterRegistry.INSTANCE.addExporterRegistryListener(this);
-	}
-
-	private void actShowContractSource() {
-
-		Contract contract = getSelectedContract();
-		if (contract != null) {
-			try {
-				URL url = contract.getLocation();
-				new ViewContractSourceDialog(new Shell(), url).open();
-			} catch (Exception x) {
-			}
-		}
-	}
-
-	/**
-	 * Print the verification exception stack trace.
-	 */
-	private void actionPrintStackTrace() {
-
-		Object obj = this.getSelectedObject();
-		if (obj != null
-				&& obj instanceof PropertySupport
-				&& ((PropertySupport) obj)
-						.getProperty(Constants.VERIFICATION_EXCEPTION) != null) {
-			Exception x =
-					(Exception) ((PropertySupport) obj)
-							.getProperty(Constants.VERIFICATION_EXCEPTION);
-			if (x != null) {
-				try {
-					new ViewExceptionStackTraceDialog(new Shell(), x).open();
-				} catch (Exception xx) {
-				}
-			}
-		}
-	}
-
-	private void reportVerificationResult(List<Contract> allContracts,
-			List<Contract> failedContracts) {
-
-		int c = allContracts.size();
-		int f = failedContracts.size();
-		String message = null;
-		if (failedContracts.size() == 0) {
-			message = "" + c + " contract instances have been verified successfully";
-		}
-		else {
-			message =
-					""
-							+ c
-							+ " contract instances checked, verification has failed for "
-							+ f
-							+ " contract instances. Verification status annotations have been added to the contract view.";
-		}
-		final String m = message;
-		Runnable r = new Runnable() {
-
-			public void run() {
-
-				MessageDialog.openInformation(myViewer.getControl().getShell(),
-						"Verification result", m);
-			}
-		};
-		myViewer.getControl().getDisplay().syncExec(r);
 	}
 }
