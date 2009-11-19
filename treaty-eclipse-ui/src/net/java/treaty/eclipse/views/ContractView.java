@@ -1574,8 +1574,18 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			this.createExportAction(exporter);
 
 			/* Update the menus. */
-			this.hookContextMenu();
-			this.contributeToActionBars();
+			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+
+				/*
+				 * (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				public void run() {
+
+					hookContextMenu();
+					contributeToActionBars();
+				}
+			});
 		}
 		// no else (action already exists).
 	}
@@ -1593,8 +1603,18 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			this.myActionsExport.remove(exporter);
 
 			/* Update the menus. */
-			this.hookContextMenu();
-			this.contributeToActionBars();
+			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+
+				/*
+				 * (non-Javadoc)
+				 * @see java.lang.Runnable#run()
+				 */
+				public void run() {
+
+					hookContextMenu();
+					contributeToActionBars();
+				}
+			});
 		}
 		// no else (action already removed).
 	}
@@ -2456,15 +2476,15 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	 * </p>
 	 */
 	private void updateTree() {
-	
+
 		Runnable r = new Runnable() {
-	
+
 			public void run() {
-	
+
 				myViewer.refresh(true);
 			}
 		};
-	
+
 		this.myViewer.getTree().getDisplay().asyncExec(r);
 	}
 
