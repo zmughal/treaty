@@ -167,7 +167,7 @@ public class SystemExampleTests {
 
 	/** The ID of the Eclipse Help System {@link Bundle}. */
 	private static final String BUNDLE_TREATY_SYSTEM_EXAMPLE =
-			"net.java.treaty.eclipse.system_internal";
+			"net.java.treaty.eclipse.system_selected";
 
 	/** The ID of the Treaty Eclipse UI {@link Bundle}. */
 	private static final String BUNDLE_TREATY_ECLIPSE_UI_ID =
