@@ -13,28 +13,19 @@ package net.java.treaty.eclipse.exporter.html;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
-import org.eclipse.core.runtime.IExtensionPoint;
-
 import net.java.treaty.AbstractCondition;
-import net.java.treaty.AbstractContractVisitor;
 import net.java.treaty.Annotatable;
 import net.java.treaty.Conjunction;
 import net.java.treaty.Connector;
@@ -53,6 +44,8 @@ import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseInstantiationContext;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.exporter.Exporter;
+
+import org.eclipse.core.runtime.IExtensionPoint;
 
 /**
  * <p>
@@ -74,9 +67,6 @@ public class HTMLExporter extends Exporter {
 	private enum Style {
 		PLAIN, TREE, TREE_FAILED, TREE_SUCCESS, CONSUMER, SUPPLIER
 	}
-
-	/** The treaty top-level domain. */
-	private static final String TREATY_NAMESPACE = "http://www.treaty.org/";
 
 	/** Used to count the exceptions. */
 	private int myExceptionCounter = 1;
@@ -581,80 +571,6 @@ public class HTMLExporter extends Exporter {
 		// no else.
 
 		return result;
-	}
-
-	/**
-	 * <p>
-	 * Converts a given {@link Resource} into a {@link String} representing the
-	 * {@link Resource}.
-	 * </p>
-	 * 
-	 * @param resource
-	 *          The {@link Resource} that shall be converted.
-	 * @return A {@link String} representing the {@link Resource}.
-	 */
-	private String getResourceAsString(Resource resource) {
-
-		StringBuffer buffer;
-		buffer = new StringBuffer();
-
-		if (resource.getRef() != null) {
-			buffer.append('?');
-			buffer.append(resource.getRef());
-		}
-
-		else if (resource.getName() != null) {
-			buffer.append(resource.getName());
-		}
-		// no else.
-
-		return buffer.toString();
-	}
-
-	/**
-	 * <p>
-	 * Returns the name of the given {@link Resource} or a default value, if the
-	 * name of the {@link Resource} is not set.
-	 * </p>
-	 * 
-	 * @param resource
-	 *          The {@link Resource} whose name shall be returned,
-	 * @return The name or a default value, if the name of the {@link Resource} is
-	 *         not set.
-	 */
-	private String getResourceName(Resource resource) {
-
-		if (resource.getRef() != null && resource.getName() != null) {
-			return resource.getName();
-		}
-
-		else {
-			return "?";
-		}
-		// end else.
-	}
-
-	/**
-	 * <p>
-	 * Returns the short name of a given vocabulary elements type (e.g. a Type or
-	 * a Relationship) by probably removing the top-level domain from the given
-	 * URI.
-	 * </p>
-	 * 
-	 * @param uri
-	 *          The URI (as a {@link String}) that shall be shortened.
-	 * @return A probably shorter form of the given URI (as a {@link String}).
-	 */
-	private String getShortNameOfVocabularyElement(String uri) {
-
-		if (uri.startsWith(TREATY_NAMESPACE)) {
-			return uri.substring(TREATY_NAMESPACE.length());
-		}
-
-		else {
-			return uri;
-		}
-		// end else.
 	}
 
 	/**
@@ -1534,287 +1450,5 @@ public class HTMLExporter extends Exporter {
 		// end for.
 
 		out.println("</tr>");
-	}
-
-	/**
-	 * TODO Claas: This method is not used. It should be removed probably.
-	 * 
-	 * <p>
-	 * Returns a {@link List} containing the atomic conditions of a given
-	 * {@link Contract} as {@link String}s.
-	 * </p>
-	 * 
-	 * @param contract
-	 *          The {@link Contract} whose atomic conditions shall be returned.
-	 * @return A {@link List} containing the atomic conditions of a given
-	 *         {@link Contract} as {@link String}s.
-	 */
-	private List<String> getAtomicConditions(Contract contract) {
-
-		final List<String> result;
-		result = new ArrayList<String>();
-
-		/* Use a visitor to create the result. */
-		ContractVisitor contractVisitor;
-		contractVisitor = new AbstractContractVisitor() {
-
-			/*
-			 * (non-Javadoc)
-			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
-			 * ExistsCondition)
-			 */
-			public boolean visit(ExistsCondition c) {
-
-				result.add("must exist: " + getResourceAsString(c.getResource()));
-
-				return true;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
-			 * PropertyCondition)
-			 */
-			public boolean visit(PropertyCondition propertyCondition) {
-
-				StringBuffer buffer;
-				buffer = new StringBuffer();
-
-				buffer.append(getResourceAsString(propertyCondition.getResource()));
-				buffer.append('.');
-				/*
-				 * FIXME Claas: probably this is wrong? Can PropertyConditions have
-				 * multiple properties?
-				 */
-				buffer.append(propertyCondition.getProperty(propertyCondition
-						.getPropertyNames().next()));
-				buffer.append(' ');
-				buffer.append(propertyCondition.getOperator());
-				buffer.append(propertyCondition.getValue());
-
-				result.add(buffer.toString());
-
-				return true;
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
-			 * RelationshipCondition)
-			 */
-			public boolean visit(RelationshipCondition c) {
-
-				StringBuffer buffer;
-				buffer = new StringBuffer();
-				buffer.append(getResourceAsString(c.getResource1()));
-				buffer.append(' ');
-				buffer.append(getShortNameOfVocabularyElement(c.getRelationship()
-						.toString()));
-				buffer.append(' ');
-				buffer.append(getResourceAsString(c.getResource2()));
-
-				result.add(buffer.toString());
-
-				return true;
-			}
-		};
-
-		contract.accept(contractVisitor);
-
-		return result;
-	}
-
-	/*
-	 * TODO Claas: This method is not used. It should be removed probably.
-	 */
-	private List<String> getExceptions(Contract contract) {
-
-		final List<String> exceptions = new ArrayList<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
-
-			@Override
-			public boolean visit(ExistsCondition c) {
-
-				doVisit(c);
-				return true;
-			}
-
-			@Override
-			public boolean visit(PropertyCondition c) {
-
-				doVisit(c);
-				return true;
-			}
-
-			@Override
-			public boolean visit(RelationshipCondition c) {
-
-				doVisit(c);
-				return true;
-			}
-
-			private void doVisit(AbstractCondition c) {
-
-				Exception x =
-						(Exception) c.getProperty(Constants.VERIFICATION_EXCEPTION);
-				if (x != null) {
-					StringWriter writer = new StringWriter();
-					x.printStackTrace(new PrintWriter(writer));
-					exceptions.add(writer.toString());
-				}
-			}
-		};
-		contract.accept(visitor);
-		return exceptions;
-	}
-
-	/*
-	 * TODO Claas: This method is not used. It should be removed probably.
-	 */
-	private List<String> getResults(Contract contract, final File folder) {
-
-		final List<String> list = new ArrayList<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
-
-			@Override
-			public boolean visit(ExistsCondition c) {
-
-				doVisit(c);
-				return true;
-			}
-
-			@Override
-			public boolean visit(PropertyCondition c) {
-
-				doVisit(c);
-				return true;
-			}
-
-			@Override
-			public boolean visit(RelationshipCondition c) {
-
-				doVisit(c);
-				return true;
-			}
-
-			private void doVisit(AbstractCondition c) {
-
-				list.add(getResult(c));
-			}
-
-			private String getResult(AbstractCondition c) {
-
-				VerificationResult r =
-						(VerificationResult) c.getProperty(Constants.VERIFICATION_RESULT);
-				Exception x =
-						(Exception) c.getProperty(Constants.VERIFICATION_EXCEPTION);
-				if (x != null) {
-					String fileName = "exception" + myExceptionCounter + ".txt";
-					File file = new File(folder.getAbsolutePath() + '/' + fileName);
-					myExceptionCounter = myExceptionCounter + 1;
-					Writer writer;
-					try {
-						writer = new FileWriter(file);
-						x.printStackTrace(new PrintWriter(writer));
-						writer.close();
-					} catch (IOException e) {
-						return "exceptions (cannot write details)";
-					}
-
-					return fileName;
-				}
-				else {
-					return r == null ? "null" : r.toString();
-				}
-			}
-		};
-		contract.accept(visitor);
-		return list;
-	}
-
-	/*
-	 * TODO Claas: This method is not used. It should be removed probably.
-	 */
-	private List<String> getVariableBindings(Contract contract) {
-
-		final List<String> list = new ArrayList<String>();
-		final Set<String> vars = new HashSet<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
-
-			@Override
-			public boolean visit(ExistsCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(PropertyCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(RelationshipCondition c) {
-
-				add(c.getResource1());
-				add(c.getResource2());
-				return true;
-			}
-
-			private void add(Resource r) {
-
-				if (r.getRef() != null && !vars.contains(r.getId())) {
-					list.add(getResourceName(r));
-					vars.add(r.getId());
-				}
-			}
-		};
-		contract.accept(visitor);
-		return list;
-	}
-
-	/*
-	 * TODO Claas: This method is not used. It should be removed probably.
-	 */
-	private List<String> getVariables(Contract contract) {
-
-		final List<String> list = new ArrayList<String>();
-		final Set<String> vars = new HashSet<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
-
-			@Override
-			public boolean visit(ExistsCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(PropertyCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(RelationshipCondition c) {
-
-				add(c.getResource1());
-				add(c.getResource2());
-				return true;
-			}
-
-			private void add(Resource r) {
-
-				if (r.getRef() != null && !vars.contains(r.getId())) {
-					list.add("variable " + getResourceAsString(r));
-					vars.add(r.getId());
-				}
-			}
-		};
-		contract.accept(visitor);
-		return list;
 	}
 }
