@@ -55,7 +55,7 @@ public class JUnitVocabulary extends ContractOntology implements
 	 * The {@link Resource} location of the ontology file of the
 	 * {@link OCLVocabulary}.
 	 */
-	private static final String RESOURCE_ONTOLOGY = "./vocabulary/junit.owl";
+	private static final String RESOURCE_ONTOLOGY = "vocabulary/junit.owl";
 
 	/** The {@link OntModel} belonging to the {@link OCLVocabulary}. */
 	private OntModel myOntology = null;
@@ -162,9 +162,11 @@ public class JUnitVocabulary extends ContractOntology implements
 
 		/* Probably load the ontology. */
 		if (this.myOntology == null) {
+			Bundle myBundle;
+			myBundle = Activator.getDefault().getBundle();
+
 			this.myOntology = ModelFactory.createOntologyModel();
-			this.myOntology.read(Activator.getDefault().getBundle().getResource(
-					RESOURCE_ONTOLOGY).toString());
+			this.myOntology.read(myBundle.getResource(RESOURCE_ONTOLOGY).toString());
 		}
 		// no else.
 
