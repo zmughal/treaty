@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +33,7 @@ import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.eclipse.Constants;
+import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.exporter.Exporter;
 
 import org.apache.velocity.Template;
@@ -49,159 +49,214 @@ import org.apache.velocity.app.VelocityEngine;
  */
 public class CSVExporter extends Exporter {
 
+	/** The treaty top-level domain. */
+	private static final String TREATY_NAMESPACE = "http://www.treaty.org/";
+
 	/** The location of the velocity template used for export. */
 	private static final String VELOCITY_TEMPLATE_LOCATION =
 			"net/java/treaty/eclipse/exporter/csv/csv.vm";
 
 	private int exceptionCounter = 1;
 
-	@Override
-	public String getName() {
-
-		return "export verification results to CSV (spreadsheet)";
-	}
-
-	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.exporter.Exporter#export(java.util.Collection,
+	 * java.io.File)
+	 */
 	public synchronized void export(Collection<Contract> contracts, File folder)
 			throws IOException {
 
 		try {
-			exceptionCounter = 1; // reset counter!
+			/* reset counter! */
+			exceptionCounter = 1;
 
-			// group contract instances by contract def
-			Map<String, List<ContractData>> contractsByXP =
-					new HashMap<String, List<ContractData>>();
-			Map<String, List<String>> atomicConditions =
-					new HashMap<String, List<String>>();
-			Map<String, List<String>> variableNames =
-					new HashMap<String, List<String>>();
+			Map<String, List<ContractData>> contractsByExtensionPoint;
+			contractsByExtensionPoint = new HashMap<String, List<ContractData>>();
 
-			for (Contract c : contracts) {
-				String xpId =
-						c.getConsumer() == null ? "anonymous_xp" : c.getConsumer().getId();
-				List<ContractData> instances = contractsByXP.get(xpId);
-				if (instances == null) {
-					instances = new ArrayList<ContractData>();
-					contractsByXP.put(xpId, instances);
-					atomicConditions.put(xpId, this.getAtomicConditions(c));
-					variableNames.put(xpId, this.getVariables(c));
+			Map<String, List<String>> atomicConditions;
+			atomicConditions = new HashMap<String, List<String>>();
+
+			Map<String, List<String>> variableNames;
+			variableNames = new HashMap<String, List<String>>();
+
+			/* Group contract instances by contract definition. */
+			for (Contract contract : contracts) {
+
+				String extensionPointId;
+				extensionPointId =
+						contract.getConsumer() == null ? "anonymous_xp" : contract
+								.getConsumer().getId();
+
+				List<ContractData> contractInstances;
+				contractInstances = contractsByExtensionPoint.get(extensionPointId);
+
+				if (contractInstances == null) {
+
+					contractInstances = new ArrayList<ContractData>();
+					contractsByExtensionPoint.put(extensionPointId, contractInstances);
+					atomicConditions.put(extensionPointId, this
+							.getAtomicConditions(contract));
+					variableNames.put(extensionPointId, this.getVariables(contract));
 				}
-				Contract[] parts = null;
-				parts = new Contract[] { c };
-				// gather data and build contract data
-				for (int i = 0; i < parts.length; i++) {
-					Contract p = parts[i];
-					ContractData d = new ContractData();
-					d.xp = xpId;
-					d.pluginId = c.getSupplier().getOwner().getId();
-					d.extensionPointId =
-							c.getSupplier().getId() == null ? "anonymous" : c.getSupplier()
-									.getId();
-					String result = VerificationResult.UNKNOWN.toString();
-					VerificationResult vr =
-							(VerificationResult) p.getProperty(Constants.VERIFICATION_RESULT);
-					if (vr != null) {
-						result = vr.toString();
+				// no else.
+
+				Contract[] parts;
+				parts = new Contract[] { contract };
+
+				/* Gather data and build contract data. */
+				for (int index = 0; index < parts.length; index++) {
+
+					Contract part;
+					part = parts[index];
+
+					ContractData contractData;
+					contractData = new ContractData();
+
+					contractData.extensionPointName = extensionPointId;
+					contractData.pluginId = contract.getSupplier().getOwner().getId();
+					contractData.extensionPointId =
+							contract.getSupplier().getId() == null ? "anonymous" : contract
+									.getSupplier().getId();
+
+					String result;
+					result = VerificationResult.UNKNOWN.toString();
+
+					VerificationResult verificationResult;
+					verificationResult =
+							(VerificationResult) part
+									.getProperty(Constants.VERIFICATION_RESULT);
+
+					if (verificationResult != null) {
+						result = verificationResult.toString();
 					}
-					d.result = result;
-					d.conditionResults = this.getResults(p, folder);
-					d.bindings = this.getVariableBindings(p);
-					d.partNo = i + 1;
-					instances.add(d);
+					// no else.
+
+					contractData.verificationResult = result;
+					contractData.conditionResults = this.getResults(part, folder);
+					contractData.bindings = this.getVariableBindings(part);
+					contractData.partNo = index + 1;
+
+					contractInstances.add(contractData);
 				}
+				// end for (iteration on contract parts).
 			}
-			// load template
-			VelocityEngine ve = new VelocityEngine();
-			ve.setProperty("resource.loader", "class");
-			ve
+			// end for (iteration on contracts).
+
+			/* Load template. */
+			VelocityEngine velocityEngine;
+
+			velocityEngine = new VelocityEngine();
+			velocityEngine.setProperty("resource.loader", "class");
+			velocityEngine
 					.setProperty("class.resource.loader.class",
 							"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-			ve.init();
-			Template template = ve.getTemplate(VELOCITY_TEMPLATE_LOCATION);
+			velocityEngine.init();
 
-			// bind variables for each xp
-			for (String xpId : contractsByXP.keySet()) {
-				List<ContractData> instances = contractsByXP.get(xpId);
-				VelocityContext context = new VelocityContext();
-				context.put("contracts", instances);
-				context.put("conditions", atomicConditions.get(xpId));
-				context.put("variables", variableNames.get(xpId));
-				File file = new File(folder.getAbsolutePath() + '/' + xpId + ".csv");
-				Writer writer = new FileWriter(file);
-				template.merge(context, writer);
+			Template template;
+			template = velocityEngine.getTemplate(VELOCITY_TEMPLATE_LOCATION);
+
+			/* Bind variables for each extension point. */
+			for (String extensionPointId : contractsByExtensionPoint.keySet()) {
+				List<ContractData> contractInstances;
+				contractInstances = contractsByExtensionPoint.get(extensionPointId);
+
+				VelocityContext velocityContext;
+				velocityContext = new VelocityContext();
+
+				velocityContext.put("contracts", contractInstances);
+				velocityContext.put("conditions", atomicConditions
+						.get(extensionPointId));
+				velocityContext.put("variables", variableNames.get(extensionPointId));
+
+				File file;
+				file =
+						new File(folder.getAbsolutePath() + '/' + extensionPointId + ".csv");
+
+				Writer writer;
+				writer = new FileWriter(file);
+
+				template.merge(velocityContext, writer);
+
 				writer.close();
 			}
-
-		} catch (Exception x) {
-			net.java.treaty.eclipse.Logger.error("Error exporting", x);
+			// end for (iteration on extension point IDs).
 		}
+		// end try.
+
+		catch (Exception e) {
+			String msg;
+			msg = "Error during exporting Contracts to CSV.";
+
+			net.java.treaty.eclipse.Logger.error(msg, e);
+
+			throw new IOException(msg, e);
+		}
+		// end catch.
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.exporter.Exporter#exportToFolder()
+	 */
 	public boolean exportToFolder() {
 
 		return true;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.exporter.Exporter#getFilterExtensions()
+	 */
 	public String[] getFilterExtensions() {
 
 		return new String[] {};
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.exporter.Exporter#getFilterNames()
+	 */
 	public String[] getFilterNames() {
 
 		return new String[] {};
 	}
 
-	private List<String> getExceptions(Contract contract) {
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.exporter.Exporter#getName()
+	 */
+	public String getName() {
 
-		final List<String> exceptions = new ArrayList<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
-
-			@Override
-			public boolean visit(ExistsCondition c) {
-
-				doVisit(c);
-				return true;
-			}
-
-			@Override
-			public boolean visit(PropertyCondition c) {
-
-				doVisit(c);
-				return true;
-			}
-
-			@Override
-			public boolean visit(RelationshipCondition c) {
-
-				doVisit(c);
-				return true;
-			}
-
-			private void doVisit(AbstractCondition c) {
-
-				Exception x =
-						(Exception) c.getProperty(Constants.VERIFICATION_EXCEPTION);
-				if (x != null) {
-					StringWriter writer = new StringWriter();
-					x.printStackTrace(new PrintWriter(writer));
-					exceptions.add(writer.toString());
-				}
-			}
-		};
-		contract.accept(visitor);
-		return exceptions;
+		return "Export verification results to CSV (spreadsheet)";
 	}
 
+	/**
+	 * <p>
+	 * Collects all atomic Conditions of a given {@link Contract}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose atomic conditions shall be returned.
+	 * @return The atomive conditions as a {@link List} of {@link String}s.
+	 */
 	private List<String> getAtomicConditions(Contract contract) {
 
-		final List<String> list = new ArrayList<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
+		final List<String> result;
+		result = new ArrayList<String>();
 
-			@Override
+		ContractVisitor visitor;
+		visitor = new AbstractContractVisitor() {
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * ExistsCondition)
+			 */
 			public boolean visit(ExistsCondition c) {
 
-				list.add("must exist: " + print(c.getResource()));
+				result.add("must exist: " + getResourceAsString(c.getResource()));
+
+				/* Visit children. */
 				return true;
 			}
 
@@ -215,7 +270,7 @@ public class CSVExporter extends Exporter {
 				StringBuffer buffer;
 				buffer = new StringBuffer();
 
-				buffer.append(print(propertyCondition.getResource()));
+				buffer.append(getResourceAsString(propertyCondition.getResource()));
 				buffer.append('.');
 				/*
 				 * FIXME Claas: is this okay or can property conditions have multiple
@@ -227,202 +282,413 @@ public class CSVExporter extends Exporter {
 				buffer.append(propertyCondition.getOperator());
 				buffer.append(propertyCondition.getValue());
 
-				list.add(buffer.toString());
+				result.add(buffer.toString());
 
+				/* Visit children. */
 				return true;
 			}
 
-			@Override
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * RelationshipCondition)
+			 */
 			public boolean visit(RelationshipCondition c) {
 
-				StringBuffer b = new StringBuffer();
-				b.append(print(c.getResource1()));
-				b.append(' ');
-				b.append(printShort(c.getRelationship().toString()));
-				b.append(' ');
-				b.append(print(c.getResource2()));
-				list.add(b.toString());
+				StringBuffer buffer;
+
+				buffer = new StringBuffer();
+				buffer.append(getResourceAsString(c.getResource1()));
+				buffer.append(' ');
+				buffer.append(getShortNameOfVocabularyElement(c.getRelationship()
+						.toString()));
+				buffer.append(' ');
+				buffer.append(getResourceAsString(c.getResource2()));
+
+				result.add(buffer.toString());
+
+				/* Visit children. */
 				return true;
 			}
 		};
+
 		contract.accept(visitor);
-		return list;
+
+		return result;
 	}
 
-	private List<String> getVariables(Contract contract) {
+	/**
+	 * <p>
+	 * Converts a given {@link Resource} into a {@link String} representing the
+	 * {@link Resource}.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} that shall be converted.
+	 * @return A {@link String} representing the {@link Resource}.
+	 */
+	private String getResourceAsString(Resource resource) {
 
-		final List<String> list = new ArrayList<String>();
-		final Set<String> vars = new HashSet<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
+		StringBuffer buffer;
+		buffer = new StringBuffer();
 
-			@Override
-			public boolean visit(ExistsCondition c) {
+		if (resource.getRef() != null) {
+			buffer.append('?');
+			buffer.append(resource.getRef());
+		}
 
-				add(c.getResource());
-				return true;
-			}
+		else if (resource.getName() != null) {
+			buffer.append(resource.getName());
+		}
+		// no else.
 
-			@Override
-			public boolean visit(PropertyCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(RelationshipCondition c) {
-
-				add(c.getResource1());
-				add(c.getResource2());
-				return true;
-			}
-
-			private void add(Resource r) {
-
-				if (r.getRef() != null && !vars.contains(r.getId())) {
-					list.add("variable " + print(r));
-					vars.add(r.getId());
-				}
-			}
-		};
-		contract.accept(visitor);
-		return list;
+		return buffer.toString();
 	}
 
-	private List<String> getVariableBindings(Contract contract) {
+	/**
+	 * <p>
+	 * Returns the name of the given {@link Resource} or a default value, if the
+	 * name of the {@link Resource} is not set.
+	 * </p>
+	 * 
+	 * @param resource
+	 *          The {@link Resource} whose name shall be returned,
+	 * @return The name or a default value, if the name of the {@link Resource} is
+	 *         not set.
+	 */
+	private String getResourceName(Resource resource) {
 
-		final List<String> list = new ArrayList<String>();
-		final Set<String> vars = new HashSet<String>();
-		ContractVisitor visitor = new AbstractContractVisitor() {
+		if (resource.getRef() != null && resource.getName() != null) {
+			return resource.getName();
+		}
 
-			@Override
-			public boolean visit(ExistsCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(PropertyCondition c) {
-
-				add(c.getResource());
-				return true;
-			}
-
-			@Override
-			public boolean visit(RelationshipCondition c) {
-
-				add(c.getResource1());
-				add(c.getResource2());
-				return true;
-			}
-
-			private void add(Resource r) {
-
-				if (r.getRef() != null && !vars.contains(r.getId())) {
-					list.add(print2(r));
-					vars.add(r.getId());
-				}
-			}
-		};
-		contract.accept(visitor);
-		return list;
+		else {
+			return "?";
+		}
+		// end else.
 	}
 
+	/**
+	 * <p>
+	 * Returns the short name of a given vocabulary elements type (e.g. a Type or
+	 * a Relationship) by probably removing the top-level domain from the given
+	 * URI.
+	 * </p>
+	 * 
+	 * @param uri
+	 *          The URI (as a {@link String}) that shall be shortened.
+	 * @return A probably shorter form of the given URI (as a {@link String}).
+	 */
+	private String getShortNameOfVocabularyElement(String uri) {
+
+		if (uri.startsWith(TREATY_NAMESPACE)) {
+			return uri.substring(TREATY_NAMESPACE.length());
+		}
+
+		else {
+			return uri;
+		}
+		// end else.
+	}
+
+	/**
+	 * <p>
+	 * Creates result files for the {@link AbstractCondition}s of a given
+	 * {@link Contract} and returns a {@link List} containing the file names.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose {@link AbstractCondition}s shall be
+	 *          visited.
+	 * @param folder
+	 *          The folder into that the results shall be saved.
+	 * @return A {@link List} containing the file names.
+	 */
 	private List<String> getResults(Contract contract, final File folder) {
 
 		final List<String> list = new ArrayList<String>();
 		ContractVisitor visitor = new AbstractContractVisitor() {
 
-			@Override
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * ExistsCondition)
+			 */
 			public boolean visit(ExistsCondition c) {
 
-				doVisit(c);
+				this.doVisit(c);
+
+				/* Visit children. */
 				return true;
 			}
 
-			@Override
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * PropertyCondition)
+			 */
 			public boolean visit(PropertyCondition c) {
 
-				doVisit(c);
+				this.doVisit(c);
+
+				/* Visit children. */
 				return true;
 			}
 
-			@Override
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * RelationshipCondition)
+			 */
 			public boolean visit(RelationshipCondition c) {
 
-				doVisit(c);
+				this.doVisit(c);
+
+				/* Visit children. */
 				return true;
 			}
 
-			private void doVisit(AbstractCondition c) {
+			/**
+			 * <p>
+			 * Visits an AbstractCondition.
+			 * </p>
+			 * 
+			 * @param condition
+			 *          The AbstractCondition that shall be visited.
+			 */
+			private void doVisit(AbstractCondition condition) {
 
-				list.add(getResult(c));
+				list.add(this.getResult(condition));
 			}
 
-			private String getResult(AbstractCondition c) {
+			/**
+			 * <p>
+			 * Create a result file for the AbstractCondition and returns the name of
+			 * this file.
+			 * </p>
+			 * 
+			 * @param condition
+			 *          The AbstractCondition that shall be visited.
+			 * @return The name of the file containing the result.
+			 */
+			private String getResult(AbstractCondition condition) {
 
-				VerificationResult r =
-						(VerificationResult) c.getProperty(Constants.VERIFICATION_RESULT);
-				Exception x =
-						(Exception) c.getProperty(Constants.VERIFICATION_EXCEPTION);
-				if (x != null) {
-					String fileName = "exception" + exceptionCounter + ".txt";
-					File file = new File(folder.getAbsolutePath() + '/' + fileName);
+				VerificationResult verificationResult;
+				verificationResult =
+						(VerificationResult) condition
+								.getProperty(Constants.VERIFICATION_RESULT);
+
+				Exception exception =
+						(Exception) condition.getProperty(Constants.VERIFICATION_EXCEPTION);
+
+				if (exception != null) {
+
+					String fileName;
+					fileName = "exception" + exceptionCounter + ".txt";
+
+					File file;
+					file = new File(folder.getAbsolutePath() + '/' + fileName);
+
 					exceptionCounter = exceptionCounter + 1;
+
 					Writer writer;
+
 					try {
 						writer = new FileWriter(file);
-						x.printStackTrace(new PrintWriter(writer));
+						exception.printStackTrace(new PrintWriter(writer));
 						writer.close();
-					} catch (IOException e) {
+					}
+					// end try.
+
+					catch (IOException e) {
+						Logger.error("Error during creation of result file.", e);
+
 						return "exceptions (cannot write details)";
 					}
+					// end catch.
 
 					return fileName;
 				}
+
 				else {
-					return r == null ? "null" : r.toString();
+					return verificationResult == null ? "null" : verificationResult
+							.toString();
 				}
+				// end else.
 			}
 		};
+
 		contract.accept(visitor);
+
 		return list;
 	}
 
-	private String printShort(String s) {
+	/**
+	 * <p>
+	 * Collects all variable bindings for a given {@link Contract}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose variable bindings shall be returned.
+	 * @return The bound variables as a {@link List} of {@link String}s.
+	 */
+	private List<String> getVariableBindings(Contract contract) {
 
-		String NAMESPACE = "http://www.treaty.org/";
-		if (s.startsWith(NAMESPACE))
-			return s.substring(NAMESPACE.length());
-		else
-			return s;
+		final List<String> result;
+		result = new ArrayList<String>();
+
+		final Set<String> variables;
+		variables = new HashSet<String>();
+
+		ContractVisitor visitor;
+		visitor = new AbstractContractVisitor() {
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * ExistsCondition)
+			 */
+			public boolean visit(ExistsCondition c) {
+
+				this.add(c.getResource());
+
+				/* Visit children. */
+				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * PropertyCondition)
+			 */
+			public boolean visit(PropertyCondition c) {
+
+				this.add(c.getResource());
+
+				/* Visit children. */
+				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * RelationshipCondition)
+			 */
+			public boolean visit(RelationshipCondition c) {
+
+				this.add(c.getResource1());
+				this.add(c.getResource2());
+
+				/* Visit children. */
+				return true;
+			}
+
+			/**
+			 * <p>
+			 * Probably adds a given Resource to the result.
+			 * </p>
+			 * 
+			 * @param resource
+			 *          The Resource that shall be added.
+			 */
+			private void add(Resource resource) {
+
+				/* Avoid duplicates and only add bound variables. */
+				if (resource.getRef() != null && !variables.contains(resource.getId())) {
+					result.add(getResourceName(resource));
+					variables.add(resource.getId());
+				}
+				// no else.
+			}
+		};
+
+		contract.accept(visitor);
+
+		return result;
 	}
 
-	private String print(Resource r) {
+	/**
+	 * <p>
+	 * Collects all variables of a given {@link Contract}.
+	 * </p>
+	 * 
+	 * @param contract
+	 *          The {@link Contract} whose variables shall be collected.
+	 * @return The variables as a {@link List} of {@link String}s.
+	 */
+	private List<String> getVariables(Contract contract) {
 
-		StringBuffer b = new StringBuffer();
-		if (r.getRef() != null) {
-			b.append('?');
-			b.append(r.getRef());
-		}
-		else if (r.getName() != null) {
-			b.append(r.getName());
-		}
-		/*
-		 * b.append('['); b.append(printShort(r.getType().toString()));
-		 * b.append(']');
-		 */
-		return b.toString();
-	}
+		final List<String> result;
+		result = new ArrayList<String>();
 
-	private String print2(Resource r) {
+		final Set<String> variables;
+		variables = new HashSet<String>();
 
-		if (r.getRef() != null && r.getName() != null) {
-			return r.getName();
-		}
-		else {
-			return "?";
-		}
+		ContractVisitor visitor;
+		visitor = new AbstractContractVisitor() {
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * ExistsCondition)
+			 */
+			public boolean visit(ExistsCondition c) {
+
+				this.add(c.getResource());
+
+				/* Visit children. */
+				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * PropertyCondition)
+			 */
+			public boolean visit(PropertyCondition c) {
+
+				this.add(c.getResource());
+
+				/* Visit children. */
+				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.AbstractContractVisitor#visit(net.java.treaty.
+			 * RelationshipCondition)
+			 */
+			public boolean visit(RelationshipCondition c) {
+
+				this.add(c.getResource1());
+				this.add(c.getResource2());
+
+				/* Visit children. */
+				return true;
+			}
+
+			/**
+			 * <p>
+			 * Adds a given Resource to the result.
+			 * </p>
+			 * 
+			 * @param resource
+			 *          The Resource that shall be added.
+			 */
+			private void add(Resource resource) {
+
+				/* Avoid duplicates. */
+				if (resource.getRef() != null && !variables.contains(resource.getId())) {
+
+					result.add("variable " + getResourceAsString(resource));
+					variables.add(resource.getId());
+				}
+				// no else.
+			}
+		};
+
+		contract.accept(visitor);
+
+		return result;
 	}
 }

@@ -13,49 +13,154 @@ package net.java.treaty.eclipse.exporter.csv;
 import java.util.List;
 
 /**
+ * <p>
  * Utility class to hold contract data.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public class ContractData {
-	
-	public String xp = null;
-	public String getExtensionPointId() {
-		return extensionPointId;
-	}
-	public String getPluginId() {
-		return pluginId;
-	}
-	public String extensionPointId = null;
-	public String pluginId = null; // owner of the extension point
-	public boolean isAggregated = false;
-	public String result = null;
-	public String exception = null;
-	public List<String> conditionResults = null;
+
+	/** The bindings of this contract. */
 	public List<String> bindings = null;
-	public int partNo = 1; // this is used when the contract is part of an aggregated contract 
-	
-	public int getPartNo() {
-		return partNo;
-	}
+
+	/** The condition results of this contract. */
+	public List<String> conditionResults = null;
+
+	/** The verification exception if any. */
+	public String exception = null;
+
+	/** The name of the contracted extension point. */
+	public String extensionPointName = null;
+
+	/** The ID of the contracted extension point. */
+	public String extensionPointId = null;
+
+	/**
+	 * TODO Claas: Contracts cannot be aggregated anymore.
+	 * 
+	 * Indicates whether or not the contract is aggregated.
+	 */
+	public boolean isAggregated = false;
+
+	/**
+	 * TODO Claas: Contracts cannot be aggregated anymore.
+	 * 
+	 * The part number if this part belongs to an aggregated contract.
+	 */
+	public int partNo = 1;
+
+	/** The ID of the contracted plug-in. */
+	public String pluginId = null;
+
+	/** The verification result of the Contract. */
+	public String verificationResult = null;
+
+	/**
+	 * <p>
+	 * Returns the bindings of this contract.
+	 * </p>
+	 * 
+	 * @return The bindings of this contract.
+	 */
 	public List<String> getBindings() {
+
 		return bindings;
 	}
+
+	/**
+	 * <p>
+	 * The condition results of this contract.
+	 * </p>
+	 * 
+	 * @return The condition results of this contract.
+	 */
 	public List<String> getConditionResults() {
-		return conditionResults;
+
+		return this.conditionResults;
 	}
+
+	/**
+	 * <p>
+	 * Returns the verification exception if any.
+	 * </p>
+	 * 
+	 * @return The verification exception if any.
+	 */
 	public String getException() {
-		return exception;
-	}
-	public String getResult() {
-		return result;
-	}
-	public String getXp() {
-		return xp;
+
+		return this.exception;
 	}
 
+	/**
+	 * <p>
+	 * Returns the ID of the contracted extension point.
+	 * </p>
+	 * 
+	 * @return The ID of the contracted extension point.
+	 */
+	public String getExtensionPointId() {
+
+		return this.extensionPointId;
+	}
+
+	/**
+	 * <p>
+	 * Returns the name of the contracted extension point.
+	 * </p>
+	 * 
+	 * @return The name of the contracted extension point.
+	 */
+	public String getExtensionPointName() {
+
+		return this.extensionPointName;
+	}
+
+	/**
+	 * <p>
+	 * Returns the part number if this part belongs to an aggregated contract.
+	 * </p>
+	 * 
+	 * @return The part number if this part belongs to an aggregated contract.
+	 */
+	public int getPartNo() {
+
+		return this.partNo;
+	}
+
+	/**
+	 * <p>
+	 * Returns the ID of the contracted plug-in.
+	 * </p>
+	 * 
+	 * @return The ID of the contracted plug-in.
+	 */
+	public String getPluginId() {
+
+		return this.pluginId;
+	}
+
+	/**
+	 * <p>
+	 * Returns the verification result of the Contract.
+	 * </p>
+	 * 
+	 * @return The verification result of the Contract.
+	 */
+	public String getVerificationResult() {
+
+		return this.verificationResult;
+	}
+
+	/**
+	 * <p>
+	 * Indicates whether or not the contract is aggregated.
+	 * </p>
+	 * 
+	 * @return Whether or not the contract is aggregated.
+	 */
 	public boolean isAggregated() {
-		return isAggregated;
-	}
 
+		return this.isAggregated;
+	}
 }
