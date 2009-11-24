@@ -18,6 +18,7 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -49,7 +50,7 @@ public class ContractViewTester extends JFrame {
 	private JPanel mainPane = new JPanel(new BorderLayout(2,2));
 	private JPanel toolbar = new JPanel(new GridLayout(2,3));
 	private JPanel toolbar2 = new JPanel(new BorderLayout());
-	private ContractView viewer = new ContractView();
+	private ContractView viewer = new CustomContractView();
 	
 	interface Command<T> {
 		void apply(T value);
@@ -129,7 +130,11 @@ public class ContractViewTester extends JFrame {
 		
 		// combo box to load contracts
 		File dataFolder = new File("testdata");
-		final File[] files = dataFolder.listFiles();
+		final File[] files = dataFolder.listFiles(new FileFilter(){
+			@Override
+			public boolean accept(File f) {
+				return !f.isDirectory() && f.getAbsolutePath().endsWith(".contract");
+			}});
 		Arrays.sort(files);
 		final JComboBox cbx = new JComboBox(files);
 		this.toolbar2.add(new JLabel("contracts:"),BorderLayout.WEST);
