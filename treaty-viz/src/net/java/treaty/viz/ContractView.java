@@ -132,6 +132,9 @@ public class ContractView extends JPanel {
 		public String toString() {
 			return "[" + type + "]";
 		}
+		public boolean isBinary() {
+			return type!=CompositionNodeType.NOT;
+		}
 	}
 	class ConditionNode extends Node {}
 	class RelationshipConditionNode extends ConditionNode {
@@ -378,7 +381,34 @@ public class ContractView extends JPanel {
 			compact(consumerNode);
 			compact(supplierNode);
 		}
+		boolean removeBinConnectivesWithOneChild = true;
+		/*
+		if (removeBinConnectivesWithOneChild) {
+			while (removeBinConnectivesWithOneChild()) {}
+		}
+		*/
 	}
+	/*
+	private boolean removeBinConnectivesWithOneChild() {
+		for (Node n:graph.getVertices()) {
+			if (n instanceof CompositionNode) {
+				CompositionNode c = (CompositionNode)n;
+				if (c.isBinary() && graph.getSuccessorCount(c)==1) {
+					Node child = graph.getSuccessors(n).iterator().next();
+					for (Node n2:graph.getSuccessors(child)) {
+						for (Node n3:graph.getPredecessors(n)) {
+							graph.addEdge(new Edge(),n3,n2); // rewire
+						}							
+					}
+					System.out.println("removing " + n);
+					graph.removeVertex(n);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	*/
 
 	private void compact(Node parent) {
 		Collection<Node> nodes1 = graph.getSuccessors(parent);
@@ -518,9 +548,6 @@ public class ContractView extends JPanel {
 		context.setVertexLabelTransformer(new Transformer<Object, String>() {
 			@Override
 			public String transform(Object v) {
-
-				// return null;
-
 				if (v instanceof CompositionNode) {
 					CompositionNode c = (CompositionNode)v;
 					return asHTMLLabel(c.type.toString(),3);
@@ -586,39 +613,20 @@ public class ContractView extends JPanel {
 			public Icon transform(Object v) {
 				if (v instanceof CompositionNode) {
 					CompositionNode n = (CompositionNode) v;
-					switch (n.type) {
-					case AND:
-						return loadIcon("and.png");
-					case OR:
-						return loadIcon("or.png");
-					case XOR:
-						return loadIcon("xor.png");
-					case NOT:
-						return loadIcon("not.png");
-					default:
-						return null;
-					}
+					return getIcon(n.type);
 				} else if (v instanceof EndNode) {
 					EndNode en = (EndNode) v;
-					switch (en.type) {
-					case CONSUMER:
-						return loadIcon("consumer.png");
-					case SUPPLIER:
-						return loadIcon("provider.png");
-					}
+					return getIcon(en.connector,en.type);
 				} else if (v instanceof ResourceNode) {
 					ResourceNode en = (ResourceNode) v;
-					if (en.isVirtual())
-						return null;
-					Resource r = en.resource;
-					return loadIcon(r.getName() == null ? "constant.png"
-							: "variable.png");
+					if (en.isVirtual()) return null;
+					return getIcon(en.resource);
 				} else if (v instanceof RelationshipConditionNode) {
-					return loadIcon("relationship.png");
+					return getIcon(((RelationshipConditionNode)v).condition);
 				} else if (v instanceof PropertyConditionNode) {
-					return loadIcon("property.png");
+					return getIcon(((PropertyConditionNode)v).condition);
 				} else if (v instanceof ExistsConditionNode) {
-					return loadIcon("exists.png");
+					return getIcon(((ExistsConditionNode)v).condition);
 				}
 				return null;
 			}
@@ -709,8 +717,7 @@ public class ContractView extends JPanel {
 					getMaxPath2Resource(consumerNode) + 1);
 		}
 
-		private void addLayer(Map<Node, Point> coordinates,
-				Collection<Node> nodes, int col) {
+		private void addLayer(Map<Node, Point> coordinates,Collection<Node> nodes, int col) {
 			int i = -1;
 			for (Node vertex : nodes) {
 				i = i + 1;
@@ -732,8 +739,10 @@ public class ContractView extends JPanel {
 					int predCount = 0;
 					int predSum = 0;
 					for (Node n2 : graph.getSuccessors(n)) {
-						if (nodes.contains(n2)) {
-							predSum = predSum + coordinates.get(n2).y;
+						// if (nodes.contains(n2)) {
+						Point p = coordinates.get(n2);
+						if (p!=null && !isVirtualNode(n2)) {
+							predSum = predSum + p.y;
 							predCount = predCount + 1;
 						}
 					}
@@ -815,6 +824,38 @@ public class ContractView extends JPanel {
 		properties.put("value type",r.getValue()==null?"null":r.getValue().getClass());
 		return this.asHTMLTable(properties);
 	}
+	
+	protected Icon getIcon(Resource r) {
+		return loadIcon(r.getName()==null?"constant.png":"variable.png");
+	}
+
+	protected Icon getIcon(CompositionNodeType r) {
+		switch (r) {
+			case AND:return loadIcon("and.png");
+			case OR:return loadIcon("or.png");
+			case XOR:return loadIcon("xor.png");
+			case NOT:return loadIcon("not.png");
+			default:return null;
+		}
+	}
+	protected Icon getIcon(Connector c,EndNodeType t) {
+		switch (t) {
+			case CONSUMER:return loadIcon("consumer.png");
+			case SUPPLIER:return loadIcon("provider.png");
+			default:return null;
+		}
+	}
+	protected Icon getIcon(RelationshipCondition r) {
+		return loadIcon("relationship.png");
+	}
+	protected Icon getIcon(ExistsCondition r) {
+		return loadIcon("exists.png");
+	}
+	protected Icon getIcon(PropertyCondition r) {
+		return loadIcon("property.png");
+	}
+	
+	
 	private String asHTMLTable(Map<String,Object> values) {
 		StringBuffer b = new StringBuffer();
 		b.append("<html><table>\n");
@@ -849,8 +890,7 @@ public class ContractView extends JPanel {
 	}
 
 	private boolean isVirtualEdge(Edge edge) {
-		return isVirtualNode(graph.getSource(edge))
-				|| isVirtualNode(graph.getDest(edge));
+		return isVirtualNode(graph.getSource(edge))	|| isVirtualNode(graph.getDest(edge));
 	}
 	
 	private Icon loadIcon(String name) {
