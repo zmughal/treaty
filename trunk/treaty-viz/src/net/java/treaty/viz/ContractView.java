@@ -28,6 +28,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
+
+import org.apache.commons.collections15.CollectionUtils;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
@@ -84,6 +86,17 @@ public class ContractView extends JPanel {
 	}
 
 	private boolean mergeEqualNodes = false;
+	private boolean removeBinConnectivesWithOneChild = true;
+
+	public boolean isRemoveBinConnectivesWithOneChild() {
+		return removeBinConnectivesWithOneChild;
+	}
+
+	public void setRemoveBinConnectivesWithOneChild(boolean removeBinConnectivesWithOneChild) {
+		this.removeBinConnectivesWithOneChild = removeBinConnectivesWithOneChild;
+		this.buildGraph();
+		this.updateGraphView();
+	}
 
 	public boolean isMergeEqualNodes() {
 		return mergeEqualNodes;
@@ -381,25 +394,28 @@ public class ContractView extends JPanel {
 			compact(consumerNode);
 			compact(supplierNode);
 		}
-		boolean removeBinConnectivesWithOneChild = true;
-		/*
+		
 		if (removeBinConnectivesWithOneChild) {
 			while (removeBinConnectivesWithOneChild()) {}
 		}
-		*/
+		
 	}
-	/*
+	
 	private boolean removeBinConnectivesWithOneChild() {
 		for (Node n:graph.getVertices()) {
-			if (n instanceof CompositionNode) {
+			if (n instanceof CompositionNode && ((CompositionNode)n).isBinary()) {
 				CompositionNode c = (CompositionNode)n;
-				if (c.isBinary() && graph.getSuccessorCount(c)==1) {
-					Node child = graph.getSuccessors(n).iterator().next();
-					for (Node n2:graph.getSuccessors(child)) {
-						for (Node n3:graph.getPredecessors(n)) {
-							graph.addEdge(new Edge(),n3,n2); // rewire
-						}							
-					}
+				Collection<Node> visibleSuccessors = new ArrayList<Node>();
+				for (Node next:graph.getSuccessors(c)) {
+					if (!isVirtualNode(next)) visibleSuccessors.add(next);
+				}
+				if (visibleSuccessors.size()==1) {
+					Node child = visibleSuccessors.iterator().next();
+					for (Node n3:graph.getPredecessors(n)) {
+						graph.addEdge(new Edge(),n3,child); // rewire
+						System.out.println("rewiring " + n3 + " -> " + child);
+					}							
+					
 					System.out.println("removing " + n);
 					graph.removeVertex(n);
 					return true;
@@ -408,7 +424,7 @@ public class ContractView extends JPanel {
 		}
 		return false;
 	}
-	*/
+	
 
 	private void compact(Node parent) {
 		Collection<Node> nodes1 = graph.getSuccessors(parent);

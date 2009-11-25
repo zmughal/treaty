@@ -109,6 +109,15 @@ public class ContractViewTester extends JFrame {
 					}
 				} 
 		);
+		addBooleanProperty(
+				"remove reduntant connectives",viewer.isRemoveBinConnectivesWithOneChild(),
+				new Command<Boolean>() {
+					@Override
+					public void apply(Boolean b) {
+						viewer.setRemoveBinConnectivesWithOneChild(b);
+					}
+				} 
+		);
 		addIntProperty(
 				"left offset",viewer.getLeftOffset(),0,200,
 				new Command<Integer>() {
@@ -163,10 +172,10 @@ public class ContractViewTester extends JFrame {
 	}
 
 	private void addBooleanProperty(String string, boolean b,final Command<Boolean> command) {
-		JPanel pane = new JPanel(new BorderLayout());
-		pane.add(new JLabel(string),BorderLayout.WEST);
+		JPanel pane = new JPanel(new BorderLayout(5,5));
+		pane.add(new JLabel(string+":",JLabel.RIGHT),BorderLayout.CENTER);
 		final JCheckBox chkBox = new JCheckBox();
-		pane.add(chkBox,BorderLayout.CENTER);
+		pane.add(chkBox,BorderLayout.EAST);
 		chkBox.setSelected(b);
 		chkBox.addActionListener(new ActionListener() {
 			@Override
@@ -177,8 +186,8 @@ public class ContractViewTester extends JFrame {
 	}
 	
 	private void addIntProperty(String string, int v,int min,int max,final Command<Integer> command) {
-		JPanel pane = new JPanel(new BorderLayout());
-		pane.add(new JLabel(string),BorderLayout.WEST);
+		JPanel pane = new JPanel(new GridLayout(1,1,5,5));
+		pane.add(new JLabel(string+":",JLabel.RIGHT));
 		final JSlider slider = new JSlider();
 		slider.setMinimum(min);
 		slider.setMaximum(max);
@@ -189,7 +198,7 @@ public class ContractViewTester extends JFrame {
 		slider.setPaintLabels(true);
 		slider.setPaintTicks(true);
 		slider.setPaintTrack(true);
-		pane.add(slider,BorderLayout.CENTER);
+		pane.add(slider);
 		slider.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
