@@ -3,6 +3,11 @@
  */
 grammar Treaty;
 
+options {
+backtrack=true;
+memoize=true;
+}
+
 @lexer::header {
 package net.java.treaty.script.generated;
 
@@ -15,9 +20,10 @@ import net.java.treaty.script.TreatyRecognitionException;
 @lexer::members {
 static private Token NEWLINE_TOKEN = new CommonToken(Newline, "\n");
 
-// Workaround until getText(), and setText() work as expected within lexer fragments
+// Workaround until getText(), and setText() work as expected within lexer fragments.
 private String lastAnnotationValue = null;
 
+// Keeps track of the implicit line joining level, so statments between parentheses can can span multiple lines.
 private int implicitLineJoiningLevel = 0;
 
 private List<Token> tokens = new LinkedList<Token>();
@@ -30,8 +36,8 @@ public void emit(Token token) {
 public Token nextToken() {
     super.nextToken();
     
-    // eliminate some edge cases by always ending on a new line
     if (tokens.size() == 0) {
+        // Eliminates the edge case were a final statement may or may not end with a new line.
         tokens.add(NEWLINE_TOKEN);
         tokens.add(Token.EOF_TOKEN);
     }
@@ -51,6 +57,7 @@ import net.java.treaty.script.TreatyRecognitionException;
 
 @parser::members {
 private Contract contract;
+private ContractVocabulary vocabulary;
 
 private Resource createNamedResource(String id, URI resourceType, String name) {
     Resource resource = createResource(id, resourceType);
@@ -76,6 +83,61 @@ private Resource createResource(String id, URI resourceType) {
     
     return resource;
 }
+
+private boolean isValidRelationship(Resource sourceResource, URI relationship, Resource targetResource) throws TreatyException {
+    /* It appears that in order to support backtracking these semantic predicates should return true when called with
+     * null arguments.
+     */
+    if (sourceResource == null || relationship == null || targetResource == null)
+        return true;
+        
+    if (!vocabulary.getRelationships().contains(relationship))
+        return false;
+
+    URI domain = vocabulary.getDomain(relationship);
+    URI range = vocabulary.getRange(relationship);
+    	
+    if (!domain.equals(sourceResource.getType()) && !vocabulary.getSupertypes(sourceResource.getType()).contains(domain))
+    	return false;
+    	
+    if (!range.equals(targetResource.getType()) && !vocabulary.getSupertypes(targetResource.getType()).contains(range))
+    	return false;
+    	
+    return true;
+}
+
+private boolean isValidProperty(Resource resource, URI property, Object value) throws TreatyException {
+    /* It appears that in order to support backtracking these semantic predicates should return true when called with
+     * null arguments.
+     */
+    if (resource == null || property == null || value == null)
+        return true;
+        
+    if (!vocabulary.getProperties().contains(property))
+        return false;
+
+    return true;
+}
+
+private RelationshipCondition createRelationshipCondition(Resource sourceResource, URI relationship, Resource targetResource) {
+    RelationshipCondition condition = new RelationshipCondition();
+    
+    condition.setResource1(sourceResource);
+    condition.setResource2(targetResource);
+    condition.setRelationship(relationship);
+    
+    return condition;
+}
+
+private PropertyCondition createPropertyCondition(Resource resource, URI property, Object value) {
+    PropertyCondition condition = new PropertyCondition();
+    
+    condition.setResource(resource);
+    condition.setOperator(property);
+    condition.setValue(value);
+    
+    return condition;
+}
 }
 
 @rulecatch {
@@ -87,8 +149,13 @@ private Resource createResource(String id, URI resourceType) {
     }
 }
 
-contract returns [Contract value]
-@init { contract = new Contract(); $value = contract; }
+contract[ContractVocabulary vocabulary] returns [Contract value]
+@init  {
+    contract = new Contract(); this.vocabulary = vocabulary;
+    if (vocabulary == null)
+        throw new IllegalArgumentException("'vocabulary' cannot be null");
+}
+@after { $value = contract; }
     :   (statment | Newline)* EOF
     ;
 
@@ -150,17 +217,17 @@ resourceReferenceAttribute returns [String value]
     ;
     
 constraint returns [AbstractCondition value]
-    :   'constraint' orConstraint  { $value = $orConstraint.value; }
-    ;
-
-orConstraint returns [AbstractCondition value, Disjunction disjunction]
-    :   (xorConstraint (Or xorConstraint)+) => { $disjunction = new Disjunction(); $value = $disjunction; } firstConstraint=xorConstraint { $disjunction.addCondition($firstConstraint.value); } (Or nextConstraint=xorConstraint { $disjunction.addCondition($nextConstraint.value); })+
-    |   xorConstraint                          { $value = $xorConstraint.value; }
+    :   'constraint' xorConstraint  { $value = $xorConstraint.value; }
     ;
 
 xorConstraint returns [AbstractCondition value, XDisjunction xDisjunction]
-    :   (andConstraint (XOr andConstraint)+) => { $xDisjunction = new XDisjunction(); $value = $xDisjunction; } firstConstraint=andConstraint { $xDisjunction.addCondition($firstConstraint.value); } (XOr nextConstraint=andConstraint { $xDisjunction.addCondition($nextConstraint.value); })+
-    |   andConstraint                           { $value = $andConstraint.value; }
+    :   (orConstraint (XOr orConstraint)+) => { $xDisjunction = new XDisjunction(); $value = $xDisjunction; } firstConstraint=orConstraint { $xDisjunction.addCondition($firstConstraint.value); } (XOr nextConstraint=orConstraint { $xDisjunction.addCondition($nextConstraint.value); })+
+    |   orConstraint                          { $value = $orConstraint.value; }
+    ;
+    
+orConstraint returns [AbstractCondition value, Disjunction disjunction]
+    :   (andConstraint (Or andConstraint)+) => { $disjunction = new Disjunction(); $value = $disjunction; } firstConstraint=andConstraint { $disjunction.addCondition($firstConstraint.value); } (Or nextConstraint=andConstraint { $disjunction.addCondition($nextConstraint.value); })+
+    |   andConstraint                          { $value = $andConstraint.value; }
     ;
 
 andConstraint returns [AbstractCondition value, Conjunction conjunction]
@@ -170,9 +237,10 @@ andConstraint returns [AbstractCondition value, Conjunction conjunction]
 
 notConstraint returns [AbstractCondition value, Negation negation]
     :   Not condition=notConstraint  { $negation = new Negation(); $negation.addCondition($condition.value); $value = $negation; }
-    |   LParen orConstraint RParen   { $value = $orConstraint.value; }
+    |   LParen xorConstraint RParen  { $value = $xorConstraint.value; }
     |   existsConstraint             { $value = $existsConstraint.value; }
     |   relationshipConstraint       { $value = $relationshipConstraint.value; }
+    |   propertyConstraint           { $value = $propertyConstraint.value; }
     ;
 
 existsConstraint returns [ExistsCondition value]
@@ -184,14 +252,118 @@ existsConstraint returns [ExistsCondition value]
     ;
 
 relationshipConstraint returns [RelationshipCondition value]
-    :   leftResource=resource relationshipType=Uri rightResource=resource
+    :   leftResource=resource relationshipType rightResource=resource
+        { isValidRelationship($leftResource.value, $relationshipType.value, $rightResource.value) }?
         {
-            $value = new RelationshipCondition();
-            $value.setResource1($leftResource.value);
-            $value.setResource2($rightResource.value);
-            $value.setRelationship(new URI($relationshipType.text));
+            $value = createRelationshipCondition($leftResource.value, $relationshipType.value, $rightResource.value);
         }
     ;
+    catch [FailedPredicateException ex] {
+        throw new FailedPredicateException(input, "relationshipConstraint", 
+            "'" + $relationshipConstraint.text + "' is not a valid relationship constraint");
+    }
+    catch [TreatyException ex] {
+        throw new TreatyRecognitionException(this.input, ex);
+    }
+
+relationshipType returns [URI value]
+    :	Uri  { $value = new URI($Uri.text); }
+    ;
+
+propertyConstraint returns [PropertyCondition value]
+    :   builtinProperyConstraint
+        {
+            $value = $builtinProperyConstraint.value;
+        }
+    |   resource propertyOperator propertyValue
+        { isValidProperty($resource.value, $propertyOperator.value, $propertyValue.value) }?
+        {
+            $value = createPropertyCondition($resource.value, $propertyOperator.value, $propertyValue.value);
+        }
+    ;
+    catch [FailedPredicateException ex] {
+        throw new FailedPredicateException(input, "propertyConstraint", 
+            "'" + $propertyConstraint.text + "' is not a valid property constraint");
+    }
+    catch [TreatyException ex] {
+        throw new TreatyRecognitionException(this.input, ex);
+    }
+    
+propertyOperator returns [URI value]
+    :   Uri  { $value = new URI($Uri.text); }
+    ;
+    
+builtinProperyConstraint returns [PropertyCondition value]
+    :   decimalPropertyConstraint  { $value = $decimalPropertyConstraint.value; }
+    |   stringPropertyConstraint   { $value = $stringPropertyConstraint.value; }
+    ;
+
+decimalPropertyConstraint returns [PropertyCondition value]
+    :   decimalResource decimalPropertyOperator decimalLiteral
+        {
+            $value = createPropertyCondition($decimalResource.value, $decimalPropertyOperator.value, $decimalLiteral.value);
+        }
+    ;
+
+decimalResource returns [Resource value]
+    :   resource  { $value = $resource.value; }
+	;
+
+decimalPropertyOperator returns [URI value]
+    :   Equal     { $value = new URI("http://www.treaty.org/builtin/#eq"); }
+    |   NotEqual  { $value = new URI("http://www.treaty.org/builtin/#neq"); }
+    |   Gt        { $value = new URI("http://www.treaty.org/builtin/#gt"); }
+    |   Gte       { $value = new URI("http://www.treaty.org/builtin/#gte"); }
+    |   Lt        { $value = new URI("http://www.treaty.org/builtin/#lt"); }
+    |   Lte       { $value = new URI("http://www.treaty.org/builtin/#lte"); }
+    ;
+
+decimalLiteral returns [Object value]
+    :   integerLiteral        { $value = $integerLiteral.value; }
+    |   floatingPointLiteral  { $value = $floatingPointLiteral.value; }
+	;
+
+stringPropertyConstraint returns [PropertyCondition value]
+    :   stringResource stringPropertyOperator stringLiteral
+        {
+            $value = createPropertyCondition($stringResource.value, $stringPropertyOperator.value, $stringLiteral.value);
+        }
+	;
+
+stringResource returns [Resource value]
+    :   resource  { $value = $resource.value; }
+	;
+
+stringPropertyOperator returns [URI value]
+    :   Equal      { $value = new URI("http://www.treaty.org/builtin/#eq"); }
+    |   NotEqual   { $value = new URI("http://www.treaty.org/builtin/#neq"); }
+    |   'matches'  { $value = new URI("http://www.treaty.org/builtin/#matches"); }
+    |   'in'       { $value = new URI("http://www.treaty.org/builtin/#in"); }
+    ;
+
+propertyValue returns [Object value]
+    :   integerLiteral       { $value = $integerLiteral.value; }
+    |   floatingPointLiteral  { $value = $floatingPointLiteral.value; }
+    |   booleanLiteral        { $value = $booleanLiteral.value; }
+    |   stringLiteral         { $value = $stringLiteral.value; }
+    ;
+
+integerLiteral returns [Integer value]
+    :   IntegerLiteral  { $value = Integer.parseInt($IntegerLiteral.text); }
+	;
+
+floatingPointLiteral returns [Double value]
+	:   FloatingPointLiteral  { $value = Double.parseDouble($FloatingPointLiteral.text); }
+	;
+
+booleanLiteral returns [Object value]
+    :   'true'   { $value = true; }
+    |   'false'  { $value = false; }
+	;
+
+stringLiteral returns [Object value]
+    :   StringLiteral  { $value = $StringLiteral.text; }
+	;
 
 resource returns [Resource value]
     :   resourceId=Identifier  { contract.getResource($resourceId.text) != null }?
@@ -200,7 +372,7 @@ resource returns [Resource value]
         }
     ;
     catch [FailedPredicateException ex] {
-        throw new FailedPredicateException(input, "resource", $resourceId.text + "' has not been declared");
+        throw new FailedPredicateException(input, "resource", "'" + $resourceId.text + "' has not been declared");
     }
 
 onFailure returns [URI value]
@@ -227,16 +399,74 @@ Colon       : ':'  ;
 Comma       : ','  ;
 Dollar      : '$'  ;
 Dot         : '.'  ;
-Equals      : '='  ;
+Equal       : '='  ;
 Exclamation : '!'  ;
 Hash        : '#'  ;    
 Minus       : '-'  ;
+NotEqual    : '!=' ;	
 Percent     : '%'  ;
 Plus        : '+'  ;
 Question    : '?'  ;    
 Semi        : ';'  ;
 Slash       : '/'  ;
 Tilde       : '~'  ;
+
+Gt          : '>'  ;
+Lt          : '<'  ;
+Gte         : '>=' ;
+Lte         : '<=' ;
+
+IntegerLiteral
+    :   ('0' | '1'..'9' '0'..'9'*)
+    ;
+
+FloatingPointLiteral
+    :   
+    |   ('0' | '1'..'9' '0'..'9'*) '.' ('0'..'9')* Exponent?
+    |   '.' ('0'..'9')+ Exponent?
+    |   ('0'..'9')+ Exponent
+    ;
+
+fragment
+Exponent 
+    :   ('e'|'E') ('+'|'-')? ('0'..'9')+
+    ;
+
+StringLiteral
+    :   '"' ( EscapeSequence | ~('\\'|'"') )* '"'
+        {
+            String value = getText().substring(1, getText().length() - 1); // strip quotes
+        }
+    ;
+
+fragment
+EscapeSequence
+    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
+    |   UnicodeEscape
+    |   OctalEscape
+    ;
+
+fragment
+OctalEscape
+    :   '\\' ('0'..'3') ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7')
+    ;
+
+fragment
+UnicodeEscape
+    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    ;
+
+fragment
+DecimalDigit
+    :   ('0'..'9')
+    ;
+
+fragment
+HexDigit 
+   :   ('0'..'9'|'a'..'f'|'A'..'F')
+   ;
 
 Trigger
     :   'on' Whitespace String
@@ -246,21 +476,21 @@ Trigger
     ;
 
 ResourceNameAttribute
-    :   'name' Equals String
+    :   'name' Equal String
         {
             emit(new CommonToken(ResourceNameAttribute, $String.text));
         }
     ;
 
 ResourceTypeAttribute
-    :   'type' Equals String
+    :   'type' Equal String
         {
             emit(new CommonToken(ResourceTypeAttribute, $String.text));
         }
     ;
 
 ResourceReferenceAttribute
-    :   'ref' Equals String
+    :   'ref' Equal String
         {
             emit(new CommonToken(ResourceReferenceAttribute, $String.text));
         }
@@ -272,7 +502,7 @@ String
     ;
 
 Annotation
-    :   At key=AnnotationKey Equals value=AnnotationValue
+    :   At key=AnnotationKey Equal value=AnnotationValue
         {
             emit(new CommonToken(AnnotationKey, $key.text));
             emit(new CommonToken(AnnotationValue, lastAnnotationValue));
@@ -339,7 +569,7 @@ BlockComment
     ;
 
 /** If a line comment is not on its own line, then we require some whitespace
- *  between it and previous statement to prevent the lexer confusing urls with
+ *  between it and the previous statement to prevent the lexer confusing urls with
  *  line comments.
  */
 LineComment
@@ -364,7 +594,7 @@ UriCharacter
 
 fragment
 UriReserved
-    :   Semi | Slash | Question | Colon | At | Amper | Equals | Plus | Dollar | Comma | Hash
+    :   Semi | Slash | Question | Colon | At | Amper | Equal | Plus | Dollar | Comma | Hash
     ;
 
 fragment
@@ -387,14 +617,4 @@ UriMark
 fragment
 UriEscaped
     :  Percent HexDigit HexDigit
-    ;
-
-fragment
-HexDigit
-    :   ('0'..'9'|'a'..'f'|'A'..'F')
-    ;
-
-fragment
-DecimalDigit
-    :   ('0'..'9')
     ;
