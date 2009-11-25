@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import net.java.treaty.Contract;
 import net.java.treaty.ContractReader;
+import net.java.treaty.ContractVocabulary;
 import net.java.treaty.ResourceManager;
 import net.java.treaty.TreatyException;
 
@@ -28,10 +29,10 @@ public class ScriptContractReader implements ContractReader {
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractReader#read(java.io.InputStream)
+	 * @see net.java.treaty.ContractReader#read(java.io.InputStream, net.java.treaty.ContractVocabulary)
 	 */
-	public Contract read(InputStream in) throws TreatyException {
-
-		return TreatyScript.fromInputStream(in);
+	public Contract read(InputStream in, ContractVocabulary vocabulary) throws TreatyException {
+		
+		return TreatyScript.fromInputStream(in, vocabulary);
 	}
 }
