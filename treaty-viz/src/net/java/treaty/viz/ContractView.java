@@ -10,13 +10,18 @@
 
 package net.java.treaty.viz;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;import java.awt.LayoutManager;
+import java.awt.Paint;
 import java.awt.Point;
+import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -28,8 +33,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
-
-import org.apache.commons.collections15.CollectionUtils;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
@@ -44,6 +47,8 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import net.java.treaty.AbstractCondition;
+import net.java.treaty.AbstractContractVisitor;
+import net.java.treaty.Annotatable;
 import net.java.treaty.ComplexCondition;
 import net.java.treaty.Conjunction;
 import net.java.treaty.Connector;
@@ -107,12 +112,14 @@ public class ContractView extends JPanel {
 		this.buildGraph();
 		this.updateGraphView();
 	}
+	
+	abstract class Node {
+		// returns either a connector, condition, or resource
+		abstract Annotatable getObject();
+	}
 
 	enum EndNodeType {
 		SUPPLIER, CONSUMER
-	}
-
-	class Node {
 	}
 
 	class EndNode extends Node {
@@ -124,6 +131,10 @@ public class ContractView extends JPanel {
 
 		EndNodeType type = EndNodeType.SUPPLIER;
 		Connector connector = null;
+		
+		Annotatable getObject() {
+			return connector;
+		}
 
 		public String toString() {
 			return "[connector:" + type + "]";
@@ -135,21 +146,26 @@ public class ContractView extends JPanel {
 	}
 
 	class CompositionNode extends Node {
-		public CompositionNode(CompositionNodeType type) {
+		public CompositionNode(CompositionNodeType type,AbstractCondition condition) {
 			super();
 			this.type = type;
+			this.condition = condition;
 		}
 
 		CompositionNodeType type = CompositionNodeType.AND;
+		AbstractCondition condition = null;
 
 		public String toString() {
 			return "[" + type + "]";
 		}
-		public boolean isBinary() {
+		boolean isBinary() {
 			return type!=CompositionNodeType.NOT;
 		}
+		Annotatable getObject() {
+			return condition;
+		}
 	}
-	class ConditionNode extends Node {}
+	abstract class ConditionNode extends Node {}
 	class RelationshipConditionNode extends ConditionNode {
 		public RelationshipConditionNode(RelationshipCondition condition) {
 			super();
@@ -158,6 +174,9 @@ public class ContractView extends JPanel {
 		RelationshipCondition condition = null;
 		public String toString() {
 			return "[" + condition.getRelationship() + "]";
+		}
+		Annotatable getObject() {
+			return condition;
 		}
 	}
 
@@ -171,6 +190,9 @@ public class ContractView extends JPanel {
 		public String toString() {
 			return "[must exist]";
 		}
+		Annotatable getObject() {
+			return condition;
+		}
 	}
 	class PropertyConditionNode extends ConditionNode {
 		public PropertyConditionNode(PropertyCondition condition) {
@@ -181,6 +203,9 @@ public class ContractView extends JPanel {
 		PropertyCondition condition = null;
 		public String toString() {
 			return "["+condition+"]";
+		}
+		Annotatable getObject() {
+			return condition;
 		}
 	}
 
@@ -201,19 +226,20 @@ public class ContractView extends JPanel {
 			super();
 			this.type = type;
 		}
-
 		public String toString() {
 			return resource == null ? "-" : "[resource:" + resource + "]";
 		}
-
-		public boolean isVirtual() {
+		boolean isVirtual() {
 			return resource == null;
+		}
+		Annotatable getObject() {
+			return resource;
 		}
 	}
 
 	private Contract model = null;
 	private DirectedGraph<Node, Edge> graph = null;
-	private Collection conditionNodes = new LinkedHashSet(); // store separetly
+	private Collection conditionNodes = new LinkedHashSet(); // store separately
 																// to retain
 																// order
 	private EndNode consumerNode = null;
@@ -307,7 +333,7 @@ public class ContractView extends JPanel {
 						}
 						else if (v instanceof CompositionNode) {
 							CompositionNode rn = (CompositionNode) v;
-							return getToolTip(rn.type);
+							return getToolTip(rn.type,rn.condition);
 						} 
 						else if (v instanceof EndNode) {
 							EndNode rn = (EndNode) v;
@@ -358,9 +384,7 @@ public class ContractView extends JPanel {
 	}
 
 	private void buildGraph() {
-
-		System.out.println("building graph");
-
+		// System.out.println("building graph");
 		consumerNode = null;
 		supplierNode = null;
 		conditionNodes = new LinkedHashSet();
@@ -413,10 +437,10 @@ public class ContractView extends JPanel {
 					Node child = visibleSuccessors.iterator().next();
 					for (Node n3:graph.getPredecessors(n)) {
 						graph.addEdge(new Edge(),n3,child); // rewire
-						System.out.println("rewiring " + n3 + " -> " + child);
+						// System.out.println("rewiring " + n3 + " -> " + child);
 					}							
 					
-					System.out.println("removing " + n);
+					// System.out.println("removing " + n);
 					graph.removeVertex(n);
 					return true;
 				}
@@ -462,8 +486,7 @@ public class ContractView extends JPanel {
 		}
 	}
 
-	private void buildGraph(Node consumerSideNode, Node supplierSideNode,
-			AbstractCondition c) {
+	private void buildGraph(Node consumerSideNode, Node supplierSideNode,AbstractCondition c) {
 		if (c instanceof ComplexCondition) {
 			ComplexCondition cplxCond = (ComplexCondition) c;
 			CompositionNodeType type = null;
@@ -473,13 +496,41 @@ public class ContractView extends JPanel {
 				type = CompositionNodeType.OR;
 			else if (cplxCond instanceof XDisjunction)
 				type = CompositionNodeType.XOR;
-			CompositionNode comp1 = new CompositionNode(type);
+			CompositionNode comp1 = new CompositionNode(type,cplxCond);
 			graph.addVertex(comp1);
 			graph.addEdge(new Edge(), consumerSideNode, comp1);
-			CompositionNode comp2 = new CompositionNode(type);
+			CompositionNode comp2 = new CompositionNode(type,cplxCond);
 			graph.addVertex(comp2);
 			graph.addEdge(new Edge(), supplierSideNode, comp2);
-			for (AbstractCondition part : cplxCond.getParts()) {
+			List<AbstractCondition> parts = cplxCond.getParts();
+			Collections.sort(parts,new Comparator<AbstractCondition>(){
+				@Override
+				public int compare(AbstractCondition c1,AbstractCondition c2) {
+					int neg = (c2 instanceof Negation?1:0)-(c1 instanceof Negation?1:0);
+					if (neg!=0) return neg;
+					return countRelationshipConditions(c2)-countRelationshipConditions(c1);
+				}
+				private int countRelationshipConditions(AbstractCondition c) {
+					if (c instanceof RelationshipCondition) {
+						return 1;
+					}
+					else if (c instanceof Negation) {
+						return countRelationshipConditions(((Negation)c).getNegatedCondition());
+					}
+					else if (c instanceof ComplexCondition) {
+						int count = 0;
+						for (AbstractCondition p:((ComplexCondition)c).getParts()) {
+							count = count+countRelationshipConditions(p);
+						}
+						return count;
+					}
+					else return 0;
+					
+				}
+			});
+			
+			// recursion
+			for (AbstractCondition part:parts) {
 				buildGraph(comp1, comp2, part);
 			}
 		}
@@ -493,10 +544,10 @@ public class ContractView extends JPanel {
 			 * consumerSideNode, comp);
 			 */
 
-			CompositionNode comp1 = new CompositionNode(type);
+			CompositionNode comp1 = new CompositionNode(type,c);
 			graph.addVertex(comp1);
 			graph.addEdge(new Edge(), consumerSideNode, comp1);
-			CompositionNode comp2 = new CompositionNode(type);
+			CompositionNode comp2 = new CompositionNode(type,c);
 			graph.addVertex(comp2);
 			graph.addEdge(new Edge(), supplierSideNode, comp2);
 			buildGraph(comp1, comp2, neg.getNegatedCondition());
@@ -668,14 +719,22 @@ public class ContractView extends JPanel {
 		});
 		
 		context.setEdgeArrowPredicate(new Predicate() {
-
 			@Override
 			public boolean evaluate(Object o) {
 				return false;
-			}
-			
-			}
-		);
+			}});
+		
+		context.setEdgeDrawPaintTransformer(new Transformer<Edge,Paint>() {
+			@Override
+			public Paint transform(Edge e) {
+				return getEdgePaint(graph.getSource(e).getObject(),graph.getDest(e).getObject());
+			}});
+		
+		context.setEdgeStrokeTransformer(new Transformer<Edge,Stroke>() {
+			@Override
+			public Stroke transform(Edge e) {
+				return getEdgeStroke(graph.getSource(e).getObject(),graph.getDest(e).getObject());
+			}});
 
 
 		// context.setEdgeShapeTransformer(new EdgeShape.Wedge<Object,Edge>(1));
@@ -817,7 +876,7 @@ public class ContractView extends JPanel {
 		return this.asHTMLTable(properties);
 	}
 
-	protected String getToolTip(CompositionNodeType r) {
+	protected String getToolTip(CompositionNodeType r,AbstractCondition condition) {
 		return r.name();
 	}
 	protected String getToolTip(Connector c) {
@@ -869,6 +928,14 @@ public class ContractView extends JPanel {
 	}
 	protected Icon getIcon(PropertyCondition r) {
 		return loadIcon("property.png");
+	}
+	
+	protected Stroke getEdgeStroke(Annotatable source,Annotatable target) {
+		return new BasicStroke(1);
+	}
+	
+	protected Paint getEdgePaint(Annotatable source,Annotatable target) {
+		return Color.black;
 	}
 	
 	
