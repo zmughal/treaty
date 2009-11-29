@@ -50,7 +50,7 @@ public class OWLVocabularyTests {
 
 	/**
 	 * <p>
-	 * Tests the method {@link OWLVocabulary#getSubtypes(URI)}.
+	 * Tests the method {@link OWLVocabulary#getSubTypes(URI)}.
 	 * </p>
 	 * 
 	 * @throws Exception
@@ -63,7 +63,7 @@ public class OWLVocabularyTests {
 		vocabulary = new OWLVocabulary();
 
 		Collection<URI> types;
-		types = vocabulary.getSubtypes(new URI(OWLVocabulary.TYPE_NAME_ONTOLOGY));
+		types = vocabulary.getSubTypes(new URI(OWLVocabulary.TYPE_NAME_ONTOLOGY));
 
 		assertNotNull(types);
 		assertEquals(0, types.size());
@@ -71,7 +71,7 @@ public class OWLVocabularyTests {
 
 	/**
 	 * <p>
-	 * Tests the method {@link OWLVocabulary#getSupertypes(URI)}.
+	 * Tests the method {@link OWLVocabulary#getSuperTypes(URI)}.
 	 * </p>
 	 * 
 	 * @throws Exception
@@ -84,7 +84,7 @@ public class OWLVocabularyTests {
 		vocabulary = new OWLVocabulary();
 
 		Collection<URI> types;
-		types = vocabulary.getSupertypes(new URI(OWLVocabulary.TYPE_NAME_ONTOLOGY));
+		types = vocabulary.getSuperTypes(new URI(OWLVocabulary.TYPE_NAME_ONTOLOGY));
 
 		assertNotNull(types);
 		assertTrue(types.contains(new URI("http://www.treaty.org#Resource")));

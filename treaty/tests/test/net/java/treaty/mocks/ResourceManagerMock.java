@@ -38,7 +38,7 @@ public class ResourceManagerMock implements ResourceManager {
 	public String resolve(URI type, String ref, Connector connector,
 			InstantiationContext context) throws ResourceLoaderException {
 
-		// TODO
+		/* The mock has not to resolve resources (yet). */
 		return null;
 	}
 

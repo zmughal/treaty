@@ -111,7 +111,7 @@ public class CompositeVocabularyTests {
 	public void testSubclasses() throws Exception {
 
 		Collection<URI> types =
-				voc.getSubtypes(new URI("http://www.treaty.org/java#JavaType"));
+				voc.getSubTypes(new URI("http://www.treaty.org/java#JavaType"));
 		assertEquals(3, types.size());
 		assertTrue(types
 				.contains(new URI("http://www.treaty.org/java#AbstractType")));
@@ -126,7 +126,7 @@ public class CompositeVocabularyTests {
 
 		Collection<URI> types =
 				voc
-						.getSupertypes(new URI(
+						.getSuperTypes(new URI(
 								"http://www.treaty.org/test#JavaSpecialClass"));
 		// list(types);
 		assertEquals(4, types.size());

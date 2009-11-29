@@ -155,10 +155,10 @@ public class TreatyParser extends Parser {
         URI domain = vocabulary.getDomain(relationship);
         URI range = vocabulary.getRange(relationship);
         	
-        if (!domain.equals(sourceResource.getType()) && !vocabulary.getSupertypes(sourceResource.getType()).contains(domain))
+        if (!domain.equals(sourceResource.getType()) && !vocabulary.getSuperTypes(sourceResource.getType()).contains(domain))
         	return false;
         	
-        if (!range.equals(targetResource.getType()) && !vocabulary.getSupertypes(targetResource.getType()).contains(range))
+        if (!range.equals(targetResource.getType()) && !vocabulary.getSuperTypes(targetResource.getType()).contains(range))
         	return false;
         	
         return true;
