@@ -51,7 +51,7 @@ public class JavaVocabularyTests {
 	@Test
 	public void testSubclasses() throws Exception {
 		JavaVocabulary jv = new JavaVocabulary();
-		Collection<URI> types = jv.getSubtypes(new URI("http://www.treaty.org/java#JavaType"));
+		Collection<URI> types = jv.getSubTypes(new URI("http://www.treaty.org/java#JavaType"));
 		assertEquals(2,types.size());
 		assertTrue(types.contains(new URI("http://www.treaty.org/java#AbstractType")));
 		assertTrue(types.contains(new URI("http://www.treaty.org/java#InstantiableClass")));
@@ -60,7 +60,7 @@ public class JavaVocabularyTests {
 	@Test
 	public void testSuperclasses() throws Exception {
 		JavaVocabulary jv = new JavaVocabulary();
-		Collection<URI> types = jv.getSupertypes(new URI("http://www.treaty.org/java#AbstractType"));
+		Collection<URI> types = jv.getSuperTypes(new URI("http://www.treaty.org/java#AbstractType"));
 		//list(types);
 		assertEquals(3,types.size());
 		assertTrue(types.contains(new URI("http://www.treaty.org/java#JavaType")));

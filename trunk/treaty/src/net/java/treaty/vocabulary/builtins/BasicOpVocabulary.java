@@ -233,7 +233,7 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSubtypes(java.net.URI)
 	 */
-	public Collection<URI> getSubtypes(URI type) throws TreatyException {
+	public Collection<URI> getSubTypes(URI type) throws TreatyException {
 
 		Collection<URI> result;
 		result = new HashSet<URI>();
@@ -274,7 +274,7 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSupertypes(java.net.URI)
 	 */
-	public Collection<URI> getSupertypes(URI type) throws TreatyException {
+	public Collection<URI> getSuperTypes(URI type) throws TreatyException {
 
 		Collection<URI> result;
 		result = new HashSet<URI>();

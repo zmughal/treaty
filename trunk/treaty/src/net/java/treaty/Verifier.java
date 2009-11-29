@@ -22,17 +22,6 @@ package net.java.treaty;
 public interface Verifier {
 
 	/**
-	 * @deprecated This enumeration is deprecated. Use {@link VerificationPolicy}
-	 *             instead.
-	 * 
-	 *             TODO Claas: Remove this enumeration when all dependencies have
-	 *             been removed.
-	 */
-	public enum Policy {
-		DETAILED, FAST
-	}
-
-	/**
 	 * <p>
 	 * Checks a {@link RelationshipCondition}.
 	 * </p>

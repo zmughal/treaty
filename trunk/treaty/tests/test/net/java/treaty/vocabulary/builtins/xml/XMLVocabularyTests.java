@@ -51,7 +51,7 @@ public class XMLVocabularyTests {
 	@Test
 	public void testSubclasses() throws Exception {
 		XMLVocabulary jv = new XMLVocabulary();
-		Collection<URI> types = jv.getSubtypes(new URI("http://www.treaty.org/xml#XMLInstance"));
+		Collection<URI> types = jv.getSubTypes(new URI("http://www.treaty.org/xml#XMLInstance"));
 		assertEquals(1,types.size());
 		assertTrue(types.contains(new URI("http://www.treaty.org/xml#XMLSchema")));
 	}
@@ -59,7 +59,7 @@ public class XMLVocabularyTests {
 	@Test
 	public void testSuperclasses() throws Exception {
 		XMLVocabulary jv = new XMLVocabulary();
-		Collection<URI> types = jv.getSupertypes(new URI("http://www.treaty.org/xml#XMLSchema"));
+		Collection<URI> types = jv.getSuperTypes(new URI("http://www.treaty.org/xml#XMLSchema"));
 		//list(types);
 		assertEquals(3,types.size());
 		assertTrue(types.contains(new URI("http://www.treaty.org/xml#XMLInstance")));

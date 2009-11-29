@@ -56,12 +56,12 @@ public class VocabularyUtilities {
 		URI range;
 		range = voc.getRange(relationship);
 	
-		if (!(domain.equals(type1) || voc.getSupertypes(type1).contains(domain))) {
+		if (!(domain.equals(type1) || voc.getSuperTypes(type1).contains(domain))) {
 			throw new TreatyException("" + type1 + " is not a valid domain type for "
 					+ relationship);
 		}
 	
-		else if (!(range.equals(type2) || voc.getSupertypes(type2).contains(range))) {
+		else if (!(range.equals(type2) || voc.getSuperTypes(type2).contains(range))) {
 			throw new TreatyException("" + type2 + " is not a valid range type for "
 					+ relationship);
 		}

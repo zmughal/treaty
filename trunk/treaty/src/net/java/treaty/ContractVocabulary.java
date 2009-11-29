@@ -129,9 +129,6 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 			throws TreatyException;
 
 	/**
-	 * TODO Claas: Recommend renaming this method into getSubTypes() (such as for
-	 * getSuperProperties).
-	 * 
 	 * <p>
 	 * Returns the sub types for a given type (as its {@link URI}).
 	 * </p>
@@ -142,7 +139,7 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * @throws TreatyException
 	 *           Thrown if the given {@link URI} does lead to a valid type.
 	 */
-	Collection<URI> getSubtypes(URI type) throws TreatyException;
+	Collection<URI> getSubTypes(URI type) throws TreatyException;
 
 	/**
 	 * <p>
@@ -160,9 +157,6 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 			throws TreatyException;
 
 	/**
-	 * TODO Claas: Recommend renaming this method into getSuperTypes() (such as
-	 * for getSuperProperties).
-	 * 
 	 * <p>
 	 * Returns the super types for a given type (as its {@link URI}).
 	 * </p>
@@ -173,7 +167,7 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * @throws TreatyException
 	 *           Thrown if the given {@link URI} does lead to a valid type.
 	 */
-	Collection<URI> getSupertypes(URI type) throws TreatyException;
+	Collection<URI> getSuperTypes(URI type) throws TreatyException;
 
 	/**
 	 * <p>

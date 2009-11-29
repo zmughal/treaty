@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.java.treaty.Connector;
+import net.java.treaty.ContractLogger;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.ExistsCondition;
 import net.java.treaty.PropertyCondition;
@@ -228,7 +229,10 @@ public class CompositeContractOntology extends ContractOntology {
 		}
 
 		else {
-			/* TODO Log a warning. */
+			/* Log a warning. */
+			ContractLogger.LOGGER.warn("The vocabulary " + vocabulary
+					+ " has been added to the CompositeContractOntology "
+					+ "although it is not a ContractOntology.");
 		}
 
 		this.notifyListeners();
@@ -351,7 +355,10 @@ public class CompositeContractOntology extends ContractOntology {
 		}
 
 		else {
-			/* TODO Log a warning. */
+			/* Log a warning. */
+			ContractLogger.LOGGER.warn("The vocabulary " + vocabulary
+					+ " has been removed from the CompositeContractOntology "
+					+ "although it is not a ContractOntology.");
 		}
 
 		this.notifyListeners();
