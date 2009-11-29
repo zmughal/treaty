@@ -25,43 +25,114 @@ import net.java.treaty.vocabulary.builtins.BuiltInOperator.NEQ;
 import net.java.treaty.vocabulary.builtins.BuiltInOperator.REGEX;
 
 /**
- * Registry for built-in operators.
+ * <p>
+ * A registry for {@link BuiltInOperator}s.
+ * </p>
+ * 
  * @author Jens Dietrich
  */
-
 public class BuiltInOperators {
-	
-	public static final BuiltInOperators INSTANCE = new BuiltInOperators();
-	
-	private BuiltInOperator[] ops = {
-		new EQ(),new NEQ(),new IN(), new REGEX(), new LT(), new GT(), new LTE(), new GTE()	
-	};
-	private Map<String,BuiltInOperator> opsByName = null;
-	private Map<URI,BuiltInOperator> opsByURI = null;
 
+	/** The singleton Instance of {@link BuiltInOperators}. */
+	public static final BuiltInOperators INSTANCE = new BuiltInOperators();
+
+	/** All {@link BuiltInOperator}s as an Array. */
+	private BuiltInOperator[] operators =
+			{ new EQ(), new NEQ(), new IN(), new REGEX(), new LT(), new GT(),
+					new LTE(), new GTE() };
+
+	/** The {@link BuiltInOperator}s mapped by their name. */
+	private Map<String, BuiltInOperator> operatorsByName = null;
+
+	/** The {@link BuiltInOperator}s mapped by their {@link URI}. */
+	private Map<URI, BuiltInOperator> operatorsByURI = null;
+
+	/**
+	 * <p>
+	 * Private constructor for singleton pattern.
+	 * </p>
+	 */
 	private BuiltInOperators() {
+
 		super();
-		opsByName = new HashMap<String,BuiltInOperator>();
-		opsByURI = new HashMap<URI,BuiltInOperator>();		
-		for (BuiltInOperator op:ops) {
-			opsByName.put(op.getName(),op);
-			opsByURI.put(op.getURI(),op);
+
+		this.operatorsByName = new HashMap<String, BuiltInOperator>();
+		this.operatorsByURI = new HashMap<URI, BuiltInOperator>();
+
+		for (BuiltInOperator operator : this.operators) {
+			this.operatorsByName.put(operator.getName(), operator);
+			this.operatorsByURI.put(operator.getURI(), operator);
 		}
+		// no else.
 	}
-	
+
+	/**
+	 * <p>
+	 * Returns the {@link BuiltInOperator} for a given name or <code>null</code>
+	 * if the {@link BuiltInOperator} does not exsist.
+	 * </p>
+	 * 
+	 * @param name
+	 *          The name of the {@link BuiltInOperator} that shall be returned.
+	 * @return The {@link BuiltInOperator} or <code>null</code>.
+	 */
 	public BuiltInOperator getInstance(String name) {
-		return this.opsByName.get(name);
+
+		return this.operatorsByName.get(name);
 	}
+
+	/**
+	 * <p>
+	 * Returns the {@link BuiltInOperator} for a given {@link URI} or
+	 * <code>null</code> if the {@link BuiltInOperator} does not exsist.
+	 * </p>
+	 * 
+	 * @param id
+	 *          The ID of the {@link BuiltInOperator} that shall be returned.
+	 * @return The {@link BuiltInOperator} or <code>null</code>.
+	 */
 	public BuiltInOperator getInstance(URI id) {
-		return this.opsByURI.get(id);
+
+		return this.operatorsByURI.get(id);
 	}
+
+	/**
+	 * <p>
+	 * Returns the {@link URI} of a given {@link BuiltInOperator}'s name or
+	 * <code>null</code> if the {@link BuiltInOperator} does not exsist.
+	 * </p>
+	 * 
+	 * @param name
+	 *          The name of the {@link BuiltInOperator}.
+	 * @return The {@link URI} or <code>null</code>.
+	 */
 	public URI getURI(String name) {
-		BuiltInOperator op = this.opsByName.get(name);
-		return op==null?null:op.getURI();
+
+		URI result;
+
+		BuiltInOperator operator;
+		operator = this.operatorsByName.get(name);
+
+		if (operator == null) {
+			result = null;
+		}
+
+		else {
+			result = operator.getURI();
+		}
+
+		return result;
 	}
+
+	/**
+	 * <p>
+	 * Returns the {@link URI}s of all {@link BuiltInOperator}s.
+	 * </p>
+	 * 
+	 * @return The {@link URI}s of all {@link BuiltInOperator}s.
+	 */
 	public Collection<URI> getOpIds() {
-		return this.opsByURI.keySet();
+
+		return this.operatorsByURI.keySet();
 	}
-	
-	
 }
