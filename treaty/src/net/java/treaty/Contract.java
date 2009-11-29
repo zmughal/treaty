@@ -797,10 +797,6 @@ public class Contract extends PropertySupport implements ConditionContext,
 	 */
 	public boolean isInstantiated() {
 
-		/*
-		 * TODO Claas: What should this method return if the list of constraints is
-		 * empty?
-		 */
 		boolean result;
 		result = true;
 
