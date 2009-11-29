@@ -14,11 +14,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+
 import net.java.treaty.Connector;
+import net.java.treaty.ContractLogger;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.ExistsCondition;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.RelationshipCondition;
+import net.java.treaty.Resource;
 import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationException;
@@ -32,6 +36,25 @@ import net.java.treaty.VerificationException;
  */
 public class BasicOpVocabulary implements ContractVocabulary {
 
+	/** The name space of the {@link BasicOpVocabulary}. */
+	public static final String NAME_SPACE_NAME =
+			"http://www.w3.org/2001/XMLSchema";
+
+	/** The name of the Boolean type of the {@link BasicOpVocabulary}. */
+	public static final String TYPE_NAME_BOOLEAN = NAME_SPACE_NAME + "#boolean";
+
+	/** The name of the Double type of the {@link BasicOpVocabulary}. */
+	public static final String TYPE_NAME_DOUBLE = NAME_SPACE_NAME + "#double";
+
+	/** The name of the Int type of the {@link BasicOpVocabulary}. */
+	public static final String TYPE_NAME_INT = NAME_SPACE_NAME + "#int";
+
+	/** The name of the Integer type of the {@link BasicOpVocabulary}. */
+	public static final String TYPE_NAME_INTEGER = NAME_SPACE_NAME + "#integer";
+
+	/** The name of the String type of the {@link BasicOpVocabulary}. */
+	public static final String TYPE_NAME_STRING = NAME_SPACE_NAME + "#string";
+
 	/** The default domain of the {@link BasicOpVocabulary}. */
 	private URI default_domain;
 
@@ -42,11 +65,33 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.Verifier#check(net.java.treaty.ExistsCondition)
 	 */
-	public void check(ExistsCondition relationshipCondition)
+	public void check(ExistsCondition existsCondition)
 			throws VerificationException {
 
-		throw new VerificationException(
-				"The basic operations vocabularies does not define types.");
+		Resource resource;
+		resource = existsCondition.getResource();
+
+		URI type;
+		type = resource.getType();
+
+		if (type.toString().startsWith(BasicOpVocabulary.NAME_SPACE_NAME)) {
+
+			assert resource.isInstantiated();
+			assert resource.isLoaded();
+
+			if (resource.getValue() == null) {
+				throw new VerificationException("Resource value should not be null");
+			}
+
+			this.checkBuiltInDatatype(resource.getValue(), type);
+		}
+
+		else {
+			throw new VerificationException(
+					"The basic operations vocabularies does not support the type " + type
+							+ ".");
+		}
+		// end else.
 	}
 
 	/*
@@ -190,7 +235,29 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 */
 	public Collection<URI> getSubtypes(URI type) throws TreatyException {
 
-		return Collections.emptySet();
+		Collection<URI> result;
+		result = new HashSet<URI>();
+
+		String name;
+		name = type.toString();
+
+		if (name.equals(TYPE_NAME_DOUBLE)) {
+
+			try {
+				result.add(new URI(TYPE_NAME_INT));
+				result.add(new URI(TYPE_NAME_INTEGER));
+			}
+
+			catch (URISyntaxException e) {
+				ContractLogger.LOGGER.error(
+						"Error during returning super types of type in BasicOpVocabulary.",
+						e);
+			}
+			// end catch.
+		}
+		// no else.
+
+		return result;
 	}
 
 	/*
@@ -209,7 +276,28 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 */
 	public Collection<URI> getSupertypes(URI type) throws TreatyException {
 
-		return Collections.emptySet();
+		Collection<URI> result;
+		result = new HashSet<URI>();
+
+		String name;
+		name = type.toString();
+
+		if (name.equals(TYPE_NAME_INT) || name.equals(TYPE_NAME_INTEGER)) {
+
+			try {
+				result.add(new URI(TYPE_NAME_DOUBLE));
+			}
+
+			catch (URISyntaxException e) {
+				ContractLogger.LOGGER.error(
+						"Error during returning super types of type in BasicOpVocabulary.",
+						e);
+			}
+			// end catch.
+		}
+		// no else.
+
+		return result;
 	}
 
 	/*
@@ -218,7 +306,24 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 */
 	public Collection<URI> getTypes() throws TreatyException {
 
-		return Collections.emptySet();
+		Collection<URI> result;
+
+		result = new HashSet<URI>();
+
+		try {
+			result.add(new URI(TYPE_NAME_BOOLEAN));
+			result.add(new URI(TYPE_NAME_DOUBLE));
+			result.add(new URI(TYPE_NAME_INT));
+			result.add(new URI(TYPE_NAME_INTEGER));
+			result.add(new URI(TYPE_NAME_STRING));
+		}
+
+		catch (URISyntaxException e) {
+			ContractLogger.LOGGER.error(
+					"Error during returning types of BasicOpVocabulary.", e);
+		}
+
+		return result;
 	}
 
 	/*
@@ -229,8 +334,131 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	public Object load(URI type, String name, Connector connector)
 			throws ResourceLoaderException {
 
-		throw new ResourceLoaderException(
-				"The basic operations vocabularies does not define types.");
+		Object result;
+
+		String typeName;
+		typeName = type.toString();
+
+		if (typeName.equals(TYPE_NAME_STRING)) {
+			result = name;
+		}
+
+		else if (typeName.equals(TYPE_NAME_INT)
+				|| typeName.equals(TYPE_NAME_INTEGER)) {
+
+			try {
+				result = Integer.parseInt(name);
+			}
+
+			catch (NumberFormatException x) {
+				throw new ResourceLoaderException(x);
+			}
+		}
+
+		else if (typeName.equals(TYPE_NAME_DOUBLE)) {
+
+			try {
+				result = Double.parseDouble(name);
+			}
+
+			catch (NumberFormatException x) {
+				throw new ResourceLoaderException(x);
+			}
+		}
+
+		else if (typeName.equals(TYPE_NAME_BOOLEAN)) {
+			result = Boolean.parseBoolean(name);
+		}
+
+		else {
+			throw new ResourceLoaderException(
+					"The basic operations vocabularies does not support the type " + name
+							+ ".");
+		}
+		// end else.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * A helper method to verify values for built-in data types.
+	 * </p>
+	 * 
+	 * @param value
+	 *          The value that shall be checked.
+	 * @param type
+	 *          The type (a {@link URI}) the value belongs to.
+	 * @throws VerificationException
+	 *           Thrown, if the verification fails.
+	 */
+	private void checkBuiltInDatatype(Object value, URI type)
+			throws VerificationException {
+
+		String typeName;
+		typeName = type.toString();
+
+		if (typeName.equals("http://www.w3.org/2001/XMLSchema:string")) {
+			ContractLogger.LOGGER
+					.warn("oudated data type URI used !!: http://www.w3.org/2001/XMLSchema#string");
+		}
+		// no else.
+
+		if (typeName.equals(TYPE_NAME_STRING)) {
+			return;
+		}
+
+		else if (typeName.equals(TYPE_NAME_INT)
+				|| typeName.equals(TYPE_NAME_INTEGER)) {
+
+			if (value instanceof Integer) {
+				return;
+			}
+
+			try {
+				Integer.parseInt(value.toString());
+			}
+
+			catch (NumberFormatException x) {
+				throw new VerificationException(value.toString()
+						+ " is not an Integer.");
+			}
+		}
+
+		else if (typeName.equals(TYPE_NAME_DOUBLE)) {
+
+			if (value instanceof Double) {
+				return;
+			}
+
+			try {
+				Double.parseDouble(value.toString());
+			}
+
+			catch (NumberFormatException x) {
+				throw new VerificationException(value.toString() + " is not a double");
+			}
+		}
+
+		else if (typeName.equals(TYPE_NAME_BOOLEAN)) {
+
+			if (value instanceof Boolean) {
+				return;
+			}
+
+			try {
+				Boolean.parseBoolean(value.toString());
+			}
+
+			catch (NumberFormatException x) {
+				throw new VerificationException(value.toString() + " is not a boolean");
+			}
+		}
+
+		else {
+			throw new VerificationException("Unsupported data type: " + type);
+		}
+		// end else.
 	}
 
 	/**
