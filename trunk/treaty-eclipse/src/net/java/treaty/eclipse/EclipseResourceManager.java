@@ -14,6 +14,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import net.java.treaty.Connector;
 import net.java.treaty.InstantiationContext;
@@ -38,6 +40,14 @@ public class EclipseResourceManager implements ResourceManager {
 
 	/** The singleton instance of the {@link EclipseResourceManager}. */
 	public static EclipseResourceManager INSTANCE = new EclipseResourceManager();
+
+	/**
+	 * Indicates whether or not this {@link EclipseResourceManager} uses caching
+	 * during resolving of plug-ins' meta data (default is <code>false</code>).
+	 */
+	private boolean isCachingEnabled = false;
+
+	private Map<Connector, Document> myCachedMetaData = null;
 
 	/**
 	 * <p>
@@ -247,6 +257,45 @@ public class EclipseResourceManager implements ResourceManager {
 
 	/**
 	 * <p>
+	 * Indicates whether or not this {@link EclipseResourceManager} uses caching
+	 * during resolving of plug-ins' meta data (default is <code>false</code>).
+	 * </p>
+	 */
+	public boolean isCachingEnabled() {
+
+		return this.isCachingEnabled;
+	}
+
+	/**
+	 * <p>
+	 * Indicates whether or not this {@link EclipseResourceManager} uses caching
+	 * during resolving of plug-ins' meta data (default is <code>false</code>).
+	 * </p>
+	 * 
+	 * @param isEnabled
+	 *          If <code>true</code>, caching will be used.
+	 */
+	public void setCachingEnabled(boolean isEnabled) {
+
+		/* Probably change the state. */
+		if (isEnabled != this.isCachingEnabled) {
+
+			this.isCachingEnabled = isEnabled;
+
+			/* Initialize or reset the caching map. */
+			if (this.isCachingEnabled) {
+				this.myCachedMetaData = new WeakHashMap<Connector, Document>();
+			}
+
+			else {
+				this.myCachedMetaData = null;
+			}
+		}
+		// no else (status is already set).
+	}
+
+	/**
+	 * <p>
 	 * A helper method that returns the xpath expression for a given
 	 * {@link EclipseExtension}.
 	 * </p>
@@ -281,7 +330,6 @@ public class EclipseResourceManager implements ResourceManager {
 	 *           Thrown, if the given {@link Connector} is not an
 	 *           {@link EclipseConnector}.
 	 */
-	// TODO Cache the results here.
 	private Document loadPluginMetaData(Connector connector)
 			throws ResourceLoaderException {
 
@@ -291,27 +339,45 @@ public class EclipseResourceManager implements ResourceManager {
 		}
 		// no else.
 
-		EclipseExtension eclipseExtension;
-		eclipseExtension = (EclipseExtension) connector;
+		Document result;
 
-		EclipsePlugin eclipsePlugin;
-		eclipsePlugin = (EclipsePlugin) eclipseExtension.getOwner();
-
-		URL url;
-		url = eclipsePlugin.getResource("plugin.xml");
-
-		SAXBuilder builder;
-
-		builder = new SAXBuilder();
-		builder.setValidation(false);
-
-		/* Try to open the document. */
-		try {
-			return builder.build(url.openStream());
+		/* Probably use a cached result. */
+		if (this.isCachingEnabled && this.myCachedMetaData.containsKey(connector)) {
+			result = this.myCachedMetaData.get(connector);
 		}
 
-		catch (Exception e) {
-			throw new ResourceLoaderException("Cannot parse plugin.xml", e);
+		else {
+			EclipseExtension eclipseExtension;
+			eclipseExtension = (EclipseExtension) connector;
+
+			EclipsePlugin eclipsePlugin;
+			eclipsePlugin = (EclipsePlugin) eclipseExtension.getOwner();
+
+			URL url;
+			url = eclipsePlugin.getResource("plugin.xml");
+
+			SAXBuilder builder;
+
+			builder = new SAXBuilder();
+			builder.setValidation(false);
+
+			/* Try to open the document. */
+			try {
+				result = builder.build(url.openStream());
+			}
+
+			catch (Exception e) {
+				throw new ResourceLoaderException("Cannot parse plugin.xml", e);
+			}
+
+			/* Probably cache the result. */
+			if (this.isCachingEnabled) {
+				this.myCachedMetaData.put(connector, result);
+			}
+			// no else.
 		}
+		// end else.
+
+		return result;
 	}
 }
