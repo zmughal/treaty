@@ -1530,6 +1530,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 	/** {@link Action} to display a {@link Contract}'s source code. */
 	private Action myActionShowContractSource;
+	
+	/** {@link Action} to display a {@link Contract}'s vizualisation. */
+	private Action myActionShowContractVizualisation;
 
 	/**
 	 * {@link Action} to verify all {@link Contract}s provided by this
@@ -1655,6 +1658,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 				myActionPrintStackTrace.setEnabled(isActionAvailable);
 				myActionShowContractSource.setEnabled(getSelectedContract() != null);
+				myActionShowContractVizualisation.setEnabled(getSelectedContract() != null);
 
 				List<Contract> selectedInstantiatedConstracts;
 				selectedInstantiatedConstracts = getSelectedInstantiatedContracts();
@@ -1962,8 +1966,34 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			}
 
 			catch (Exception e) {
-				Logger.error("Error occurred during display of Contract source code.",
+				Logger.error("Error occurred during display of contract source code",
 						e);
+			}
+			// end catch.
+		}
+		// no else.
+	}
+	
+	/**
+	 * <p>
+	 * Shows a dialog window to display the vizualisation of a selected
+	 * {@link Contract}.
+	 * </p>
+	 */
+	private void actionShowContractVizualisation() {
+
+		Contract contract;
+		contract = this.getSelectedContract();
+
+		if (contract != null) {
+			try {
+				System.out.println("Vizualising contract " + contract); // TODO remove
+				new ContractVizViewer(new Shell(), contract).open();
+			}
+
+			catch (Exception e) {
+				e.printStackTrace(); // TODO remove
+				Logger.error("Error occurred during display of contract vizualisation",e);
 			}
 			// end catch.
 		}
@@ -2103,6 +2133,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		manager.add(this.myActionVerifySelectedContracts);
 		manager.add(this.myActionPrintStackTrace);
 		manager.add(this.myActionShowContractSource);
+		manager.add(this.myActionShowContractVizualisation);
 
 		manager.add(new Separator());
 
@@ -2426,99 +2457,73 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 		/* Action to print the stack trace. */
 		this.myActionPrintStackTrace = new Action() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see org.eclipse.jface.action.Action#run()
-			 */
 			public void run() {
-
 				actionPrintStackTrace();
 			}
 		};
 
-		this.myActionPrintStackTrace
-				.setText("Display verification exception details.");
-		this.myActionPrintStackTrace
-				.setToolTipText("Displays the verification exception stack trace.");
+		this.myActionPrintStackTrace.setText("Display verification exception details.");
+		this.myActionPrintStackTrace.setToolTipText("Displays the verification exception stack trace.");
 		this.myActionPrintStackTrace.setEnabled(false);
-
-		/* Action to refresh the ContractView. */
+		
 		this.myActionRefresh = new Action() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see org.eclipse.jface.action.Action#run()
-			 */
 			public void run() {
-
 				actionReloadContracts();
 			}
 		};
 
 		this.myActionRefresh.setText("Reset");
-		this.myActionRefresh
-				.setImageDescriptor(getImageDescriptor("icons/refresh.gif"));
-		this.myActionRefresh
-				.setToolTipText("Reloads all contracts and resets verification status of all contracts.");
+		this.myActionRefresh.setImageDescriptor(getImageDescriptor("icons/refresh.gif"));
+		this.myActionRefresh.setToolTipText("Reloads all contracts and resets verification status of all contracts.");
 
 		/* Action to verify all contracts. */
 		this.myActionVerifyAllContracts = new Action() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see org.eclipse.jface.action.Action#run()
-			 */
 			public void run() {
-
 				actionVerifyAllContracts();
 			}
 		};
 
 		this.myActionVerifyAllContracts.setText("Verify all contracts");
-		this.myActionVerifyAllContracts
-				.setImageDescriptor(getImageDescriptor("icons/verify_all.gif"));
-		this.myActionVerifyAllContracts
-				.setToolTipText("Run verification for all contracts.");
+		this.myActionVerifyAllContracts.setImageDescriptor(getImageDescriptor("icons/verify_all.gif"));
+		this.myActionVerifyAllContracts.setToolTipText("Run verification for all contracts.");
 
 		/* Action to verify selected contracts. */
 		this.myActionVerifySelectedContracts = new Action() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see org.eclipse.jface.action.Action#run()
-			 */
 			public void run() {
-
 				actionVerifySelectedContracts();
 			}
 		};
 
 		this.myActionVerifySelectedContracts.setText("Verify selected contracts");
-		this.myActionVerifySelectedContracts
-				.setImageDescriptor(getImageDescriptor("icons/verify_sel.gif"));
-		this.myActionVerifySelectedContracts
-				.setToolTipText("Runs verification for selected contracts.");
+		this.myActionVerifySelectedContracts.setImageDescriptor(getImageDescriptor("icons/verify_sel.gif"));
+		this.myActionVerifySelectedContracts.setToolTipText("Runs verification for selected contracts.");
 		this.myActionVerifySelectedContracts.setEnabled(false);
 
 		/* Action to show a contracts source code. */
 		this.myActionShowContractSource = new Action() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see org.eclipse.jface.action.Action#run()
-			 */
 			public void run() {
-
 				actionShowContractSource();
 			}
 		};
 
 		this.myActionShowContractSource.setEnabled(false);
 		this.myActionShowContractSource.setText("Display contract source");
-		this.myActionShowContractSource
-				.setToolTipText("Displays the source code of the contract.");
+		this.myActionShowContractSource.setToolTipText("Displays the source code of the contract.");
 
+		
+		/* Action to show a contracts vizualisation. */
+		this.myActionShowContractVizualisation = new Action() {
+			public void run() {
+				actionShowContractVizualisation();
+			}
+		};
+
+		this.myActionShowContractVizualisation.setEnabled(false);
+		this.myActionShowContractVizualisation.setText("Display contract vizualisation");
+		this.myActionShowContractVizualisation.setToolTipText("Vizualises the selected contract.");
+
+		
+		
 		/* Create an export action for each exporter. */
 		for (Exporter exporter : ExporterRegistry.INSTANCE.getExporters()) {
 
