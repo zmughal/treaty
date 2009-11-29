@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="net.java.treaty.test.provider2.x1"
+         name="Extension 1"
+         point="net.java.treaty.test.consumer2.xp1">
+   </extension>
+
+</plugin>

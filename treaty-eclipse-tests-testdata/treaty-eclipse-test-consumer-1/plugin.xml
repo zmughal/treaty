@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="net.java.treaty.test.consumer1.xp1" name="Extension Point 1" schema="schema/net.java.treaty.test.consumer1.xp1.exsd"/>
+
+</plugin>
