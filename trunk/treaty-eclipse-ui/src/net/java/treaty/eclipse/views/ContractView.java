@@ -1905,7 +1905,8 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			if (exception != null) {
 
 				try {
-					new ViewExceptionStackTraceDialog(new Shell(), exception).open();
+					new ViewExceptionStackTraceDialog(this.getViewSite().getShell(),
+							exception).open();
 				}
 
 				catch (Exception e) {
@@ -1991,7 +1992,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			try {
 				ContractVizViewer viewer;
 
-				viewer = new ContractVizViewer(new Shell(), contract);
+				viewer = new ContractVizViewer(this.getSite().getShell(), contract);
 				viewer.open();
 			}
 
