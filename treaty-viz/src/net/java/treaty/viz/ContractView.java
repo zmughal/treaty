@@ -17,7 +17,11 @@ import java.awt.Dimension;import java.awt.LayoutManager;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Stroke;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,7 +51,6 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import net.java.treaty.AbstractCondition;
-import net.java.treaty.AbstractContractVisitor;
 import net.java.treaty.Annotatable;
 import net.java.treaty.ComplexCondition;
 import net.java.treaty.Conjunction;
@@ -88,6 +91,7 @@ public class ContractView extends JPanel {
 
 	private void init() {
 		this.setLayout(new BorderLayout(0, 0));
+		
 	}
 
 	private boolean mergeEqualNodes = false;
@@ -236,10 +240,69 @@ public class ContractView extends JPanel {
 			return resource;
 		}
 	}
+	
+	class Stretcher implements MouseListener {
+		private int x= 0;
+		private int y = 0;
+		@Override
+		public void mouseClicked(MouseEvent e) {}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {}
+
+		@Override
+		public void mouseExited(MouseEvent e) {}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (e.isControlDown()) {
+				x = e.getX();
+				y = e.getY();
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (e.isControlDown()) {
+				scale(e.getX(),e.getY());
+			}
+		}
+		private void scale(int _x,int _y) {
+			int TRESHOLD = 10;
+			boolean update = false;
+			if ((_x-x)>TRESHOLD) {
+				columnWidth = columnWidth+getScaleFactor(_x,x,columnWidth);
+				update = true;
+			}
+			else if ((_x-x)<-TRESHOLD) {
+				columnWidth = columnWidth+getScaleFactor(_x,x,columnWidth);
+				update = true;
+			}
+			if ((_y-y)>TRESHOLD) {
+				rowHeight = rowHeight+getScaleFactor(_y,y,rowHeight);
+				update = true;
+			}
+			else if ((_y-y)<-TRESHOLD) {
+				rowHeight = rowHeight+getScaleFactor(_y,y,rowHeight);
+				update = true;
+			}
+			if (update) {
+				updateGraphView();
+			}
+		}
+		private int getScaleFactor(int x1,int x2, int value) {
+			int v = Math.abs(x1-x2);
+			int factor = 0;
+			if (v<=50) factor = 10;
+			else if (v<=200) factor = 20;
+			else factor = 30;
+			return x1-x2>0?factor:(-1*factor);
+		}
+	};
 
 	private Contract model = null;
 	private DirectedGraph<Node, Edge> graph = null;
-	private Collection conditionNodes = new LinkedHashSet(); // store separately
+	private Collection<Node> conditionNodes = new LinkedHashSet<Node>(); // store separately
 																// to retain
 																// order
 	private EndNode consumerNode = null;
@@ -305,10 +368,8 @@ public class ContractView extends JPanel {
 		class Updater extends SwingWorker<VisualizationViewer, Object> {
 			@Override
 			public VisualizationViewer doInBackground() {
-				Layout<Node, Edge> layout = new ContractLayout(graph,
-						ContractView.this.getSize());
-				final VisualizationViewer<Node, Edge> vv = new VisualizationViewer<Node, Edge>(
-						layout);
+				Layout<Node, Edge> layout = new ContractLayout(graph,ContractView.this.getSize());
+				final VisualizationViewer<Node, Edge> vv = new VisualizationViewer<Node, Edge>(layout);
 
 				configureRenderer(vv.getRenderContext());
 
@@ -320,9 +381,24 @@ public class ContractView extends JPanel {
 																	// area size
 				vv.setBackground(Color.white);
 
-				DefaultModalGraphMouse gm = new DefaultModalGraphMouse();
-				gm.setMode(edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode.PICKING);
+				// deactivate if CTRL is pressed, then stretcher is in charge
+				DefaultModalGraphMouse gm = new DefaultModalGraphMouse() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						if (!e.isControlDown()) {
+							super.mousePressed(e);
+						}
+					}
+					@Override
+					public void mouseReleased(MouseEvent e) {
+						if (!e.isControlDown()) {
+							super.mouseReleased(e);
+						}
+					}					
+				};
+				gm.setMode(edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode.ANNOTATING);
 				vv.setGraphMouse(gm);
+				vv.addMouseListener(new Stretcher());
 
 				vv.setVertexToolTipTransformer(new Transformer<Node, String>() {
 					@Override
@@ -506,8 +582,8 @@ public class ContractView extends JPanel {
 			Collections.sort(parts,new Comparator<AbstractCondition>(){
 				@Override
 				public int compare(AbstractCondition c1,AbstractCondition c2) {
-					int neg = (c2 instanceof Negation?1:0)-(c1 instanceof Negation?1:0);
-					if (neg!=0) return neg;
+					//int neg = (c2 instanceof Negation?1:0)-(c1 instanceof Negation?1:0);
+					//if (neg!=0) return neg;
 					return countRelationshipConditions(c2)-countRelationshipConditions(c1);
 				}
 				private int countRelationshipConditions(AbstractCondition c) {
@@ -788,8 +864,7 @@ public class ContractView extends JPanel {
 			// getMaxPath2Resource(supplierNode) + 2;
 			// int H = Math.max(consumerRes.size(),supplierRes.size());
 
-			addLayer(coordinates, conditionNodes,
-					getMaxPath2Resource(consumerNode) + 1);
+			addLayer(coordinates, conditionNodes,getMaxPath2Resource(consumerNode) + 1);
 		}
 
 		private void addLayer(Map<Node, Point> coordinates,Collection<Node> nodes, int col) {
@@ -977,6 +1052,7 @@ public class ContractView extends JPanel {
 	}
 	
 	private Icon loadIcon(String name) {
-		return new ImageIcon("icons/"+ name);
+		URL url = ContractView.class.getResource("/net/java/treaty/viz/icons/"+name);
+		return new ImageIcon(url);
 	}
 }
