@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -12,7 +12,6 @@ package net.java.treaty.eclipse.views;
 
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Label;
 import java.awt.Toolkit;
 
 import net.java.treaty.Contract;
@@ -25,33 +24,34 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 /**
  * <p>
- * Abstract superclass for simple pop-up text dialogs.
+ * The {@link ContractVizViewer} adapts the AWT
+ * {@link ContractVisualizationView} as a Eclipse SWT view.
  * </p>
  * 
  * @author Jens Dietrich
  */
 public class ContractVizViewer extends Dialog {
 
-	private Contract contract = null;
+	/** The {@link Contract} of this {@link ContractVizViewer}. */
+	private Contract myContract = null;
 
 	/**
 	 * <p>
-	 * Creares a new {@link ContractVizViewer}
+	 * Creates a new {@link ContractVizViewer}
 	 * </p>
 	 * 
 	 * @param parentShell
 	 *          The parent {@link Shell} of this {@link ContractVizViewer}.
 	 */
-	public ContractVizViewer(Shell parentShell,Contract contract) {
+	public ContractVizViewer(Shell parentShell, Contract contract) {
 
 		super(parentShell);
 
 		this.setShellStyle(SWT.RESIZE | SWT.TITLE);
-		this.contract = contract;
+		this.myContract = contract;
 	}
 
 	/*
@@ -83,7 +83,7 @@ public class ContractVizViewer extends Dialog {
 	 */
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-	
+
 		createButton(parent, IDialogConstants.OK_ID, "Close", false);
 	}
 
@@ -103,17 +103,22 @@ public class ContractVizViewer extends Dialog {
 		gridData.grabExcessVerticalSpace = true;
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.verticalAlignment = GridData.FILL;
-		Composite composite = new Composite(parent,SWT.EMBEDDED | SWT.NO_BACKGROUND);
+
+		Composite composite;
+		composite = new Composite(parent, SWT.EMBEDDED | SWT.NO_BACKGROUND);
 		composite.setLayoutData(gridData);
 
-		Frame frame = SWT_AWT.new_Frame(parent);
-		
-		frame.add(new Label("hello awt"));
+		Frame frame = SWT_AWT.new_Frame(composite);
+
+		ContractVisualizationView contractVizualizationView;
+
+		contractVizualizationView = new ContractVisualizationView(this.myContract);
+		contractVizualizationView.setVisible(true);
+
+		frame.add(contractVizualizationView);
 
 		return composite;
 	}
-
-
 
 	/**
 	 * <p>
@@ -123,6 +128,7 @@ public class ContractVizViewer extends Dialog {
 	 * @return The title of this {@link ContractVizViewer}.
 	 */
 	protected String getTitle() {
+
 		return "Contract Vizualisation";
 	}
 }
