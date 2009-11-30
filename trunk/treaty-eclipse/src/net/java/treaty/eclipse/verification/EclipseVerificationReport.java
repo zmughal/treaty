@@ -13,8 +13,10 @@ package net.java.treaty.eclipse.verification;
 import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
 import net.java.treaty.Annotatable;
 import net.java.treaty.Contract;
+import net.java.treaty.VerificationException;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
+import net.java.treaty.eclipse.Constants;
 
 /**
  * <p>
@@ -47,6 +49,12 @@ public class EclipseVerificationReport implements VerificationReport {
 
 		if (context instanceof Annotatable) {
 			((Annotatable) context).setProperty(VERIFICATION_RESULT, result);
+
+			if (VerificationResult.FAILURE == result && remarks.length > 0) {
+				((Annotatable) context).setProperty(Constants.VERIFICATION_EXCEPTION,
+						new VerificationException(remarks[0]));
+			}
+			// no else.
 		}
 		// no else.
 	}
