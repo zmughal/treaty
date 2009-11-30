@@ -16,6 +16,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Stroke;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -23,13 +25,18 @@ import javax.swing.ImageIcon;
 import net.java.treaty.AbstractCondition;
 import net.java.treaty.Annotatable;
 import net.java.treaty.ComplexCondition;
+import net.java.treaty.Connector;
 import net.java.treaty.Contract;
 import net.java.treaty.ExistsCondition;
 import net.java.treaty.Negation;
 import net.java.treaty.PropertyCondition;
+import net.java.treaty.PropertySupport;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.VerificationResult;
+import net.java.treaty.eclipse.Constants;
+import net.java.treaty.eclipse.EclipseExtension;
+import net.java.treaty.eclipse.EclipseExtensionPoint;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.snippets.Snippet156;
@@ -52,15 +59,10 @@ public class ContractVisualizationView extends net.java.treaty.viz.ContractView 
 	 * Creates a new {@link ContractVisualizationView} for a given
 	 * {@link Contract}.
 	 * </p>
-	 * 
-	 * @param contract
-	 *          The {@link Contract} of the {@link ContractVisualizationView}.
 	 */
-	public ContractVisualizationView(Contract contract) {
+	public ContractVisualizationView() {
 
 		super();
-
-		this.setModel(contract);
 	}
 
 	/*
@@ -158,6 +160,164 @@ public class ContractVisualizationView extends net.java.treaty.viz.ContractView 
 		}
 
 		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.viz.ContractView#getToolTip(net.java.treaty.viz.ContractView
+	 * .CompositionNodeType, net.java.treaty.AbstractCondition)
+	 */
+	protected String getToolTip(CompositionNodeType nodeType,
+			AbstractCondition condition) {
+
+		Map<String, Object> properties;
+		properties = new LinkedHashMap<String, Object>();
+		properties.put("type", nodeType.name());
+
+		/* Probably display a verification exception. */
+		String verificationException;
+		verificationException = this.getVerificationException(condition);
+
+		if (verificationException.length() > 0) {
+			properties.put("failure", verificationException);
+		}
+		// no else.
+
+		return this.asHTMLTable(properties);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.viz.ContractView#getToolTip(net.java.treaty.Connector)
+	 */
+	protected String getToolTip(Connector connector) {
+
+		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+
+		if (connector != null) {
+
+			if (connector instanceof EclipseExtensionPoint) {
+				properties.put("type", "ExtensionPoint");
+			}
+
+			else if (connector instanceof EclipseExtension) {
+				properties.put("type", "Extension");
+			}
+			// no else.
+
+			properties.put("id", connector.getId());
+		}
+
+		else {
+			properties.put("type", "unbound");
+		}
+		// end else.
+
+		return this.asHTMLTable(properties);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.viz.ContractView#getToolTip(net.java.treaty.ExistsCondition
+	 * )
+	 */
+	protected String getToolTip(ExistsCondition existsCondition) {
+
+		Map<String, Object> properties;
+		properties = new LinkedHashMap<String, Object>();
+		properties.put("resource", existsCondition.getResource().getId());
+
+		/* Probably display a verification exception. */
+		String verificationException;
+		verificationException = this.getVerificationException(existsCondition);
+
+		if (verificationException.length() > 0) {
+			properties.put("failure", verificationException);
+		}
+		// no else.
+
+		return this.asHTMLTable(properties);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seenet.java.treaty.viz.ContractView#getToolTip(net.java.treaty.
+	 * RelationshipCondition)
+	 */
+	protected String getToolTip(RelationshipCondition relationshipCondition) {
+
+		Map<String, Object> properties;
+		properties = new LinkedHashMap<String, Object>();
+
+		properties.put("id", relationshipCondition.getRelationship());
+
+		/* Probably display a verification exception. */
+		String verificationException;
+		verificationException =
+				this.getVerificationException(relationshipCondition);
+
+		if (verificationException.length() > 0) {
+			properties.put("failure", verificationException);
+		}
+		// no else.
+
+		return this.asHTMLTable(properties);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.viz.ContractView#getToolTip(net.java.treaty.Resource)
+	 */
+	protected String getToolTip(Resource resource) {
+
+		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+
+		properties.put("id", resource.getId());
+		properties.put("name", resource.getName() == null ? "-" : resource
+				.getName());
+		properties.put("ref", resource.getRef() == null ? "-" : resource.getRef());
+		properties.put("type", resource.getType());
+
+		/* Probably display a verification exception. */
+		String verificationException;
+		verificationException = this.getVerificationException(resource);
+
+		if (verificationException.length() > 0) {
+			properties.put("failure", verificationException);
+		}
+		// no else.
+
+		return this.asHTMLTable(properties);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.viz.ContractView#getToolTip(net.java.treaty.PropertyCondition
+	 * )
+	 */
+	protected String getToolTip(PropertyCondition propertyCondition) {
+
+		Map<String, Object> properties;
+		properties = new LinkedHashMap<String, Object>();
+
+		properties.put("operator", propertyCondition.getOperator());
+		properties.put("value", propertyCondition.getValue());
+		properties.put("value type", propertyCondition.getValue() == null ? "null"
+				: propertyCondition.getValue().getClass());
+
+		/* Probably display a verification exception. */
+		String verificationException;
+		verificationException = this.getVerificationException(propertyCondition);
+
+		if (verificationException.length() > 0) {
+			properties.put("failure", verificationException);
+		}
+		// no else.
+
+		return this.asHTMLTable(properties);
 	}
 
 	/**
@@ -295,5 +455,46 @@ public class ContractVisualizationView extends net.java.treaty.viz.ContractView 
 		// no else.
 
 		return result;
+	}
+
+	/**
+	 * <p>
+	 * A helper method that returns a {@link String} describing the probably
+	 * existing verification exception of a given {@link PropertySupport}.
+	 * </p>
+	 * 
+	 * @param propertySupport
+	 *          The {@link PropertySupport} whose exception shall be returned.
+	 * @return The verification exception as a {@link String} or an empty
+	 *         {@link String}.
+	 */
+	private String getVerificationException(PropertySupport propertySupport) {
+
+		StringBuffer buffer;
+		buffer = new StringBuffer();
+
+		if (propertySupport.getProperty(Constants.VERIFICATION_EXCEPTION) != null
+				&& propertySupport.getProperty(Constants.VERIFICATION_EXCEPTION) instanceof Exception) {
+
+			Exception exception =
+					(Exception) propertySupport
+							.getProperty(Constants.VERIFICATION_EXCEPTION);
+
+			buffer.append("<font color=\"red\">");
+
+			if (exception.getMessage() != null && exception.getMessage().length() > 0) {
+				buffer.append(exception.getMessage());
+			}
+
+			else {
+				buffer.append(exception.getClass().getSimpleName());
+			}
+			// end else.
+
+			buffer.append("</font>");
+		}
+		// no else.
+
+		return buffer.toString();
 	}
 }
