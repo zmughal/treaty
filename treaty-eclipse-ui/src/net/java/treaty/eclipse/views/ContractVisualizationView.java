@@ -476,20 +476,40 @@ public class ContractVisualizationView extends net.java.treaty.viz.ContractView 
 		if (propertySupport.getProperty(Constants.VERIFICATION_EXCEPTION) != null
 				&& propertySupport.getProperty(Constants.VERIFICATION_EXCEPTION) instanceof Exception) {
 
-			Exception exception =
+			Throwable exception =
 					(Exception) propertySupport
 							.getProperty(Constants.VERIFICATION_EXCEPTION);
 
 			buffer.append("<font color=\"red\">");
 
-			if (exception.getMessage() != null && exception.getMessage().length() > 0) {
-				buffer.append(exception.getMessage());
-			}
+			while (exception != null) {
 
-			else {
-				buffer.append(exception.getClass().getSimpleName());
+				if (exception.getMessage() != null
+						&& exception.getMessage().length() > 0) {
+					buffer.append(exception.getMessage());
+				}
+
+				else {
+					buffer.append(exception.getClass().getSimpleName());
+				}
+
+				if (exception.getCause() != null
+						&& exception.getCause().equals(exception)) {
+					break;
+				}
+
+				else {
+					exception = exception.getCause();
+
+					if (exception != null) {
+						buffer.append("<br />");
+						buffer.append("<i>caused by:</i><br />");
+					}
+					// no else.
+				}
+				// end else.
 			}
-			// end else.
+			// end while.
 
 			buffer.append("</font>");
 		}
