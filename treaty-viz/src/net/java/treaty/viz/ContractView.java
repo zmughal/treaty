@@ -69,11 +69,27 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 
 /**
- * Swing component to visualise contracts.
+ * <p>
+ * Swing component to visualize contracts.
+ * </p>
  * 
- * @author jens dietrich
+ * @author Jens Dietrich
  */
 public class ContractView extends JPanel {
+
+	/**
+	 * <p>
+	 * The different types a composition node can have.
+	 * </p>
+	 * 
+	 * @author Jens Dietrich
+	 */
+	public enum CompositionNodeType {
+		AND, OR, XOR, NOT
+	}
+
+	/** Generated ID for serialization. */
+	private static final long serialVersionUID = -4783323458640635927L;
 
 	public ContractView() {
 
@@ -164,10 +180,6 @@ public class ContractView extends JPanel {
 
 			return "[connector:" + type + "]";
 		}
-	}
-
-	enum CompositionNodeType {
-		AND, OR, XOR, NOT
 	}
 
 	class CompositionNode extends Node {
