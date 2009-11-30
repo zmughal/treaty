@@ -11,24 +11,17 @@
 package net.java.treaty.eclipse.views;
 
 import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
-
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
-import java.awt.Stroke;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-
 import net.java.treaty.AbstractCondition;
 import net.java.treaty.Annotatable;
-import net.java.treaty.ComplexCondition;
 import net.java.treaty.Connector;
 import net.java.treaty.Contract;
 import net.java.treaty.ExistsCondition;
-import net.java.treaty.Negation;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.PropertySupport;
 import net.java.treaty.RelationshipCondition;
@@ -96,70 +89,36 @@ public class ContractVisualizationView extends net.java.treaty.viz.ContractView 
 	 * net.java.treaty.viz.ContractView#getEdgePaint(net.java.treaty.Annotatable,
 	 * net.java.treaty.Annotatable)
 	 */
-	protected Paint getEdgePaint(Annotatable source, Annotatable target) {
+	protected Paint getEdgePaint(Node source, Node target) {
 
-		Paint result;
-
-		Annotatable verifiedCondition;
-		verifiedCondition = this.findAnnotatableForResult(source, target);
-
-		Object verificationResult;
-		verificationResult = null;
-
-		if (verifiedCondition != null) {
-			verificationResult = verifiedCondition.getProperty(VERIFICATION_RESULT);
-		}
-		// no else.
-
-		if (verificationResult == VerificationResult.FAILURE) {
-			result = Color.RED;
-		}
-
-		else if (verificationResult == VerificationResult.SUCCESS) {
-			result = Color.GREEN;
-		}
-
-		else {
-			result = Color.GRAY;
-		}
-
-		return result;
+		VerificationResult s1 = this.getStatus(source);
+		VerificationResult s2 = this.getStatus(target);
+		
+		return s2==VerificationResult.FAILURE?Color.RED:Color.GREEN;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.viz.ContractView#getEdgeStroke(net.java.treaty.Annotatable,
-	 * net.java.treaty.Annotatable)
-	 */
-	protected Stroke getEdgeStroke(Annotatable source, Annotatable target) {
-
-		Stroke result;
-
-		Annotatable verifiedCondition;
-		verifiedCondition = this.findAnnotatableForResult(source, target);
-
-		Object verificationResult;
-		verificationResult = null;
-
-		if (verifiedCondition != null) {
-			verificationResult = verifiedCondition.getProperty(VERIFICATION_RESULT);
+	private VerificationResult getStatus(Node n) {
+		Annotatable a = n.getObject();
+		if (a==null) {
+			return VerificationResult.UNKNOWN;
 		}
-		// no else.
-
-		if (verificationResult == VerificationResult.FAILURE) {
-			result = new BasicStroke(2);
+		else if (a instanceof Resource) {
+			// look for references conditions
+			for (Node n2:this.graph.getSuccessors(n)) {
+				VerificationResult s2 = getStatus(n2);
+				if (s2==VerificationResult.FAILURE) return VerificationResult.FAILURE;
+			} 
+			return VerificationResult.SUCCESS;
 		}
-
-		else if (verificationResult == VerificationResult.SUCCESS) {
-			result = new BasicStroke(2);
-		}
-
 		else {
-			result = new BasicStroke(1);
+			VerificationResult f = (VerificationResult)a.getProperty(VERIFICATION_RESULT);
+			if (f!=null) {
+				return f;
+			}
+			else {
+				return VerificationResult.SUCCESS;
+			}
 		}
-
-		return result;
 	}
 
 	/*
@@ -320,142 +279,7 @@ public class ContractVisualizationView extends net.java.treaty.viz.ContractView 
 		return this.asHTMLTable(properties);
 	}
 
-	/**
-	 * <p>
-	 * A helper method that searches the right {@link Annotatable} to color or
-	 * stroke an edge between two given {@link Annotatable}s.
-	 * </p>
-	 * 
-	 * @param source
-	 *          The source {@link Annotatable} of the edge.
-	 * @param target
-	 *          The target {@link Annotatable} of the edge.
-	 * @return The found {@link Annotatable} or <code>null</code>.
-	 */
-	private Annotatable findAnnotatableForResult(Annotatable source,
-			Annotatable target) {
 
-		Annotatable result;
-		result = null;
-
-		/* If the target is a condition it provides the result. */
-		if (target instanceof AbstractCondition) {
-			result = target;
-		}
-
-		/* If the target is a resource, search the condition of the resource. */
-		else if (target instanceof Resource) {
-
-			/*
-			 * If the source is a complex condition, search the condition of the
-			 * resource.
-			 */
-			if (source instanceof ComplexCondition) {
-				result =
-						this.findConditionOfResource((ComplexCondition) source,
-								(Resource) target);
-			}
-
-			/* Else the source condition provides the result. */
-			else {
-				result = source;
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * A helper method that searches the {@link AbstractCondition} to which a
-	 * given {@link Resource} belongs to. The {@link AbstractCondition} can be a
-	 * given {@link AbstractCondition} or a part of this {@link AbstractCondition}
-	 * , if it is a {@link ComplexCondition}.
-	 * </p>
-	 * 
-	 * @param condition
-	 *          The {@link AbstractCondition} in whose parts shall be searched
-	 *          for.
-	 * @param resource
-	 *          The {@link Resource} whose {@link AbstractCondition} shall be
-	 *          found.
-	 * @return The found {@link AbstractCondition} that ownes the given
-	 *         {@link Resource} or <code>null</code>.
-	 */
-	private Annotatable findConditionOfResource(AbstractCondition condition,
-			Resource resource) {
-
-		Annotatable result;
-		result = null;
-
-		/* If the condition is complex, search in its parts. */
-		if (condition instanceof ComplexCondition) {
-
-			ComplexCondition complexCondition;
-			complexCondition = (ComplexCondition) condition;
-
-			for (AbstractCondition part : complexCondition.getParts()) {
-
-				result = this.findConditionOfResource(part, resource);
-
-				if (result != null) {
-					break;
-				}
-				// no else.
-			}
-			// end for.
-		}
-
-		/* If the condition is an ExistsCondition, check its resource. */
-		else if (condition instanceof ExistsCondition) {
-
-			ExistsCondition existsCondition;
-			existsCondition = (ExistsCondition) condition;
-
-			if (existsCondition.getResource().equals(resource)) {
-				result = existsCondition;
-			}
-			// no else.
-		}
-
-		/* If the condition is an Negation, check its negated condition. */
-		else if (condition instanceof Negation) {
-
-			Negation negation;
-			negation = (Negation) condition;
-
-			result =
-					this
-							.findConditionOfResource(negation.getNegatedCondition(), resource);
-		}
-
-		/* If the condition is an PropertyCondition, check its resource. */
-		else if (condition instanceof PropertyCondition) {
-
-			PropertyCondition propertyCondition;
-			propertyCondition = (PropertyCondition) condition;
-
-			if (propertyCondition.getResource().equals(resource)) {
-				result = propertyCondition;
-			}
-			// no else.
-		}
-
-		/* If the condition is an RelationshipCondition, check its resources. */
-		else if (condition instanceof RelationshipCondition) {
-
-			RelationshipCondition relationshipCondition;
-			relationshipCondition = (RelationshipCondition) condition;
-
-			if (relationshipCondition.getResource1().equals(resource)
-					|| relationshipCondition.getResource2().equals(resource)) {
-				result = relationshipCondition;
-			}
-			// no else.
-		}
-		// no else.
-
-		return result;
-	}
 
 	/**
 	 * <p>
