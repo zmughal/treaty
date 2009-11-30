@@ -11,10 +11,11 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Jens Dietrich, Masse University
 Export-Package: net.java.treaty.eclipse.views
-Bundle-ClassPath: lib/collections-generic-4.01.jar,
+Bundle-ClassPath: .,
+ lib/treaty-viz.jar,
+ lib/collections-generic-4.01.jar,
  lib/jung-api-2.0.jar,
  lib/jung-graph-impl-2.0.jar,
  lib/jung-visualization-2.0.jar,
  lib/log4j-1.2.15.jar,
- lib/treaty-viz.jar,
- .
+ lib/jung-algorithms-2.0.jar
