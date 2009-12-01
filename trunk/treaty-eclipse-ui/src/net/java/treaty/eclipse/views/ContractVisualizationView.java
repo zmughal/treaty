@@ -11,8 +11,11 @@
 package net.java.treaty.eclipse.views;
 
 import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
+
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
+import java.awt.Stroke;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.Icon;
@@ -30,6 +33,7 @@ import net.java.treaty.VerificationResult;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
+import net.java.treaty.viz.ContractView.Node;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.snippets.Snippet156;
@@ -91,34 +95,56 @@ public class ContractVisualizationView extends net.java.treaty.viz.ContractView 
 	 */
 	protected Paint getEdgePaint(Node source, Node target) {
 
-		VerificationResult s1 = this.getStatus(source);
-		VerificationResult s2 = this.getStatus(target);
-		
-		return s2==VerificationResult.FAILURE?Color.RED:Color.GREEN;
+		Paint result;
+
+		VerificationResult verificationResult;
+		verificationResult = this.getStatus(target);
+
+		switch (verificationResult) {
+
+		case FAILURE:
+			result = Color.RED;
+			break;
+
+		case SUCCESS:
+			result = Color.GREEN;
+			break;
+
+		default:
+			result = Color.YELLOW;
+		}
+
+		return result;
 	}
 
-	private VerificationResult getStatus(Node n) {
-		Annotatable a = n.getObject();
-		if (a==null) {
-			return VerificationResult.UNKNOWN;
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.viz.ContractView#getEdgeStroke(net.java.treaty.viz.ContractView
+	 * .Node, net.java.treaty.viz.ContractView.Node)
+	 */
+	protected Stroke getEdgeStroke(Node source, Node target) {
+
+		Stroke result;
+
+		VerificationResult verificationResult;
+		verificationResult = this.getStatus(target);
+
+		switch (verificationResult) {
+
+		case FAILURE:
+			result = new BasicStroke(2);
+			break;
+
+		case SUCCESS:
+			result = new BasicStroke(2);
+			break;
+
+		default:
+			result = new BasicStroke(1);
 		}
-		else if (a instanceof Resource) {
-			// look for references conditions
-			for (Node n2:this.graph.getSuccessors(n)) {
-				VerificationResult s2 = getStatus(n2);
-				if (s2==VerificationResult.FAILURE) return VerificationResult.FAILURE;
-			} 
-			return VerificationResult.SUCCESS;
-		}
-		else {
-			VerificationResult f = (VerificationResult)a.getProperty(VERIFICATION_RESULT);
-			if (f!=null) {
-				return f;
-			}
-			else {
-				return VerificationResult.SUCCESS;
-			}
-		}
+
+		return result;
 	}
 
 	/*
@@ -279,7 +305,58 @@ public class ContractVisualizationView extends net.java.treaty.viz.ContractView 
 		return this.asHTMLTable(properties);
 	}
 
+	/**
+	 * <p>
+	 * A helper method that returns the {@link VerificationResult} for a given
+	 * {@link Node}.
+	 * </p>
+	 * 
+	 * @param node
+	 *          The {@link Node} whose {@link VerificationResult} shall be
+	 *          returned.
+	 * @return The {@link VerificationResult} for the given {@link Node}.
+	 */
+	private VerificationResult getStatus(Node node) {
 
+		VerificationResult result;
+
+		Annotatable annotatable;
+		annotatable = node.getObject();
+
+		if (annotatable == null) {
+			result = VerificationResult.UNKNOWN;
+		}
+
+		else if (annotatable instanceof Resource) {
+
+			result = VerificationResult.UNKNOWN;
+
+			/* Look for referenced conditions. */
+			for (Node aSuccessor : this.graph.getSuccessors(node)) {
+
+				result = this.getStatus(aSuccessor);
+
+				if (result == VerificationResult.FAILURE) {
+					break;
+				}
+				// no else.
+			}
+			// end for.
+		}
+
+		else {
+			result =
+					(VerificationResult) annotatable.getProperty(VERIFICATION_RESULT);
+
+			if (result == null) {
+				result = VerificationResult.UNKNOWN;
+			}
+			// no else.
+		}
+		// end else.
+
+		return result;
+	}
 
 	/**
 	 * <p>

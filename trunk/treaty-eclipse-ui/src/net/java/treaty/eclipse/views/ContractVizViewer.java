@@ -26,10 +26,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTextArea;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import net.java.treaty.Contract;
 import net.java.treaty.VerificationResult;
@@ -76,10 +73,10 @@ public class ContractVizViewer extends Dialog {
 	private ContractVisualizationView myContractVisualizationView;
 
 	/** The tool bar (a {@link JPanel}) of this {@link ContractVizViewer}. */
-	private JPanel myToolbar = new JPanel(new GridLayout(1, 4));
+	private JPanel myToolbar = new JPanel(new GridLayout(2, 2));
 
 	/** The status line (a {@link JPanel}) of this {@link ContractVizViewer}. */
-	private JPanel myStatusLine = new JPanel(new GridLayout(1, 1));
+	private JPanel myStatusLine = new JPanel(new GridLayout(2, 1));
 
 	/**
 	 * <p>
@@ -156,16 +153,15 @@ public class ContractVizViewer extends Dialog {
 
 		Frame frame = SWT_AWT.new_Frame(composite);
 
-		/* Create the CV View. */
+		/* Add CVV, tool bar and status line to the frame. */
 		this.myContractVisualizationView = new ContractVisualizationView();
 		this.myContractVisualizationView.setModel(this.myContract);
 
-		/* Add tool bar, CVV and status line to the frame. */
-		frame.add(this.myToolbar, BorderLayout.NORTH);
-		this.initializeToolbar();
-
 		frame.add(new JScrollPane(this.myContractVisualizationView),
 				BorderLayout.CENTER);
+
+		frame.add(this.myToolbar, BorderLayout.NORTH);
+		this.initializeToolbar();
 
 		frame.add(this.myStatusLine, BorderLayout.SOUTH);
 		this.initializeStatusLine();
@@ -186,25 +182,7 @@ public class ContractVizViewer extends Dialog {
 		buffer = new StringBuffer();
 
 		buffer.append("Contract Visualization");
-		buffer.append(" - ");
-
-		if (this.myContract.getConsumer() != null) {
-			buffer.append("Consumer: " + this.myContract.getConsumer().getId());
-		}
-
-		else {
-			buffer.append("Unbound Consumer.");
-		}
-
-		buffer.append(", ");
-
-		if (this.myContract.getSupplier() != null) {
-			buffer.append("Supplier: " + this.myContract.getSupplier().getId());
-		}
-
-		else {
-			buffer.append("Unbound Supplier.");
-		}
+		buffer.append(" (BETA)");
 
 		return buffer.toString();
 	}
@@ -254,77 +232,21 @@ public class ContractVizViewer extends Dialog {
 
 	/**
 	 * <p>
-	 * A helper method that adds a {@link JSlider} to alter a {@link Integer}
-	 * value to the tool bar.
-	 * </p>
-	 * 
-	 * @param string
-	 *          The label of the {@link JSlider}.
-	 * @param initialValue
-	 *          The initial value of the {@link JSlider}.
-	 * @param min
-	 *          The minimal value of the {@link JSlider}.
-	 * @param max
-	 *          The maximal value of the {@link JSlider}.
-	 * @param command
-	 *          The {@link Command} that is used to alter the value.
-	 */
-	private void addIntegerPropertyCommand(String string, int initialValue,
-			int min, int max, final Command<Integer> command) {
-
-		JPanel jPane;
-
-		jPane = new JPanel(new GridLayout(1, 1, 5, 5));
-		jPane.add(new JLabel(string + ":", JLabel.RIGHT));
-
-		final JSlider slider;
-		slider = new JSlider();
-
-		slider.setMinimum(min);
-		slider.setMaximum(max);
-		slider.setValue(initialValue);
-		slider.setMinorTickSpacing(10);
-		slider.setMajorTickSpacing(50);
-		slider.createStandardLabels(50);
-		slider.setPaintLabels(true);
-		slider.setPaintTicks(true);
-		slider.setPaintTrack(true);
-
-		jPane.add(slider);
-
-		slider.addChangeListener(new ChangeListener() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent
-			 * )
-			 */
-			public void stateChanged(ChangeEvent e) {
-
-				command.apply(slider.getValue());
-			}
-		});
-
-		myToolbar.add(jPane);
-	}
-
-	/**
-	 * <p>
 	 * A helper method that initializes the status line of this
 	 * {@link ContractVizViewer}.
 	 * </p>
 	 */
 	private void initializeStatusLine() {
 
-		JTextArea jTextArea;
-		jTextArea = new JTextArea();
+		JTextArea contractVerificationStatus;
+		contractVerificationStatus = new JTextArea();
 
-		jTextArea.setBackground(this.myStatusLine.getBackground());
-		jTextArea.setFont(jTextArea.getFont().deriveFont(Font.BOLD));
+		contractVerificationStatus.setBackground(this.myStatusLine.getBackground());
+		contractVerificationStatus.setFont(contractVerificationStatus.getFont()
+				.deriveFont(Font.BOLD));
 
 		if (!this.myContract.isInstantiated()) {
-			jTextArea
+			contractVerificationStatus
 					.setText("This Contract is not instantiated and thus cannot be verified.");
 		}
 
@@ -334,8 +256,9 @@ public class ContractVizViewer extends Dialog {
 			verificationResult = this.myContract.getProperty(VERIFICATION_RESULT);
 
 			if (verificationResult == null) {
-				jTextArea.setText("This Contract has not been verified yet.");
-				jTextArea.setForeground(Color.GRAY);
+				contractVerificationStatus
+						.setText("This Contract has not been verified yet.");
+				contractVerificationStatus.setForeground(Color.GRAY);
 			}
 
 			else if (verificationResult == VerificationResult.FAILURE) {
@@ -366,25 +289,41 @@ public class ContractVizViewer extends Dialog {
 				}
 				// no else.
 
-				jTextArea.setText(buffer.toString());
-				jTextArea.setForeground(Color.RED);
+				contractVerificationStatus.setText(buffer.toString());
+				contractVerificationStatus.setForeground(Color.RED);
 			}
 
 			else if (verificationResult == VerificationResult.SUCCESS) {
-				jTextArea.setText("This Contract has been verified successfully.");
-				jTextArea.setForeground(Color.GREEN);
+				contractVerificationStatus
+						.setText("This Contract has been verified successfully.");
+				contractVerificationStatus.setForeground(Color.GREEN);
 			}
 
 			else {
-				jTextArea
+				contractVerificationStatus
 						.setText("The verification of this Contract resulted in an unknown state.");
-				jTextArea.setForeground(Color.GRAY);
+				contractVerificationStatus.setForeground(Color.GRAY);
 			}
 			// end else.
 		}
 		// end else.
 
-		this.myStatusLine.add(jTextArea);
+		this.myStatusLine.add(contractVerificationStatus);
+
+		JTextArea userHelp;
+		userHelp = new JTextArea();
+
+		userHelp.setBackground(this.myStatusLine.getBackground());
+		userHelp.setFont(userHelp.getFont().deriveFont(Font.ITALIC));
+
+		userHelp
+				.setText("You can move the graph by pressing the left mouse button and "
+						+ " moving the mouse. \nYou can alter the graph's size by pressing "
+						+ "CTRL and the left mouse button and moving the mouse. \n"
+						+ "Tooltips will give you further information about graph elements "
+						+ "during mouse over.");
+
+		this.myStatusLine.add(userHelp);
 	}
 
 	/**
@@ -393,6 +332,23 @@ public class ContractVizViewer extends Dialog {
 	 * </p>
 	 */
 	private void initializeToolbar() {
+
+		JTextArea consumerText;
+		consumerText = new JTextArea();
+
+		consumerText.setBackground(this.myToolbar.getBackground());
+		consumerText.setFont(consumerText.getFont().deriveFont(Font.BOLD));
+
+		if (this.myContract.getConsumer() != null) {
+			consumerText
+					.setText("Consumer: " + this.myContract.getConsumer().getId());
+		}
+
+		else {
+			consumerText.setText("No Consumer bound to Contract.");
+		}
+
+		this.myToolbar.add(consumerText);
 
 		this.addBooleanPropertyCommand("Merge equal Resources",
 				this.myContractVisualizationView.isMergeEqualNodes(),
@@ -404,7 +360,24 @@ public class ContractVizViewer extends Dialog {
 					}
 				});
 
-		this.addBooleanPropertyCommand("Remove reduntant Connectives",
+		JTextArea supplierText;
+		supplierText = new JTextArea();
+
+		supplierText.setBackground(this.myToolbar.getBackground());
+		supplierText.setFont(supplierText.getFont().deriveFont(Font.BOLD));
+
+		if (this.myContract.getSupplier() != null) {
+			supplierText
+					.setText("Supplier: " + this.myContract.getSupplier().getId());
+		}
+
+		else {
+			supplierText.setText("No Supplier bound to Contract.");
+		}
+
+		this.myToolbar.add(supplierText);
+
+		this.addBooleanPropertyCommand("Remove redundant Connectives",
 				this.myContractVisualizationView.isRemoveBinConnectivesWithOneChild(),
 				new Command<Boolean>() {
 
@@ -412,26 +385,6 @@ public class ContractVizViewer extends Dialog {
 
 						myContractVisualizationView
 								.setRemoveBinConnectivesWithOneChild(aBoolean);
-					}
-				});
-
-		this.addIntegerPropertyCommand("Column Width",
-				this.myContractVisualizationView.getColumnWidth(), 0, 200,
-				new Command<Integer>() {
-
-					public void apply(Integer integer) {
-
-						myContractVisualizationView.setColumnWidth(integer);
-					}
-				});
-
-		this.addIntegerPropertyCommand("Row Height",
-				this.myContractVisualizationView.getRowHeight(), 0, 200,
-				new Command<Integer>() {
-
-					public void apply(Integer integer) {
-
-						myContractVisualizationView.setRowHeight(integer);
 					}
 				});
 	}
