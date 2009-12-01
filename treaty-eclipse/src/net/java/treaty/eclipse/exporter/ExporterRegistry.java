@@ -225,15 +225,18 @@ public class ExporterRegistry implements IRegistryEventListener {
 					Class<?> clazz;
 					clazz = bundle.loadClass(className);
 
-					Exporter exporter;
-					exporter = (Exporter) clazz.newInstance();
+					if (Exporter.class.isAssignableFrom(clazz)) {
+						Exporter exporter;
+						exporter = (Exporter) clazz.newInstance();
 
-					/*
-					 * Add the exporter and probably store it for notify, if its a new
-					 * exporter.
-					 */
-					if (exportersOfExtension.add(exporter)) {
-						newExportersOfExtension.add(exporter);
+						/*
+						 * Add the exporter and probably store it for notify, if its a new
+						 * exporter.
+						 */
+						if (exportersOfExtension.add(exporter)) {
+							newExportersOfExtension.add(exporter);
+						}
+						// no else.
 					}
 					// no else.
 				}
