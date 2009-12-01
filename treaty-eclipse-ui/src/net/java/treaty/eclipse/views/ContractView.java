@@ -300,7 +300,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 *          The {@link Object} that shall be wrapped.
 		 */
 		public TreeObject(Object object) {
-
 			this.object = object;
 		}
 
@@ -347,7 +346,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 *          The {@link TreeParent} of this {@link TreeObject}.
 		 */
 		public void setParent(TreeParent parent) {
-
 			this.parent = parent;
 		}
 
@@ -357,7 +355,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 */
 		@Override
 		public String toString() {
-
 			return getObject().toString();
 		}
 	}
@@ -373,7 +370,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	private class TreeParent extends TreeObject {
 
 		/** The children {@link TreeObject}s of this {@link TreeParent}. */
-		private ArrayList<TreeObject> children;
+		private List<TreeObject> children = new ArrayList<TreeObject>();
 
 		/**
 		 * <p>
@@ -386,8 +383,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		public TreeParent(Object object) {
 
 			super(object);
-
-			this.children = new ArrayList<TreeObject>();
 		}
 
 		/**
@@ -412,7 +407,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 * @return All children {@link TreeObject}s of this {@link TreeParent}.
 		 */
 		public TreeObject[] getChildren() {
-
+			if (children==null) return new TreeObject[0];
 			return (TreeObject[]) this.children.toArray(new TreeObject[this.children
 					.size()]);
 		}
@@ -2218,27 +2213,34 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	 */
 	private Contract findContract(TreeObject treeObject) {
 
-		Contract result;
+		Object adaptedObject = treeObject.getObject();
 
-		Object adaptedObject;
-		adaptedObject = treeObject.getObject();
-
-		TreeObject parent;
-		parent = treeObject.getParent();
-
+		// check whether this is a contract
 		if (adaptedObject instanceof Contract) {
-			result = (Contract) adaptedObject;
+			return (Contract) adaptedObject;
+		}
+		
+		// check whether the first child and only this is a contract
+		// this will pick contracts when parents (extensions and ext points)
+		// are selected
+		if (treeObject instanceof TreeParent) {
+			TreeObject[] children = ((TreeParent)treeObject).getChildren();
+			if (children!=null && children.length>0 && children[0].getObject() instanceof Contract) {
+				Contract contract = (Contract)children[0].getObject();
+				boolean isUniqueSelection = true; 
+				for (int i=1;i<children.length;i++) {
+					isUniqueSelection = isUniqueSelection && !(children[i].getObject() instanceof Contract );
+				}
+				if (isUniqueSelection) return contract;
+			}
 		}
 
-		else if (parent != null) {
-			result = this.findContract(parent);
+		TreeObject parent = treeObject.getParent();
+		if (parent != null) {
+			 return this.findContract(parent);
 		}
 
-		else {
-			result = null;
-		}
-
-		return result;
+		return null;
 	}
 
 	/**
