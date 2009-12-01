@@ -310,18 +310,12 @@ public class ContractVizViewer extends Dialog {
 
 		this.myStatusLine.add(contractVerificationStatus);
 
-		JTextArea userHelp;
-		userHelp = new JTextArea();
+		
+		JTextArea userHelp = new JTextArea();
 
 		userHelp.setBackground(this.myStatusLine.getBackground());
 		userHelp.setFont(userHelp.getFont().deriveFont(Font.ITALIC));
-
-		userHelp
-				.setText("You can move the graph by pressing the left mouse button and "
-						+ " moving the mouse. \nYou can alter the graph's size by pressing "
-						+ "CTRL and the left mouse button and moving the mouse. \n"
-						+ "Tooltips will give you further information about graph elements "
-						+ "during mouse over.");
+		userHelp.setText("\nDrag mouse to pan image, use mouse wheel to zoom, Ctrl+drag to scale horizontally and vertically.");
 
 		this.myStatusLine.add(userHelp);
 	}
