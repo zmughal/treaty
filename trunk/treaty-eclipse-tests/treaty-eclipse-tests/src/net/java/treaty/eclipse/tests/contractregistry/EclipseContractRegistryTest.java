@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import net.java.treaty.Role;
 import net.java.treaty.eclipse.contractregistry.EclipseAdapterFactory;
+import net.java.treaty.eclipse.contractregistry.EclipseConnectorAdaptationException;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 
 import org.eclipse.core.runtime.IExtension;
@@ -265,7 +266,8 @@ public class EclipseContractRegistryTest {
 	 * @throws BundleException
 	 */
 	@Test
-	public void testAddingConnectors01() throws BundleException {
+	public void testAddingConnectors01() throws BundleException,
+			EclipseConnectorAdaptationException {
 
 		/* Clear the registry to avoid side effects. */
 		EclipseContractRegistry.clear();
@@ -312,7 +314,8 @@ public class EclipseContractRegistryTest {
 	 * @throws BundleException
 	 */
 	@Test
-	public void testAddingConnectors02() throws BundleException {
+	public void testAddingConnectors02() throws BundleException,
+			EclipseConnectorAdaptationException {
 
 		/* Clear the registry to avoid side effects. */
 		EclipseContractRegistry.clear();
@@ -379,7 +382,8 @@ public class EclipseContractRegistryTest {
 	 * @throws BundleException
 	 */
 	@Test
-	public void testAddingConnectors03() throws BundleException {
+	public void testAddingConnectors03() throws BundleException,
+			EclipseConnectorAdaptationException {
 
 		/* Clear the registry to avoid side effects. */
 		EclipseContractRegistry.clear();
@@ -466,7 +470,8 @@ public class EclipseContractRegistryTest {
 	 * @throws BundleException
 	 */
 	@Test
-	public void testRemovingConnectors01() throws BundleException {
+	public void testRemovingConnectors01() throws BundleException,
+			EclipseConnectorAdaptationException {
 
 		this.addAllConnectors();
 
@@ -526,7 +531,8 @@ public class EclipseContractRegistryTest {
 	 * @throws BundleException
 	 */
 	@Test
-	public void testRemovingConnectors02() throws BundleException {
+	public void testRemovingConnectors02() throws BundleException,
+			EclipseConnectorAdaptationException {
 
 		this.addAllConnectors();
 
@@ -570,7 +576,8 @@ public class EclipseContractRegistryTest {
 	 * @throws BundleException
 	 */
 	@Test
-	public void testRemovingConnectors03() throws BundleException {
+	public void testRemovingConnectors03() throws BundleException,
+			EclipseConnectorAdaptationException {
 
 		this.addAllConnectors();
 
@@ -666,7 +673,8 @@ public class EclipseContractRegistryTest {
 	 * @throws BundleException
 	 */
 	@Test
-	public void testRemovingConnectors04() throws BundleException {
+	public void testRemovingConnectors04() throws BundleException,
+			EclipseConnectorAdaptationException {
 
 		this.addAllConnectors();
 

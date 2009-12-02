@@ -23,6 +23,7 @@ import net.java.treaty.VerificationReport;
 import net.java.treaty.Verifier;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.contractregistry.EclipseAdapterFactory;
+import net.java.treaty.eclipse.contractregistry.EclipseConnectorAdaptationException;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.verification.EclipseVerificationReport;
 import net.java.treaty.eclipse.verification.EclipseVerifier;
@@ -231,7 +232,7 @@ public class ClockExampleTests {
 	 * </p>
 	 */
 	@BeforeClass
-	public static void setUp() {
+	public static void setUp() throws EclipseConnectorAdaptationException {
 
 		/* Initialize the ContractRegistry. */
 		EclipseContractRegistry.getInstance();
