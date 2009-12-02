@@ -10,6 +10,9 @@
 
 package net.java.treaty.eclipse.contractregistry;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.java.treaty.Contract;
 import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
@@ -51,10 +54,10 @@ public class UpdateJobExtensionPointsRemoved extends Job {
 	private static final int WORK_EXTENSION_POINT_REMOVAL = 1000;
 
 	/**
-	 * The {@link IExtensionPoint}s this {@link UpdateJobExtensionPointsRemoved}
-	 * shall handle.
+	 * The {@link EclipseExtensionPoint}s this
+	 * {@link UpdateJobExtensionPointsRemoved} shall handle.
 	 */
-	private IExtensionPoint[] myExtensionPoints;
+	private Set<EclipseExtensionPoint> myExtensionPoints;
 
 	/**
 	 * <p>
@@ -72,7 +75,44 @@ public class UpdateJobExtensionPointsRemoved extends Job {
 
 		super(name);
 
-		this.myExtensionPoints = extensionPoints;
+		Set<EclipseExtensionPoint> eclipseExtensionPoints;
+		eclipseExtensionPoints = new HashSet<EclipseExtensionPoint>();
+
+		boolean extensionPointWasInvalid;
+		extensionPointWasInvalid = false;
+
+		for (IExtensionPoint extensionPoint : extensionPoints) {
+
+			try {
+				EclipseExtensionPoint eclipseExtensionPoint;
+				eclipseExtensionPoint =
+						EclipseAdapterFactory.getInstance().createExtensionPoint(
+								extensionPoint);
+				eclipseExtensionPoints.add(eclipseExtensionPoint);
+			}
+			// end try.
+
+			catch (EclipseConnectorAdaptationException e) {
+				Logger.warn("IExtensionPoint " + extensionPoint
+						+ " is invalid. Try to clean the ContractRegistry manually.", e);
+
+				extensionPointWasInvalid = true;
+			}
+			// end catch.
+		}
+		// end for (iteration on extension points).
+
+		this.myExtensionPoints = eclipseExtensionPoints;
+
+		if (extensionPointWasInvalid) {
+			Job jobCleanRegistry;
+			jobCleanRegistry =
+					new UpdateJobCleanContractRegistry(
+							"Invalid ExtensionPoint found. Clean the ContractRegistry.");
+
+			jobCleanRegistry.schedule();
+		}
+		// no else.
 	}
 
 	/*
@@ -126,68 +166,56 @@ public class UpdateJobExtensionPointsRemoved extends Job {
 		monitor.subTask("Search for contracted ExtensionPoints.");
 
 		/* If not extension point has been given at all, mark this task as worked. */
-		if (this.myExtensionPoints == null || this.myExtensionPoints.length == 0) {
+		if (this.myExtensionPoints == null || this.myExtensionPoints.size() == 0) {
 			monitor.worked(WORK_EXTENSION_POINTS);
 		}
 		// no else.
 
 		/* Search for extension points that can now be removed again. */
-		for (IExtensionPoint extensionPoint : this.myExtensionPoints) {
+		for (EclipseExtensionPoint eclipseExtensionPoint : this.myExtensionPoints) {
 
-			try {
-				EclipseExtensionPoint eclipseExtensionPoint;
-				eclipseExtensionPoint =
-						EclipseAdapterFactory.getInstance().createExtensionPoint(
-								extensionPoint);
+			if (eclipseExtensionPoint.getContracts().size() > 0) {
 
-				if (eclipseExtensionPoint.getContracts().size() > 0) {
+				/*
+				 * Remove the extension points extensions and also un-instantiate their
+				 * contracts.
+				 */
+				this
+						.removeContractsFromExtensionsOfExtensionPoint(eclipseExtensionPoint);
 
-					/*
-					 * Remove the extension points extensions and also un-instantiate
-					 * their contracts.
-					 */
-					this
-							.removeContractsFromExtensionsOfExtensionPoint(eclipseExtensionPoint);
+				/* Remove all Contracts from the Extension Point. */
+				for (Contract contract : eclipseExtensionPoint.getContracts()) {
 
-					/* Remove all Contracts from the Extension Point. */
-					for (Contract contract : eclipseExtensionPoint.getContracts()) {
-
-						try {
-							EclipseContractRegistry.getInstance().updateContract(
-									UpdateType.REMOVE_CONTRACT, contract, eclipseExtensionPoint,
-									Role.CONSUMER);
-						}
-
-						catch (TreatyException e) {
-
-							Logger.error(
-									"Unexpected TreatyException during removal of Contracts "
-											+ "from ExtensionPoint.", e);
-						}
-						// end catch.
-
-						/* Check if the contract was an external contract. */
-						if (contract.getDefinition() != null
-								&& contract.getSupplier() == null) {
-
-							/* Register the legislator contract as unbound. */
-							EclipseContractRegistry.getInstance()
-									.addUnboundLegislatorContract(eclipseExtensionPoint.getId(),
-											contract.getDefinition());
-						}
-						// no else.
+					try {
+						EclipseContractRegistry.getInstance().updateContract(
+								UpdateType.REMOVE_CONTRACT, contract, eclipseExtensionPoint,
+								Role.CONSUMER);
 					}
-					// end for.
+
+					catch (TreatyException e) {
+
+						Logger.error(
+								"Unexpected TreatyException during removal of Contracts "
+										+ "from ExtensionPoint.", e);
+					}
+					// end catch.
+
+					/* Check if the contract was an external contract. */
+					if (contract.getOwner() != null
+							&& !eclipseExtensionPoint.getId().equals(
+									contract.getOwner().getId())) {
+
+						/* Register the legislator contract as unbound. */
+						EclipseContractRegistry.getInstance().addUnboundLegislatorContract(
+								eclipseExtensionPoint.getId(), contract.getDefinition());
+					}
+					// no else.
 				}
-				// no else.
+				// end for.
 			}
-			// end try.
+			// no else.
 
-			catch (EclipseConnectorAdaptationException e1) {
-				Logger.warn(e1.getMessage(), e1);
-			}
-
-			monitor.worked(WORK_EXTENSION_POINTS / this.myExtensionPoints.length);
+			monitor.worked(WORK_EXTENSION_POINTS / this.myExtensionPoints.size());
 		}
 		// end for.
 	}
@@ -250,35 +278,23 @@ public class UpdateJobExtensionPointsRemoved extends Job {
 		/* Update monitor status. */
 		monitor.subTask("Remove Extensions Points.");
 
-		if (this.myExtensionPoints == null || this.myExtensionPoints.length == 0) {
+		if (this.myExtensionPoints == null || this.myExtensionPoints.size() == 0) {
 			monitor.worked(WORK_EXTENSION_POINT_REMOVAL);
 		}
 		// no else.
 
-		for (IExtensionPoint extensionPoint : this.myExtensionPoints) {
+		for (EclipseExtensionPoint eclipseExtensionPoint : this.myExtensionPoints) {
 
-			try {
-				EclipseExtensionPoint eclipseExtensionPoint;
-				eclipseExtensionPoint =
-						EclipseAdapterFactory.getInstance().createExtensionPoint(
-								extensionPoint);
+			EclipsePlugin eclipsePlugin;
+			eclipsePlugin = (EclipsePlugin) eclipseExtensionPoint.getOwner();
 
-				EclipsePlugin eclipsePlugin;
-				eclipsePlugin = (EclipsePlugin) eclipseExtensionPoint.getOwner();
+			eclipsePlugin.removeExtensionPoint(eclipseExtensionPoint);
 
-				eclipsePlugin.removeExtensionPoint(eclipseExtensionPoint);
-
-				EclipseAdapterFactory.getInstance().removeIExtensionPointFromCache(
-						extensionPoint);
-			}
-			// end try.
-
-			catch (EclipseConnectorAdaptationException e1) {
-				Logger.warn(e1.getMessage(), e1);
-			}
+			EclipseAdapterFactory.getInstance().removeEclipseExtensionPointFromCache(
+					eclipseExtensionPoint);
 
 			monitor.worked(WORK_EXTENSION_POINT_REMOVAL
-					/ this.myExtensionPoints.length);
+					/ this.myExtensionPoints.size());
 		}
 		// end for.
 	}
