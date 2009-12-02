@@ -300,6 +300,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 *          The {@link Object} that shall be wrapped.
 		 */
 		public TreeObject(Object object) {
+
 			this.object = object;
 		}
 
@@ -346,6 +347,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 *          The {@link TreeParent} of this {@link TreeObject}.
 		 */
 		public void setParent(TreeParent parent) {
+
 			this.parent = parent;
 		}
 
@@ -355,6 +357,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 */
 		@Override
 		public String toString() {
+
 			return getObject().toString();
 		}
 	}
@@ -407,7 +410,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 * @return All children {@link TreeObject}s of this {@link TreeParent}.
 		 */
 		public TreeObject[] getChildren() {
-			if (children==null) return new TreeObject[0];
+
+			if (children == null)
+				return new TreeObject[0];
 			return (TreeObject[]) this.children.toArray(new TreeObject[this.children
 					.size()]);
 		}
@@ -1606,7 +1611,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 		this.myViewer =
 				new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		this.myDrillDownAdapter = new DrillDownAdapter(myViewer);
 
 		this.myViewer.getTree().setHeaderVisible(true);
 
@@ -2094,8 +2098,8 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	private void contributeToActionBars() {
 
 		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
+		this.fillLocalPullDown(bars.getMenuManager());
+		this.fillLocalToolBar(bars.getToolBarManager());
 	}
 
 	private void createExportAction(Exporter exporter) {
@@ -2159,6 +2163,8 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	 */
 	private void fillLocalPullDown(IMenuManager manager) {
 
+		manager.removeAll();
+
 		manager.add(this.myActionRefresh);
 
 		manager.add(new Separator());
@@ -2186,6 +2192,8 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	 */
 	private void fillLocalToolBar(IToolBarManager toolBarManager) {
 
+		toolBarManager.removeAll();
+
 		toolBarManager.add(this.myActionRefresh);
 		toolBarManager.add(this.myActionVerifyAllContracts);
 		toolBarManager.add(this.myActionVerifySelectedContracts);
@@ -2199,6 +2207,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 		toolBarManager.add(new Separator());
 
+		this.myDrillDownAdapter = new DrillDownAdapter(this.myViewer);
 		this.myDrillDownAdapter.addNavigationActions(toolBarManager);
 	}
 
@@ -2219,25 +2228,29 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		if (adaptedObject instanceof Contract) {
 			return (Contract) adaptedObject;
 		}
-		
+
 		// check whether the first child and only this is a contract
 		// this will pick contracts when parents (extensions and ext points)
 		// are selected
 		if (treeObject instanceof TreeParent) {
-			TreeObject[] children = ((TreeParent)treeObject).getChildren();
-			if (children!=null && children.length>0 && children[0].getObject() instanceof Contract) {
-				Contract contract = (Contract)children[0].getObject();
-				boolean isUniqueSelection = true; 
-				for (int i=1;i<children.length;i++) {
-					isUniqueSelection = isUniqueSelection && !(children[i].getObject() instanceof Contract );
+			TreeObject[] children = ((TreeParent) treeObject).getChildren();
+			if (children != null && children.length > 0
+					&& children[0].getObject() instanceof Contract) {
+				Contract contract = (Contract) children[0].getObject();
+				boolean isUniqueSelection = true;
+				for (int i = 1; i < children.length; i++) {
+					isUniqueSelection =
+							isUniqueSelection
+									&& !(children[i].getObject() instanceof Contract);
 				}
-				if (isUniqueSelection) return contract;
+				if (isUniqueSelection)
+					return contract;
 			}
 		}
 
 		TreeObject parent = treeObject.getParent();
 		if (parent != null) {
-			 return this.findContract(parent);
+			return this.findContract(parent);
 		}
 
 		return null;
