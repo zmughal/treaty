@@ -23,8 +23,6 @@ import net.java.treaty.eclipse.verification.EclipseVerifier;
 import net.java.treaty.eclipse.vocabulary.junit.Activator;
 import net.java.treaty.eclipse.vocabulary.junit.JUnitVocabulary;
 
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,11 +46,8 @@ public class Tests {
 		String id = Activator.PLUGIN_ID;
 		Bundle bundle = org.eclipse.core.runtime.Platform.getBundle(id);
 		plugin = new EclipsePlugin(bundle);
-		IExtensionRegistry registry =
-				org.eclipse.core.runtime.Platform.getExtensionRegistry();
-		IExtension x =
-				registry.getExtension("net.java.treaty.eclipse.vocabulary.junit");
-		connector = new EclipseExtension(plugin, x);
+		connector =
+				new EclipseExtension(plugin, "net.java.treaty.eclipse.vocabulary.junit");
 	}
 
 	@After
