@@ -58,10 +58,21 @@ public class EclipseAdapterFactory {
 
 	/**
 	 * The already adapted {@link EclipseExtension}s of this
-	 * {@link EclipseAdapterFactory} identified by their {@link IExtension}.
+	 * {@link EclipseAdapterFactory} identified by their {@link IExtension} id or
+	 * a generated id.
 	 */
-	private Map<IExtension, EclipseExtension> myEclipseExtensions =
-			new HashMap<IExtension, EclipseExtension>();
+	private Map<String, EclipseExtension> myEclipseExtensions =
+			new HashMap<String, EclipseExtension>();
+
+	/**
+	 * Mapps {@link IExtension}s wihtout an identifier to a generated unique
+	 * identifier.
+	 */
+	private Map<IExtension, String> extensionIDs =
+			new WeakHashMap<IExtension, String>();
+
+	/** Counter to generate unique identifiers for {@link IExtension}s. */
+	private int unnamedExtensionCounter = 0;
 
 	/**
 	 * <p>
@@ -196,11 +207,18 @@ public class EclipseAdapterFactory {
 			throws EclipseConnectorAdaptationException {
 
 		EclipseExtension result;
+		String uniqueIdentifier;
+		uniqueIdentifier = extension.getUniqueIdentifier();
+
+		if (uniqueIdentifier == null || uniqueIdentifier.length() == 0) {
+			uniqueIdentifier = this.getUniqueIdentifier(extension);
+		}
+		// no else.
 
 		try {
 			/* Probably use a cached result. */
-			if (this.myEclipseExtensions.containsKey(extension)) {
-				result = this.myEclipseExtensions.get(extension);
+			if (this.myEclipseExtensions.containsKey(uniqueIdentifier)) {
+				result = this.myEclipseExtensions.get(uniqueIdentifier);
 			}
 
 			else {
@@ -213,9 +231,7 @@ public class EclipseAdapterFactory {
 						org.eclipse.core.runtime.Platform.getBundle(contributor.getName());
 				eclipsePlugin = this.createEclipsePlugin(bundle);
 
-				result =
-						new EclipseExtension(eclipsePlugin, extension
-								.getExtensionPointUniqueIdentifier());
+				result = new EclipseExtension(eclipsePlugin, uniqueIdentifier);
 
 				IExtensionPoint extensionPoint;
 				extensionPoint =
@@ -225,7 +241,7 @@ public class EclipseAdapterFactory {
 				result.setExtensionPoint(this.createExtensionPoint(extensionPoint));
 
 				/* Cache the result. */
-				this.myEclipseExtensions.put(extension, result);
+				this.myEclipseExtensions.put(uniqueIdentifier, result);
 			}
 			// end else.
 		}
@@ -269,21 +285,21 @@ public class EclipseAdapterFactory {
 	 */
 	public void removeEclipseExtensionFromCache(EclipseExtension eclipseExtension) {
 
-		IExtension extensionToBeRemoved;
-		extensionToBeRemoved = null;
+		String idToBeRemoved;
+		idToBeRemoved = null;
 
-		for (IExtension extension : this.myEclipseExtensions.keySet()) {
+		for (String extensionID : this.myEclipseExtensions.keySet()) {
 
-			if (this.myEclipseExtensions.get(extension).equals(eclipseExtension)) {
-				extensionToBeRemoved = extension;
+			if (this.myEclipseExtensions.get(extensionID).equals(eclipseExtension)) {
+				idToBeRemoved = extensionID;
 				break;
 			}
 			// no else.
 		}
 		// end for.
 
-		if (extensionToBeRemoved != null) {
-			this.myEclipseExtensions.remove(extensionToBeRemoved);
+		if (idToBeRemoved != null) {
+			this.myEclipseExtensions.remove(idToBeRemoved);
 		}
 		// no else.
 	}
@@ -318,5 +334,39 @@ public class EclipseAdapterFactory {
 			this.myEclipseExtensionPoints.remove(idToBeRemoved);
 		}
 		// no else.
+	}
+
+	/**
+	 * <p>
+	 * (Probably creates and) returns a unique ID for the given {@link IExtension}
+	 * .
+	 * </p>
+	 * 
+	 * @param extension
+	 *          The {@link IExtension} for that an ID shall be returned.
+	 * @return The unique ID.
+	 * @throws InvalidRegistryObjectException
+	 *           Thrown, if the given {@link IExtension} is invalid.
+	 */
+	private String getUniqueIdentifier(IExtension extension)
+			throws InvalidRegistryObjectException {
+
+		String result;
+
+		if (this.extensionIDs.containsKey(extension)) {
+			result = this.extensionIDs.get(extension);
+		}
+
+		else {
+			StringBuffer buffer;
+			buffer = new StringBuffer();
+
+			buffer.append(extension.getExtensionPointUniqueIdentifier());
+			buffer.append(".unnamedExtension_" + this.unnamedExtensionCounter++);
+
+			result = buffer.toString();
+		}
+
+		return result;
 	}
 }
