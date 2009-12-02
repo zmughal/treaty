@@ -217,6 +217,13 @@ public class EclipseAdapterFactory {
 						new EclipseExtension(eclipsePlugin, extension
 								.getExtensionPointUniqueIdentifier());
 
+				IExtensionPoint extensionPoint;
+				extensionPoint =
+						org.eclipse.core.runtime.Platform.getExtensionRegistry()
+								.getExtensionPoint(
+										extension.getExtensionPointUniqueIdentifier());
+				result.setExtensionPoint(this.createExtensionPoint(extensionPoint));
+
 				/* Cache the result. */
 				this.myEclipseExtensions.put(extension, result);
 			}
@@ -253,29 +260,63 @@ public class EclipseAdapterFactory {
 
 	/**
 	 * <p>
-	 * Removes a given {@link IExtension} from the cache of this
+	 * Removes a given {@link EclipseExtension} from the cache of this
 	 * {@link EclipseAdapterFactory}.
 	 * </p>
 	 * 
-	 * @param extension
-	 *          The {@link IExtension} that shall be removed.
+	 * @param eclipseExtension
+	 *          The {@link EclipseExtension} that shall be removed.
 	 */
-	public void removeIExtensionFromCache(IExtension extension) {
+	public void removeEclipseExtensionFromCache(EclipseExtension eclipseExtension) {
 
-		this.myEclipseExtensions.remove(extension);
+		IExtension extensionToBeRemoved;
+		extensionToBeRemoved = null;
+
+		for (IExtension extension : this.myEclipseExtensions.keySet()) {
+
+			if (this.myEclipseExtensions.get(extension).equals(eclipseExtension)) {
+				extensionToBeRemoved = extension;
+				break;
+			}
+			// no else.
+		}
+		// end for.
+
+		if (extensionToBeRemoved != null) {
+			this.myEclipseExtensions.remove(extensionToBeRemoved);
+		}
+		// no else.
 	}
 
 	/**
 	 * <p>
-	 * Removes a given {@link IExtensionPoint} from the cache of this
+	 * Removes a given {@link EclipseExtensionPoint} from the cache of this
 	 * {@link EclipseAdapterFactory}.
 	 * </p>
 	 * 
-	 * @param extensionPoint
-	 *          The {@link IExtensionPoint} that shall be removed.
+	 * @param eclipseExtensionPoint
+	 *          The {@link EclipseExtensionPoint} that shall be removed.
 	 */
-	public void removeIExtensionPointFromCache(IExtensionPoint extensionPoint) {
+	public void removeEclipseExtensionPointFromCache(
+			EclipseExtensionPoint eclipseExtensionPoint) {
 
-		this.myEclipseExtensionPoints.remove(extensionPoint);
+		String idToBeRemoved;
+		idToBeRemoved = null;
+
+		for (String extensionPointID : this.myEclipseExtensionPoints.keySet()) {
+
+			if (this.myEclipseExtensionPoints.get(extensionPointID).equals(
+					eclipseExtensionPoint)) {
+				idToBeRemoved = extensionPointID;
+				break;
+			}
+			// no else.
+		}
+		// end for.
+
+		if (idToBeRemoved != null) {
+			this.myEclipseExtensionPoints.remove(idToBeRemoved);
+		}
+		// no else.
 	}
 }
