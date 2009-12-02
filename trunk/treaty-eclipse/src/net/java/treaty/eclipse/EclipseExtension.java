@@ -13,8 +13,6 @@ package net.java.treaty.eclipse;
 import net.java.treaty.Component;
 import net.java.treaty.ConnectorType;
 
-import org.eclipse.core.runtime.IExtension;
-
 /**
  * <p>
  * Represents eclipse extensions. This is a wrapper class.
@@ -25,32 +23,32 @@ import org.eclipse.core.runtime.IExtension;
 public class EclipseExtension extends EclipseConnector implements
 		Comparable<EclipseExtension> {
 
-	/** The wrapped {@link IExtension} of this {@link EclipseExtension}. */
-	private IExtension extension = null;
+	/** The id of this {@link EclipseExtension}. */
+	private String myID = null;
 
 	/**
 	 * The associated {@link EclipseExtensionPoint} of this
 	 * {@link EclipseExtension}.
 	 */
-	private EclipseExtensionPoint extensionPoint = null;
+	private EclipseExtensionPoint myExtensionPoint = null;
 
 	/**
 	 * <p>
 	 * Creates a new {@link EclipseExtension} for a given {@link EclipsePlugin}
-	 * and a given {@link IExtension} that shall be wrapped.
+	 * and a given id.
 	 * </p>
 	 * 
 	 * @param owner
 	 *          The owner (an {@link EclipsePlugin}) of the created
 	 *          {@link EclipseExtension}.
-	 * @param extension
-	 *          The wrapped {@link IExtension} of this {@link EclipseExtension}.
+	 * @param id
+	 *          The id of this {@link EclipseExtension}.
 	 */
-	public EclipseExtension(EclipsePlugin owner, IExtension extension) {
+	public EclipseExtension(EclipsePlugin owner, String id) {
 
 		super(owner);
 
-		this.extension = extension;
+		this.myID = id;
 
 		if (owner != null) {
 			owner.addExtension(this);
@@ -117,7 +115,7 @@ public class EclipseExtension extends EclipseConnector implements
 
 	public String getId() {
 
-		return this.extension.getUniqueIdentifier();
+		return this.myID;
 	}
 
 	/**
@@ -169,20 +167,7 @@ public class EclipseExtension extends EclipseConnector implements
 	 */
 	public EclipseExtensionPoint getExtensionPoint() {
 
-		return extensionPoint;
-	}
-
-	/**
-	 * <p>
-	 * Returns the wrapped {@link IExtension} of this {@link EclipseExtension}.
-	 * </p>
-	 * 
-	 * @return The wrapped {@link IExtension} of this {@link EclipseExtension}
-	 *         .</p>
-	 */
-	public IExtension getWrappedExtension() {
-
-		return this.extension;
+		return myExtensionPoint;
 	}
 
 	/**
@@ -197,7 +182,7 @@ public class EclipseExtension extends EclipseConnector implements
 	 */
 	public void setExtensionPoint(EclipseExtensionPoint extensionPoint) {
 
-		this.extensionPoint = extensionPoint;
+		this.myExtensionPoint = extensionPoint;
 	}
 
 	/*
@@ -207,11 +192,8 @@ public class EclipseExtension extends EclipseConnector implements
 	@Override
 	public String toString() {
 
-		return new StringBuffer()
-				.append(this.getClass().getName())
-				.append('(')
-				.append(
-						this.extension == null ? "?" : this.extension.getUniqueIdentifier())
-				.append(",defined in ").append(this.getOwner()).append(')').toString();
+		return new StringBuffer().append(this.getClass().getName()).append('(')
+				.append(this.getId() == null ? "?" : this.getId()).append(
+						",defined in ").append(this.getOwner()).append(')').toString();
 	}
 }

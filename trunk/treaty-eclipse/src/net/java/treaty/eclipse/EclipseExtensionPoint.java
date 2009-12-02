@@ -16,8 +16,6 @@ import java.util.Set;
 import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
 
-import org.eclipse.core.runtime.IExtensionPoint;
-
 /**
  * <p>
  * Represents eclipse extension points. This is a wrapper class.
@@ -28,30 +26,29 @@ import org.eclipse.core.runtime.IExtensionPoint;
 public class EclipseExtensionPoint extends EclipseConnector {
 
 	/** The {@link EclipseExtension}s of this {@link EclipseExtensionPoint}. */
-	private Set<EclipseExtension> extensions = new HashSet<EclipseExtension>();
+	private Set<EclipseExtension> myEclipseExtensions =
+			new HashSet<EclipseExtension>();
 
-	/** The {@link IExtensionPoint} wrapped by this {@link EclipseExtensionPoint}. */
-	private IExtensionPoint extensionPoint = null;
+	/** The ID of this {@link EclipseExtensionPoint}. */
+	private String myID = null;
 
 	/**
 	 * <p>
 	 * Creates a new {@link EclipseExtensionPoint} for a given owning
-	 * {@link EclipsePlugin} and a given {@link IExtensionPoint} that shall be
-	 * wrapped.
+	 * {@link EclipsePlugin} and a given id.
+	 * </p>
 	 * 
 	 * @param owner
 	 *          The {@link EclipsePlugin} of the created
 	 *          {@link EclipseExtensionPoint}.
-	 * @param extensionPoint
-	 *          The wrapped {@link IExtensionPoint} of the created
-	 *          {@link EclipseExtensionPoint}.
+	 * @param id
+	 *          The ID of the created {@link EclipseExtensionPoint}.
 	 */
-	public EclipseExtensionPoint(EclipsePlugin owner,
-			IExtensionPoint extensionPoint) {
+	public EclipseExtensionPoint(EclipsePlugin owner, String id) {
 
 		super(owner);
 
-		this.extensionPoint = extensionPoint;
+		this.myID = id;
 
 		if (owner != null) {
 			owner.addExtensionPoint(this);
@@ -65,7 +62,7 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	 */
 	public String getId() {
 
-		return this.extensionPoint.getUniqueIdentifier();
+		return this.myID;
 	}
 
 	/*
@@ -88,7 +85,7 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	 */
 	public void addExtension(EclipseExtension eclipseExtension) {
 
-		this.extensions.add(eclipseExtension);
+		this.myEclipseExtensions.add(eclipseExtension);
 		eclipseExtension.setExtensionPoint(this);
 	}
 
@@ -103,20 +100,7 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	 */
 	public Set<EclipseExtension> getExtensions() {
 
-		return new HashSet<EclipseExtension>(this.extensions);
-	}
-
-	/**
-	 * <p>
-	 * Returns the {@link IExtensionPoint} that is wrapped by this
-	 * {@link EclipseExtensionPoint}.
-	 * 
-	 * @return The {@link IExtensionPoint} that is wrapped by this
-	 *         {@link EclipseExtensionPoint}.
-	 */
-	public IExtensionPoint getWrappedExtensionPoint() {
-
-		return this.extensionPoint;
+		return new HashSet<EclipseExtension>(this.myEclipseExtensions);
 	}
 
 	/**
@@ -169,7 +153,7 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	public void removeExtension(EclipseExtension eclipseExtension) {
 
 		eclipseExtension.setExtensionPoint(null);
-		this.extensions.remove(eclipseExtension);
+		this.myEclipseExtensions.remove(eclipseExtension);
 	}
 
 	/*
@@ -180,9 +164,7 @@ public class EclipseExtensionPoint extends EclipseConnector {
 	public String toString() {
 
 		return new StringBuffer().append(this.getClass().getName()).append('(')
-				.append(
-						this.extensionPoint == null ? "?" : this.extensionPoint
-								.getUniqueIdentifier()).append(",defined in ").append(
-						this.getOwner()).append(')').toString();
+				.append(this.getId() == null ? "?" : this.getId()).append(
+						",defined in ").append(this.getOwner()).append(')').toString();
 	}
 }

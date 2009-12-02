@@ -21,6 +21,7 @@ import net.java.treaty.eclipse.EclipsePlugin;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.osgi.framework.Bundle;
 
 /**
@@ -48,19 +49,14 @@ public class EclipseAdapterFactory {
 			new WeakHashMap<Bundle, EclipsePlugin>();
 
 	/**
-	 * TODO Claas: Caching here can probably cause problems in long living
-	 * environments.
-	 * 
 	 * The already adapted {@link EclipseExtensionPoint}s of this
-	 * {@link EclipseAdapterFactory} identified by their unique identifier.
+	 * {@link EclipseAdapterFactory} identified by their {@link IExtensionPoint}'s
+	 * unique ID.
 	 */
 	private Map<String, EclipseExtensionPoint> myEclipseExtensionPoints =
 			new HashMap<String, EclipseExtensionPoint>();
 
 	/**
-	 * TODO Claas: Caching here can probably cause problems in long living
-	 * environments.
-	 * 
 	 * The already adapted {@link EclipseExtension}s of this
 	 * {@link EclipseAdapterFactory} identified by their {@link IExtension}.
 	 */
@@ -132,37 +128,53 @@ public class EclipseAdapterFactory {
 	 *          The {@link IExtensionPoint} the {@link EclipseExtensionPoint}
 	 *          shall be created for.
 	 * @return The created {@link EclipseExtensionPoint}.
+	 * @throws EclipseConnectorAdaptationException
+	 *           Thrown, if the given {@link IExtensionPoint} is invalid and
+	 *           cannot be adapted.
 	 */
 	public EclipseExtensionPoint createExtensionPoint(
-			IExtensionPoint extensionPoint) {
+			IExtensionPoint extensionPoint)
+			throws EclipseConnectorAdaptationException {
 
 		EclipseExtensionPoint result;
 
-		/* Probably use a cached result. */
-		if (this.myEclipseExtensionPoints.containsKey(extensionPoint
-				.getUniqueIdentifier())) {
-			result =
-					this.myEclipseExtensionPoints.get(extensionPoint
-							.getUniqueIdentifier());
+		try {
+			/* Probably use a cached result. */
+			if (this.myEclipseExtensionPoints.containsKey(extensionPoint
+					.getUniqueIdentifier())) {
+				result =
+						this.myEclipseExtensionPoints.get(extensionPoint
+								.getUniqueIdentifier());
+			}
+
+			else {
+				IContributor contributor;
+				Bundle bundle;
+				EclipsePlugin eclipsePlugin;
+
+				contributor = extensionPoint.getContributor();
+				bundle =
+						org.eclipse.core.runtime.Platform.getBundle(contributor.getName());
+				eclipsePlugin = this.createEclipsePlugin(bundle);
+
+				result =
+						new EclipseExtensionPoint(eclipsePlugin, extensionPoint
+								.getUniqueIdentifier());
+
+				/* Cache the result. */
+				this.myEclipseExtensionPoints.put(extensionPoint.getUniqueIdentifier(),
+						result);
+			}
+			// end else.
 		}
+		// end try
 
-		else {
-			IContributor contributor;
-			Bundle bundle;
-			EclipsePlugin eclipsePlugin;
-
-			contributor = extensionPoint.getContributor();
-			bundle =
-					org.eclipse.core.runtime.Platform.getBundle(contributor.getName());
-			eclipsePlugin = this.createEclipsePlugin(bundle);
-
-			result = new EclipseExtensionPoint(eclipsePlugin, extensionPoint);
-
-			/* Cache the result. */
-			this.myEclipseExtensionPoints.put(extensionPoint.getUniqueIdentifier(),
-					result);
+		catch (InvalidRegistryObjectException e) {
+			throw new EclipseConnectorAdaptationException(
+					"The given IExtensionPoint was invalid. Cannot adapt "
+							+ "an EclipseExtensionPoint.", e);
 		}
-		// end else.
+		// end catch.
 
 		return result;
 	}
@@ -176,32 +188,48 @@ public class EclipseAdapterFactory {
 	 *          The {@link IExtension} the {@link EclipseExtension} shall be
 	 *          created for.
 	 * @return The created {@link EclipseExtension}.
+	 * @throws EclipseConnectorAdaptationException
+	 *           Thrown, if the given {@link IExtension} is invalid and cannot be
+	 *           adapted.
 	 */
-	public EclipseExtension createExtension(IExtension extension) {
+	public EclipseExtension createExtension(IExtension extension)
+			throws EclipseConnectorAdaptationException {
 
 		EclipseExtension result;
 
-		/* Probably use a cached result. */
-		if (this.myEclipseExtensions.containsKey(extension)) {
-			result = this.myEclipseExtensions.get(extension);
+		try {
+			/* Probably use a cached result. */
+			if (this.myEclipseExtensions.containsKey(extension)) {
+				result = this.myEclipseExtensions.get(extension);
+			}
+
+			else {
+				IContributor contributor;
+				Bundle bundle;
+				EclipsePlugin eclipsePlugin;
+
+				contributor = extension.getContributor();
+				bundle =
+						org.eclipse.core.runtime.Platform.getBundle(contributor.getName());
+				eclipsePlugin = this.createEclipsePlugin(bundle);
+
+				result =
+						new EclipseExtension(eclipsePlugin, extension
+								.getExtensionPointUniqueIdentifier());
+
+				/* Cache the result. */
+				this.myEclipseExtensions.put(extension, result);
+			}
+			// end else.
 		}
+		// end try
 
-		else {
-			IContributor contributor;
-			Bundle bundle;
-			EclipsePlugin eclipsePlugin;
-
-			contributor = extension.getContributor();
-			bundle =
-					org.eclipse.core.runtime.Platform.getBundle(contributor.getName());
-			eclipsePlugin = this.createEclipsePlugin(bundle);
-
-			result = new EclipseExtension(eclipsePlugin, extension);
-
-			/* Cache the result. */
-			this.myEclipseExtensions.put(extension, result);
+		catch (InvalidRegistryObjectException e) {
+			throw new EclipseConnectorAdaptationException("The given IExtension "
+					+ extension + " was invalid. Cannot adapt " + "an EclipseExtension.",
+					e);
 		}
-		// end else.
+		// end catch.
 
 		return result;
 	}
@@ -221,5 +249,33 @@ public class EclipseAdapterFactory {
 		this.myEclipsePlugins.clear();
 		this.myEclipseExtensionPoints.clear();
 		this.myEclipseExtensions.clear();
+	}
+
+	/**
+	 * <p>
+	 * Removes a given {@link IExtension} from the cache of this
+	 * {@link EclipseAdapterFactory}.
+	 * </p>
+	 * 
+	 * @param extension
+	 *          The {@link IExtension} that shall be removed.
+	 */
+	public void removeIExtensionFromCache(IExtension extension) {
+
+		this.myEclipseExtensions.remove(extension);
+	}
+
+	/**
+	 * <p>
+	 * Removes a given {@link IExtensionPoint} from the cache of this
+	 * {@link EclipseAdapterFactory}.
+	 * </p>
+	 * 
+	 * @param extensionPoint
+	 *          The {@link IExtensionPoint} that shall be removed.
+	 */
+	public void removeIExtensionPointFromCache(IExtensionPoint extensionPoint) {
+
+		this.myEclipseExtensionPoints.remove(extensionPoint);
 	}
 }

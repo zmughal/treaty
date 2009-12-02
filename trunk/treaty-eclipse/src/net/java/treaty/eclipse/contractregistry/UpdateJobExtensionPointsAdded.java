@@ -144,36 +144,44 @@ public class UpdateJobExtensionPointsAdded extends Job {
 			URL contractURL;
 			contractURL = bundle.getEntry(contractName);
 
-			EclipseExtensionPoint eclipseExtensionPoint;
-			eclipseExtensionPoint =
-					EclipseAdapterFactory.getInstance().createExtensionPoint(
-							extensionPoint);
+			try {
+				EclipseExtensionPoint eclipseExtensionPoint;
+				eclipseExtensionPoint =
+						EclipseAdapterFactory.getInstance().createExtensionPoint(
+								extensionPoint);
 
-			/* If a contract has been found, add it to the extension point. */
-			if (contractURL != null) {
+				/* If a contract has been found, add it to the extension point. */
+				if (contractURL != null) {
 
-				Contract contract;
+					Contract contract;
 
-				contract =
-						EclipseContractFactory.INSTANCE.createContract(contractURL,
-								eclipseExtensionPoint);
+					contract =
+							EclipseContractFactory.INSTANCE.createContract(contractURL,
+									eclipseExtensionPoint);
 
-				this.addContractToExtensionPoint(eclipseExtensionPoint, contract);
+					this.addContractToExtensionPoint(eclipseExtensionPoint, contract);
+				}
+				// no else (extension point not contracted by own plug-in).
+
+				/*
+				 * Also check if the extension point has further unbound legislator
+				 * contracts.
+				 */
+				for (Contract legislatorContract : EclipseContractRegistry
+						.getInstance()
+						.removeUnboundLegislatorContractsForContractedConnector(
+								eclipseExtensionPoint)) {
+
+					this.addContractToExtensionPoint(eclipseExtensionPoint,
+							legislatorContract);
+				}
+				// no else (no unbound legislator contracts).
 			}
-			// no else (extension point not contracted by own plug-in).
+			// end try.
 
-			/*
-			 * Also check if the extension point has further unbound legislator
-			 * contracts.
-			 */
-			for (Contract legislatorContract : EclipseContractRegistry.getInstance()
-					.removeUnboundLegislatorContractsForContractedConnector(
-							eclipseExtensionPoint)) {
-
-				this.addContractToExtensionPoint(eclipseExtensionPoint,
-						legislatorContract);
+			catch (EclipseConnectorAdaptationException e1) {
+				Logger.warn(e1.getMessage(), e1);
 			}
-			// no else (no unbound legislator contracts).
 
 			monitor.worked(TOTAL_WORK / this.myExtensionPoints.length);
 		}
@@ -210,6 +218,7 @@ public class UpdateJobExtensionPointsAdded extends Job {
 				this.addContractToExtensionsOfExtensionPoint(eclipseExtensionPoint,
 						instantiatedContract);
 			}
+			// end for.
 		}
 		// end try.
 
@@ -234,12 +243,15 @@ public class UpdateJobExtensionPointsAdded extends Job {
 	private void addContractToExtensionsOfExtensionPoint(
 			EclipseExtensionPoint eclipseExtensionPoint, Contract contract) {
 
+		IExtensionPoint extensionPoint;
+		extensionPoint =
+				org.eclipse.core.runtime.Platform.getExtensionRegistry()
+						.getExtensionPoint(eclipseExtensionPoint.getId());
 		/*
 		 * Don't iterate on the eclipse extensions here, they could not be added to
 		 * the extension point yet!
 		 */
-		for (IExtension extension : eclipseExtensionPoint
-				.getWrappedExtensionPoint().getExtensions()) {
+		for (IExtension extension : extensionPoint.getExtensions()) {
 
 			try {
 				EclipseExtension eclipseExtension;
@@ -250,6 +262,11 @@ public class UpdateJobExtensionPointsAdded extends Job {
 
 				EclipseContractRegistry.getInstance().updateContract(
 						UpdateType.ADD_CONTRACT, contract, eclipseExtension, Role.SUPPLIER);
+			}
+			// end try.
+
+			catch (EclipseConnectorAdaptationException e1) {
+				Logger.warn(e1.getMessage(), e1);
 			}
 
 			catch (TreatyException e) {

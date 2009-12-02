@@ -147,24 +147,32 @@ public class UpdateJobExtensionsRemoved extends Job {
 		 */
 		for (IExtension extension : this.myExtensions) {
 
-			EclipseExtension eclipseExtension;
-			eclipseExtension =
-					EclipseAdapterFactory.getInstance().createExtension(extension);
+			try {
+				EclipseExtension eclipseExtension;
+				eclipseExtension =
+						EclipseAdapterFactory.getInstance().createExtension(extension);
 
-			/* Remove all contract from the extension. */
-			for (Contract contract : eclipseExtension.getContracts()) {
+				/* Remove all contract from the extension. */
+				for (Contract contract : eclipseExtension.getContracts()) {
 
-				try {
-					EclipseContractRegistry.getInstance().updateContract(
-							UpdateType.REMOVE_CONTRACT, contract, eclipseExtension,
-							Role.SUPPLIER);
+					try {
+						EclipseContractRegistry.getInstance().updateContract(
+								UpdateType.REMOVE_CONTRACT, contract, eclipseExtension,
+								Role.SUPPLIER);
+					}
+
+					catch (TreatyException e) {
+
+						Logger.error("Unpected TreatyException during removel of "
+								+ "Contract from Extension.", e);
+					}
 				}
+				// end for.
+			}
+			// end try.
 
-				catch (TreatyException e) {
-
-					Logger.error("Unpected TreatyException during removel of "
-							+ "Contract from Extension.", e);
-				}
+			catch (EclipseConnectorAdaptationException e1) {
+				Logger.warn(e1.getMessage(), e1);
 			}
 
 			monitor.worked(WORK_CONTRACTED_EXTENSIONS / this.myExtensions.length);
@@ -196,33 +204,40 @@ public class UpdateJobExtensionsRemoved extends Job {
 		/* Iterate on the extensions. */
 		for (IExtension extension : this.myExtensions) {
 
-			EclipseExtension eclipseExtension;
-			eclipseExtension =
-					EclipseAdapterFactory.getInstance().createExtension(extension);
+			try {
+				EclipseExtension eclipseExtension;
+				eclipseExtension =
+						EclipseAdapterFactory.getInstance().createExtension(extension);
 
-			/* Probably remove legislator contracts. */
-			for (Contract contract : EclipseContractRegistry.getInstance()
-					.getContracts(eclipseExtension, Role.LEGISLATOR)) {
+				/* Probably remove legislator contracts. */
+				for (Contract contract : EclipseContractRegistry.getInstance()
+						.getContracts(eclipseExtension, Role.LEGISLATOR)) {
 
-				/* Remove the external contract. */
-				try {
-					EclipseContractRegistry.getInstance().updateContract(
-							UpdateType.REMOVE_CONTRACT, contract, eclipseExtension,
-							Role.LEGISLATOR);
+					/* Remove the external contract. */
+					try {
+						EclipseContractRegistry.getInstance().updateContract(
+								UpdateType.REMOVE_CONTRACT, contract, eclipseExtension,
+								Role.LEGISLATOR);
+					}
+
+					catch (TreatyException e) {
+
+						Logger.error("Unexpected TreatyException during removal of "
+								+ "legislator Contract from Extensions.", e);
+					}
 				}
+				// end for.
 
-				catch (TreatyException e) {
-
-					Logger.error("Unexpected TreatyException during removal of "
-							+ "legislator Contract from Extensions.", e);
-				}
+				/* Probably remove unbound legislator contracts as well. */
+				EclipseContractRegistry.getInstance()
+						.removeUnboundLegislatorContractsForLegislatorConnector(
+								eclipseExtension);
 			}
-			// end for.
+			// end try.
 
-			/* Probably remove unbound legislator contracts as well. */
-			EclipseContractRegistry.getInstance()
-					.removeUnboundLegislatorContractsForLegislatorConnector(
-							eclipseExtension);
+			catch (EclipseConnectorAdaptationException e1) {
+				Logger.warn(e1.getMessage(), e1);
+			}
 
 			monitor.worked(WORK_LEGISLATOR_CONTRACTS / this.myExtensions.length);
 		}
@@ -250,14 +265,24 @@ public class UpdateJobExtensionsRemoved extends Job {
 
 		for (IExtension extension : this.myExtensions) {
 
-			EclipseExtension eclipseExtension;
-			eclipseExtension =
-					EclipseAdapterFactory.getInstance().createExtension(extension);
+			try {
+				EclipseExtension eclipseExtension;
+				eclipseExtension =
+						EclipseAdapterFactory.getInstance().createExtension(extension);
 
-			EclipsePlugin eclipsePlugin;
+				EclipsePlugin eclipsePlugin;
 
-			eclipsePlugin = (EclipsePlugin) eclipseExtension.getOwner();
-			eclipsePlugin.removeExtension(eclipseExtension);
+				eclipsePlugin = (EclipsePlugin) eclipseExtension.getOwner();
+				eclipsePlugin.removeExtension(eclipseExtension);
+
+				EclipseAdapterFactory.getInstance()
+						.removeIExtensionFromCache(extension);
+			}
+			// end try.
+
+			catch (EclipseConnectorAdaptationException e1) {
+				Logger.warn(e1.getMessage(), e1);
+			}
 
 			monitor.worked(WORK_EXTENSION_REMOVAL / this.myExtensions.length);
 		}
