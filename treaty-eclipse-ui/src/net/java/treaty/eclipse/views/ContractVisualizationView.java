@@ -192,6 +192,7 @@ public class ContractVisualizationView extends net.java.treaty.viz.ContractView 
 			// no else.
 
 			properties.put("id", connector.getId());
+			properties.put("plugin (owner)",connector.getOwner().getId());
 		}
 
 		else {
