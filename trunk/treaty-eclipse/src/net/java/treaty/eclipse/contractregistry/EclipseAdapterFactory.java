@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import net.java.treaty.eclipse.EclipseConnector;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
@@ -39,9 +40,6 @@ public class EclipseAdapterFactory {
 	private static EclipseAdapterFactory myInstance;
 
 	/**
-	 * TODO Claas: Caching here can probably cause problems in long living
-	 * environments.
-	 * 
 	 * The already adapted {@link EclipsePlugin}s of this
 	 * {@link EclipseAdapterFactory}.
 	 */
@@ -333,6 +331,63 @@ public class EclipseAdapterFactory {
 
 		if (idToBeRemoved != null) {
 			this.myEclipseExtensionPoints.remove(idToBeRemoved);
+
+			this.probablyRemovePluginAsWell(eclipseExtensionPoint);
+		}
+		// no else.
+	}
+
+	/**
+	 * <p>
+	 * A helper method that checks after the removal of an
+	 * {@link EclipseExtensionPoint} or an {@link EclipseExtension} if its
+	 * {@link EclipsePlugin} can be removed from the cache as well and probably
+	 * removes the {@link EclipsePlugin}.
+	 * </p>
+	 * 
+	 * @param eclipseConnector
+	 *          The {@link EclipseConnector} whose {@link EclipsePlugin} shall be
+	 *          checked.
+	 */
+	private void probablyRemovePluginAsWell(EclipseConnector eclipseConnector) {
+
+		EclipsePlugin owningPlugin;
+		owningPlugin = (EclipsePlugin) eclipseConnector.getOwner();
+
+		boolean pluginIsStillInUse;
+		pluginIsStillInUse = false;
+
+		/* Check all extension points. */
+		for (EclipseExtensionPoint eclipseExtensionPoint : this.myEclipseExtensionPoints
+				.values()) {
+
+			if (eclipseExtensionPoint.getOwner().equals(owningPlugin)) {
+				pluginIsStillInUse = true;
+				break;
+			}
+			// no else.
+		}
+		// end for.
+
+		if (!pluginIsStillInUse) {
+
+			/* Check all extensions. */
+			for (EclipseExtension eclipseExtension : this.myEclipseExtensions
+					.values()) {
+
+				if (eclipseExtension.getOwner().equals(owningPlugin)) {
+					pluginIsStillInUse = true;
+					break;
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// no else.
+
+		/* Probably remove plug-in from cache. */
+		if (!pluginIsStillInUse) {
+			this.myEclipsePlugins.remove(owningPlugin.getBundle());
 		}
 		// no else.
 	}
