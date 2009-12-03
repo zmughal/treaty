@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="net.java.treaty.eclipse.system"
-      label="Contract examples for some standard Eclipse extension points"
-      version="1.1.2"
-      provider-name="Jens Dietrich, Lucia Stewart">
+      id="net.java.treaty.eclipse.example.system"
+      label="Treeaty Contract Examples for some standard Eclipse Extension Points"
+      version="2.0.0"
+      provider-name="Jens Dietrich &amp; Lucia Stewart, Massey University">
 
    <description url="http://www.example.com/description">
       This feature adds contracts to some standard Eclipse extension points. Please check the repository for a larger set.
