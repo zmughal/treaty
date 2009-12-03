@@ -268,12 +268,7 @@ public class ContractViewer extends JDialog {
 	}
 
 	protected void configureNorthPanel(JPanel pane) {
-		pane.setLayout(new BorderLayout());
-		pane.setOpaque(true);
-		JTextArea helpText = new JTextArea();
-		helpText.setEditable(false);
-		helpText.setText("More text goes here");
-		pane.add(helpText,BorderLayout.CENTER);
+
 	}
 
 	// sets the actual contract view component, can be overridden
