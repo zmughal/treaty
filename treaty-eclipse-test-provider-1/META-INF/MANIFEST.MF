@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test Provider 1
+Bundle-SymbolicName: net.java.treaty.test.provider1;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: net.java.treaty.test.provider1.Activator
+Bundle-Vendor: Claas Wilke
+Require-Bundle: org.eclipse.core.runtime,
+ net.java.treaty.test.consumer1;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
