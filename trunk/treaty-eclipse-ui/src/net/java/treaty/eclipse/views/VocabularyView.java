@@ -780,7 +780,8 @@ public class VocabularyView extends ViewPart implements
 		tabItem1.setText("Types and Properties");
 
 		this.viewer =
-				new TreeViewer(tabFolder, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+				new TreeViewer(tabFolder, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
+						| SWT.FULL_SELECTION);
 		this.drillDownAdapter = new DrillDownAdapter(this.viewer);
 
 		this.viewer.getTree().setHeaderVisible(true);
