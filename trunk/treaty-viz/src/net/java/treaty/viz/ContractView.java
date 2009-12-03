@@ -19,8 +19,9 @@ import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,6 +97,9 @@ public class ContractView extends JPanel {
 
 	private boolean mergeEqualNodes = false;
 	private boolean removeBinConnectivesWithOneChild = true;
+	
+	// event handling for properties
+	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	public boolean isRemoveBinConnectivesWithOneChild() {
 		return removeBinConnectivesWithOneChild;
@@ -255,10 +259,8 @@ public class ContractView extends JPanel {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (e.isControlDown()) {
-				x = e.getX();
-				y = e.getY();
-			}
+			x = e.getX();
+			y = e.getY();
 		}
 
 		@Override
@@ -266,33 +268,41 @@ public class ContractView extends JPanel {
 			if (e.isControlDown()) {
 				scale(e.getX(),e.getY());
 			}
+			else {
+				// update start positions
+				leftOffset = leftOffset + (e.getX()-x);
+				topOffset = topOffset + (e.getY()-y);
+			}
 		}
 		private void scale(int _x,int _y) {
 			int TRESHOLD = 10;
+			
 			boolean update = false;
 			if ((_x-x)>TRESHOLD) {
-				columnWidth = columnWidth+getScaleFactor(_x,x,columnWidth);
+				setColumnWidth(columnWidth+getScaleFactor(_x,x,columnWidth));
 				update = true;
 			}
 			else if ((_x-x)<-TRESHOLD) {
-				columnWidth = columnWidth+getScaleFactor(_x,x,columnWidth);
+				setColumnWidth(columnWidth+getScaleFactor(_x,x,columnWidth));
 				update = true;
 			}
 			if ((_y-y)>TRESHOLD) {
-				rowHeight = rowHeight+getScaleFactor(_y,y,rowHeight);
+				setRowHeight(rowHeight+getScaleFactor(_y,y,rowHeight));
 				update = true;
 			}
 			else if ((_y-y)<-TRESHOLD) {
-				rowHeight = rowHeight+getScaleFactor(_y,y,rowHeight);
+				setRowHeight(rowHeight+getScaleFactor(_y,y,rowHeight));
 				update = true;
 			}
+			
 			if (update) {
 				updateGraphView();
 			}
 		}
 		private int getScaleFactor(int x1,int x2, int value) {
 			int v = Math.abs(x1-x2);
-			int factor = 0;
+			
+			int factor = v/5;
 			if (v<=50) factor = 10;
 			else if (v<=200) factor = 20;
 			else factor = 30;
@@ -312,8 +322,10 @@ public class ContractView extends JPanel {
 	}
 
 	public void setLeftOffset(int leftOffset) {
+		int old = this.leftOffset;
 		this.leftOffset = leftOffset;
 		this.updateGraphView();
+		this.propertyChangeSupport.firePropertyChange("leftOffset", old, leftOffset);
 	}
 
 	public int getTopOffset() {
@@ -321,8 +333,10 @@ public class ContractView extends JPanel {
 	}
 
 	public void setTopOffset(int topOffset) {
+		int old = this.topOffset;
 		this.topOffset = topOffset;
 		this.updateGraphView();
+		this.propertyChangeSupport.firePropertyChange("topOffset", old, topOffset);
 	}
 
 	public int getColumnWidth() {
@@ -330,8 +344,10 @@ public class ContractView extends JPanel {
 	}
 
 	public void setColumnWidth(int columnWidth) {
+		int old = this.columnWidth;
 		this.columnWidth = columnWidth;
 		this.updateGraphView();
+		this.propertyChangeSupport.firePropertyChange("columnWidth", old, columnWidth);
 	}
 
 	public int getRowHeight() {
@@ -339,8 +355,10 @@ public class ContractView extends JPanel {
 	}
 
 	public void setRowHeight(int rowHeight) {
+		int old = this.rowHeight;
 		this.rowHeight = rowHeight;
 		this.updateGraphView();
+		this.propertyChangeSupport.firePropertyChange("rowHeight", old, rowHeight);
 	}
 
 	private int leftOffset = 50;
@@ -1050,5 +1068,18 @@ public class ContractView extends JPanel {
 	private Icon loadIcon(String name) {
 		URL url = ContractView.class.getResource("/net/java/treaty/viz/icons/"+name);
 		return new ImageIcon(url);
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener l) {
+		this.propertyChangeSupport.addPropertyChangeListener(l);
+	}
+	public void addPropertyChangeListener(String propertyName,PropertyChangeListener l) {
+		this.propertyChangeSupport.addPropertyChangeListener(propertyName,l);
+	}
+	public void removePropertyChangeListener(PropertyChangeListener l) {
+		this.propertyChangeSupport.removePropertyChangeListener(l);
+	}
+	public void removePropertyChangeListener(String propertyName,PropertyChangeListener l) {
+		this.propertyChangeSupport.removePropertyChangeListener(propertyName,l);
 	}
 }
