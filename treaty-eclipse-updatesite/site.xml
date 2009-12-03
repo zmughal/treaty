@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/net.java.treaty.example.clock_1.0.15.jar" id="net.java.treaty.example.clock" version="1.0.15">
+   <feature url="features/net.java.treaty.eclipse_2.0.0.jar" id="net.java.treaty.eclipse" version="2.0.0">
+      <category name="Treaty"/>
+   </feature>
+   <feature url="features/net.java.treaty.eclipse.example.clock_2.0.0.jar" id="net.java.treaty.eclipse.example.clock" version="2.0.0">
       <category name="Examples"/>
    </feature>
-   <feature url="features/net.java.treaty.eclipse_1.2.1.jar" id="net.java.treaty.eclipse" version="1.2.1">
-      <category name="Treaty"/>
+   <feature url="features/net.java.treaty.eclipse.example.system_2.0.0.jar" id="net.java.treaty.eclipse.example.system" version="2.0.0">
+      <category name="Examples"/>
    </feature>
    <category-def name="Treaty" label="Treaty"/>
    <category-def name="Examples" label="Treaty Examples"/>
