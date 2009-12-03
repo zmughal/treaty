@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2009 Jens Dietrich
+ * Copyright (C)  2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -43,13 +43,13 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * <p>
- * The {@link ContractVizViewer} adapts the AWT
- * {@link ContractVisualizationView} as a Eclipse SWT view.
+ * The {@link ContractVizViewer4SWT} adapts the AWT
+ * {@link ContractVizView} as a Eclipse SWT view.
  * </p>
- * 
+ * SWT dialog wrapping a swing component.
  * @author Jens Dietrich
  */
-public class ContractVizViewer extends Dialog {
+public class ContractVizViewer4SWT extends Dialog {
 
 	/**
 	 * <p>
@@ -66,27 +66,27 @@ public class ContractVizViewer extends Dialog {
 		void apply(T value);
 	}
 
-	/** The {@link Contract} of this {@link ContractVizViewer}. */
+	/** The {@link Contract} of this {@link ContractVizViewer4SWT}. */
 	private Contract myContract = null;
 
-	/** The {@link ContractVisualizationView} of this {@link ContractVizViewer}. */
-	private ContractVisualizationView myContractVisualizationView;
+	/** The {@link ContractVizView} of this {@link ContractVizViewer4SWT}. */
+	private ContractVizView myContractVisualizationView;
 
-	/** The tool bar (a {@link JPanel}) of this {@link ContractVizViewer}. */
+	/** The tool bar (a {@link JPanel}) of this {@link ContractVizViewer4SWT}. */
 	private JPanel myToolbar = new JPanel(new GridLayout(2, 2));
 
-	/** The status line (a {@link JPanel}) of this {@link ContractVizViewer}. */
+	/** The status line (a {@link JPanel}) of this {@link ContractVizViewer4SWT}. */
 	private JPanel myStatusLine = new JPanel(new GridLayout(2, 1));
 
 	/**
 	 * <p>
-	 * Creates a new {@link ContractVizViewer}
+	 * Creates a new {@link ContractVizViewer4SWT}
 	 * </p>
 	 * 
 	 * @param parentShell
-	 *          The parent {@link Shell} of this {@link ContractVizViewer}.
+	 *          The parent {@link Shell} of this {@link ContractVizViewer4SWT}.
 	 */
-	public ContractVizViewer(Shell parentShell, Contract contract) {
+	public ContractVizViewer4SWT(Shell parentShell, Contract contract) {
 
 		super(parentShell);
 
@@ -154,7 +154,7 @@ public class ContractVizViewer extends Dialog {
 		Frame frame = SWT_AWT.new_Frame(composite);
 
 		/* Add CVV, tool bar and status line to the frame. */
-		this.myContractVisualizationView = new ContractVisualizationView();
+		this.myContractVisualizationView = new ContractVizView();
 		this.myContractVisualizationView.setModel(this.myContract);
 
 		frame.add(new JScrollPane(this.myContractVisualizationView),
@@ -171,10 +171,10 @@ public class ContractVizViewer extends Dialog {
 
 	/**
 	 * <p>
-	 * Returns the title of this {@link ContractVizViewer}.
+	 * Returns the title of this {@link ContractVizViewer4SWT}.
 	 * </p>
 	 * 
-	 * @return The title of this {@link ContractVizViewer}.
+	 * @return The title of this {@link ContractVizViewer4SWT}.
 	 */
 	protected String getTitle() {
 
@@ -233,7 +233,7 @@ public class ContractVizViewer extends Dialog {
 	/**
 	 * <p>
 	 * A helper method that initializes the status line of this
-	 * {@link ContractVizViewer}.
+	 * {@link ContractVizViewer4SWT}.
 	 * </p>
 	 */
 	private void initializeStatusLine() {
