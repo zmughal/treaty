@@ -10,11 +10,7 @@
 
 package net.java.treaty.eclipse.contractregistry;
 
-import java.util.Set;
-
-import net.java.treaty.Contract;
-import net.java.treaty.eclipse.EclipsePlugin;
-import net.java.treaty.eclipse.Logger;
+import net.java.treaty.eclipse.EclipseContractFactory;
 
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -22,7 +18,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.osgi.framework.Bundle;
 
 /**
  * <p>
@@ -37,10 +32,10 @@ import org.osgi.framework.Bundle;
 public class UpdateJobCleanContractRegistry extends Job {
 
 	/**
-	 * The work of {@link UpdateJobCleanContractRegistry}s to search for
-	 * {@link Contract}s defined with a {@link Bundle}'s {@link IExtensionPoint}s.
+	 * The work of {@link UpdateJobCleanContractRegistry}s to Clean the
+	 * {@link EclipseContractRegistry}.
 	 */
-	private static final int WORK_ECLIPSE_PLUGINS = 33000;
+	private static final int WORK_CLEAN = 33000;
 
 	/**
 	 * <p>
@@ -65,28 +60,19 @@ public class UpdateJobCleanContractRegistry extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 
 		/* Update monitor status. */
-		monitor.beginTask("Clean the ContracRegistry.", WORK_ECLIPSE_PLUGINS);
+		monitor.beginTask("Clean the ContracRegistry.", WORK_CLEAN);
 
-		Set<EclipsePlugin> contractedPlugins;
-		contractedPlugins =
-				EclipseContractRegistry.getInstance().getContractedEclipsePlugins();
+		EclipseContractRegistry.clear();
+		EclipseAdapterFactory.getInstance().clearCache();
+		EclipseContractFactory.INSTANCE.clearCache();
 
-		for (EclipsePlugin eclipsePlugin : contractedPlugins) {
+		UpdateJobInitializeContractRegistry contractRegistryStartUpJob;
+		contractRegistryStartUpJob =
+				new UpdateJobInitializeContractRegistry(
+						"Re-initial ContractRegistry startup");
+		contractRegistryStartUpJob.setRule(new ContractRegistryAccess(true));
 
-			switch (eclipsePlugin.getBundle().getState()) {
-
-			case Bundle.UNINSTALLED:
-
-				/* FIXME Claas: Implement a registry clean/reset here. */
-				Logger.warn("Found uninstalled bundle: " + eclipsePlugin);
-				break;
-			// no default case;
-			}
-			// end switch.
-
-			monitor.worked(WORK_ECLIPSE_PLUGINS / contractedPlugins.size());
-		}
-		// end for.
+		contractRegistryStartUpJob.schedule();
 
 		monitor.done();
 

@@ -207,15 +207,16 @@ public class EclipseAdapterFactory {
 			throws EclipseConnectorAdaptationException {
 
 		EclipseExtension result;
-		String uniqueIdentifier;
-		uniqueIdentifier = extension.getUniqueIdentifier();
-
-		if (uniqueIdentifier == null || uniqueIdentifier.length() == 0) {
-			uniqueIdentifier = this.getUniqueIdentifier(extension);
-		}
-		// no else.
 
 		try {
+			String uniqueIdentifier;
+			uniqueIdentifier = extension.getUniqueIdentifier();
+
+			if (uniqueIdentifier == null || uniqueIdentifier.length() == 0) {
+				uniqueIdentifier = this.getUniqueIdentifier(extension);
+			}
+			// no else.
+
 			/* Probably use a cached result. */
 			if (this.myEclipseExtensions.containsKey(uniqueIdentifier)) {
 				result = this.myEclipseExtensions.get(uniqueIdentifier);

@@ -96,6 +96,7 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 		contractRegistryStartUpJob =
 				new UpdateJobInitializeContractRegistry(
 						"Initial ContractRegistry Startup");
+		contractRegistryStartUpJob.setRule(new ContractRegistryAccess(true));
 
 		contractRegistryStartUpJob.schedule();
 	}
@@ -112,6 +113,7 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 		jobExtensionsAdded =
 				new UpdateJobExtensionsAdded(extensions,
 						"Extensions Added. Update the ContractRegistry.");
+		jobExtensionsAdded.setRule(new ContractRegistryAccess(false));
 
 		jobExtensionsAdded.schedule();
 	}
@@ -128,6 +130,7 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 		jobExtensionPointsAdded =
 				new UpdateJobExtensionPointsAdded(extensionPoints,
 						"ExtensionPoints Added. Update the ContractRegistry.");
+		jobExtensionPointsAdded.setRule(new ContractRegistryAccess(false));
 
 		jobExtensionPointsAdded.schedule();
 	}
@@ -144,6 +147,7 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 		jobExtensionsRemoved =
 				new UpdateJobExtensionsRemoved(extensions,
 						"Extensions Removed. Update the ContractRegistry.");
+		jobExtensionsRemoved.setRule(new ContractRegistryAccess(true));
 
 		jobExtensionsRemoved.schedule();
 	}
@@ -160,6 +164,7 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 		jobExtensionPointsRemoved =
 				new UpdateJobExtensionPointsRemoved(extensionPoints,
 						"ExtensionPoints Removed. Update the ContractRegistry.");
+		jobExtensionPointsRemoved.setRule(new ContractRegistryAccess(true));
 
 		jobExtensionPointsRemoved.schedule();
 	}

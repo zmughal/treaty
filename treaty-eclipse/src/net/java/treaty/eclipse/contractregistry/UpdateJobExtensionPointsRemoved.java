@@ -109,6 +109,7 @@ public class UpdateJobExtensionPointsRemoved extends Job {
 			jobCleanRegistry =
 					new UpdateJobCleanContractRegistry(
 							"Invalid ExtensionPoint found. Clean the ContractRegistry.");
+			jobCleanRegistry.setRule(new ContractRegistryAccess(true));
 
 			jobCleanRegistry.schedule();
 		}
