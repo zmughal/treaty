@@ -1989,15 +1989,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		if (contract != null) {
 
 			try {
-				ContractVizViewer viewer;
-
-				viewer = new ContractVizViewer(this.getSite().getShell(), contract);
-				viewer.open();
+				ContractVizViewer4Swing.show(contract);			
 			}
 
 			catch (Exception e) {
-				Logger.error("Error occurred during display of contract vizualisation",
-						e);
+				Logger.error("Error occurred during display of contract vizualisation",e);
 			}
 			// end catch.
 		}

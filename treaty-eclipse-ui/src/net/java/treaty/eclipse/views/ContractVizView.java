@@ -40,24 +40,24 @@ import org.eclipse.swt.snippets.Snippet156;
 
 /**
  * <p>
- * The {@link ContractVisualizationView} can be used to display one
+ * The {@link ContractVizView} can be used to display one
  * {@link Contract} instance in a graph-based view.
  * </p>
  * 
  * @author Claas Wilke
  */
-public class ContractVisualizationView extends net.java.treaty.viz.ContractView {
+public class ContractVizView extends net.java.treaty.viz.ContractView {
 
 	/** Generated ID used for serialization. */
 	private static final long serialVersionUID = 916862140623747905L;
 
 	/**
 	 * <p>
-	 * Creates a new {@link ContractVisualizationView} for a given
+	 * Creates a new {@link ContractVizView} for a given
 	 * {@link Contract}.
 	 * </p>
 	 */
-	public ContractVisualizationView() {
+	public ContractVizView() {
 
 		super();
 	}
