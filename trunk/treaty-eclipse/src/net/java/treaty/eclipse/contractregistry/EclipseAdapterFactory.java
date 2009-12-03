@@ -58,14 +58,13 @@ public class EclipseAdapterFactory {
 
 	/**
 	 * The already adapted {@link EclipseExtension}s of this
-	 * {@link EclipseAdapterFactory} identified by their {@link IExtension} id or
-	 * a generated id.
+	 * {@link EclipseAdapterFactory} identified by their {@link IExtension}.
 	 */
-	private Map<String, EclipseExtension> myEclipseExtensions =
-			new HashMap<String, EclipseExtension>();
+	private Map<IExtension, EclipseExtension> myEclipseExtensions =
+			new HashMap<IExtension, EclipseExtension>();
 
 	/**
-	 * Mapps {@link IExtension}s wihtout an identifier to a generated unique
+	 * Maps {@link IExtension}s without an identifier to a generated unique
 	 * identifier.
 	 */
 	private Map<IExtension, String> extensionIDs =
@@ -218,8 +217,8 @@ public class EclipseAdapterFactory {
 			// no else.
 
 			/* Probably use a cached result. */
-			if (this.myEclipseExtensions.containsKey(uniqueIdentifier)) {
-				result = this.myEclipseExtensions.get(uniqueIdentifier);
+			if (this.myEclipseExtensions.containsKey(extension)) {
+				result = this.myEclipseExtensions.get(extension);
 			}
 
 			else {
@@ -242,7 +241,7 @@ public class EclipseAdapterFactory {
 				result.setExtensionPoint(this.createExtensionPoint(extensionPoint));
 
 				/* Cache the result. */
-				this.myEclipseExtensions.put(uniqueIdentifier, result);
+				this.myEclipseExtensions.put(extension, result);
 			}
 			// end else.
 		}
@@ -286,21 +285,22 @@ public class EclipseAdapterFactory {
 	 */
 	public void removeEclipseExtensionFromCache(EclipseExtension eclipseExtension) {
 
-		String idToBeRemoved;
-		idToBeRemoved = null;
+		IExtension extesionToBeRemoved;
+		extesionToBeRemoved = null;
 
-		for (String extensionID : this.myEclipseExtensions.keySet()) {
+		for (IExtension extension : this.myEclipseExtensions.keySet()) {
 
-			if (this.myEclipseExtensions.get(extensionID).equals(eclipseExtension)) {
-				idToBeRemoved = extensionID;
+			if (this.myEclipseExtensions.get(extension).equals(eclipseExtension)) {
+				extesionToBeRemoved = extension;
 				break;
 			}
 			// no else.
 		}
 		// end for.
 
-		if (idToBeRemoved != null) {
-			this.myEclipseExtensions.remove(idToBeRemoved);
+		if (extesionToBeRemoved != null) {
+			this.myEclipseExtensions.remove(extesionToBeRemoved);
+			this.extensionIDs.remove(extesionToBeRemoved);
 		}
 		// no else.
 	}
