@@ -1074,11 +1074,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 				Object adaptedObject;
 				adaptedObject = ((TreeObject) node).getObject();
 
-				if (column == 1) {
+				if (column == STATUS_COLUMN) {
 					result = this.getStatusIcon(adaptedObject);
 				}
 
-				else {
+				else if (column == LABEL_COLUMN) {
 
 					if (adaptedObject instanceof Connector) {
 						Connector connector;
@@ -1147,7 +1147,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 					}
 					// no else.
 				}
-				// end else (column != 1).
+				// no else (unknown column).
 			}
 			// no else (node is no TreeObject, return null).
 
@@ -1165,7 +1165,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			String result;
 
 			if (!(node instanceof TreeObject)) {
-				if (column == 0) {
+				if (column == LABEL_COLUMN) {
 					result = node.toString();
 				}
 
@@ -1178,11 +1178,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 				Object adaptedObject;
 				adaptedObject = ((TreeObject) node).getObject();
 
-				if (column == 1) {
+				if (column == STATUS_COLUMN) {
 					return this.getStatus(adaptedObject);
 				}
 
-				else {
+				else if (column == LABEL_COLUMN) {
 
 					if (adaptedObject instanceof EclipseExtensionPoint) {
 						result = ((Connector) adaptedObject).getId();
@@ -1291,7 +1291,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 					}
 					// end else (instanceof check).
 				}
-				// end else (column != 1).
+
+				/* (unknown column). */
+				else {
+					result = "";
+				}
 			}
 			// end else (node is TreeObject).
 
@@ -1509,8 +1513,17 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		}
 	}
 
+	/** The number of the column used to display the {@link Contract}'s labels. */
+	private static int LABEL_COLUMN = 0;
+
 	/** Label used to display contract instances in the {@link ContractView}. */
 	private static final String LABEL_INSTANCES = "Contract Instances";
+
+	/**
+	 * The number of the column used to display the {@link Contract}'s
+	 * verification status.
+	 */
+	private static int STATUS_COLUMN = 1;
 
 	/**
 	 * A boolean that specifies whether or not the {@link ContractView} has been
@@ -1610,22 +1623,32 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	public void createPartControl(Composite parent) {
 
 		this.myViewer =
-				new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+				new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL
+						| SWT.FULL_SELECTION);
 
 		this.myViewer.getTree().setHeaderVisible(true);
 
-		TreeColumn column2;
-		column2 = new TreeColumn(myViewer.getTree(), SWT.LEFT);
-		column2.setText("plugin contracts");
+		TreeColumn columnStatus;
+		TreeColumn columnLabel;
+
+		if (LABEL_COLUMN < STATUS_COLUMN) {
+			columnLabel = new TreeColumn(myViewer.getTree(), SWT.LEFT);
+			columnStatus = new TreeColumn(myViewer.getTree(), SWT.LEFT);
+		}
+
+		else {
+			columnStatus = new TreeColumn(myViewer.getTree(), SWT.LEFT);
+			columnLabel = new TreeColumn(myViewer.getTree(), SWT.LEFT);
+		}
 
 		Rectangle bounds;
 		bounds = myViewer.getTree().getDisplay().getBounds();
-		column2.setWidth(Math.max(600, bounds.width - 400));
 
-		TreeColumn column1;
-		column1 = new TreeColumn(myViewer.getTree(), SWT.LEFT);
-		column1.setText("status");
-		column1.setWidth(150);
+		columnLabel.setText("Plug-in Contracts");
+		columnLabel.setWidth(Math.min(600, bounds.width - 200));
+
+		columnStatus.setText("Status");
+		columnStatus.setWidth(150);
 
 		this.myViewer.setLabelProvider(new ViewLabelProvider());
 
@@ -1989,11 +2012,12 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		if (contract != null) {
 
 			try {
-				ContractVizViewer4Swing.show(contract);			
+				ContractVizViewer4Swing.show(contract);
 			}
 
 			catch (Exception e) {
-				Logger.error("Error occurred during display of contract vizualisation",e);
+				Logger.error("Error occurred during display of contract vizualisation",
+						e);
 			}
 			// end catch.
 		}
