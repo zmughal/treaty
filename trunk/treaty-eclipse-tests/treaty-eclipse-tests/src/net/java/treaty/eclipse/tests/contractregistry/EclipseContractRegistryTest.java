@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Jens Dietrich
+ * Copyright (C) 2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -721,6 +721,314 @@ public class EclipseContractRegistryTest {
 	 * Causes the following events.
 	 * <ol>
 	 * <li>Added the {@link IExtensionPoint} consumer1xp1.</li>
+	 * <li>Added the {@link IExtensionPoint} consumer1xp1.</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @throws BundleException
+	 */
+	@Test
+	public void testAddingConnectorsTwice01() throws BundleException,
+			EclipseConnectorAdaptationException {
+
+		pause();
+		pause();
+		pause();
+
+		/* Clear the registry to avoid side effects. */
+		EclipseContractRegistry.clear();
+		EclipseAdapterFactory.getInstance().clearCache();
+
+		IExtensionPoint[] extensionPoints;
+		extensionPoints = new IExtensionPoint[1];
+		extensionPoints[0] = consumer1extensionPoint1;
+
+		/* Simulate add of consumer1xp1. */
+		EclipseContractRegistry.getInstance().added(extensionPoints);
+
+		pause();
+		pause();
+		pause();
+
+		/* The Registry should know the contracted bundle. */
+		assertTrue(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle1)));
+
+		/* The Contract of the Extension Point should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().isEmpty());
+
+		/* The Extension Point should have exactly one contract. */
+		assertEquals(1, EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().size());
+
+		/* The Contract of the Extension should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtension(
+				provider1extension1).getContracts().isEmpty());
+
+		/* Simulate add of consumer1xp1 again. */
+		EclipseContractRegistry.getInstance().added(extensionPoints);
+
+		pause();
+		pause();
+		pause();
+
+		/* The Registry should know the contracted bundle. */
+		assertTrue(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle1)));
+
+		/* The Contract of the Extension Point should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().isEmpty());
+
+		/* The Extension Point should have exactly one contract. */
+		assertEquals(1, EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().size());
+
+		/* The Contract of the Extension should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtension(
+				provider1extension1).getContracts().isEmpty());
+	}
+
+	/**
+	 * <p>
+	 * A test case testing the {@link EclipseContractRegistry}.
+	 * </p>
+	 * 
+	 * <p>
+	 * Causes the following events.
+	 * <ol>
+	 * <li>Added the {@link IExtension} provider1x1.</li>
+	 * <li>Added the {@link IExtension} provider1x1.</li>
+	 * <li>Added the {@link IExtensionPoint} consumer1xp1.</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @throws BundleException
+	 */
+	@Test
+	public void testAddingConnectorsTwice02() throws BundleException,
+			EclipseConnectorAdaptationException {
+
+		/* Clear the registry to avoid side effects. */
+		EclipseContractRegistry.clear();
+		EclipseAdapterFactory.getInstance().clearCache();
+
+		/* Simulate add of provider1x1. */
+		IExtension[] extensions;
+		extensions = new IExtension[1];
+		extensions[0] = provider1extension1;
+		EclipseContractRegistry.getInstance().added(extensions);
+
+		pause();
+
+		/* The Registry should not know the contracted bundle. */
+		assertFalse(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle1)));
+
+		/* The Contract of the Extension Point should be empty. */
+		assertTrue(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().isEmpty());
+
+		/* The Contract of the Extension should be empty. */
+		assertTrue(EclipseAdapterFactory.getInstance().createExtension(
+				provider1extension1).getContracts().isEmpty());
+
+		/* Simulate add of provider1x1 again. */
+		extensions = new IExtension[1];
+		extensions[0] = provider1extension1;
+		EclipseContractRegistry.getInstance().added(extensions);
+
+		pause();
+
+		/* The Registry should not know the contracted bundle. */
+		assertFalse(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle1)));
+
+		/* The Contract of the Extension Point should be empty. */
+		assertTrue(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().isEmpty());
+
+		/* The Contract of the Extension should be empty. */
+		assertTrue(EclipseAdapterFactory.getInstance().createExtension(
+				provider1extension1).getContracts().isEmpty());
+
+		/* Simulate add of consumer1xp1. */
+		IExtensionPoint[] extensionPoints;
+		extensionPoints = new IExtensionPoint[1];
+		extensionPoints[0] = consumer1extensionPoint1;
+		EclipseContractRegistry.getInstance().added(extensionPoints);
+
+		pause();
+
+		/* The Registry should know the contracted bundle. */
+		assertTrue(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle1)));
+
+		/* The Contract of the Extension Point should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().isEmpty());
+
+		/* The Extension Point should have exactly one Contract. */
+		assertEquals(1, EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().size());
+
+		/* The Contract of the Extension should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtension(
+				provider1extension1).getContracts().isEmpty());
+
+		/* The Extension should have exactly one Contract. */
+		assertEquals(1, EclipseAdapterFactory.getInstance().createExtension(
+				provider1extension1).getContracts().size());
+	}
+
+	/**
+	 * <p>
+	 * A test case testing the {@link EclipseContractRegistry}.
+	 * </p>
+	 * 
+	 * <p>
+	 * Causes the following events.
+	 * <ol>
+	 * <li>Added the {@link IExtensionPoint} consumer2xp1.</li>
+	 * <li>Added the {@link IExtension} legislator1xc1.</li>
+	 * <li>Added the {@link IExtension} legislator1xc1.</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @throws BundleException
+	 */
+	@Test
+	public void testAddingConnectorsTwice03() throws BundleException,
+			EclipseConnectorAdaptationException {
+
+		/* Clear the registry to avoid side effects. */
+		EclipseContractRegistry.clear();
+		EclipseAdapterFactory.getInstance().clearCache();
+
+		/* Simulate add of consumer2x1. */
+		IExtensionPoint[] extensionPoints;
+		extensionPoints = new IExtensionPoint[1];
+		extensionPoints[0] = consumer2extensionPoint1;
+		EclipseContractRegistry.getInstance().added(extensionPoints);
+
+		pause();
+
+		/* The Registry should not know the contracted bundle. */
+		assertFalse(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle2)));
+
+		/* The Contract of the Extension Point should be empty. */
+		assertTrue(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer2extensionPoint1).getContracts().isEmpty());
+
+		/* The Registry should not know the external contract. */
+		assertFalse(EclipseContractRegistry.getInstance().playsConnectorRole(
+				EclipseAdapterFactory.getInstance().createExtension(
+						legislator1extension1), Role.LEGISLATOR));
+
+		/* The registry should not know an unbound legislator contract. */
+		assertFalse(EclipseContractRegistry.getInstance()
+				.hasUnboundLegislatorContracts(
+						consumer2extensionPoint1.getUniqueIdentifier()));
+
+		/* The Contract of the Extension should be empty. */
+		assertTrue(EclipseAdapterFactory.getInstance().createExtension(
+				provider2extension1).getContracts().isEmpty());
+
+		/* Simulate add of legislator1xc1. */
+		IExtension[] extensions;
+		extensions = new IExtension[1];
+		extensions[0] = legislator1extension1;
+		EclipseContractRegistry.getInstance().added(extensions);
+
+		pause();
+
+		/* The Registry should know the contracted bundle. */
+		assertTrue(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle2)));
+
+		/* The Contract of the Extension Point should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer2extensionPoint1).getContracts().isEmpty());
+
+		/* The Extension Point should have exactly one contract. */
+		assertEquals(1, EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer2extensionPoint1).getContracts().size());
+
+		/* The Registry should know the external contract. */
+		assertTrue(EclipseContractRegistry.getInstance().playsConnectorRole(
+				EclipseAdapterFactory.getInstance().createExtension(
+						legislator1extension1), Role.LEGISLATOR));
+
+		/* The registry should not know an unbound legislator contract. */
+		assertFalse(EclipseContractRegistry.getInstance()
+				.hasUnboundLegislatorContracts(
+						consumer2extensionPoint1.getUniqueIdentifier()));
+
+		/* The Contract of the Extension should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtension(
+				provider2extension1).getContracts().isEmpty());
+
+		/* Simulate add of legislator1xc1 again. */
+		extensions = new IExtension[1];
+		extensions[0] = legislator1extension1;
+		EclipseContractRegistry.getInstance().added(extensions);
+
+		pause();
+
+		/* The Registry should know the contracted bundle. */
+		assertTrue(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle2)));
+
+		/* The Contract of the Extension Point should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer2extensionPoint1).getContracts().isEmpty());
+
+		/* The Extension Point should have exactly one contract. */
+		assertEquals(1, EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer2extensionPoint1).getContracts().size());
+
+		/* The Registry should know the external contract. */
+		assertTrue(EclipseContractRegistry.getInstance().playsConnectorRole(
+				EclipseAdapterFactory.getInstance().createExtension(
+						legislator1extension1), Role.LEGISLATOR));
+
+		/* The registry should not know an unbound legislator contract. */
+		assertFalse(EclipseContractRegistry.getInstance()
+				.hasUnboundLegislatorContracts(
+						consumer2extensionPoint1.getUniqueIdentifier()));
+
+		/* The Contract of the Extension should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtension(
+				provider2extension1).getContracts().isEmpty());
+	}
+
+	/**
+	 * <p>
+	 * A test case testing the {@link EclipseContractRegistry}.
+	 * </p>
+	 * 
+	 * <p>
+	 * Causes the following events.
+	 * <ol>
+	 * <li>Added the {@link IExtensionPoint} consumer1xp1.</li>
 	 * <li>Removed the {@link IExtensionPoint} consumer1xp1.</li>
 	 * <li>Added the {@link IExtensionPoint} consumer1xp1.</li>
 	 * </ol>
@@ -801,6 +1109,114 @@ public class EclipseContractRegistryTest {
 		pause();
 		pause();
 		pause();
+
+		/* The Registry should know the contracted bundle. */
+		assertTrue(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle1)));
+
+		/* The Contract of the Extension Point should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().isEmpty());
+
+		/* The Extension Point should have exactly one contract. */
+		assertEquals(1, EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().size());
+
+		/* The Contract of the Extension should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtension(
+				provider1extension1).getContracts().isEmpty());
+	}
+
+	/**
+	 * <p>
+	 * A test case testing the {@link EclipseContractRegistry}.
+	 * </p>
+	 * 
+	 * <p>
+	 * Causes the following events.
+	 * <ol>
+	 * <li>Added an invalid IExtensionPoint</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @throws BundleException
+	 */
+	@Test
+	public void testAddingInvalidConnector01() throws BundleException,
+			EclipseConnectorAdaptationException {
+
+		/* Clear the registry to avoid side effects. */
+		EclipseContractRegistry.clear();
+		EclipseAdapterFactory.getInstance().clearCache();
+
+		IExtensionPoint[] extensionPoints;
+		extensionPoints = new IExtensionPoint[1];
+		extensionPoints[0] = new InvalidExtensionPointMock();
+
+		/* Simulate add of consumer1xp1. */
+		EclipseContractRegistry.getInstance().added(extensionPoints);
+
+		pause();
+		pause();
+		pause();
+
+		/* The registry should be reset and now all the bundles and their contracts. */
+
+		/* The Registry should know the contracted bundle. */
+		assertTrue(EclipseContractRegistry.getInstance()
+				.getContractedEclipsePlugins().contains(
+						EclipseAdapterFactory.getInstance().createEclipsePlugin(
+								consumerBundle1)));
+
+		/* The Contract of the Extension Point should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().isEmpty());
+
+		/* The Extension Point should have exactly one contract. */
+		assertEquals(1, EclipseAdapterFactory.getInstance().createExtensionPoint(
+				consumer1extensionPoint1).getContracts().size());
+
+		/* The Contract of the Extension should not be empty. */
+		assertFalse(EclipseAdapterFactory.getInstance().createExtension(
+				provider1extension1).getContracts().isEmpty());
+	}
+
+	/**
+	 * <p>
+	 * A test case testing the {@link EclipseContractRegistry}.
+	 * </p>
+	 * 
+	 * <p>
+	 * Causes the following events.
+	 * <ol>
+	 * <li>Added an invalid IExtension</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @throws BundleException
+	 */
+	@Test
+	public void testAddingInvalidConnector02() throws BundleException,
+			EclipseConnectorAdaptationException {
+
+		/* Clear the registry to avoid side effects. */
+		EclipseContractRegistry.clear();
+		EclipseAdapterFactory.getInstance().clearCache();
+
+		IExtension[] extensions;
+		extensions = new IExtension[1];
+		extensions[0] = new InvalidExtensionMock();
+
+		/* Simulate add of consumer1xp1. */
+		EclipseContractRegistry.getInstance().added(extensions);
+
+		pause();
+		pause();
+		pause();
+
+		/* The registry should be reset and now all the bundles and their contracts. */
 
 		/* The Registry should know the contracted bundle. */
 		assertTrue(EclipseContractRegistry.getInstance()
