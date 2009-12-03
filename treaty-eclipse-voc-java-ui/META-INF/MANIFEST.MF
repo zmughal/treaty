@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java Vocabulary for Treaty for Eclipse UI Contributions
+Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.java.ui;singleton:=true
+Bundle-Version: 2.0.0
+Bundle-Activator: net.java.treaty.eclipse.vocabulary.java.ui.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.java.treaty.eclipse;bundle-version="2.0.0",
+ net.java.treaty.eclipse.ui;bundle-version="1.0.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Jens Dietrich, Massey University
