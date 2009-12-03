@@ -111,7 +111,7 @@ public class ContractVizView extends net.java.treaty.viz.ContractView {
 			break;
 
 		default:
-			result = Color.YELLOW;
+			result = Color.GRAY;
 		}
 
 		return result;
@@ -141,7 +141,7 @@ public class ContractVizView extends net.java.treaty.viz.ContractView {
 			break;
 
 		default:
-			result = new BasicStroke(1);
+			result = new BasicStroke(2);
 		}
 
 		return result;
