@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Treaty Eclipse Test Suite
+Bundle-SymbolicName: net.java.treaty.eclipse.tests
+Bundle-Version: 2.0.0
+Bundle-Activator: net.java.treaty.eclipse.tests.Activator
+Bundle-Vendor: Claas Wilke, Massey University
+Require-Bundle: org.eclipse.core.runtime,
+ org.junit4,
+ net.java.treaty.eclipse;bundle-version="2.0.0",
+ net.java.treaty.eclipse.vocabulary.junit;bundle-version="2.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
