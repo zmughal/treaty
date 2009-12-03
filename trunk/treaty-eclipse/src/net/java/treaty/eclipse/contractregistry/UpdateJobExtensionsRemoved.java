@@ -124,6 +124,7 @@ public class UpdateJobExtensionsRemoved extends Job {
 			jobCleanRegistry =
 					new UpdateJobCleanContractRegistry(
 							"Invalid Extension found. Clean the ContractRegistry.");
+			jobCleanRegistry.setRule(new ContractRegistryAccess(true));
 
 			jobCleanRegistry.schedule();
 		}

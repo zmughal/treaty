@@ -48,6 +48,16 @@ public class EclipseContractFactory {
 
 	/**
 	 * <p>
+	 * Clears the cache of the {@link EclipseContractFactory}.
+	 * </p>
+	 */
+	public void clearCache() {
+
+		this.myCachedContracts.clear();
+	}
+
+	/**
+	 * <p>
 	 * Creates a new {@link Contract} for a given {@link URL} and a given
 	 * {@link EclipseConnector}.
 	 * </p>

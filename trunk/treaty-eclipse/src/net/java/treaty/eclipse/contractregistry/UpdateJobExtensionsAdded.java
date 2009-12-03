@@ -122,6 +122,7 @@ public class UpdateJobExtensionsAdded extends Job {
 			jobCleanRegistry =
 					new UpdateJobCleanContractRegistry(
 							"Invalid Extension found. Clean the ContractRegistry.");
+			jobCleanRegistry.setRule(new ContractRegistryAccess(true));
 
 			jobCleanRegistry.schedule();
 		}
@@ -194,122 +195,134 @@ public class UpdateJobExtensionsAdded extends Job {
 		/* Iterate on the extensions and search for legislator contracts. */
 		for (EclipseExtension eclipseExtension : this.myEclipseExtensions) {
 
-			/* Check if the extension provides an external contract. */
-			if (eclipseExtension.getExtensionPoint().getId().equals(
-					Constants.LEGISLATOR_CONTRACT_EXTENSION_POINT_ID)) {
+			/*
+			 * Ensure that the extension point has not been added yet (to avoid
+			 * mis-configurations caused by errors in job scheduling).
+			 */
+			if (EclipseContractRegistry.getInstance().getContracts(eclipseExtension,
+					Role.LEGISLATOR).size() == 0) {
 
-				/*
-				 * Iterate through the attributes of the extension and try to load their
-				 * contracts.
-				 */
-				for (IConfigurationElement extensionAttribute : this.myMappedExtensions
-						.get(eclipseExtension).getConfigurationElements()) {
+				/* Check if the extension provides an external contract. */
+				if (eclipseExtension.getExtensionPoint().getId().equals(
+						Constants.LEGISLATOR_CONTRACT_EXTENSION_POINT_ID)) {
 
-					try {
-						String contractLocation;
-						contractLocation =
-								extensionAttribute
-										.getAttribute(Constants.LEGISLATOR_CONTRACT_ATTRIBUTE_LOCATION);
+					/*
+					 * Iterate through the attributes of the extension and try to load
+					 * their contracts.
+					 */
+					for (IConfigurationElement extensionAttribute : this.myMappedExtensions
+							.get(eclipseExtension).getConfigurationElements()) {
 
-						Bundle bundle;
-						bundle = ((EclipsePlugin) eclipseExtension.getOwner()).getBundle();
+						try {
+							String contractLocation;
+							contractLocation =
+									extensionAttribute
+											.getAttribute(Constants.LEGISLATOR_CONTRACT_ATTRIBUTE_LOCATION);
 
-						if (bundle != null && contractLocation != null) {
+							Bundle bundle;
+							bundle =
+									((EclipsePlugin) eclipseExtension.getOwner()).getBundle();
 
-							URL contractUrl;
-							contractUrl = bundle.getEntry(contractLocation);
+							if (bundle != null && contractLocation != null) {
 
-							/* Check if the contract leads to an invalid URL. */
-							if (contractUrl == null) {
-								Logger.warn("No Legislator Contract found for location "
-										+ contractUrl);
-							}
+								URL contractUrl;
+								contractUrl = bundle.getEntry(contractLocation);
 
-							/* Else try to add the contract to the registry. */
-							else {
-
-								/* Add the contract to the resgistry. */
-								Contract legislatorContract;
-								legislatorContract =
-										EclipseContractFactory.INSTANCE.createContract(contractUrl,
-												eclipseExtension);
-
-								EclipseContractRegistry.getInstance().updateContract(
-										UpdateType.ADD_CONTRACT, legislatorContract,
-										eclipseExtension, Role.LEGISLATOR);
-
-								/* Search for a contracted extension point. */
-								String extensionPointID;
-								IExtensionPoint extensionPoint;
-
-								extensionPointID =
-										contractLocation.substring(contractLocation
-												.lastIndexOf("/") + 1, contractLocation.length()
-												- ".contract".length());
-								extensionPoint =
-										org.eclipse.core.runtime.Platform.getExtensionRegistry()
-												.getExtensionPoint(extensionPointID);
-
-								/*
-								 * If no extension point has been found, store the unbound
-								 * contract.
-								 */
-								if (extensionPoint == null) {
-
-									/* Store the unbound legislator to bind it later on. */
-									EclipseContractRegistry.getInstance()
-											.addUnboundLegislatorContract(extensionPointID,
-													legislatorContract);
+								/* Check if the contract leads to an invalid URL. */
+								if (contractUrl == null) {
+									Logger.warn("No Legislator Contract found for location "
+											+ contractUrl);
 								}
 
-								/* Else add the legislator contract to the extension point. */
+								/* Else try to add the contract to the registry. */
 								else {
-									try {
-										EclipseExtensionPoint eclipseExtensionPoint;
-										eclipseExtensionPoint =
-												EclipseAdapterFactory.getInstance()
-														.createExtensionPoint(extensionPoint);
 
-										this.addContractToExtensionPoint(eclipseExtensionPoint,
-												legislatorContract);
+									/* Add the contract to the resgistry. */
+									Contract legislatorContract;
+									legislatorContract =
+											EclipseContractFactory.INSTANCE.createContract(
+													contractUrl, eclipseExtension);
+
+									EclipseContractRegistry.getInstance().updateContract(
+											UpdateType.ADD_CONTRACT, legislatorContract,
+											eclipseExtension, Role.LEGISLATOR);
+
+									/* Search for a contracted extension point. */
+									String extensionPointID;
+									IExtensionPoint extensionPoint;
+
+									extensionPointID =
+											contractLocation.substring(contractLocation
+													.lastIndexOf("/") + 1, contractLocation.length()
+													- ".contract".length());
+									extensionPoint =
+											org.eclipse.core.runtime.Platform.getExtensionRegistry()
+													.getExtensionPoint(extensionPointID);
+
+									/*
+									 * If no extension point has been found, store the unbound
+									 * contract.
+									 */
+									if (extensionPoint == null) {
+
+										/* Store the unbound legislator to bind it later on. */
+										EclipseContractRegistry.getInstance()
+												.addUnboundLegislatorContract(extensionPointID,
+														legislatorContract);
 									}
-									// end try.
 
-									catch (EclipseConnectorAdaptationException e) {
-										Logger
-												.warn(
-														"IExtensionPoint "
-																+ extensionPoint
-																+ " is invalid. Try to clean the ContractRegistry manually.",
-														e);
+									/* Else add the legislator contract to the extension point. */
+									else {
+										try {
+											EclipseExtensionPoint eclipseExtensionPoint;
+											eclipseExtensionPoint =
+													EclipseAdapterFactory.getInstance()
+															.createExtensionPoint(extensionPoint);
 
-										Job jobCleanRegistry;
-										jobCleanRegistry =
-												new UpdateJobCleanContractRegistry(
-														"Invalid ExtensionPoint found. Clean the ContractRegistry.");
+											this.addContractToExtensionPoint(eclipseExtensionPoint,
+													legislatorContract);
+										}
+										// end try.
 
-										jobCleanRegistry.schedule();
+										catch (EclipseConnectorAdaptationException e) {
+											Logger
+													.warn(
+															"IExtensionPoint "
+																	+ extensionPoint
+																	+ " is invalid. Try to clean the ContractRegistry manually.",
+															e);
+
+											Job jobCleanRegistry;
+											jobCleanRegistry =
+													new UpdateJobCleanContractRegistry(
+															"Invalid ExtensionPoint found. Clean the ContractRegistry.");
+											jobCleanRegistry
+													.setRule(new ContractRegistryAccess(true));
+
+											jobCleanRegistry.schedule();
+										}
+										// end catch.
 									}
-									// end catch.
+									// end else (legislator contract).
 								}
-								// end else (legislator contract).
+								// end else (valid location).
 							}
-							// end else (valid location).
+							// no else (bundle or location was null).
 						}
-						// no else (bundle or location was null).
-					}
-					// end try.
+						// end try.
 
-					catch (TreatyException e) {
+						catch (TreatyException e) {
 
-						Logger.error("Error during initialization of legislator Contract.",
-								e);
+							Logger.error(
+									"Error during initialization of legislator Contract.", e);
+						}
+						// end catch.
 					}
-					// end catch.
+					// end for (iteration on extension attributes).
 				}
-				// end for (iteration on extension attributes).
+				// no else (no external contract).
 			}
-			// no else (no external contract).
+			// no else (extension has been added yet).
 
 			monitor.worked(WORK_EXTERNAL_CONTRACTS / this.myEclipseExtensions.size());
 		}
@@ -343,29 +356,38 @@ public class UpdateJobExtensionsAdded extends Job {
 		 */
 		for (EclipseExtension eclipseExtension : this.myEclipseExtensions) {
 
-			EclipseExtensionPoint eclipseExtensionPoint;
-			eclipseExtensionPoint = eclipseExtension.getExtensionPoint();
+			/*
+			 * Ensure that the extension point has not been added yet (to avoid
+			 * mis-configurations caused by errors in job scheduling).
+			 */
+			if (EclipseContractRegistry.getInstance().getContracts(eclipseExtension,
+					Role.SUPPLIER).size() == 0) {
 
-			/* Check if the extension's extension point is contracted. */
-			if (eclipseExtensionPoint.getContracts().size() > 0) {
+				EclipseExtensionPoint eclipseExtensionPoint;
+				eclipseExtensionPoint = eclipseExtension.getExtensionPoint();
 
-				for (Contract contract : eclipseExtensionPoint.getContracts()) {
+				/* Check if the extension's extension point is contracted. */
+				if (eclipseExtensionPoint.getContracts().size() > 0) {
 
-					try {
-						EclipseContractRegistry.getInstance().updateContract(
-								UpdateType.ADD_CONTRACT, contract, eclipseExtension,
-								Role.SUPPLIER);
+					for (Contract contract : eclipseExtensionPoint.getContracts()) {
+
+						try {
+							EclipseContractRegistry.getInstance().updateContract(
+									UpdateType.ADD_CONTRACT, contract, eclipseExtension,
+									Role.SUPPLIER);
+						}
+
+						catch (TreatyException e) {
+
+							Logger.error("Unexpected TreatyException occurred during adding "
+									+ "Contract of ExtensionPoint to Extension.", e);
+						}
 					}
-
-					catch (TreatyException e) {
-
-						Logger.error("Unexpected TreatyException occurred during adding "
-								+ "Contract of ExtensionPoint to Extension.", e);
-					}
+					// end for.
 				}
-				// end for.
+				// no else (extension not contracted).
 			}
-			// no else (extension not contracted).
+			// no else (extension has been added yet).
 
 			monitor.worked(WORK_CONTRACTED_EXTENSIONS
 					/ this.myEclipseExtensions.size());
@@ -473,6 +495,7 @@ public class UpdateJobExtensionsAdded extends Job {
 			jobCleanRegistry =
 					new UpdateJobCleanContractRegistry(
 							"Invalid Extension found. Clean the ContractRegistry.");
+			jobCleanRegistry.setRule(new ContractRegistryAccess(true));
 
 			jobCleanRegistry.schedule();
 		}
