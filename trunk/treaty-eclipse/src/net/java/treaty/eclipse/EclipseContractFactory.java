@@ -12,8 +12,6 @@ package net.java.treaty.eclipse;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import net.java.treaty.Contract;
 import net.java.treaty.ContractReader;
@@ -33,8 +31,6 @@ public class EclipseContractFactory {
 	/** The singleton instance of the {@link EclipseContractFactory}. */
 	public static EclipseContractFactory INSTANCE = new EclipseContractFactory();
 
-	private Map<URL, Contract> myCachedContracts = new HashMap<URL, Contract>();
-
 	/**
 	 * <p>
 	 * Creates a new {@link EclipseContractFactory}. Private constructor for
@@ -44,16 +40,6 @@ public class EclipseContractFactory {
 	private EclipseContractFactory() {
 
 		/* Remains empty. */
-	}
-
-	/**
-	 * <p>
-	 * Clears the cache of the {@link EclipseContractFactory}.
-	 * </p>
-	 */
-	public void clearCache() {
-
-		this.myCachedContracts.clear();
 	}
 
 	/**
@@ -75,48 +61,36 @@ public class EclipseContractFactory {
 
 		Contract result;
 
-		/* Probably use a cached result. */
-		if (this.myCachedContracts.containsKey(location)) {
-			result = this.myCachedContracts.get(location);
-		}
+		result = null;
 
-		/* Else try to load the contract. */
-		else {
-			result = null;
+		/* Check if the given URL is not null. */
+		if (location != null) {
 
-			/* Check if the given URL is not null. */
-			if (location != null) {
+			ContractReader reader;
 
-				ContractReader reader;
+			Logger.info("Loading contract from " + location);
+			reader = new XMLContractReader();
 
-				Logger.info("Loading contract from " + location);
-				reader = new XMLContractReader();
+			/* Try to read the contract. */
+			try {
+				result =
+						reader.read(location.openStream(), VocabularyRegistry.INSTANCE);
+				result.setLocation(location);
 
-				/* Try to read the contract. */
-				try {
-					result =
-							reader.read(location.openStream(), VocabularyRegistry.INSTANCE);
-					result.setLocation(location);
-
-					/* If the owner of the contract is not null, set the owner. */
-					if (owner != null) {
-						result.setOwner(owner);
-					}
-					// no else.
-
-					/* Cache the result. */
-					this.myCachedContracts.put(location, result);
+				/* If the owner of the contract is not null, set the owner. */
+				if (owner != null) {
+					result.setOwner(owner);
 				}
-
-				catch (TreatyException e) {
-					Logger.error("Exception loading contract from " + location, e);
-				}
-
-				catch (IOException e) {
-					Logger.error("Exception loading contract from " + location, e);
-				}
+				// no else.
 			}
-			// no else (URL is null).
+
+			catch (TreatyException e) {
+				Logger.error("Exception loading contract from " + location, e);
+			}
+
+			catch (IOException e) {
+				Logger.error("Exception loading contract from " + location, e);
+			}
 		}
 
 		return result;

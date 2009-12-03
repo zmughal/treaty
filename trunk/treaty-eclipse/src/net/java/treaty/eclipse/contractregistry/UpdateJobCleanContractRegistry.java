@@ -10,8 +10,6 @@
 
 package net.java.treaty.eclipse.contractregistry;
 
-import net.java.treaty.eclipse.EclipseContractFactory;
-
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -64,7 +62,6 @@ public class UpdateJobCleanContractRegistry extends Job {
 
 		EclipseContractRegistry.clear();
 		EclipseAdapterFactory.getInstance().clearCache();
-		EclipseContractFactory.INSTANCE.clearCache();
 
 		UpdateJobInitializeContractRegistry contractRegistryStartUpJob;
 		contractRegistryStartUpJob =
