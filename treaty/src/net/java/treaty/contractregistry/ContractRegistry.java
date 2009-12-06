@@ -10,6 +10,7 @@
 
 package net.java.treaty.contractregistry;
 
+import java.net.URI;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.java.treaty.Component;
 import net.java.treaty.Connector;
 import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
@@ -24,7 +26,6 @@ import net.java.treaty.ContractLogger;
 import net.java.treaty.ResourceManager;
 import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
-import net.java.treaty.event.LifeCycleEvent;
 
 /**
  * <p>
@@ -128,28 +129,26 @@ public class ContractRegistry {
 	/**
 	 * <p>
 	 * Returns a {@link Set} of all {@link Contract}s that must be validated after
-	 * a given {@link LifeCycleEvent} occurred.
+	 * a given trigger for a given {@link Component} occurred.
 	 * </p>
 	 * 
 	 * <p>
 	 * <strong>Please note that this method will only return {@link Contract}s
-	 * that define the same trigger (see {@link Contract#getTriggers()}), the
-	 * {@link LifeCycleEvent} has as its type (see
-	 * {@link LifeCycleEvent#getType()}).</strong> If a {@link Contract} does not
-	 * defined any trigger, he will be returned anyway (support of deprecated
-	 * {@link Contract}s).
+	 * that define the same trigger (see {@link Contract#getTriggers()}).</strong>
+	 * If a {@link Contract} does not defined any trigger, he will be returned
+	 * anyway (support of deprecated {@link Contract}s).
 	 * </p>
 	 * 
 	 * @return A {@link Set} of all {@link Contract}s that must be validated after
 	 *         a given {@link LifeCycleEvent} occurred.
 	 */
-	public Set<Contract> getAffectedContracts(LifeCycleEvent lifeCycleEvent) {
+	public Set<Contract> getAffectedContracts(URI triggerType, Component component) {
 
 		Set<Contract> result;
 		result = new LinkedHashSet<Contract>();
 
 		/* Iterate on all connectors of the given component. */
-		for (Connector connector : lifeCycleEvent.getComponent().getConnectors()) {
+		for (Connector connector : component.getConnectors()) {
 
 			switch (connector.getType()) {
 
@@ -161,7 +160,7 @@ public class ContractRegistry {
 
 						/* Only add contracts that have the right trigger type. */
 						if (contract.getTriggers().size() == 0
-								|| contract.getTriggers().contains(lifeCycleEvent.getType())) {
+								|| contract.getTriggers().contains(triggerType)) {
 							result.addAll(this.getInstantiatedContracts(contract));
 						}
 						// no else.
@@ -178,7 +177,7 @@ public class ContractRegistry {
 
 						/* Only add contracts that have the right trigger type. */
 						if (contract.getTriggers().size() == 0
-								|| contract.getTriggers().contains(lifeCycleEvent.getType())) {
+								|| contract.getTriggers().contains(triggerType)) {
 							result.addAll(this.getInstantiatedContracts(contract));
 						}
 						// no else.

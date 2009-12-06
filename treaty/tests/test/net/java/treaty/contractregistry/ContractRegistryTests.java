@@ -29,7 +29,6 @@ import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
 import net.java.treaty.contractregistry.ContractRegistry;
 import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
-import net.java.treaty.event.LifeCycleEvent;
 import net.java.treaty.xml.XMLContractReader;
 
 import org.junit.BeforeClass;
@@ -832,15 +831,6 @@ public class ContractRegistryTests {
 		ContractRegistry contractRegistry;
 		contractRegistry = new ContractRegistry(resourceManagerMock);
 
-		LifeCycleEvent consumerUpdate;
-		consumerUpdate = new LifeCycleEvent(consumerComponentMock, triggerType1);
-
-		LifeCycleEvent supplier1Update;
-		supplier1Update = new LifeCycleEvent(supplier1ComponentMock, triggerType1);
-
-		LifeCycleEvent supplier2Update;
-		supplier2Update = new LifeCycleEvent(supplier2ComponentMock, triggerType1);
-
 		/* Add the consumer contract. */
 		try {
 			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
@@ -852,12 +842,12 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(consumerUpdate)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumerComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
 		try {
@@ -870,12 +860,12 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(consumerUpdate)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update)
-				.size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumerComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
 		try {
@@ -888,12 +878,12 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(2, contractRegistry.getAffectedContracts(consumerUpdate)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier2Update)
-				.size());
+		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+				consumerComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
 	}
 
 	/**
@@ -938,15 +928,6 @@ public class ContractRegistryTests {
 		ContractRegistry contractRegistry;
 		contractRegistry = new ContractRegistry(resourceManagerMock);
 
-		LifeCycleEvent consumer1Update;
-		consumer1Update = new LifeCycleEvent(consumer1ComponentMock, triggerType1);
-
-		LifeCycleEvent consumer2Update;
-		consumer2Update = new LifeCycleEvent(consumer2ComponentMock, triggerType1);
-
-		LifeCycleEvent supplier1Update;
-		supplier1Update = new LifeCycleEvent(supplier1ComponentMock, triggerType1);
-
 		/* Add the supplier contract. */
 		try {
 			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
@@ -958,12 +939,12 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer2Update)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer2ComponentMock).size());
 
 		/* Add a consumer contract. */
 		try {
@@ -976,12 +957,12 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer2Update)
-				.size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer2ComponentMock).size());
 
 		/* Add a consumer contract. */
 		try {
@@ -994,12 +975,12 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(2, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(consumer2Update)
-				.size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumer2ComponentMock).size());
 	}
 
 	/**
@@ -1052,19 +1033,6 @@ public class ContractRegistryTests {
 		ContractRegistry contractRegistry;
 		contractRegistry = new ContractRegistry(resourceManagerMock);
 
-		LifeCycleEvent legislator1Update;
-		legislator1Update =
-				new LifeCycleEvent(legislator1ComponentMock, triggerType1);
-
-		LifeCycleEvent consumer1Update;
-		consumer1Update = new LifeCycleEvent(consumer1ComponentMock, triggerType1);
-
-		LifeCycleEvent supplier1Update;
-		supplier1Update = new LifeCycleEvent(supplier1ComponentMock, triggerType1);
-
-		LifeCycleEvent supplier2Update;
-		supplier2Update = new LifeCycleEvent(supplier2ComponentMock, triggerType1);
-
 		/* Add the legislator contract. */
 		try {
 			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
@@ -1076,14 +1044,14 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(legislator1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				legislator1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
 
 		/* Add the consumer contract. */
 		try {
@@ -1096,14 +1064,14 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(legislator1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				legislator1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
 		try {
@@ -1117,14 +1085,14 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(legislator1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				legislator1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
 		try {
@@ -1138,15 +1106,14 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(legislator1Update)
-				.size());
-		assertEquals(2, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier2Update)
-				.size());
-
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				legislator1ComponentMock).size());
+		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
 	}
 
 	/**
@@ -1199,19 +1166,6 @@ public class ContractRegistryTests {
 		ContractRegistry contractRegistry;
 		contractRegistry = new ContractRegistry(resourceManagerMock);
 
-		LifeCycleEvent legislator1Update;
-		legislator1Update =
-				new LifeCycleEvent(legislator1ComponentMock, triggerType1);
-
-		LifeCycleEvent consumer1Update;
-		consumer1Update = new LifeCycleEvent(consumer1ComponentMock, triggerType1);
-
-		LifeCycleEvent consumer2Update;
-		consumer2Update = new LifeCycleEvent(consumer2ComponentMock, triggerType1);
-
-		LifeCycleEvent supplier1Update;
-		supplier1Update = new LifeCycleEvent(supplier1ComponentMock, triggerType1);
-
 		/* Add the legislator contract. */
 		try {
 			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
@@ -1223,14 +1177,14 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(legislator1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer2Update)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				legislator1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer2ComponentMock).size());
 
 		/* Add the supplier contract. */
 		try {
@@ -1243,14 +1197,14 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(legislator1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer2Update)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				legislator1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer2ComponentMock).size());
 
 		/* Add a consumer contract. */
 		try {
@@ -1264,14 +1218,14 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(legislator1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumer2Update)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				legislator1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumer2ComponentMock).size());
 
 		/* Add a consumer contract. */
 		try {
@@ -1285,14 +1239,14 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(legislator1Update)
-				.size());
-		assertEquals(2, contractRegistry.getAffectedContracts(supplier1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(consumer1Update)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(consumer2Update)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				legislator1ComponentMock).size());
+		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumer1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumer2ComponentMock).size());
 	}
 
 	/**
@@ -1337,24 +1291,6 @@ public class ContractRegistryTests {
 		ContractRegistry contractRegistry;
 		contractRegistry = new ContractRegistry(resourceManagerMock);
 
-		LifeCycleEvent consumerUpdate1;
-		consumerUpdate1 = new LifeCycleEvent(consumerComponentMock, triggerType1);
-
-		LifeCycleEvent supplier1Update1;
-		supplier1Update1 = new LifeCycleEvent(supplier1ComponentMock, triggerType1);
-
-		LifeCycleEvent supplier2Update1;
-		supplier2Update1 = new LifeCycleEvent(supplier2ComponentMock, triggerType1);
-
-		LifeCycleEvent consumerUpdate2;
-		consumerUpdate2 = new LifeCycleEvent(consumerComponentMock, triggerType2);
-
-		LifeCycleEvent supplier1Update2;
-		supplier1Update2 = new LifeCycleEvent(supplier1ComponentMock, triggerType2);
-
-		LifeCycleEvent supplier2Update2;
-		supplier2Update2 = new LifeCycleEvent(supplier2ComponentMock, triggerType2);
-
 		/* Add the consumer contract. */
 		try {
 			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
@@ -1366,18 +1302,18 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(consumerUpdate1)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update1)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update1)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumerUpdate2)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update2)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update2)
-				.size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumerComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+				consumerComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
 		try {
@@ -1390,18 +1326,18 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(consumerUpdate1)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier1Update1)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update1)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumerUpdate2)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update2)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update2)
-				.size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumerComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+				consumerComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
 		try {
@@ -1414,18 +1350,18 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(2, contractRegistry.getAffectedContracts(consumerUpdate1)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier1Update1)
-				.size());
-		assertEquals(1, contractRegistry.getAffectedContracts(supplier2Update1)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(consumerUpdate2)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier1Update2)
-				.size());
-		assertEquals(0, contractRegistry.getAffectedContracts(supplier2Update2)
-				.size());
+		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+				consumerComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+				consumerComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+				supplier2ComponentMock).size());
 	}
 
 	/**
