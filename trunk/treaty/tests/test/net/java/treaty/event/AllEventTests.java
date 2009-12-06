@@ -8,30 +8,24 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package test.net.java.treaty;
+package test.net.java.treaty.event;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import test.net.java.treaty.contractregistry.AllContractRegistryTests;
-import test.net.java.treaty.event.AllEventTests;
-import test.net.java.treaty.script.AllScriptTests;
-import test.net.java.treaty.vocabulary.AllVocabularyTests;
-import test.net.java.treaty.xml.AllXmlTests;
+import test.net.java.treaty.event.verification.AllVerificationTests;
 
 /**
  * <p>
  * Provides a JUnit Test Suite containing all JUnit test cases of the Treaty
- * Framework.
+ * Framework package <code>net.java.treaty.event</code>.
  * </p>
  * 
  * @author Claas Wilke
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { ContractTests.class, AllContractRegistryTests.class,
-		AllEventTests.class, AllScriptTests.class, AllVocabularyTests.class,
-		AllXmlTests.class })
-public class AllTreatyTests {
+@Suite.SuiteClasses( { AllVerificationTests.class })
+public class AllEventTests {
 	/*
 	 * This class remains completely empty, being used only as a holder for the
 	 * above annotations.
