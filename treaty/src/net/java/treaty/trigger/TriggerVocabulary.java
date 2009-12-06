@@ -8,7 +8,7 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.event;
+package net.java.treaty.trigger;
 
 import java.net.URI;
 import java.util.Set;
