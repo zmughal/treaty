@@ -13,6 +13,7 @@ package net.java.treaty.eclipse;
 import net.java.treaty.Contract;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.eclipse.exporter.Exporter;
+import net.java.treaty.trigger.TriggerVocabulary;
 
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -56,6 +57,13 @@ public interface Constants {
 	 * contracts that lead to the contract definition.
 	 */
 	static final String LEGISLATOR_CONTRACT_ATTRIBUTE_LOCATION = "location";
+
+	/**
+	 * The ID of the {@link IExtensionPoint} that can be used to register
+	 * {@link TriggerVocabulary}s.
+	 */
+	static final String TRIGGER_VOCABULARY_EXTENSION_POINT_ID =
+			"net.java.treaty.eclipse.triggervocabulary";
 
 	/** Key used to annotate verification results. */
 	public static final String VERIFICATION_RESULT =

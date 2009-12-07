@@ -201,65 +201,71 @@ public class ExporterRegistry implements IRegistryEventListener {
 	 */
 	private void addExporters(IExtension extension) {
 
-		Set<Exporter> exportersOfExtension;
-		exportersOfExtension = new HashSet<Exporter>();
+		if (extension.isValid()
+				&& extension.getExtensionPointUniqueIdentifier().equals(
+						Constants.EXPORTER_EXTENSION_POINT_ID)) {
 
-		Set<Exporter> newExportersOfExtension;
-		newExportersOfExtension = new HashSet<Exporter>();
+			Set<Exporter> exportersOfExtension;
+			exportersOfExtension = new HashSet<Exporter>();
 
-		String pluginId;
-		pluginId = extension.getContributor().getName();
+			Set<Exporter> newExportersOfExtension;
+			newExportersOfExtension = new HashSet<Exporter>();
 
-		/* Try to get the exporter. */
-		try {
-			for (IConfigurationElement configurationElement : extension
-					.getConfigurationElements()) {
+			String pluginId;
+			pluginId = extension.getContributor().getName();
 
-				String className;
-				className = configurationElement.getAttribute("class");
+			/* Try to get the exporter. */
+			try {
+				for (IConfigurationElement configurationElement : extension
+						.getConfigurationElements()) {
 
-				Bundle bundle;
-				bundle = org.eclipse.core.runtime.Platform.getBundle(pluginId);
+					String className;
+					className = configurationElement.getAttribute("class");
 
-				if (bundle != null && className != null) {
-					Class<?> clazz;
-					clazz = bundle.loadClass(className);
+					Bundle bundle;
+					bundle = org.eclipse.core.runtime.Platform.getBundle(pluginId);
 
-					if (Exporter.class.isAssignableFrom(clazz)) {
-						Exporter exporter;
-						exporter = (Exporter) clazz.newInstance();
+					if (bundle != null && className != null) {
+						Class<?> clazz;
+						clazz = bundle.loadClass(className);
 
-						/*
-						 * Add the exporter and probably store it for notify, if its a new
-						 * exporter.
-						 */
-						if (exportersOfExtension.add(exporter)) {
-							newExportersOfExtension.add(exporter);
+						if (Exporter.class.isAssignableFrom(clazz)) {
+							Exporter exporter;
+							exporter = (Exporter) clazz.newInstance();
+
+							/*
+							 * Add the exporter and probably store it for notify, if its a new
+							 * exporter.
+							 */
+							if (exportersOfExtension.add(exporter)) {
+								newExportersOfExtension.add(exporter);
+							}
+							// no else.
 						}
 						// no else.
 					}
 					// no else.
 				}
-				// no else.
+				// end for.
+
+				/* Store all exporters of this extension. */
+				this.myExporters.put(extension.getUniqueIdentifier(),
+						exportersOfExtension);
+
+				/* Notify all listeners of all newly added exporters. */
+				for (Exporter exporter : newExportersOfExtension) {
+					this.notifiyAddedExporter(exporter);
+				}
+				// end for.
 			}
-			// end for.
+			// end try.
 
-			/* Store all exporters of this extension. */
-			this.myExporters.put(extension.getUniqueIdentifier(),
-					exportersOfExtension);
-
-			/* Notify all listeners of all newly added exporters. */
-			for (Exporter exporter : newExportersOfExtension) {
-				this.notifiyAddedExporter(exporter);
+			catch (Exception e) {
+				Logger.error("Error loading Exporter from " + pluginId, e);
 			}
-			// end for.
+			// end catch.
 		}
-		// end try.
-
-		catch (Exception e) {
-			Logger.error("Error loading Exporter from " + pluginId, e);
-		}
-		// end catch.
+		// no else (wrong type of IExtension).
 	}
 
 	/**

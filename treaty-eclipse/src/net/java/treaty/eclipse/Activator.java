@@ -12,6 +12,7 @@ package net.java.treaty.eclipse;
 
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.exporter.ExporterRegistry;
+import net.java.treaty.eclipse.trigger.EclipseTriggerRegistry;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
@@ -50,6 +51,9 @@ public class Activator extends Plugin {
 
 		super.start(context);
 		plugin = this;
+
+		/* Start the trigger registry. */
+		EclipseTriggerRegistry.INSTANCE.initialize();
 	}
 
 	/*
@@ -61,6 +65,7 @@ public class Activator extends Plugin {
 		EclipseContractRegistry.getInstance().tearDown();
 		VocabularyRegistry.INSTANCE.tearDown();
 		ExporterRegistry.INSTANCE.tearDown();
+		EclipseTriggerRegistry.INSTANCE.tearDown();
 
 		plugin = null;
 		super.stop(context);

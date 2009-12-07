@@ -226,7 +226,7 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 	 * 
 	 * @return The Singleton Instance of the {@link EclipseContractRegistry}.
 	 */
-	public static EclipseContractRegistry getInstance() {
+	public synchronized static EclipseContractRegistry getInstance() {
 
 		if (myInstance == null) {
 			myInstance = new EclipseContractRegistry();
