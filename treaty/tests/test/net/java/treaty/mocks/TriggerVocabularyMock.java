@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.java.treaty.ContractLogger;
-import net.java.treaty.event.AbstractTriggerVocabulary;
-import net.java.treaty.event.TriggerVocabulary;
+import net.java.treaty.trigger.AbstractTriggerVocabulary;
+import net.java.treaty.trigger.TriggerVocabulary;
 
 /**
  * <p>

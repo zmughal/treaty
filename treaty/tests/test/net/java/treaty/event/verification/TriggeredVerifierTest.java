@@ -30,9 +30,9 @@ import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
 import net.java.treaty.contractregistry.ContractRegistry;
 import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
-import net.java.treaty.event.AbstractTriggerVocabulary;
-import net.java.treaty.event.verification.AbstractTriggeredVerifier;
-import net.java.treaty.event.verification.TriggeredVerifierListener;
+import net.java.treaty.trigger.AbstractTriggerVocabulary;
+import net.java.treaty.trigger.verification.AbstractTriggeredVerifier;
+import net.java.treaty.trigger.verification.TriggeredVerifierListener;
 import net.java.treaty.xml.XMLContractReader;
 
 import org.junit.Test;

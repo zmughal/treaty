@@ -13,7 +13,7 @@ package test.net.java.treaty.mocks;
 import net.java.treaty.Contract;
 import net.java.treaty.Resource;
 import net.java.treaty.VerificationPolicy;
-import net.java.treaty.event.verification.AbstractTriggeredVerifier;
+import net.java.treaty.trigger.verification.AbstractTriggeredVerifier;
 
 /**
  * <p>
