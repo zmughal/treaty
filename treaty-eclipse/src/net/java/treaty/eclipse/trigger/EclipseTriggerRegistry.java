@@ -52,13 +52,6 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 			null;
 
 	/**
-	 * The {@link TriggerRegistryListener}s of this {@link EclipseTriggerRegistry}
-	 * .
-	 */
-	private Set<TriggerRegistryListener> listeners =
-			new HashSet<TriggerRegistryListener>();
-
-	/**
 	 * <p>
 	 * Private constructor for singleton pattern.
 	 * </p>
@@ -112,7 +105,6 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 					triggerVocabulary.tearDown();
 
 					this.removeTriggerVocabulary(triggerVocabulary);
-					this.notifiyRemovedTriggerVocabulary(triggerVocabulary);
 
 					Logger.info("Removed TriggerVocabulary " + triggerVocabulary);
 				}
@@ -132,19 +124,6 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 	public void removed(IExtensionPoint[] extensionPoints) {
 
 		/* This method can be ignored, only listens to extensions. */
-	}
-
-	/**
-	 * <p>
-	 * Adds a new Listener to this {@link EclipseTriggerRegistry}.
-	 * </p>
-	 * 
-	 * @param listener
-	 *          The {@link TriggerRegistryListener} that shall be added.
-	 */
-	public void addListener(TriggerRegistryListener listener) {
-
-		this.listeners.add(listener);
 	}
 
 	/**
@@ -182,19 +161,6 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 
 	/**
 	 * <p>
-	 * Removes a Listener from this {@link EclipseTriggerRegistry}.
-	 * </p>
-	 * 
-	 * @param listener
-	 *          The {@link TriggerRegistryListener} that shall be removed.
-	 */
-	public void removeListener(TriggerRegistryListener listener) {
-
-		this.listeners.add(listener);
-	}
-
-	/**
-	 * <p>
 	 * This method can be called when this plug-in shall be de-activated.
 	 * Unregisters the {@link EclipseTriggerRegistry} as listener of the
 	 * ExtensionRegistry.
@@ -225,10 +191,6 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 			triggerVocabulariesOfExtension =
 					new HashSet<AbstractEclipseTriggerVocabulary>();
 
-			Set<AbstractEclipseTriggerVocabulary> newTriggerVocabulariesOfExtension;
-			newTriggerVocabulariesOfExtension =
-					new HashSet<AbstractEclipseTriggerVocabulary>();
-
 			String pluginId;
 			pluginId = extension.getContributor().getName();
 
@@ -252,17 +214,9 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 							triggerVocabulary =
 									(AbstractEclipseTriggerVocabulary) clazz.newInstance();
 
-							/*
-							 * Add the TriggerVocabulary and probably store it for notify, if
-							 * its a new TriggerVocabulary.
-							 */
-							if (triggerVocabulariesOfExtension.add(triggerVocabulary)) {
-								newTriggerVocabulariesOfExtension.add(triggerVocabulary);
-								this.addTriggerVocabulary(triggerVocabulary);
-
-								Logger.info("Added new TriggerVocabulary " + triggerVocabulary);
-							}
-							// no else.
+							this.addTriggerVocabulary(triggerVocabulary);
+							triggerVocabulariesOfExtension.add(triggerVocabulary);
+							Logger.info("Added new TriggerVocabulary " + triggerVocabulary);
 						}
 						// no else.
 					}
@@ -273,12 +227,6 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 				/* Store all exporters of this extension. */
 				this.triggerVocabulariesOfExtension.put(
 						extension.getUniqueIdentifier(), triggerVocabulariesOfExtension);
-
-				/* Notify all listeners of all newly added exporters. */
-				for (TriggerVocabulary triggerVocabulary : newTriggerVocabulariesOfExtension) {
-					this.notifiyAddedTriggerVocabulary(triggerVocabulary);
-				}
-				// end for.
 			}
 			// end try.
 
@@ -289,42 +237,5 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 			// end catch.
 		}
 		// no else (wrong type of IExtension).
-	}
-
-	/**
-	 * <p>
-	 * Notifies all registered {@link TriggerRegistryListener}s, that a
-	 * {@link TriggerVocabulary} has been added to this
-	 * {@link EclipseTriggerRegistry}.
-	 * </p>
-	 * 
-	 * @param triggerVocabulary
-	 *          The {@link TriggerVocabulary} that has been added.
-	 */
-	private void notifiyAddedTriggerVocabulary(TriggerVocabulary triggerVocabulary) {
-
-		for (TriggerRegistryListener listener : this.listeners) {
-			listener.triggerVocabularyAdded(triggerVocabulary);
-		}
-		// end for.
-	}
-
-	/**
-	 * <p>
-	 * Notifies all registered {@link TriggerRegistryListener}s, that a
-	 * {@link TriggerVocabulary} has been removed to this
-	 * {@link EclipseTriggerRegistry}.
-	 * </p>
-	 * 
-	 * @param exporter
-	 *          The {@link Exporter} that has been removed.
-	 */
-	private void notifiyRemovedTriggerVocabulary(
-			TriggerVocabulary triggerVocabulary) {
-
-		for (TriggerRegistryListener listener : this.listeners) {
-			listener.triggerVocabularyRemoved(triggerVocabulary);
-		}
-		// end for.
 	}
 }

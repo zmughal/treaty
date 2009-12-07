@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import net.java.treaty.eclipse.trigger.EclipseTriggerRegistry;
-import net.java.treaty.eclipse.trigger.TriggerRegistryListener;
 import net.java.treaty.eclipse.ui.Activator;
+import net.java.treaty.trigger.TriggerRegistryListener;
 import net.java.treaty.trigger.TriggerVocabulary;
 
 import org.eclipse.core.runtime.IAdaptable;
