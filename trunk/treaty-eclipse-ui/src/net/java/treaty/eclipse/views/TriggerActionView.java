@@ -566,7 +566,9 @@ public class TriggerActionView extends ViewPart implements
 
 				if (triggerOrAction.getType() == TriggerOrActionType.Action) {
 					if (EclipseActionRegistry.INSTANCE
-							.isUniversalActionOnFailure(triggerOrAction.getUri())) {
+							.isUniversalActionOnFailure(triggerOrAction.getUri())
+							&& EclipseActionRegistry.INSTANCE
+									.isUniversalActionOnSuccess(triggerOrAction.getUri())) {
 						result = ICON_YES;
 					}
 
@@ -643,6 +645,11 @@ public class TriggerActionView extends ViewPart implements
 						// no else.
 
 						buffer.append("onSuccess");
+					}
+					// no else.
+
+					if (buffer.length() == 0) {
+						buffer.append("no");
 					}
 					// no else.
 
