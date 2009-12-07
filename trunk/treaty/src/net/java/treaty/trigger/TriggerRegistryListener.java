@@ -8,13 +8,12 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.eclipse.trigger;
+package net.java.treaty.trigger;
 
-import net.java.treaty.trigger.TriggerVocabulary;
 
 /**
  * <p>
- * Interface used to listen to the {@link EclipseTriggerRegistry}.
+ * Interface used to listen to the {@link TriggerRegistry}.
  * </p>
  * 
  * @author Claas Wilke
@@ -24,12 +23,12 @@ public interface TriggerRegistryListener {
 	/**
 	 * <p>
 	 * Method called, if a {@link TriggerVocabulary} has been added to the
-	 * {@link EclipseTriggerRegistry}.
+	 * {@link TriggerRegistry}.
 	 * </p>
 	 * 
 	 * @param triggerVocabulary
 	 *          The {@link TriggerVocabulary} that has been added to the
-	 *          {@link EclipseTriggerRegistry}.
+	 *          {@link TriggerRegistry}.
 	 */
 	public void triggerVocabularyAdded(TriggerVocabulary triggerVocabulary);
 
@@ -41,7 +40,7 @@ public interface TriggerRegistryListener {
 	 * 
 	 * @param triggerVocabulary
 	 *          The {@link TriggerVocabulary} that has been removed from the
-	 *          {@link EclipseTriggerRegistry}.
+	 *          {@link TriggerRegistry}.
 	 */
 	public void triggerVocabularyRemoved(TriggerVocabulary triggerVocabulary);
 }

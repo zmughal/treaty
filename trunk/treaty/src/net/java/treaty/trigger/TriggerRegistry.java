@@ -23,9 +23,28 @@ import java.util.Set;
  */
 public class TriggerRegistry {
 
+	/**
+	 * The {@link TriggerRegistryListener}s of this {@link TriggerRegistry} .
+	 */
+	private Set<TriggerRegistryListener> listeners =
+			new HashSet<TriggerRegistryListener>();
+
 	/** The {@link TriggerVocabulary}s of this {@link TriggerRegistry}. */
 	private Set<TriggerVocabulary> triggerVocabularies =
 			new HashSet<TriggerVocabulary>();
+
+	/**
+	 * <p>
+	 * Adds a new Listener to this {@link TriggerRegistry}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link TriggerRegistryListener} that shall be added.
+	 */
+	public void addListener(TriggerRegistryListener listener) {
+
+		this.listeners.add(listener);
+	}
 
 	/**
 	 * <p>
@@ -39,7 +58,16 @@ public class TriggerRegistry {
 	 */
 	public boolean addTriggerVocabulary(TriggerVocabulary triggerVocabulary) {
 
-		return this.triggerVocabularies.add(triggerVocabulary);
+		boolean result;
+
+		result = this.triggerVocabularies.add(triggerVocabulary);
+
+		if (result) {
+			this.notifiyAddedTriggerVocabulary(triggerVocabulary);
+		}
+		// no else.
+
+		return result;
 	}
 
 	/**
@@ -79,6 +107,19 @@ public class TriggerRegistry {
 
 	/**
 	 * <p>
+	 * Removes a Listener from this {@link TriggerRegistry}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link TriggerRegistryListener} that shall be removed.
+	 */
+	public void removeListener(TriggerRegistryListener listener) {
+
+		this.listeners.add(listener);
+	}
+
+	/**
+	 * <p>
 	 * Removes a {@link TriggerVocabulary} from this {@link TriggerRegistry}.
 	 * </p>
 	 * 
@@ -89,6 +130,50 @@ public class TriggerRegistry {
 	 */
 	public boolean removeTriggerVocabulary(TriggerVocabulary triggerVocabulary) {
 
-		return this.triggerVocabularies.remove(triggerVocabulary);
+		boolean result;
+
+		result = this.triggerVocabularies.remove(triggerVocabulary);
+
+		if (result) {
+			this.notifiyRemovedTriggerVocabulary(triggerVocabulary);
+		}
+		// no else.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Notifies all registered {@link TriggerRegistryListener}s, that a
+	 * {@link TriggerVocabulary} has been added to this {@link TriggerRegistry}.
+	 * </p>
+	 * 
+	 * @param triggerVocabulary
+	 *          The {@link TriggerVocabulary} that has been added.
+	 */
+	private void notifiyAddedTriggerVocabulary(TriggerVocabulary triggerVocabulary) {
+
+		for (TriggerRegistryListener listener : this.listeners) {
+			listener.triggerVocabularyAdded(triggerVocabulary);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Notifies all registered {@link TriggerRegistryListener}s, that a
+	 * {@link TriggerVocabulary} has been removed to this {@link TriggerRegistry}.
+	 * </p>
+	 * 
+	 * @param exporter
+	 *          The {@link Exporter} that has been removed.
+	 */
+	private void notifiyRemovedTriggerVocabulary(
+			TriggerVocabulary triggerVocabulary) {
+
+		for (TriggerRegistryListener listener : this.listeners) {
+			listener.triggerVocabularyRemoved(triggerVocabulary);
+		}
+		// end for.
 	}
 }
