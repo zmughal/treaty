@@ -29,8 +29,11 @@ import net.java.treaty.trigger.TriggerVocabulary;
 public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 
 	/** The name space of this {@link TriggerVocabulary}. */
-	public static final String NAME_SPACE =
-			"http://www.treaty.org/test/net/java/treaty/event";
+	public static final String NAME_SPACE = "http://www.treaty.org/trigger/test";
+
+	/** The name of a test trigger. */
+	public static final String NAME_DEFAULT_TRIGGER =
+			NAME_SPACE + "#defaultTrigger";
 
 	/** The name of a test trigger. */
 	public static final String NAME_TRIGGER_1 = NAME_SPACE + "#trigger1";
@@ -41,11 +44,69 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 	/** The trigger types of this {@link TriggerVocabulary}. */
 	private Set<URI> triggerTypes;
 
+	/**
+	 * <p>
+	 * Creates a new {@link TriggerVocabularyMock}.
+	 * </p>
+	 */
+	public TriggerVocabularyMock() {
+
+		this.initialize();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see net.java.treaty.event.TriggerVocabulary#getTriggerTypes()
 	 */
 	public Set<URI> getTriggerTypes() {
+
+		return this.triggerTypes;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.TriggerVocabulary#isDefaultTrigger(java.net.URI)
+	 */
+	public boolean isDefaultTrigger(URI triggerType) {
+
+		/** Return true only for the default trigger. */
+		return triggerType.toString().equals(NAME_DEFAULT_TRIGGER);
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link URI} for a given trigger's name or <code>null</code> if
+	 * the trigger does not exist.
+	 * </p>
+	 * 
+	 * @param name
+	 *          The trigger's name.
+	 * @return The {@link URI} or <code>null</code>.
+	 */
+	public URI getTrigger(String name) {
+
+		URI result;
+		result = null;
+
+		for (URI triggerType : this.triggerTypes) {
+			if (triggerType.toString().equals(name)) {
+				result = triggerType;
+				break;
+			}
+			// no else.
+		}
+		// end for.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Initializes this {@link TriggerVocabularyMock}.
+	 * </p>
+	 */
+	private void initialize() {
 
 		/* Probably initialize. */
 		if (this.triggerTypes == null) {
@@ -54,6 +115,7 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 			try {
 				this.triggerTypes.add(new URI(NAME_TRIGGER_1));
 				this.triggerTypes.add(new URI(NAME_TRIGGER_2));
+				this.triggerTypes.add(new URI(NAME_DEFAULT_TRIGGER));
 			}
 
 			catch (URISyntaxException e) {
@@ -64,7 +126,5 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 			}
 		}
 		// no else.
-
-		return this.triggerTypes;
 	}
 }

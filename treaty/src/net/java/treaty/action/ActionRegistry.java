@@ -14,6 +14,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.java.treaty.Contract;
+
 /**
  * <p>
  * The {@link ActionRegistry} manages {@link ActionVocabulary}s.
@@ -103,6 +105,68 @@ public class ActionRegistry {
 	public Set<ActionVocabulary> getActionVocabularies() {
 
 		return this.actionVocabularies;
+	}
+
+	/**
+	 * <p>
+	 * Returns <code>true</code> if the given {@link URI} represents an action
+	 * defined by this {@link ActionVocabulary} which shall be executed for all
+	 * {@link Contract}s after unsuccessful verification ignoring the fact,
+	 * whether or not the action is defined by the {@link Contract} itself.
+	 * </p>
+	 * 
+	 * @param actionType
+	 *          The type ({@link URI}) of the action.
+	 * @return <code>true</code>, if the action is universal for unsuccessful
+	 *         verification results.
+	 */
+	public boolean isUniversalActionOnFailure(URI actionType) {
+
+		boolean result;
+
+		ActionVocabulary actionVocabulary;
+		actionVocabulary = this.getActionVocabulary(actionType);
+
+		if (actionVocabulary != null) {
+			result = actionVocabulary.isUniversalActionOnFailure(actionType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns <code>true</code> if the given {@link URI} represents an action
+	 * defined by this {@link ActionVocabulary} which shall be executed for all
+	 * {@link Contract}s after successful verification ignoring the fact, whether
+	 * or not the action is defined by the {@link Contract} itself.
+	 * </p>
+	 * 
+	 * @param actionType
+	 *          The type ({@link URI}) of the action.
+	 * @return <code>true</code>, if the action is universal for successful
+	 *         verification results.
+	 */
+	public boolean isUniversalActionOnSuccess(URI actionType) {
+
+		boolean result;
+
+		ActionVocabulary actionVocabulary;
+		actionVocabulary = this.getActionVocabulary(actionType);
+
+		if (actionVocabulary != null) {
+			result = actionVocabulary.isUniversalActionOnSuccess(actionType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
 	}
 
 	/**

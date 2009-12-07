@@ -35,4 +35,26 @@ public interface TriggerVocabulary extends EventProvider {
 	 *         {@link TriggerVocabulary} defines.
 	 */
 	public Set<URI> getTriggerTypes();
+
+	/**
+	 * <p>
+	 * Evaluates to <code>true</code> if the given triggerType represents a
+	 * trigger of this {@link TriggerVocabulary} and this trigger shall be used to
+	 * trigger the verification of all {@link Contract}s (in the context the
+	 * trigger events occurs) ignoring whether or not the trigger is defined as a
+	 * trigger of these {@link Contract}s. The best example for a default trigger
+	 * is manual verification of all {@link Contract}s.
+	 * </p>
+	 * 
+	 * <p>
+	 * <strong>Attention:</strong> Default triggers can consume a large ammount of
+	 * resources, especially when many {@link Contract}s exists. Thus, default
+	 * triggers should be used rarely.
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The type ({@link URI}) of the trigger that shall be checked.
+	 * @return <code>true</code> if the trigger is a default trigger.
+	 */
+	public boolean isDefaultTrigger(URI triggerType);
 }
