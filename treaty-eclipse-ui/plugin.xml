@@ -29,6 +29,13 @@
                menubarPath="treaty/treaty"
                id="net.java.treaty.eclipse.actions.DisplayVocabularyView">
          </action>
+         <action
+               label="Trigger and Action Browser"
+               class="net.java.treaty.eclipse.actions.DisplayTriggerActionView"
+               tooltip="List installed Triggers and Actions"
+               menubarPath="treaty/treaty"
+               id="net.java.treaty.eclipse.actions.DisplayVocabularyView">
+         </action>
       </actionSet>
    </extension>
    <extension
@@ -57,6 +64,20 @@
             icon="icons/sample.gif"
             id="net.java.treaty.eclipse.views.VocabularyView"
             name="Contract Vocabulary">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="net.java.treaty.eclipse"
+            name="Treaty">
+      </category>
+      <view
+            category="net.java.treaty.eclipse"
+            class="net.java.treaty.eclipse.views.TriggerActionView"
+            icon="icons/sample.gif"
+            id="net.java.treaty.eclipse.views.TriggerActionView"
+            name="Trigger and Action View">
       </view>
    </extension>
    <extension
