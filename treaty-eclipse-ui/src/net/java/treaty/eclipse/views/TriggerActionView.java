@@ -563,6 +563,39 @@ public class TriggerActionView extends ViewPart implements
 			}
 
 			else if (collumn == 1) {
+
+				if (triggerOrAction.getType() == TriggerOrActionType.Action) {
+					if (EclipseActionRegistry.INSTANCE
+							.isUniversalActionOnFailure(triggerOrAction.getUri())) {
+						result = ICON_YES;
+					}
+
+					else if (EclipseActionRegistry.INSTANCE
+							.isUniversalActionOnFailure(triggerOrAction.getUri())
+							|| EclipseActionRegistry.INSTANCE
+									.isUniversalActionOnSuccess(triggerOrAction.getUri())) {
+						result = ICON_PARTS;
+					}
+
+					else {
+						result = ICON_NO;
+					}
+				}
+
+				else if (triggerOrAction.getType() == TriggerOrActionType.Trigger) {
+					if (EclipseTriggerRegistry.INSTANCE.isDefaultTrigger(triggerOrAction
+							.getUri())) {
+						result = ICON_YES;
+					}
+
+					else {
+						result = ICON_NO;
+					}
+				}
+				// no else.
+			}
+
+			else if (collumn == 2) {
 				result = ICON_VOCABULARY;
 			}
 			// no else.
@@ -589,6 +622,51 @@ public class TriggerActionView extends ViewPart implements
 			}
 
 			else if (collumn == 1) {
+
+				if (triggerOrAction.getType() == TriggerOrActionType.Action) {
+
+					StringBuffer buffer;
+					buffer = new StringBuffer();
+
+					if (EclipseActionRegistry.INSTANCE
+							.isUniversalActionOnFailure(triggerOrAction.getUri())) {
+						buffer.append("onFailure");
+					}
+					// no else.
+
+					if (EclipseActionRegistry.INSTANCE
+							.isUniversalActionOnSuccess(triggerOrAction.getUri())) {
+
+						if (buffer.length() > 0) {
+							buffer.append(" / ");
+						}
+						// no else.
+
+						buffer.append("onSuccess");
+					}
+					// no else.
+
+					result = buffer.toString();
+				}
+
+				else if (triggerOrAction.getType() == TriggerOrActionType.Trigger) {
+
+					if (EclipseTriggerRegistry.INSTANCE.isDefaultTrigger(triggerOrAction
+							.getUri())) {
+						result = "yes";
+					}
+
+					else {
+						result = "no";
+					}
+				}
+
+				else {
+					result = "";
+				}
+			}
+
+			else if (collumn == 2) {
 
 				result = triggerOrAction.getOwner();
 			}
@@ -644,6 +722,18 @@ public class TriggerActionView extends ViewPart implements
 	private final Image ICON_TRIGGER =
 			this.getImageDescriptor("icons/trigger.gif").createImage();
 
+	/** Icon used to enable default trigger or action. */
+	private final Image ICON_YES =
+			this.getImageDescriptor("icons/status_success.gif").createImage();
+
+	/** Icon used to enable partly default trigger or action. */
+	private final Image ICON_PARTS =
+			this.getImageDescriptor("icons/status_open.gif").createImage();
+
+	/** Icon used to enable no default trigger or action. */
+	private final Image ICON_NO =
+			this.getImageDescriptor("icons/status_failure.gif").createImage();
+
 	/** The {@link Action} used to refresh this {@link TriggerActionView}. */
 	private Action actionRefresh;
 
@@ -689,12 +779,16 @@ public class TriggerActionView extends ViewPart implements
 
 		TreeColumn column1;
 		column1 = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
-		column1.setText("Tigger or Actions");
+		column1.setText("Tigger or Action");
 		column1.setWidth(350);
 
 		TreeColumn column2 = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
-		column2.setText("Contributed by");
-		column2.setWidth(300);
+		column2.setText("default");
+		column2.setWidth(150);
+
+		TreeColumn column3 = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
+		column3.setText("Contributed by");
+		column3.setWidth(300);
 
 		this.viewer.setContentProvider(new ViewContentProvider());
 		this.viewer.setLabelProvider(new ViewLabelProvider());
@@ -751,6 +845,9 @@ public class TriggerActionView extends ViewPart implements
 		ICON_ACTION.dispose();
 		ICON_VOCABULARY.dispose();
 		ICON_TRIGGER.dispose();
+		ICON_YES.dispose();
+		ICON_PARTS.dispose();
+		ICON_NO.dispose();
 
 		super.dispose();
 	}
