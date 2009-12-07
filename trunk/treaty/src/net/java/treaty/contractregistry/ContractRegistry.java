@@ -26,6 +26,7 @@ import net.java.treaty.ContractLogger;
 import net.java.treaty.ResourceManager;
 import net.java.treaty.Role;
 import net.java.treaty.TreatyException;
+import net.java.treaty.trigger.TriggerRegistry;
 
 /**
  * <p>
@@ -97,6 +98,9 @@ public class ContractRegistry {
 	/** The current {@link ResourceManager} of this {@link ContractRegistry}. */
 	private ResourceManager myResourceManager;
 
+	/** The {@link TriggerRegistry} belonging to this {@link ContractRegistry}. */
+	private TriggerRegistry myTriggerRegistry;
+
 	/**
 	 * <p>
 	 * Creates a new {@link ContractRegistry}.
@@ -105,10 +109,15 @@ public class ContractRegistry {
 	 * @param resourceManager
 	 *          The {@link ResourceManager} the {@link ContractRegistry} should
 	 *          use to bind {@link Contract}s.
+	 * @param triggerRegistry
+	 *          The {@link TriggerRegistry} belonging to this
+	 *          {@link ContractRegistry}.
 	 */
-	public ContractRegistry(ResourceManager resourceManager) {
+	public ContractRegistry(ResourceManager resourceManager,
+			TriggerRegistry triggerRegistry) {
 
 		this.myResourceManager = resourceManager;
+		this.myTriggerRegistry = triggerRegistry;
 	}
 
 	/**
@@ -132,13 +141,6 @@ public class ContractRegistry {
 	 * a given trigger for a given {@link Component} occurred.
 	 * </p>
 	 * 
-	 * <p>
-	 * <strong>Please note that this method will only return {@link Contract}s
-	 * that define the same trigger (see {@link Contract#getTriggers()}).</strong>
-	 * If a {@link Contract} does not defined any trigger, he will be returned
-	 * anyway (support of deprecated {@link Contract}s).
-	 * </p>
-	 * 
 	 * @return A {@link Set} of all {@link Contract}s that must be validated after
 	 *         a given {@link LifeCycleEvent} occurred.
 	 */
@@ -159,7 +161,7 @@ public class ContractRegistry {
 					for (Contract contract : this.myConsumerContracts.get(connector)) {
 
 						/* Only add contracts that have the right trigger type. */
-						if (contract.getTriggers().size() == 0
+						if (this.myTriggerRegistry.isDefaultTrigger(triggerType)
 								|| contract.getTriggers().contains(triggerType)) {
 							result.addAll(this.getInstantiatedContracts(contract));
 						}
@@ -176,7 +178,7 @@ public class ContractRegistry {
 					for (Contract contract : this.mySupplierContracts.get(connector)) {
 
 						/* Only add contracts that have the right trigger type. */
-						if (contract.getTriggers().size() == 0
+						if (this.myTriggerRegistry.isDefaultTrigger(triggerType)
 								|| contract.getTriggers().contains(triggerType)) {
 							result.addAll(this.getInstantiatedContracts(contract));
 						}

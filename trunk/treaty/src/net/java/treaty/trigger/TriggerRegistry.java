@@ -107,6 +107,36 @@ public class TriggerRegistry {
 
 	/**
 	 * <p>
+	 * Evaluates to <code>true</code> if the given trigger type represents a
+	 * default trigger.
+	 * </p>
+	 * 
+	 * @see TriggerVocabulary#isDefaultTrigger(URI)
+	 * 
+	 * @param triggerType
+	 *          The type ({@link URI}) of the trigger that shall be checked.
+	 * @return <code>true</code> if the trigger is a default trigger.
+	 */
+	public boolean isDefaultTrigger(URI triggerType) {
+
+		boolean result;
+
+		TriggerVocabulary triggerVocabulary;
+		triggerVocabulary = this.getTriggerVocabulary(triggerType);
+
+		if (triggerVocabulary != null) {
+			result = triggerVocabulary.isDefaultTrigger(triggerType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
 	 * Removes a Listener from this {@link TriggerRegistry}.
 	 * </p>
 	 * 
@@ -138,6 +168,36 @@ public class TriggerRegistry {
 			this.notifiyRemovedTriggerVocabulary(triggerVocabulary);
 		}
 		// no else.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link TriggerVocabulary} that defines a given trigger (by its
+	 * {@link URI}) or <code>null</code> if none of the registered
+	 * {@link TriggerVocabulary}s defines the given trigger.
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The trigger type whose {@link TriggerVocabulary} shall be
+	 *          returned.
+	 * @return The defining {@link TriggerVocabulary} or <code>null</code>.
+	 */
+	protected TriggerVocabulary getTriggerVocabulary(URI triggerType) {
+
+		TriggerVocabulary result;
+		result = null;
+
+		for (TriggerVocabulary triggerVocabulary : this.triggerVocabularies) {
+
+			if (triggerVocabulary.getTriggerTypes().contains(triggerType)) {
+				result = triggerVocabulary;
+				break;
+			}
+			// no else.
+		}
+		// end for.
 
 		return result;
 	}

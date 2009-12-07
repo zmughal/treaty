@@ -31,6 +31,7 @@ import net.java.treaty.TreatyException;
 import net.java.treaty.contractregistry.ContractRegistry;
 import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
 import net.java.treaty.trigger.AbstractTriggerVocabulary;
+import net.java.treaty.trigger.TriggerRegistry;
 import net.java.treaty.trigger.verification.AbstractTriggeredVerifier;
 import net.java.treaty.trigger.verification.TriggeredVerifierListener;
 import net.java.treaty.xml.XMLContractReader;
@@ -110,8 +111,12 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 	public void testVerification01() throws TreatyException, URISyntaxException {
 
 		/* Prepare test data. */
+		TriggerRegistry triggerRegistry;
+		triggerRegistry = new TriggerRegistry();
+
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry(new ResourceManagerMock());
+		contractRegistry =
+				new ContractRegistry(new ResourceManagerMock(), triggerRegistry);
 
 		Component consumerComponent;
 		consumerComponent = new ComponentMock("consumercomponent");
@@ -206,8 +211,12 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 	public void testVerification02() throws TreatyException, URISyntaxException {
 
 		/* Prepare test data. */
+		TriggerRegistry triggerRegistry;
+		triggerRegistry = new TriggerRegistry();
+
 		ContractRegistry contractRegistry;
-		contractRegistry = new ContractRegistry(new ResourceManagerMock());
+		contractRegistry =
+				new ContractRegistry(new ResourceManagerMock(), triggerRegistry);
 
 		Component consumerComponent;
 		consumerComponent = new ComponentMock("consumercomponent");
