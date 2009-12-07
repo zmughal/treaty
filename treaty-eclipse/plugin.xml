@@ -5,4 +5,5 @@
    <extension-point id="net.java.treaty.eclipse.contract" name="treaty contracts" schema="schema/net.java.treaty.eclipse.contract.exsd"/>
    <extension-point id="net.java.treaty.eclipse.exporter" name="contract exporter" schema="schema/net.java.treaty.eclipse.exporter.exsd"/>
    <extension-point id="net.java.treaty.eclipse.triggervocabulary" name="Treaty Trigger Vocabularies" schema="schema/net.java.treaty.eclipse.triggervocabulary.exsd"/>
+   <extension-point id="net.java.treaty.eclipse.actionvocabulary" name="Treaty Eclipse Action Vocabularies." schema="schema/net.java.treaty.eclipse.actionvocabulary.exsd"/>
 </plugin>

@@ -11,7 +11,15 @@
 package net.java.treaty.eclipse.trigger;
 
 import net.java.treaty.trigger.AbstractTriggerVocabulary;
+import net.java.treaty.trigger.TriggerVocabulary;
 
+/**
+ * <p>
+ * Abstract eclipse implementation of the {@link TriggerVocabulary} interface.
+ * </p>
+ * 
+ * @author Claas Wilke
+ */
 public abstract class AbstractEclipseTriggerVocabulary extends
 		AbstractTriggerVocabulary {
 

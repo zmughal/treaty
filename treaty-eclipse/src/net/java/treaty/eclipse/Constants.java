@@ -28,6 +28,13 @@ import org.eclipse.core.runtime.IExtensionPoint;
 public interface Constants {
 
 	/**
+	 * The ID of the {@link IExtensionPoint} that can be used to register
+	 * {@link TriggerVocabulary}s.
+	 */
+	static final String ACTION_VOCABULARY_EXTENSION_POINT_ID =
+			"net.java.treaty.eclipse.actionvocabulary";
+
+	/**
 	 * The suffix of the file where {@link Contract}s are located inside the same
 	 * plug-in, whose {@link IExtensionPoint} they contract.
 	 */
