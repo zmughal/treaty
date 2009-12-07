@@ -67,6 +67,18 @@ public class TriggerRegistry {
 
 	/**
 	 * <p>
+	 * Returns all {@link TriggerVocabulary}s of this {@link TriggerRegistry}.
+	 * </p>
+	 * 
+	 * @return All {@link TriggerVocabulary}s of this {@link TriggerRegistry}.
+	 */
+	public Set<TriggerVocabulary> getTriggerVocabularies() {
+
+		return this.triggerVocabularies;
+	}
+
+	/**
+	 * <p>
 	 * Removes a {@link TriggerVocabulary} from this {@link TriggerRegistry}.
 	 * </p>
 	 * 
