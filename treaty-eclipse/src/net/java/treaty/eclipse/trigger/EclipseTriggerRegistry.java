@@ -55,7 +55,7 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 	 * The {@link TriggerRegistryListener}s of this {@link EclipseTriggerRegistry}
 	 * .
 	 */
-	private Set<TriggerRegistryListener> myListeners =
+	private Set<TriggerRegistryListener> listeners =
 			new HashSet<TriggerRegistryListener>();
 
 	/**
@@ -108,12 +108,12 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 
 				for (AbstractEclipseTriggerVocabulary triggerVocabulary : this.triggerVocabulariesOfExtension
 						.remove(extension.getUniqueIdentifier())) {
-					
+
 					triggerVocabulary.tearDown();
 
 					this.removeTriggerVocabulary(triggerVocabulary);
 					this.notifiyRemovedTriggerVocabulary(triggerVocabulary);
-					
+
 					Logger.info("Removed TriggerVocabulary " + triggerVocabulary);
 				}
 				// end for.
@@ -132,6 +132,19 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 	public void removed(IExtensionPoint[] extensionPoints) {
 
 		/* This method can be ignored, only listens to extensions. */
+	}
+
+	/**
+	 * <p>
+	 * Adds a new Listener to this {@link EclipseTriggerRegistry}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link TriggerRegistryListener} that shall be added.
+	 */
+	public void addListener(TriggerRegistryListener listener) {
+
+		this.listeners.add(listener);
 	}
 
 	/**
@@ -169,6 +182,19 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 
 	/**
 	 * <p>
+	 * Removes a Listener from this {@link EclipseTriggerRegistry}.
+	 * </p>
+	 * 
+	 * @param listener
+	 *          The {@link TriggerRegistryListener} that shall be removed.
+	 */
+	public void removeListener(TriggerRegistryListener listener) {
+
+		this.listeners.add(listener);
+	}
+
+	/**
+	 * <p>
 	 * This method can be called when this plug-in shall be de-activated.
 	 * Unregisters the {@link EclipseTriggerRegistry} as listener of the
 	 * ExtensionRegistry.
@@ -196,10 +222,12 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 						Constants.TRIGGER_VOCABULARY_EXTENSION_POINT_ID)) {
 
 			Set<AbstractEclipseTriggerVocabulary> triggerVocabulariesOfExtension;
-			triggerVocabulariesOfExtension = new HashSet<AbstractEclipseTriggerVocabulary>();
+			triggerVocabulariesOfExtension =
+					new HashSet<AbstractEclipseTriggerVocabulary>();
 
 			Set<AbstractEclipseTriggerVocabulary> newTriggerVocabulariesOfExtension;
-			newTriggerVocabulariesOfExtension = new HashSet<AbstractEclipseTriggerVocabulary>();
+			newTriggerVocabulariesOfExtension =
+					new HashSet<AbstractEclipseTriggerVocabulary>();
 
 			String pluginId;
 			pluginId = extension.getContributor().getName();
@@ -221,7 +249,8 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 
 						if (TriggerVocabulary.class.isAssignableFrom(clazz)) {
 							AbstractEclipseTriggerVocabulary triggerVocabulary;
-							triggerVocabulary = (AbstractEclipseTriggerVocabulary) clazz.newInstance();
+							triggerVocabulary =
+									(AbstractEclipseTriggerVocabulary) clazz.newInstance();
 
 							/*
 							 * Add the TriggerVocabulary and probably store it for notify, if
@@ -230,7 +259,7 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 							if (triggerVocabulariesOfExtension.add(triggerVocabulary)) {
 								newTriggerVocabulariesOfExtension.add(triggerVocabulary);
 								this.addTriggerVocabulary(triggerVocabulary);
-								
+
 								Logger.info("Added new TriggerVocabulary " + triggerVocabulary);
 							}
 							// no else.
@@ -274,7 +303,7 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 	 */
 	private void notifiyAddedTriggerVocabulary(TriggerVocabulary triggerVocabulary) {
 
-		for (TriggerRegistryListener listener : this.myListeners) {
+		for (TriggerRegistryListener listener : this.listeners) {
 			listener.triggerVocabularyAdded(triggerVocabulary);
 		}
 		// end for.
@@ -293,7 +322,7 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 	private void notifiyRemovedTriggerVocabulary(
 			TriggerVocabulary triggerVocabulary) {
 
-		for (TriggerRegistryListener listener : this.myListeners) {
+		for (TriggerRegistryListener listener : this.listeners) {
 			listener.triggerVocabularyRemoved(triggerVocabulary);
 		}
 		// end for.
