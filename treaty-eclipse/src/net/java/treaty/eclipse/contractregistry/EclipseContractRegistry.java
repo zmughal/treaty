@@ -29,6 +29,7 @@ import net.java.treaty.contractregistry.ContractRegistry;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.EclipseResourceManager;
+import net.java.treaty.eclipse.trigger.EclipseTriggerRegistry;
 
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -76,7 +77,7 @@ public final class EclipseContractRegistry extends ContractRegistry implements
 	 */
 	private EclipseContractRegistry() {
 
-		super(EclipseResourceManager.INSTANCE);
+		super(EclipseResourceManager.INSTANCE, EclipseTriggerRegistry.INSTANCE);
 
 		this.init();
 	}
