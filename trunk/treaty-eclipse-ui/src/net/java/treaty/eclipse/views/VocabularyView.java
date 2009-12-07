@@ -855,6 +855,9 @@ public class VocabularyView extends ViewPart implements
 	@Override
 	public void dispose() {
 
+		/* Un-register as listener of the VocabularyRegistry. */
+		VocabularyRegistry.INSTANCE.removeListener(this);
+
 		/* Dispose the icons. */
 		ICON_PLUGIN.dispose();
 		ICON_PREDICATE.dispose();
