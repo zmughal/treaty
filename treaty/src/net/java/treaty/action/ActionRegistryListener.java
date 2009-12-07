@@ -8,38 +8,38 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.trigger;
+package net.java.treaty.action;
 
 /**
  * <p>
- * Interface used to listen to the {@link TriggerRegistry}.
+ * Interface used to listen to the {@link ActionRegistry}.
  * </p>
  * 
  * @author Claas Wilke
  */
-public interface TriggerRegistryListener {
+public interface ActionRegistryListener {
 
 	/**
 	 * <p>
-	 * Method called, if a {@link TriggerVocabulary} has been added to the
-	 * {@link TriggerRegistry}.
+	 * Method called, if a {@link ActionVocabulary} has been added to the
+	 * {@link ActionVocabulary}.
 	 * </p>
 	 * 
-	 * @param triggerVocabulary
-	 *          The {@link TriggerVocabulary} that has been added to the
+	 * @param actionVocabulary
+	 *          The {@link ActionVocabulary} that has been added to the
 	 *          {@link TriggerRegistry}.
 	 */
-	public void triggerVocabularyAdded(TriggerVocabulary triggerVocabulary);
+	public void actionVocabularyAdded(ActionVocabulary actionVocabulary);
 
 	/**
 	 * <p>
-	 * Method called, if an {@link TriggerVocabulary} has been removed from the
-	 * {@link TriggerRegistry}.
+	 * Method called, if an {@link ActionVocabulary} has been removed from the
+	 * {@link ActionRegistry}.
 	 * </p>
 	 * 
-	 * @param triggerVocabulary
-	 *          The {@link TriggerVocabulary} that has been removed from the
-	 *          {@link TriggerRegistry}.
+	 * @param actionVocabulary
+	 *          The {@link ActionVocabulary} that has been removed from the
+	 *          {@link ActionRegistry}.
 	 */
-	public void triggerVocabularyRemoved(TriggerVocabulary triggerVocabulary);
+	public void triggerVocabularyRemoved(ActionVocabulary triggerVocabulary);
 }
