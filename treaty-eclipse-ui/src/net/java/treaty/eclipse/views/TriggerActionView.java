@@ -14,6 +14,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Set;
 
+import net.java.treaty.action.ActionVocabulary;
+import net.java.treaty.eclipse.action.EclipseActionRegistry;
 import net.java.treaty.eclipse.trigger.EclipseTriggerRegistry;
 import net.java.treaty.eclipse.ui.Activator;
 import net.java.treaty.trigger.TriggerRegistryListener;
@@ -409,8 +411,59 @@ public class TriggerActionView extends ViewPart implements
 		private void initialize() {
 
 			invisibleRoot = new TreeParent(null, null, "");
-			this.addNodes(invisibleRoot, EclipseTriggerRegistry.INSTANCE
+			this.addTriggerNodes(invisibleRoot, EclipseTriggerRegistry.INSTANCE
 					.getTriggerVocabularies());
+			this.addActionNodes(invisibleRoot, EclipseActionRegistry.INSTANCE
+					.getActionVocabularies());
+		}
+
+		/**
+		 * <p>
+		 * Adds the node for a given {@link Set} of {@link ActionVocabulary} and its
+		 * children nodes to a given {@link TreeParent}.
+		 * </p>
+		 * 
+		 * @param parent
+		 *          The {@link TreeParent} to which the node shall be added.
+		 * @param actionVocabularies
+		 *          The {@link ActionVocabulary}s for that nodes shall be added.
+		 */
+		private void addActionNodes(TreeParent parent,
+				Set<ActionVocabulary> actionVocabularies) {
+
+			for (ActionVocabulary actionVocabulary : actionVocabularies) {
+
+				/* Add all triggers of the vocabulary. */
+				for (URI trigger : actionVocabulary.getActionTypes()) {
+
+					this.addActionNodes(parent, trigger, actionVocabulary);
+				}
+				// end for.
+			}
+			// end for.
+		}
+
+		/**
+		 * <p>
+		 * Adds a node for a given trigger.
+		 * </p>
+		 * 
+		 * @param parent
+		 *          The owning {@link TreeParent}.
+		 * @param type
+		 *          The trigger type {@link URI}.
+		 * @param actionVocabulary
+		 *          The owning {@link ActionVocabulary}.
+		 */
+		private void addActionNodes(TreeParent parent, URI type,
+				ActionVocabulary actionVocabulary) {
+
+			TriggerOrAction node;
+			node =
+					new TriggerOrAction(type, TriggerOrActionType.Action,
+							actionVocabulary.toString());
+
+			parent.addChild(node);
 		}
 
 		/**
@@ -424,7 +477,7 @@ public class TriggerActionView extends ViewPart implements
 		 * @param triggerVocabularies
 		 *          The {@link TriggerVocabulary}s for that nodes shall be added.
 		 */
-		private void addNodes(TreeParent parent,
+		private void addTriggerNodes(TreeParent parent,
 				Set<TriggerVocabulary> triggerVocabularies) {
 
 			for (TriggerVocabulary triggerVocabulary : triggerVocabularies) {
@@ -432,7 +485,7 @@ public class TriggerActionView extends ViewPart implements
 				/* Add all triggers of the vocabulary. */
 				for (URI trigger : triggerVocabulary.getTriggerTypes()) {
 
-					this.addNodes(parent, trigger, triggerVocabulary);
+					this.addTriggerNodes(parent, trigger, triggerVocabulary);
 				}
 				// end for.
 			}
@@ -451,7 +504,7 @@ public class TriggerActionView extends ViewPart implements
 		 * @param triggerVocabulary
 		 *          The owning {@link TriggerVocabulary}.
 		 */
-		private void addNodes(TreeParent parent, URI type,
+		private void addTriggerNodes(TreeParent parent, URI type,
 				TriggerVocabulary triggerVocabulary) {
 
 			TriggerOrAction node;
