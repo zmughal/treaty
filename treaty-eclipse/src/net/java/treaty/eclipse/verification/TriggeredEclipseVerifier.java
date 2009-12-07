@@ -33,8 +33,7 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 	 */
 	public TriggeredEclipseVerifier() {
 
-		/* FIXME Claas: This should be done dynamically via an extension point. */
-		this.addListener(TriggeredVerifierResultLogger.INSTANCE);
+		/* Remains empty. */
 	}
 
 	/*
@@ -60,6 +59,9 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 			result =
 					contract.check(eclipseVerificationReport, eclipseVerifier,
 							VerificationPolicy.DETAILED);
+
+			/* FIXME Claas: Implement action propagation. */
+
 		} catch (ResourceLoaderException e) {
 
 			Logger.error(

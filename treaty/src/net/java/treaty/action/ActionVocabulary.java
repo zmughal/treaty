@@ -40,6 +40,36 @@ public interface ActionVocabulary {
 
 	/**
 	 * <p>
+	 * Returns <code>true</code> if the given {@link URI} represents an action
+	 * defined by this {@link ActionVocabulary} which shall be executed for all
+	 * {@link Contract}s after unsuccessful verification ignoring the fact,
+	 * whether or not the action is defined by the {@link Contract} itself.
+	 * </p>
+	 * 
+	 * @param actionType
+	 *          The type ({@link URI}) of the action.
+	 * @return <code>true</code>, if the action is universal for unsuccessful
+	 *         verification results.
+	 */
+	public boolean isUniversalActionOnFailure(URI actionType);
+
+	/**
+	 * <p>
+	 * Returns <code>true</code> if the given {@link URI} represents an action
+	 * defined by this {@link ActionVocabulary} which shall be executed for all
+	 * {@link Contract}s after successful verification ignoring the fact, whether
+	 * or not the action is defined by the {@link Contract} itself.
+	 * </p>
+	 * 
+	 * @param actionType
+	 *          The type ({@link URI}) of the action.
+	 * @return <code>true</code>, if the action is universal for successful
+	 *         verification results.
+	 */
+	public boolean isUniversalActionOnSuccess(URI actionType);
+
+	/**
+	 * <p>
 	 * Performs an action of the given type (as a {@link URI}) for a given
 	 * {@link Contract} with a given {@link VerificationResult}.
 	 * <p>
