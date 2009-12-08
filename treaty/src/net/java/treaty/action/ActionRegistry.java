@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.VerificationReport;
 
 /**
  * <p>
@@ -23,11 +24,155 @@ import net.java.treaty.Contract;
  * 
  * @author Claas Wilke
  */
-public class ActionRegistry {
+public class ActionRegistry implements ActionVocabulary {
 
 	/** The {@link ActionVocabulary}s of this {@link ActionRegistry}. */
 	private Set<ActionVocabulary> actionVocabularies =
 			new HashSet<ActionVocabulary>();
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#after(java.net.URI,
+	 * java.net.URI, java.util.Set)
+	 */
+	public void after(URI triggerType, URI actionType,
+			Set<VerificationReport> verificationReports) {
+	
+		this.getActionVocabulary(actionType).after(triggerType, actionType,
+				verificationReports);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#before(java.net.URI,
+	 * java.net.URI, java.util.Set)
+	 */
+	public void before(URI triggerType, URI actionType,
+			Set<Contract> contractsToVerify) {
+	
+		this.getActionVocabulary(actionType).before(triggerType, actionType,
+				contractsToVerify);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#getActionTypes()
+	 */
+	public Set<URI> getActionTypes() {
+
+		Set<URI> result;
+		result = new HashSet<URI>();
+
+		for (ActionVocabulary triggerVocabulary : this.actionVocabularies) {
+
+			result.addAll(triggerVocabulary.getActionTypes());
+		}
+		// end for.
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#isAfterAction(java.net.URI)
+	 */
+	public boolean isAfterAction(URI actionType) {
+
+		boolean result;
+
+		ActionVocabulary actionVocabulary;
+		actionVocabulary = this.getActionVocabulary(actionType);
+
+		if (actionVocabulary != null) {
+			result = actionVocabulary.isAfterAction(actionType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#isBeforeAction(java.net.URI)
+	 */
+	public boolean isBeforeAction(URI actionType) {
+
+		boolean result;
+
+		ActionVocabulary actionVocabulary;
+		actionVocabulary = this.getActionVocabulary(actionType);
+
+		if (actionVocabulary != null) {
+			result = actionVocabulary.isBeforeAction(actionType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.action.ActionVocabulary#isDefaultOnFailure(java.net.URI)
+	 */
+	public boolean isDefaultOnFailure(URI actionType) {
+
+		boolean result;
+
+		ActionVocabulary actionVocabulary;
+		actionVocabulary = this.getActionVocabulary(actionType);
+
+		if (actionVocabulary != null) {
+			result = actionVocabulary.isDefaultOnFailure(actionType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.action.ActionVocabulary#isDefaultOnSuccess(java.net.URI)
+	 */
+	public boolean isDefaultOnSuccess(URI actionType) {
+
+		boolean result;
+
+		ActionVocabulary actionVocabulary;
+		actionVocabulary = this.getActionVocabulary(actionType);
+
+		if (actionVocabulary != null) {
+			result = actionVocabulary.isDefaultOnSuccess(actionType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#perform(java.net.URI,
+	 * java.net.URI, net.java.treaty.VerificationReport)
+	 */
+	public void perform(URI triggerType, URI actionType,
+			VerificationReport verificationReport) {
+	
+		this.getActionVocabulary(actionType).perform(triggerType, actionType,
+				verificationReport);
+	}
 
 	/**
 	 * <p>
@@ -74,29 +219,6 @@ public class ActionRegistry {
 
 	/**
 	 * <p>
-	 * Returns a {@link Set} containing the {@link URI}s of all actions currently
-	 * registered in this {@link ActionRegistry}.
-	 * </p>
-	 * 
-	 * @return A {@link Set} containing the {@link URI}s of all actions currently
-	 *         registered in this {@link ActionRegistry}.
-	 */
-	public Set<URI> getActions() {
-
-		Set<URI> result;
-		result = new HashSet<URI>();
-
-		for (ActionVocabulary triggerVocabulary : this.actionVocabularies) {
-
-			result.addAll(triggerVocabulary.getActionTypes());
-		}
-		// end for.
-
-		return result;
-	}
-
-	/**
-	 * <p>
 	 * Returns all {@link ActionVocabulary}s of this {@link ActionRegistry}.
 	 * </p>
 	 * 
@@ -109,37 +231,6 @@ public class ActionRegistry {
 
 	/**
 	 * <p>
-	 * Returns all actions that shall be performed for the beginning of a
-	 * verification. Because only default actions can be performed in this
-	 * situation, no parameter is required.
-	 * </p>
-	 * 
-	 * @return All actions that shall be performed for the beginning of a
-	 *         verification as a {@link Set} of {@link URI}s.
-	 */
-	public Set<URI> getActionsOnBeginVerification() {
-
-		Set<URI> result;
-		result = new HashSet<URI>();
-
-		for (ActionVocabulary actionVocabulary : this.actionVocabularies) {
-
-			for (URI actionType : actionVocabulary.getActionTypes()) {
-
-				if (actionVocabulary.isUniversalActionOnBeginVerification(actionType)) {
-					result.add(actionType);
-				}
-				// no else.
-			}
-			// end for.
-		}
-		// end for.
-
-		return result;
-	}
-
-	/**
-	 * <p>
 	 * Returns all actions that shall be performed after finishing a verification.
 	 * Because only default actions can be performed in this situation, no
 	 * parameter is required.
@@ -148,21 +239,44 @@ public class ActionRegistry {
 	 * @return All actions that shall be performed after finishing a verification
 	 *         as a {@link Set} of {@link URI}s.
 	 */
-	public Set<URI> getActionsOnEndVerification() {
+	public Set<URI> getAfterActions() {
 
 		Set<URI> result;
 		result = new HashSet<URI>();
 
-		for (ActionVocabulary actionVocabulary : this.actionVocabularies) {
+		for (URI actionType : this.getActionTypes()) {
 
-			for (URI actionType : actionVocabulary.getActionTypes()) {
-
-				if (actionVocabulary.isUniversalActionOnEndVerification(actionType)) {
-					result.add(actionType);
-				}
-				// no else.
+			if (this.isAfterAction(actionType)) {
+				result.add(actionType);
 			}
-			// end for.
+			// no else.
+		}
+		// end for.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns all actions that shall be performed for the beginning of a
+	 * verification. Because only default actions can be performed in this
+	 * situation, no parameter is required.
+	 * </p>
+	 * 
+	 * @return All actions that shall be performed for the beginning of a
+	 *         verification as a {@link Set} of {@link URI}s.
+	 */
+	public Set<URI> getBeforeActions() {
+
+		Set<URI> result;
+		result = new HashSet<URI>();
+
+		for (URI actionType : this.getActionTypes()) {
+
+			if (this.isBeforeAction(actionType)) {
+				result.add(actionType);
+			}
+			// no else.
 		}
 		// end for.
 
@@ -180,22 +294,18 @@ public class ActionRegistry {
 	 * @return All actions that shall be performed after finishing a
 	 *         {@link Contract}'s verification not successfully.
 	 */
-	public Set<URI> getActionsOnFailure(Contract contract) {
+	public Set<URI> getOnFailureActions(Contract contract) {
 
 		Set<URI> result;
 		result = new HashSet<URI>();
 
-		for (ActionVocabulary actionVocabulary : this.actionVocabularies) {
+		for (URI actionType : this.getActionTypes()) {
 
-			for (URI actionType : actionVocabulary.getActionTypes()) {
-
-				if (actionVocabulary.isUniversalActionOnFailure(actionType)
-						|| contract.getOnVerificationFailsActions().contains(actionType)) {
-					result.add(actionType);
-				}
-				// no else.
+			if (this.isDefaultOnFailure(actionType)
+					|| contract.getOnVerificationFailsActions().contains(actionType)) {
+				result.add(actionType);
 			}
-			// end for.
+			// no else.
 		}
 		// end for.
 
@@ -213,147 +323,20 @@ public class ActionRegistry {
 	 * @return All actions that shall be performed after finishing a
 	 *         {@link Contract}'s verification successfully.
 	 */
-	public Set<URI> getActionsOnSuccess(Contract contract) {
+	public Set<URI> getOnSuccessActions(Contract contract) {
 
 		Set<URI> result;
 		result = new HashSet<URI>();
 
-		for (ActionVocabulary actionVocabulary : this.actionVocabularies) {
+		for (URI actionType : this.getActionTypes()) {
 
-			for (URI actionType : actionVocabulary.getActionTypes()) {
-
-				if (actionVocabulary.isUniversalActionOnSuccess(actionType)
-						|| contract.getOnVerificationSucceedsActions().contains(actionType)) {
-					result.add(actionType);
-				}
-				// no else.
+			if (this.isDefaultOnSuccess(actionType)
+					|| contract.getOnVerificationSucceedsActions().contains(actionType)) {
+				result.add(actionType);
 			}
-			// end for.
+			// no else.
 		}
 		// end for.
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Returns <code>true</code> if the given {@link URI} represents an action
-	 * defined by this {@link ActionVocabulary} which shall be executed for all
-	 * {@link Contract}s before starting their verification job.
-	 * </p>
-	 * 
-	 * @param actionType
-	 *          The type ({@link URI}) of the action.
-	 * @return <code>true</code>, if the action is universal before starting a
-	 *         verification job.
-	 */
-	public boolean isUniversalActionOnBeginVerification(URI actionType) {
-
-		boolean result;
-
-		ActionVocabulary actionVocabulary;
-		actionVocabulary = this.getActionVocabulary(actionType);
-
-		if (actionVocabulary != null) {
-			result =
-					actionVocabulary.isUniversalActionOnBeginVerification(actionType);
-		}
-
-		else {
-			result = false;
-		}
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Returns <code>true</code> if the given {@link URI} represents an action
-	 * defined by this {@link ActionVocabulary} which shall be executed for all
-	 * {@link Contract}s after finishing a verification job.
-	 * </p>
-	 * 
-	 * @param actionType
-	 *          The type ({@link URI}) of the action.
-	 * @return <code>true</code>, if the action is universal after finishing a
-	 *         verification job.
-	 */
-	public boolean isUniversalActionOnEndVerification(URI actionType) {
-
-		boolean result;
-
-		ActionVocabulary actionVocabulary;
-		actionVocabulary = this.getActionVocabulary(actionType);
-
-		if (actionVocabulary != null) {
-			result = actionVocabulary.isUniversalActionOnEndVerification(actionType);
-		}
-
-		else {
-			result = false;
-		}
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Returns <code>true</code> if the given {@link URI} represents an action
-	 * defined by this {@link ActionVocabulary} which shall be executed for all
-	 * {@link Contract}s after unsuccessful verification ignoring the fact,
-	 * whether or not the action is defined by the {@link Contract} itself.
-	 * </p>
-	 * 
-	 * @param actionType
-	 *          The type ({@link URI}) of the action.
-	 * @return <code>true</code>, if the action is universal for unsuccessful
-	 *         verification results.
-	 */
-	public boolean isUniversalActionOnFailure(URI actionType) {
-
-		boolean result;
-
-		ActionVocabulary actionVocabulary;
-		actionVocabulary = this.getActionVocabulary(actionType);
-
-		if (actionVocabulary != null) {
-			result = actionVocabulary.isUniversalActionOnFailure(actionType);
-		}
-
-		else {
-			result = false;
-		}
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Returns <code>true</code> if the given {@link URI} represents an action
-	 * defined by this {@link ActionVocabulary} which shall be executed for all
-	 * {@link Contract}s after successful verification ignoring the fact, whether
-	 * or not the action is defined by the {@link Contract} itself.
-	 * </p>
-	 * 
-	 * @param actionType
-	 *          The type ({@link URI}) of the action.
-	 * @return <code>true</code>, if the action is universal for successful
-	 *         verification results.
-	 */
-	public boolean isUniversalActionOnSuccess(URI actionType) {
-
-		boolean result;
-
-		ActionVocabulary actionVocabulary;
-		actionVocabulary = this.getActionVocabulary(actionType);
-
-		if (actionVocabulary != null) {
-			result = actionVocabulary.isUniversalActionOnSuccess(actionType);
-		}
-
-		else {
-			result = false;
-		}
 
 		return result;
 	}

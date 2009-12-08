@@ -50,7 +50,7 @@ public interface ActionVocabulary {
 	 * @return <code>true</code>, if the action is universal before starting a
 	 *         verification job.
 	 */
-	public boolean isUniversalActionOnBeginVerification(URI actionType);
+	public boolean isBeforeAction(URI actionType);
 
 	/**
 	 * <p>
@@ -64,7 +64,7 @@ public interface ActionVocabulary {
 	 * @return <code>true</code>, if the action is universal after finishing a
 	 *         verification job.
 	 */
-	public boolean isUniversalActionOnEndVerification(URI actionType);
+	public boolean isAfterAction(URI actionType);
 
 	/**
 	 * <p>
@@ -79,7 +79,7 @@ public interface ActionVocabulary {
 	 * @return <code>true</code>, if the action is universal for unsuccessful
 	 *         verification results.
 	 */
-	public boolean isUniversalActionOnFailure(URI actionType);
+	public boolean isDefaultOnFailure(URI actionType);
 
 	/**
 	 * <p>
@@ -94,7 +94,7 @@ public interface ActionVocabulary {
 	 * @return <code>true</code>, if the action is universal for successful
 	 *         verification results.
 	 */
-	public boolean isUniversalActionOnSuccess(URI actionType);
+	public boolean isDefaultOnSuccess(URI actionType);
 
 	/**
 	 * <p>
@@ -106,13 +106,12 @@ public interface ActionVocabulary {
 	 *          The type of trigger that caused the verification.
 	 * @param actionType
 	 *          The type of the action to be performed.
-	 * @param contractsToVerify
-	 *          The {@link Set} of {@link Contract}s that has been verified.
-	 * @param failedContracts
-	 *          The {@link Set} of {@link Contract}s whose verification failed.
+	 * @param verificationReports
+	 *          The {@link Set} of {@link VerificationReport}s describing the
+	 *          {@link Contract}s that have been verified.
 	 */
-	public void performActionAfterVerification(URI triggerType, URI actionType,
-			Set<Contract> contractsToVerify, Set<Contract> failedContracts);
+	public void after(URI triggerType, URI actionType,
+			Set<VerificationReport> verificationReports);
 
 	/**
 	 * <p>
@@ -127,46 +126,24 @@ public interface ActionVocabulary {
 	 * @param contractsToVerify
 	 *          The {@link Set} of {@link Contract}s that shall be verified.
 	 */
-	public void performActionBeforeVerification(URI triggerType, URI actionType,
+	public void before(URI triggerType, URI actionType,
 			Set<Contract> contractsToVerify);
 
 	/**
 	 * <p>
 	 * Performs an action of the given type (as a {@link URI}) for a given
-	 * {@link Contract} with a given {@link VerificationReport} whose verification
-	 * failed.
+	 * {@link Contract} by a given {@link VerificationReport} after its
+	 * verification.
 	 * <p>
 	 * 
 	 * @param triggerType
 	 *          The type of trigger that caused the verification.
 	 * @param actionType
 	 *          The type of the action to be performed.
-	 * @param contract
-	 *          The {@link Contract}s that has been verified.
 	 * @param verificationReport
 	 *          The {@link VerificationReport} of the {@link Contract}s
 	 *          verification.
 	 */
-	public void performActionOnFailure(URI triggerType, URI actionType,
-			Contract contract, VerificationReport verificationReport);
-
-	/**
-	 * <p>
-	 * Performs an action of the given type (as a {@link URI}) for a given
-	 * {@link Contract} with a given {@link VerificationReport} whose verification
-	 * succeeded.
-	 * <p>
-	 * 
-	 * @param triggerType
-	 *          The type of trigger that caused the verification.
-	 * @param actionType
-	 *          The type of the action to be performed.
-	 * @param contract
-	 *          The {@link Contract}s that has been verified.
-	 * @param verificationReport
-	 *          The {@link VerificationReport} of the {@link Contract}s
-	 *          verification.
-	 */
-	public void performActionOnSuccess(URI triggerType, URI actionType,
-			Contract contract, VerificationReport verificationReport);
+	public void perform(URI triggerType, URI actionType,
+			VerificationReport verificationReport);
 }
