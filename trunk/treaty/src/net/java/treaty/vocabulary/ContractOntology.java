@@ -12,11 +12,13 @@ package net.java.treaty.vocabulary;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.TreatyException;
+
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -143,9 +145,9 @@ public abstract class ContractOntology implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getProperties()
 	 */
-	public Collection<URI> getProperties() throws TreatyException {
+	public Set<URI> getProperties() throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 		result = new HashSet<URI>();
 
 		OntModel model;
@@ -214,9 +216,9 @@ public abstract class ContractOntology implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getRelationships()
 	 */
-	public Collection<URI> getRelationships() throws TreatyException {
+	public Set<URI> getRelationships() throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 		result = new HashSet<URI>();
 
 		OntModel model;
@@ -243,10 +245,10 @@ public abstract class ContractOntology implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSubProperties(java.net.URI)
 	 */
-	public Collection<URI> getSubProperties(URI relationshipOrProperty)
+	public Set<URI> getSubProperties(URI relationshipOrProperty)
 			throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 		result = new HashSet<URI>();
 
 		OntModel model;
@@ -283,9 +285,9 @@ public abstract class ContractOntology implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSubtypes(java.net.URI)
 	 */
-	public Collection<URI> getSubTypes(URI type) throws TreatyException {
+	public Set<URI> getSubTypes(URI type) throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 		result = new HashSet<URI>();
 
 		OntModel model;
@@ -315,10 +317,10 @@ public abstract class ContractOntology implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSuperProperties(java.net.URI)
 	 */
-	public Collection<URI> getSuperProperties(URI relationshipOrProperty)
+	public Set<URI> getSuperProperties(URI relationshipOrProperty)
 			throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 		result = new HashSet<URI>();
 
 		OntModel model;
@@ -348,9 +350,9 @@ public abstract class ContractOntology implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSupertypes(java.net.URI)
 	 */
-	public Collection<URI> getSuperTypes(URI type) throws TreatyException {
+	public Set<URI> getSuperTypes(URI type) throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 		result = new HashSet<URI>();
 
 		OntModel model;
@@ -380,9 +382,9 @@ public abstract class ContractOntology implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getTypes()
 	 */
-	public Collection<URI> getTypes() throws TreatyException {
+	public Set<URI> getTypes() throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 		result = new HashSet<URI>();
 
 		OntModel model;

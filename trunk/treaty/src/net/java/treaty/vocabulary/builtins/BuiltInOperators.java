@@ -11,9 +11,9 @@
 package net.java.treaty.vocabulary.builtins;
 
 import java.net.URI;
-import java.util.Collection;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import net.java.treaty.vocabulary.builtins.BuiltInOperator.EQ;
 import net.java.treaty.vocabulary.builtins.BuiltInOperator.GT;
@@ -131,7 +131,7 @@ public class BuiltInOperators {
 	 * 
 	 * @return The {@link URI}s of all {@link BuiltInOperator}s.
 	 */
-	public Collection<URI> getOpIds() {
+	public Set<URI> getOpIds() {
 
 		return this.operatorsByURI.keySet();
 	}
