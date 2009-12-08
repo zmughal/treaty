@@ -19,6 +19,7 @@ import java.util.Set;
 
 import net.java.treaty.Contract;
 import net.java.treaty.VerificationReport;
+import net.java.treaty.VerificationResult;
 import net.java.treaty.action.ActionVocabulary;
 import net.java.treaty.eclipse.Logger;
 
@@ -84,60 +85,11 @@ public class LoggerActionVocabulary implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isUniversalActionOnBeginVerification
-	 * (java.net.URI)
+	 * @see net.java.treaty.action.ActionVocabulary#after(java.net.URI,
+	 * java.net.URI, java.util.Set)
 	 */
-	public boolean isUniversalActionOnBeginVerification(URI actionType) {
-
-		/* Only the log info action is universal on begin of verification. */
-		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isUniversalActionOnEndVerification
-	 * (java.net.URI)
-	 */
-	public boolean isUniversalActionOnEndVerification(URI actionType) {
-
-		/* Only the log info action is universal on end of verification. */
-		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isUniversalActionOnFailure(java
-	 * .net.URI)
-	 */
-	public boolean isUniversalActionOnFailure(URI actionType) {
-
-		/* Only the log warning action is universal on success. */
-		return ACTION_TYPE_LOG_WARNING.equals(actionType.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isUniversalActionOnSuccess(java
-	 * .net.URI)
-	 */
-	public boolean isUniversalActionOnSuccess(URI actionType) {
-
-		/* Only the log info action is universal on success. */
-		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#performActionAfterVerification(
-	 * java.net.URI, java.net.URI, java.util.Set, java.util.Set)
-	 */
-	public void performActionAfterVerification(URI triggerType, URI actionType,
-			Set<Contract> contractsToVerify, Set<Contract> failedContracts) {
+	public void after(URI triggerType, URI actionType,
+			Set<VerificationReport> verificationReports) {
 
 		if (this.getActionTypes().contains(actionType)) {
 
@@ -145,9 +97,22 @@ public class LoggerActionVocabulary implements ActionVocabulary {
 			buffer = new StringBuffer();
 
 			buffer.append("Verification finished. ");
-			buffer.append(contractsToVerify.size());
+			buffer.append(verificationReports.size());
 			buffer.append(" Contracts were verified, verification of ");
-			buffer.append(failedContracts.size() + " Contracts failed. ");
+
+			int failedContracts;
+			failedContracts = 0;
+
+			for (VerificationReport verificationReport : verificationReports) {
+
+				if (verificationReport.getVerificationResult() != VerificationResult.SUCCESS) {
+					failedContracts++;
+				}
+				// no else.
+			}
+			// end for.
+
+			buffer.append(failedContracts + " Contracts failed. ");
 			buffer.append("Verification was triggered by trigger ");
 			buffer.append(triggerType.toString());
 
@@ -166,8 +131,12 @@ public class LoggerActionVocabulary implements ActionVocabulary {
 		// no else (wrong type of action).
 	}
 
-	@Override
-	public void performActionBeforeVerification(URI triggerType, URI actionType,
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#before(java.net.URI,
+	 * java.net.URI, java.util.Set)
+	 */
+	public void before(URI triggerType, URI actionType,
 			Set<Contract> contractsToVerify) {
 
 		if (this.getActionTypes().contains(actionType)) {
@@ -198,54 +167,87 @@ public class LoggerActionVocabulary implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#performActionOnFailure(java.net
-	 * .URI, java.net.URI, net.java.treaty.Contract,
-	 * net.java.treaty.VerificationReport)
+	 * @see net.java.treaty.action.ActionVocabulary#isAfterAction(java.net.URI)
 	 */
-	public void performActionOnFailure(URI triggerType, URI actionType,
-			Contract contract, VerificationReport verificationReport) {
+	public boolean isAfterAction(URI actionType) {
 
-		if (ACTION_TYPE_LOG_WARNING.equals(actionType.toString())) {
+		/* Only the log info action is universal on end of verification. */
+		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
+	}
 
-			StringBuffer buffer;
-			buffer = new StringBuffer();
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#isBeforeAction(java.net.URI)
+	 */
+	public boolean isBeforeAction(URI actionType) {
 
-			buffer.append("Verification of Contract ");
-			buffer.append(contract);
-			buffer.append(" failed. ");
-			buffer.append("Verification was triggered by trigger ");
-			buffer.append(triggerType.toString());
-
-			Logger.warn(buffer.toString());
-		}
-		// no else (wrong type of action).
+		/* Only the log info action is universal on begin of verification. */
+		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * net.java.treaty.action.ActionVocabulary#performActionOnSuccess(java.net
-	 * .URI, java.net.URI, net.java.treaty.Contract,
-	 * net.java.treaty.VerificationReport)
+	 * net.java.treaty.action.ActionVocabulary#isDefaultOnFailure(java.net.URI)
 	 */
-	public void performActionOnSuccess(URI triggerType, URI actionType,
-			Contract contract, VerificationReport verificationReport) {
+	public boolean isDefaultOnFailure(URI actionType) {
 
-		if (ACTION_TYPE_LOG_INFO.equals(actionType.toString())) {
+		/* Only the log warning action is universal on success. */
+		return ACTION_TYPE_LOG_WARNING.equals(actionType.toString());
+	}
 
-			StringBuffer buffer;
-			buffer = new StringBuffer();
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.action.ActionVocabulary#isDefaultOnSuccess(java.net.URI)
+	 */
+	public boolean isDefaultOnSuccess(URI actionType) {
 
-			buffer.append("Verification of Contract ");
-			buffer.append(contract);
-			buffer.append(" succeeded. ");
-			buffer.append("Verification was triggered by trigger ");
-			buffer.append(triggerType.toString());
+		/* Only the log info action is universal on success. */
+		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
+	}
 
-			Logger.info(buffer.toString());
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#perform(java.net.URI,
+	 * java.net.URI, net.java.treaty.VerificationReport)
+	 */
+	public void perform(URI triggerType, URI actionType,
+			VerificationReport verificationReport) {
+
+		if (verificationReport.getVerificationResult() == VerificationResult.SUCCESS) {
+			if (ACTION_TYPE_LOG_INFO.equals(actionType.toString())) {
+
+				StringBuffer buffer;
+				buffer = new StringBuffer();
+
+				buffer.append("Verification of Contract ");
+				buffer.append(verificationReport.getContract());
+				buffer.append(" succeeded. ");
+				buffer.append("Verification was triggered by trigger ");
+				buffer.append(triggerType.toString());
+
+				Logger.info(buffer.toString());
+			}
+			// no else (wrong type of action).
 		}
-		// no else (wrong type of action).
+
+		else {
+			if (ACTION_TYPE_LOG_WARNING.equals(actionType.toString())) {
+
+				StringBuffer buffer;
+				buffer = new StringBuffer();
+
+				buffer.append("Verification of Contract ");
+				buffer.append(verificationReport.getContract());
+				buffer.append(" failed. ");
+				buffer.append("Verification was triggered by trigger ");
+				buffer.append(triggerType.toString());
+
+				Logger.warn(buffer.toString());
+			}
+			// no else (wrong type of action).
+		}
 	}
 
 	/*
