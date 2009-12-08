@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.Set;
 
 import net.java.treaty.Contract;
-import net.java.treaty.VerificationResult;
+import net.java.treaty.VerificationReport;
 
 /**
  * <p>
@@ -37,6 +37,34 @@ public interface ActionVocabulary {
 	 *         {@link ActionVocabulary} defines.
 	 */
 	public Set<URI> getActionTypes();
+
+	/**
+	 * <p>
+	 * Returns <code>true</code> if the given {@link URI} represents an action
+	 * defined by this {@link ActionVocabulary} which shall be executed for all
+	 * {@link Contract}s before starting their verification job.
+	 * </p>
+	 * 
+	 * @param actionType
+	 *          The type ({@link URI}) of the action.
+	 * @return <code>true</code>, if the action is universal before starting a
+	 *         verification job.
+	 */
+	public boolean isUniversalActionOnBeginVerification(URI actionType);
+
+	/**
+	 * <p>
+	 * Returns <code>true</code> if the given {@link URI} represents an action
+	 * defined by this {@link ActionVocabulary} which shall be executed for all
+	 * {@link Contract}s after finishing a verification job.
+	 * </p>
+	 * 
+	 * @param actionType
+	 *          The type ({@link URI}) of the action.
+	 * @return <code>true</code>, if the action is universal after finishing a
+	 *         verification job.
+	 */
+	public boolean isUniversalActionOnEndVerification(URI actionType);
 
 	/**
 	 * <p>
@@ -71,16 +99,74 @@ public interface ActionVocabulary {
 	/**
 	 * <p>
 	 * Performs an action of the given type (as a {@link URI}) for a given
-	 * {@link Contract} with a given {@link VerificationResult}.
+	 * {@link Set} of {@link Contract}s after their verification.
 	 * <p>
 	 * 
+	 * @param triggerType
+	 *          The type of trigger that caused the verification.
+	 * @param actionType
+	 *          The type of the action to be performed.
+	 * @param contractsToVerify
+	 *          The {@link Set} of {@link Contract}s that has been verified.
+	 * @param failedContracts
+	 *          The {@link Set} of {@link Contract}s whose verification failed.
+	 */
+	public void performActionAfterVerification(URI triggerType, URI actionType,
+			Set<Contract> contractsToVerify, Set<Contract> failedContracts);
+
+	/**
+	 * <p>
+	 * Performs an action of the given type (as a {@link URI}) for a given
+	 * {@link Set} of {@link Contract}s before their verification.
+	 * <p>
+	 * 
+	 * @param triggerType
+	 *          The type of trigger that caused the verification.
+	 * @param actionType
+	 *          The type of the action to be performed.
+	 * @param contractsToVerify
+	 *          The {@link Set} of {@link Contract}s that shall be verified.
+	 */
+	public void performActionBeforeVerification(URI triggerType, URI actionType,
+			Set<Contract> contractsToVerify);
+
+	/**
+	 * <p>
+	 * Performs an action of the given type (as a {@link URI}) for a given
+	 * {@link Contract} with a given {@link VerificationReport} whose verification
+	 * failed.
+	 * <p>
+	 * 
+	 * @param triggerType
+	 *          The type of trigger that caused the verification.
 	 * @param actionType
 	 *          The type of the action to be performed.
 	 * @param contract
-	 *          The {@link Contract} that has been verified.
-	 * @param verificationResult
-	 *          The {@link VerificationResult} of the {@link Contract}.
+	 *          The {@link Contract}s that has been verified.
+	 * @param verificationReport
+	 *          The {@link VerificationReport} of the {@link Contract}s
+	 *          verification.
 	 */
-	public void performAction(URI actionType, Contract contract,
-			VerificationResult verificationResult);
+	public void performActionOnFailure(URI triggerType, URI actionType,
+			Contract contract, VerificationReport verificationReport);
+
+	/**
+	 * <p>
+	 * Performs an action of the given type (as a {@link URI}) for a given
+	 * {@link Contract} with a given {@link VerificationReport} whose verification
+	 * succeeded.
+	 * <p>
+	 * 
+	 * @param triggerType
+	 *          The type of trigger that caused the verification.
+	 * @param actionType
+	 *          The type of the action to be performed.
+	 * @param contract
+	 *          The {@link Contract}s that has been verified.
+	 * @param verificationReport
+	 *          The {@link VerificationReport} of the {@link Contract}s
+	 *          verification.
+	 */
+	public void performActionOnSuccess(URI triggerType, URI actionType,
+			Contract contract, VerificationReport verificationReport);
 }

@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.java.treaty.Contract;
-import net.java.treaty.ContractLogger;
+import net.java.treaty.VerificationReport;
 import net.java.treaty.trigger.EventListener;
 
 /**
@@ -43,32 +43,7 @@ public abstract class AbstractTriggeredVerifier implements EventListener {
 	 */
 	public void update(URI triggerType, Set<Contract> contracts) {
 
-		for (Contract contract : contracts) {
-			if (this.verify(contract)) {
-
-				/* Propagate positive result. */
-				ContractLogger.LOGGER.info("Contract " + contract
-						+ " has been verified successfully.");
-
-				for (TriggeredVerifierListener listener : this.listeners) {
-					listener.verificationSucceeded(triggerType, contract);
-				}
-				// end for.
-			}
-
-			else {
-
-				/* Propagate negative result. */
-				ContractLogger.LOGGER.info("Verification of Contract " + contract
-						+ " failed.");
-
-				for (TriggeredVerifierListener listener : this.listeners) {
-					listener.verificationFailed(triggerType, contract);
-				}
-				// end for.
-			}
-		}
-		// end for.
+		this.verify(triggerType, contracts);
 	}
 
 	/**
@@ -89,6 +64,50 @@ public abstract class AbstractTriggeredVerifier implements EventListener {
 
 	/**
 	 * <p>
+	 * Informs all registered {@link TriggeredVerifierListener} of this
+	 * {@link AbstractTriggeredVerifier} that the verification of a given
+	 * {@link Contract} caused by a given trigger has failed.
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The {@link URI} of the trigger that shall be handled.
+	 * @param contracts
+	 *          All {@link Contract}s that must be verified after the caused
+	 *          trigger.
+	 */
+	public void notifyListenersVerificationFailed(URI triggerType,
+			Contract contract) {
+
+		for (TriggeredVerifierListener listener : this.listeners) {
+			listener.verificationFailed(triggerType, contract);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
+	 * Informs all registered {@link TriggeredVerifierListener} of this
+	 * {@link AbstractTriggeredVerifier} that the verification of a given
+	 * {@link Contract} caused by a given trigger has succeeded.
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The {@link URI} of the trigger that shall be handled.
+	 * @param contracts
+	 *          All {@link Contract}s that must be verified after the caused
+	 *          trigger.
+	 */
+	public void notifyListenersVerificationSucceeded(URI triggerType,
+			Contract contract) {
+
+		for (TriggeredVerifierListener listener : this.listeners) {
+			listener.verificationSucceeded(triggerType, contract);
+		}
+		// end for.
+	}
+
+	/**
+	 * <p>
 	 * Removed a {@link TriggeredVerifierListener} to this
 	 * {@link AbstractTriggeredVerifier}.
 	 * </p>
@@ -105,13 +124,81 @@ public abstract class AbstractTriggeredVerifier implements EventListener {
 
 	/**
 	 * <p>
-	 * Verifies a given {@link Contract}.
+	 * Hook method to perform actions before the verification of a {@link Set} of
+	 * {@link Contract}s triggered by a given trigger type (as a {@link URI}).
 	 * </p>
 	 * 
-	 * @param contract
-	 *          The {@link Contract} that shall be verified.
-	 * @return <code>true</code> if the {@link Contract} has been verified
-	 *         successfully.
+	 * @param triggerType
+	 *          The {@link URI} of the trigger that shall be handled.
+	 * @param contracts
+	 *          All {@link Contract}s that must be verified after the caused
+	 *          trigger.
 	 */
-	abstract protected boolean verify(Contract contract);
+	protected abstract void performActionBeginVerification(URI triggerType,
+			Set<Contract> contracts);
+
+	/**
+	 * <p>
+	 * Hook method to perform actions after the verification of a {@link Set} of
+	 * {@link Contract}s triggered by a given trigger type (as a {@link URI}).
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The {@link URI} of the trigger that shall be handled.
+	 * @param verfiedContracts
+	 *          All {@link Contract}s that have been verified after the caused
+	 *          trigger.
+	 * @param failedContracts
+	 *          All {@link Contract}s that whose verification failed.
+	 */
+	protected abstract void performActionEndVerification(URI triggerType,
+			Set<Contract> verfiedContracts, Set<Contract> failedContracts);
+
+	/**
+	 * <p>
+	 * Hook method to perform actions after the unsuccessful verification of one
+	 * {@link Contract} triggered by a given trigger type (as a {@link URI}).
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The {@link URI} of the trigger that shall be handled.
+	 * @param contract
+	 *          The {@link Contract}s that has been verified.
+	 * @param verificationReport
+	 *          The {@link VerificationReport} of the {@link Contract}s
+	 *          verification.
+	 */
+	protected abstract void performActionVerificationOfContractFailed(
+			URI triggerType, Contract contract, VerificationReport verificationReport);
+
+	/**
+	 * <p>
+	 * Hook method to perform actions after the successful verification of one
+	 * {@link Contract} triggered by a given trigger type (as a {@link URI}).
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The {@link URI} of the trigger that shall be handled.
+	 * @param contract
+	 *          The {@link Contract}s that has been verified.
+	 * @param verificationReport
+	 *          The {@link VerificationReport} of the {@link Contract}s
+	 *          verification.
+	 */
+	protected abstract void performActionVerificationOfContractSucceeded(
+			URI triggerType, Contract contract, VerificationReport verificationReport);
+
+	/**
+	 * <p>
+	 * Verifies a given {@link Set} of {@link Contract}s cause by a given trigger
+	 * type (as a {@link URI}).
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The {@link URI} of the trigger that shall be handled.
+	 * @param contracts
+	 *          All {@link Contract}s that must be verified after the caused
+	 *          trigger.
+	 */
+	abstract protected void verify(URI triggerType, Set<Contract> contracts);
 }
