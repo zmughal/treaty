@@ -565,27 +565,25 @@ public class TriggerActionView extends ViewPart implements
 			else if (collumn == 1) {
 
 				if (triggerOrAction.getType() == TriggerOrActionType.Action) {
-					if (EclipseActionRegistry.INSTANCE
-							.isUniversalActionOnFailure(triggerOrAction.getUri())
+					if (EclipseActionRegistry.INSTANCE.isDefaultOnFailure(triggerOrAction
+							.getUri())
 							&& EclipseActionRegistry.INSTANCE
-									.isUniversalActionOnSuccess(triggerOrAction.getUri())
-							&& EclipseActionRegistry.INSTANCE
-									.isUniversalActionOnBeginVerification(triggerOrAction
-											.getUri())
-							&& EclipseActionRegistry.INSTANCE
-									.isUniversalActionOnEndVerification(triggerOrAction.getUri())) {
+									.isDefaultOnSuccess(triggerOrAction.getUri())
+							&& EclipseActionRegistry.INSTANCE.isBeforeAction(triggerOrAction
+									.getUri())
+							&& EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
+									.getUri())) {
 						result = ICON_YES;
 					}
 
 					else if (EclipseActionRegistry.INSTANCE
-							.isUniversalActionOnFailure(triggerOrAction.getUri())
+							.isDefaultOnFailure(triggerOrAction.getUri())
 							|| EclipseActionRegistry.INSTANCE
-									.isUniversalActionOnSuccess(triggerOrAction.getUri())
-							|| EclipseActionRegistry.INSTANCE
-									.isUniversalActionOnBeginVerification(triggerOrAction
-											.getUri())
-							|| EclipseActionRegistry.INSTANCE
-									.isUniversalActionOnEndVerification(triggerOrAction.getUri())) {
+									.isDefaultOnSuccess(triggerOrAction.getUri())
+							|| EclipseActionRegistry.INSTANCE.isBeforeAction(triggerOrAction
+									.getUri())
+							|| EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
+									.getUri())) {
 						result = ICON_PARTS;
 					}
 
@@ -640,14 +638,14 @@ public class TriggerActionView extends ViewPart implements
 					StringBuffer buffer;
 					buffer = new StringBuffer();
 
-					if (EclipseActionRegistry.INSTANCE
-							.isUniversalActionOnBeginVerification(triggerOrAction.getUri())) {
+					if (EclipseActionRegistry.INSTANCE.isBeforeAction(triggerOrAction
+							.getUri())) {
 						buffer.append("begin");
 					}
 					// no else.
 
-					if (EclipseActionRegistry.INSTANCE
-							.isUniversalActionOnEndVerification(triggerOrAction.getUri())) {
+					if (EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
+							.getUri())) {
 
 						if (buffer.length() > 0) {
 							buffer.append(" / ");
@@ -658,8 +656,8 @@ public class TriggerActionView extends ViewPart implements
 					}
 					// no else.
 
-					if (EclipseActionRegistry.INSTANCE
-							.isUniversalActionOnFailure(triggerOrAction.getUri())) {
+					if (EclipseActionRegistry.INSTANCE.isDefaultOnFailure(triggerOrAction
+							.getUri())) {
 
 						if (buffer.length() > 0) {
 							buffer.append(" / ");
@@ -670,8 +668,8 @@ public class TriggerActionView extends ViewPart implements
 					}
 					// no else.
 
-					if (EclipseActionRegistry.INSTANCE
-							.isUniversalActionOnSuccess(triggerOrAction.getUri())) {
+					if (EclipseActionRegistry.INSTANCE.isDefaultOnSuccess(triggerOrAction
+							.getUri())) {
 
 						if (buffer.length() > 0) {
 							buffer.append(" / ");

@@ -43,6 +43,7 @@ import net.java.treaty.PropertySupport;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.Role;
+import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.contractregistry.ContractRegistryListener;
 import net.java.treaty.eclipse.Constants;
@@ -1856,23 +1857,31 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	 * {@link Contract}s and a given {@link List} of violated {@link Contract}s.
 	 * </p>
 	 * 
-	 * @param allContracts
-	 *          All {@link Contract}s that have been verified.
-	 * @param failedContracts
-	 *          All {@link Contract}s whose verification failed.
+	 * @param verificationReports
+	 *          The {@link VerificationReport}s of all {@link Contract}s that have
+	 *          been verified.
 	 */
-	public void reportVerificationResult(Collection<Contract> allContracts,
-			Collection<Contract> failedContracts) {
+	public void reportVerificationResult(
+			Collection<VerificationReport> verificationReports) {
 
 		int totalContractCount;
-		totalContractCount = allContracts.size();
+		totalContractCount = verificationReports.size();
 
 		int failedContractCount;
-		failedContractCount = failedContracts.size();
+		failedContractCount = 0;
+
+		for (VerificationReport verificationReport : verificationReports) {
+
+			if (verificationReport.getVerificationResult() != VerificationResult.SUCCESS) {
+				failedContractCount++;
+			}
+			// no else.
+		}
+		// end for.
 
 		String message = null;
 
-		if (failedContracts.size() == 0) {
+		if (failedContractCount == 0) {
 			message =
 					totalContractCount
 							+ " Contract instances have been verified successfully.";
