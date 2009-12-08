@@ -145,14 +145,12 @@ public abstract class AbstractTriggeredVerifier implements EventListener {
 	 * 
 	 * @param triggerType
 	 *          The {@link URI} of the trigger that shall be handled.
-	 * @param verfiedContracts
-	 *          All {@link Contract}s that have been verified after the caused
-	 *          trigger.
-	 * @param failedContracts
-	 *          All {@link Contract}s that whose verification failed.
+	 * @param verificationReports
+	 *          The {@link VerificationReport}s of all {@link Contract}s that have
+	 *          been verified.
 	 */
 	protected abstract void performActionEndVerification(URI triggerType,
-			Set<Contract> verfiedContracts, Set<Contract> failedContracts);
+			Set<VerificationReport> verificationReports);
 
 	/**
 	 * <p>
