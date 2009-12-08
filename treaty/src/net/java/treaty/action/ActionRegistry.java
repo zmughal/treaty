@@ -109,6 +109,195 @@ public class ActionRegistry {
 
 	/**
 	 * <p>
+	 * Returns all actions that shall be performed for the beginning of a
+	 * verification. Because only default actions can be performed in this
+	 * situation, no parameter is required.
+	 * </p>
+	 * 
+	 * @return All actions that shall be performed for the beginning of a
+	 *         verification as a {@link Set} of {@link URI}s.
+	 */
+	public Set<URI> getActionsOnBeginVerification() {
+
+		Set<URI> result;
+		result = new HashSet<URI>();
+
+		for (ActionVocabulary actionVocabulary : this.actionVocabularies) {
+
+			for (URI actionType : actionVocabulary.getActionTypes()) {
+
+				if (actionVocabulary.isUniversalActionOnBeginVerification(actionType)) {
+					result.add(actionType);
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// end for.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns all actions that shall be performed after finishing a verification.
+	 * Because only default actions can be performed in this situation, no
+	 * parameter is required.
+	 * </p>
+	 * 
+	 * @return All actions that shall be performed after finishing a verification
+	 *         as a {@link Set} of {@link URI}s.
+	 */
+	public Set<URI> getActionsOnEndVerification() {
+
+		Set<URI> result;
+		result = new HashSet<URI>();
+
+		for (ActionVocabulary actionVocabulary : this.actionVocabularies) {
+
+			for (URI actionType : actionVocabulary.getActionTypes()) {
+
+				if (actionVocabulary.isUniversalActionOnEndVerification(actionType)) {
+					result.add(actionType);
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// end for.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns all actions that shall be performed after finishing a
+	 * {@link Contract}'s verification not successfully.
+	 * </p>
+	 * 
+	 * @param The
+	 *          {@link Contract} for which the actions shall be returned.
+	 * @return All actions that shall be performed after finishing a
+	 *         {@link Contract}'s verification not successfully.
+	 */
+	public Set<URI> getActionsOnFailure(Contract contract) {
+
+		Set<URI> result;
+		result = new HashSet<URI>();
+
+		for (ActionVocabulary actionVocabulary : this.actionVocabularies) {
+
+			for (URI actionType : actionVocabulary.getActionTypes()) {
+
+				if (actionVocabulary.isUniversalActionOnFailure(actionType)
+						|| contract.getOnVerificationFailsActions().contains(actionType)) {
+					result.add(actionType);
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// end for.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns all actions that shall be performed after finishing a
+	 * {@link Contract}'s verification successfully.
+	 * </p>
+	 * 
+	 * @param The
+	 *          {@link Contract} for which the actions shall be returned.
+	 * @return All actions that shall be performed after finishing a
+	 *         {@link Contract}'s verification successfully.
+	 */
+	public Set<URI> getActionsOnSuccess(Contract contract) {
+
+		Set<URI> result;
+		result = new HashSet<URI>();
+
+		for (ActionVocabulary actionVocabulary : this.actionVocabularies) {
+
+			for (URI actionType : actionVocabulary.getActionTypes()) {
+
+				if (actionVocabulary.isUniversalActionOnSuccess(actionType)
+						|| contract.getOnVerificationSucceedsActions().contains(actionType)) {
+					result.add(actionType);
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// end for.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns <code>true</code> if the given {@link URI} represents an action
+	 * defined by this {@link ActionVocabulary} which shall be executed for all
+	 * {@link Contract}s before starting their verification job.
+	 * </p>
+	 * 
+	 * @param actionType
+	 *          The type ({@link URI}) of the action.
+	 * @return <code>true</code>, if the action is universal before starting a
+	 *         verification job.
+	 */
+	public boolean isUniversalActionOnBeginVerification(URI actionType) {
+
+		boolean result;
+
+		ActionVocabulary actionVocabulary;
+		actionVocabulary = this.getActionVocabulary(actionType);
+
+		if (actionVocabulary != null) {
+			result =
+					actionVocabulary.isUniversalActionOnBeginVerification(actionType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Returns <code>true</code> if the given {@link URI} represents an action
+	 * defined by this {@link ActionVocabulary} which shall be executed for all
+	 * {@link Contract}s after finishing a verification job.
+	 * </p>
+	 * 
+	 * @param actionType
+	 *          The type ({@link URI}) of the action.
+	 * @return <code>true</code>, if the action is universal after finishing a
+	 *         verification job.
+	 */
+	public boolean isUniversalActionOnEndVerification(URI actionType) {
+
+		boolean result;
+
+		ActionVocabulary actionVocabulary;
+		actionVocabulary = this.getActionVocabulary(actionType);
+
+		if (actionVocabulary != null) {
+			result = actionVocabulary.isUniversalActionOnEndVerification(actionType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
 	 * Returns <code>true</code> if the given {@link URI} represents an action
 	 * defined by this {@link ActionVocabulary} which shall be executed for all
 	 * {@link Contract}s after unsuccessful verification ignoring the fact,
