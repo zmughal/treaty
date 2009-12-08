@@ -14,6 +14,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.java.treaty.Contract;
+
 /**
  * <p>
  * The {@link TriggerRegistry} manages {@link TriggerVocabulary}s.
@@ -21,17 +23,106 @@ import java.util.Set;
  * 
  * @author Claas Wilke
  */
-public class TriggerRegistry {
+public class TriggerRegistry implements TriggerVocabulary {
+
+	/**
+	 * The {@link EventListener}s of this {@link TriggerRegistry} .
+	 */
+	private Set<EventListener> eventlisteners = new HashSet<EventListener>();
 
 	/**
 	 * The {@link TriggerRegistryListener}s of this {@link TriggerRegistry} .
 	 */
-	private Set<TriggerRegistryListener> listeners =
+	private Set<TriggerRegistryListener> registrylisteners =
 			new HashSet<TriggerRegistryListener>();
 
 	/** The {@link TriggerVocabulary}s of this {@link TriggerRegistry}. */
 	private Set<TriggerVocabulary> triggerVocabularies =
 			new HashSet<TriggerVocabulary>();
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.EventProvider#addEventListener(net.java.treaty.
+	 * trigger.EventListener)
+	 */
+	public boolean addEventListener(EventListener listener) {
+
+		return this.eventlisteners.add(listener);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getTriggerTypes()
+	 */
+	public Set<URI> getTriggerTypes() {
+
+		Set<URI> result;
+		result = new HashSet<URI>();
+
+		for (TriggerVocabulary triggerVocabulary : this.triggerVocabularies) {
+
+			result.addAll(triggerVocabulary.getTriggerTypes());
+		}
+		// end for.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Evaluates to <code>true</code> if the given trigger type represents a
+	 * default trigger.
+	 * </p>
+	 * 
+	 * @see TriggerVocabulary#isDefaultTrigger(URI)
+	 * 
+	 * @param triggerType
+	 *          The type ({@link URI}) of the trigger that shall be checked.
+	 * @return <code>true</code> if the trigger is a default trigger.
+	 */
+	public boolean isDefaultTrigger(URI triggerType) {
+
+		boolean result;
+
+		TriggerVocabulary triggerVocabulary;
+		triggerVocabulary = this.getTriggerVocabulary(triggerType);
+
+		if (triggerVocabulary != null) {
+			result = triggerVocabulary.isDefaultTrigger(triggerType);
+		}
+
+		else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.EventProvider#notifyEventListners(java.net.URI,
+	 * java.util.Set)
+	 */
+	public void notifyEventListners(URI triggerType, Set<Contract> contracts) {
+	
+		for (EventListener listener : this.eventlisteners) {
+			listener.update(triggerType, contracts);
+		}
+		// no else.
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.EventProvider#removeEventListener(net.java.treaty
+	 * .trigger.EventListener)
+	 */
+	public boolean removeEventListener(EventListener listener) {
+
+		return this.eventlisteners.remove(listener);
+	}
 
 	/**
 	 * <p>
@@ -43,7 +134,7 @@ public class TriggerRegistry {
 	 */
 	public void addListener(TriggerRegistryListener listener) {
 
-		this.listeners.add(listener);
+		this.registrylisteners.add(listener);
 	}
 
 	/**
@@ -118,12 +209,12 @@ public class TriggerRegistry {
 	 * @return The defining {@link TriggerVocabulary} or <code>null</code>.
 	 */
 	public TriggerVocabulary getTriggerVocabulary(URI triggerType) {
-	
+
 		TriggerVocabulary result;
 		result = null;
-	
+
 		for (TriggerVocabulary triggerVocabulary : this.triggerVocabularies) {
-	
+
 			if (triggerVocabulary.getTriggerTypes().contains(triggerType)) {
 				result = triggerVocabulary;
 				break;
@@ -131,36 +222,6 @@ public class TriggerRegistry {
 			// no else.
 		}
 		// end for.
-	
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * Evaluates to <code>true</code> if the given trigger type represents a
-	 * default trigger.
-	 * </p>
-	 * 
-	 * @see TriggerVocabulary#isDefaultTrigger(URI)
-	 * 
-	 * @param triggerType
-	 *          The type ({@link URI}) of the trigger that shall be checked.
-	 * @return <code>true</code> if the trigger is a default trigger.
-	 */
-	public boolean isDefaultTrigger(URI triggerType) {
-
-		boolean result;
-
-		TriggerVocabulary triggerVocabulary;
-		triggerVocabulary = this.getTriggerVocabulary(triggerType);
-
-		if (triggerVocabulary != null) {
-			result = triggerVocabulary.isDefaultTrigger(triggerType);
-		}
-
-		else {
-			result = false;
-		}
 
 		return result;
 	}
@@ -175,7 +236,7 @@ public class TriggerRegistry {
 	 */
 	public void removeListener(TriggerRegistryListener listener) {
 
-		this.listeners.add(listener);
+		this.registrylisteners.add(listener);
 	}
 
 	/**
@@ -213,7 +274,7 @@ public class TriggerRegistry {
 	 */
 	private void notifiyAddedTriggerVocabulary(TriggerVocabulary triggerVocabulary) {
 
-		for (TriggerRegistryListener listener : this.listeners) {
+		for (TriggerRegistryListener listener : this.registrylisteners) {
 			listener.triggerVocabularyAdded(triggerVocabulary);
 		}
 		// end for.
@@ -231,7 +292,7 @@ public class TriggerRegistry {
 	private void notifiyRemovedTriggerVocabulary(
 			TriggerVocabulary triggerVocabulary) {
 
-		for (TriggerRegistryListener listener : this.listeners) {
+		for (TriggerRegistryListener listener : this.registrylisteners) {
 			listener.triggerVocabularyRemoved(triggerVocabulary);
 		}
 		// end for.
