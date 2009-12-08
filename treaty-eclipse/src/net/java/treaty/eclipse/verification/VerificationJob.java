@@ -224,8 +224,23 @@ public class VerificationJob extends Job {
 					contract.check(verificationReport, verifier,
 							VerificationPolicy.DETAILED);
 
-			if (!result) {
+			if (result) {
+				/* Inform listeners. */
+				for (VerificationJobListener listener : this.myListeners) {
+					listener
+							.verificationOfContractSucceeded(contract, verificationReport);
+				}
+				// end for.
+			}
+
+			else {
 				this.failedContracts.add(contract);
+
+				/* Inform listeners. */
+				for (VerificationJobListener listener : this.myListeners) {
+					listener.verificationOfContractFailed(contract, verificationReport);
+				}
+				// end for.
 			}
 
 			this.doneContracts.add(contract);

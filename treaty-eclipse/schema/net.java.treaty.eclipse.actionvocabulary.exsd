@@ -52,7 +52,7 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="net.java.treaty.action.ActionRegistry:"/>
+                  <meta.attribute kind="java" basedOn=":net.java.treaty.action.ActionVocabulary"/>
                </appInfo>
             </annotation>
          </attribute>

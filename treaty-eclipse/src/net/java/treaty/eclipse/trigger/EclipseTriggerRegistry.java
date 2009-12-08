@@ -18,6 +18,7 @@ import java.util.Set;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.exporter.Exporter;
+import net.java.treaty.eclipse.verification.TriggeredEclipseVerifier;
 import net.java.treaty.trigger.TriggerRegistry;
 import net.java.treaty.trigger.TriggerVocabulary;
 
@@ -105,6 +106,10 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 					triggerVocabulary.tearDown();
 
 					this.removeTriggerVocabulary(triggerVocabulary);
+
+					/* Un-register the triggered verifier as listener. */
+					triggerVocabulary
+							.removeEventListener(TriggeredEclipseVerifier.INSTANCE);
 
 					Logger.info("Removed TriggerVocabulary " + triggerVocabulary);
 				}
@@ -216,6 +221,11 @@ public class EclipseTriggerRegistry extends TriggerRegistry implements
 
 							this.addTriggerVocabulary(triggerVocabulary);
 							triggerVocabulariesOfExtension.add(triggerVocabulary);
+
+							/* Register the triggered verifier as listener. */
+							triggerVocabulary
+									.addEventListener(TriggeredEclipseVerifier.INSTANCE);
+
 							Logger.info("Added new TriggerVocabulary " + triggerVocabulary);
 						}
 						// no else.
