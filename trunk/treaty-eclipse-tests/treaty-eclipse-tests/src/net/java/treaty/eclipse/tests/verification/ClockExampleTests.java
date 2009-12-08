@@ -144,6 +144,30 @@ public class ClockExampleTests {
 			 * here.
 			 */
 		}
+
+		/*
+		 * (non-Javadoc)
+		 * @seenet.java.treaty.eclipse.verification.VerificationJobListener#
+		 * verificationOfContractFailed(net.java.treaty.Contract,
+		 * net.java.treaty.VerificationReport)
+		 */
+		public void verificationOfContractFailed(Contract contract,
+				VerificationReport verificationReport) {
+
+			/* Do nothing. */
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @seenet.java.treaty.eclipse.verification.VerificationJobListener#
+		 * verificationOfContractSucceeded(net.java.treaty.Contract,
+		 * net.java.treaty.VerificationReport)
+		 */
+		public void verificationOfContractSucceeded(Contract contract,
+				VerificationReport verificationReport) {
+
+			/* Do nothing. */
+		}
 	}
 
 	/**
