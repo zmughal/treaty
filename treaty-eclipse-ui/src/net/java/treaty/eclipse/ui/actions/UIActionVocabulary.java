@@ -69,68 +69,18 @@ public class UIActionVocabulary implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isUniversalActionOnBeginVerification
-	 * (java.net.URI)
+	 * @see net.java.treaty.action.ActionVocabulary#after(java.net.URI,
+	 * java.net.URI, java.util.Set)
 	 */
-	public boolean isUniversalActionOnBeginVerification(URI actionType) {
-
-		/* This vocabulary does not provide any actions on begin verification. */
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isUniversalActionOnEndVerification
-	 * (java.net.URI)
-	 */
-	public boolean isUniversalActionOnEndVerification(URI actionType) {
-
-		/* The show verification action is universal on end. */
-		return ACTION_TYPE_SHOW_VERIFICATION_RESULT.equals(actionType.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isUniversalActionOnFailure(java
-	 * .net.URI)
-	 */
-	public boolean isUniversalActionOnFailure(URI actionType) {
-
-		/* This vocabulary does not provide any actions on failed verification. */
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isUniversalActionOnSuccess(java
-	 * .net.URI)
-	 */
-	public boolean isUniversalActionOnSuccess(URI actionType) {
-
-		/* This vocabulary does not provide any actions on successful verification. */
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#performActionAfterVerification(
-	 * java.net.URI, java.net.URI, java.util.Set, java.util.Set)
-	 */
-	public void performActionAfterVerification(URI triggerType, URI actionType,
-			Set<Contract> contractsToVerify, Set<Contract> failedContracts) {
+	public void after(URI triggerType, URI actionType,
+			Set<VerificationReport> verificationReports) {
 
 		if (ACTION_TYPE_SHOW_VERIFICATION_RESULT.equals(actionType.toString())) {
 
 			if (this.contractView != null) {
 
 				contractView.update();
-				contractView.reportVerificationResult(contractsToVerify,
-						failedContracts);
+				contractView.reportVerificationResult(verificationReports);
 			}
 
 			else {
@@ -143,11 +93,10 @@ public class UIActionVocabulary implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#performActionBeforeVerification
-	 * (java.net.URI, java.net.URI, java.util.Set)
+	 * @see net.java.treaty.action.ActionVocabulary#before(java.net.URI,
+	 * java.net.URI, java.util.Set)
 	 */
-	public void performActionBeforeVerification(URI triggerType, URI actionType,
+	public void before(URI triggerType, URI actionType,
 			Set<Contract> contractsToVerify) {
 
 		/* This vocabulary does not provide any actions on begin verification. */
@@ -155,28 +104,58 @@ public class UIActionVocabulary implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#performActionOnFailure(java.net
-	 * .URI, java.net.URI, net.java.treaty.Contract,
-	 * net.java.treaty.VerificationReport)
+	 * @see net.java.treaty.action.ActionVocabulary#isAfterAction(java.net.URI)
 	 */
-	public void performActionOnFailure(URI triggerType, URI actionType,
-			Contract contract, VerificationReport verificationReport) {
+	public boolean isAfterAction(URI actionType) {
 
-		/* This vocabulary does not provide any actions on failed verification. */
+		/* The show verification action is universal on end. */
+		return ACTION_TYPE_SHOW_VERIFICATION_RESULT.equals(actionType.toString());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#isBeforeAction(java.net.URI)
+	 */
+	public boolean isBeforeAction(URI actionType) {
+
+		/* This vocabulary does not provide any actions on begin verification. */
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#perform(java.net.URI,
+	 * java.net.URI, net.java.treaty.VerificationReport)
+	 */
+	public void perform(URI triggerType, URI actionType,
+			VerificationReport verificationReport) {
+
+		/*
+		 * This vocabulary does not provide any actions on verification of single
+		 * contracts.
+		 */
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * net.java.treaty.action.ActionVocabulary#performActionOnSuccess(java.net
-	 * .URI, java.net.URI, net.java.treaty.Contract,
-	 * net.java.treaty.VerificationReport)
+	 * net.java.treaty.action.ActionVocabulary#isDefaultOnFailure(java.net.URI)
 	 */
-	public void performActionOnSuccess(URI triggerType, URI actionType,
-			Contract contract, VerificationReport verificationReport) {
+	public boolean isDefaultOnFailure(URI actionType) {
+
+		/* This vocabulary does not provide any actions on failed verification. */
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.action.ActionVocabulary#isDefaultOnSuccess(java.net.URI)
+	 */
+	public boolean isDefaultOnSuccess(URI actionType) {
 
 		/* This vocabulary does not provide any actions on successful verification. */
+		return false;
 	}
 
 	/*
