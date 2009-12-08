@@ -16,16 +16,13 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
 import net.java.treaty.Connector;
-import net.java.treaty.ContractVocabulary;
 import net.java.treaty.ExistsCondition;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.RelationshipCondition;
@@ -34,13 +31,11 @@ import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.VerificationException;
 import net.java.treaty.vocabulary.ContractOntology;
 import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
-
 import org.iso_relax.verifier.Verifier;
 import org.iso_relax.verifier.VerifierFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.sun.msv.reader.GrammarReaderController;
@@ -54,8 +49,7 @@ import com.sun.msv.reader.dtd.DTDReader;
  * 
  * @author Jens Dietrich
  */
-public class XMLVocabulary extends ContractOntology implements
-		ContractVocabulary {
+public class XMLVocabulary extends ContractOntology  {
 
 	/**
 	 * <p>
