@@ -8,7 +8,7 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package test.net.java.treaty.event.verification;
+package test.net.java.treaty.trigger.verification;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
