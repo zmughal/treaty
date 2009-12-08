@@ -43,10 +43,10 @@ public class TriggeredVerifierMock extends AbstractTriggeredVerifier {
 	/*
 	 * (non-Javadoc)
 	 * @seenet.java.treaty.trigger.verification.AbstractTriggeredVerifier#
-	 * performActionEndVerification(java.net.URI, java.util.Set, java.util.Set)
+	 * performActionEndVerification(java.net.URI, java.util.Set)
 	 */
 	protected void performActionEndVerification(URI triggerType,
-			Set<Contract> verfiedContracts, Set<Contract> failedContracts) {
+			Set<VerificationReport> verificationReports) {
 
 		/* Remains empty. */
 	}
