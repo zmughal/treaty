@@ -16,7 +16,6 @@ import java.util.Set;
 
 import net.java.treaty.Contract;
 import net.java.treaty.VerificationReport;
-import net.java.treaty.action.ActionVocabulary;
 import net.java.treaty.eclipse.action.EclipseActionRegistry;
 import net.java.treaty.trigger.verification.AbstractTriggeredVerifier;
 
@@ -129,12 +128,9 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 				VerificationJob verificationJob;
 				verificationJob = (VerificationJob) event.getJob();
 
-				verificationJob.getDoneContracts();
-				verificationJob.getFailedContracts();
-
-				performActionEndVerification(triggerType2, new HashSet<Contract>(
-						verificationJob.getDoneContracts()), new HashSet<Contract>(
-						verificationJob.getFailedContracts()));
+				performActionEndVerification(triggerType2,
+						new HashSet<VerificationReport>(verificationJob
+								.getVerificationReports()));
 			}
 
 			/*
@@ -183,17 +179,9 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 	protected void performActionBeginVerification(URI triggerType,
 			Set<Contract> contracts) {
 
-		for (URI actionType : EclipseActionRegistry.INSTANCE
-				.getActionsOnBeginVerification()) {
-
-			ActionVocabulary actionVocabulary;
-			actionVocabulary =
-					EclipseActionRegistry.INSTANCE.getActionVocabulary(actionType);
-
-			actionVocabulary.performActionBeforeVerification(triggerType, actionType,
-					contracts);
+		for (URI actionType : EclipseActionRegistry.INSTANCE.getBeforeActions()) {
+			EclipseActionRegistry.INSTANCE.before(triggerType, actionType, contracts);
 		}
-		// end for.
 	}
 
 	/*
@@ -202,19 +190,12 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 	 * performActionEndVerification(java.net.URI, java.util.Set, java.util.Set)
 	 */
 	protected void performActionEndVerification(URI triggerType,
-			Set<Contract> verfiedContracts, Set<Contract> failedContracts) {
+			Set<VerificationReport> verificationReports) {
 
-		for (URI actionType : EclipseActionRegistry.INSTANCE
-				.getActionsOnEndVerification()) {
-
-			ActionVocabulary actionVocabulary;
-			actionVocabulary =
-					EclipseActionRegistry.INSTANCE.getActionVocabulary(actionType);
-
-			actionVocabulary.performActionAfterVerification(triggerType, actionType,
-					verfiedContracts, failedContracts);
+		for (URI actionType : EclipseActionRegistry.INSTANCE.getAfterActions()) {
+			EclipseActionRegistry.INSTANCE.after(triggerType, actionType,
+					verificationReports);
 		}
-		// end for.
 	}
 
 	/*
@@ -227,15 +208,12 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 			Contract contract, VerificationReport verificationReport) {
 
 		for (URI actionType : EclipseActionRegistry.INSTANCE
-				.getActionsOnFailure(contract)) {
-			ActionVocabulary actionVocabulary;
-			actionVocabulary =
-					EclipseActionRegistry.INSTANCE.getActionVocabulary(actionType);
-
-			actionVocabulary.performActionOnFailure(triggerType, actionType,
-					contract, verificationReport);
+				.getOnFailureActions(contract)) {
+			EclipseActionRegistry.INSTANCE.perform(triggerType, actionType,
+					verificationReport);
 		}
-		// end for.
+
+		this.notifyListenersVerificationSucceeded(triggerType, contract);
 	}
 
 	/*
@@ -248,14 +226,11 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 			Contract contract, VerificationReport verificationReport) {
 
 		for (URI actionType : EclipseActionRegistry.INSTANCE
-				.getActionsOnSuccess(contract)) {
-			ActionVocabulary actionVocabulary;
-			actionVocabulary =
-					EclipseActionRegistry.INSTANCE.getActionVocabulary(actionType);
-
-			actionVocabulary.performActionOnSuccess(triggerType, actionType,
-					contract, verificationReport);
+				.getOnSuccessActions(contract)) {
+			EclipseActionRegistry.INSTANCE.perform(triggerType, actionType,
+					verificationReport);
 		}
-		// end for.
+
+		this.notifyListenersVerificationSucceeded(triggerType, contract);
 	}
 }

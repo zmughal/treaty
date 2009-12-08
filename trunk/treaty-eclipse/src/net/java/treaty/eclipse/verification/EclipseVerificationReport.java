@@ -31,6 +31,9 @@ public class EclipseVerificationReport implements VerificationReport {
 	/** The {@link Contract} of this {@link EclipseVerificationReport}. */
 	private Contract contract = null;
 
+	/** The {@link VerificationResult} of this {@link VerificationReport}. */
+	private VerificationResult verificationResult = VerificationResult.SUCCESS;
+
 	/*
 	 * (non-Javadoc)
 	 * @see net.java.treaty.VerificationReport#getContract()
@@ -38,6 +41,15 @@ public class EclipseVerificationReport implements VerificationReport {
 	public Contract getContract() {
 
 		return this.contract;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.VerificationReport#getVerificationResult()
+	 */
+	public VerificationResult getVerificationResult() {
+
+		return this.verificationResult;
 	}
 
 	/*
@@ -57,6 +69,8 @@ public class EclipseVerificationReport implements VerificationReport {
 			// no else.
 		}
 		// no else.
+
+		this.verificationResult = result;
 	}
 
 	/*
