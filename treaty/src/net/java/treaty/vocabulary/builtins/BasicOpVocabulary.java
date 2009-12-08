@@ -12,9 +12,9 @@ package net.java.treaty.vocabulary.builtins;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import net.java.treaty.Connector;
 import net.java.treaty.ContractLogger;
@@ -182,7 +182,7 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getProperties()
 	 */
-	public Collection<URI> getProperties() throws TreatyException {
+	public Set<URI> getProperties() throws TreatyException {
 
 		return BuiltInOperators.INSTANCE.getOpIds();
 	}
@@ -214,7 +214,7 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getRelationships()
 	 */
-	public Collection<URI> getRelationships() throws TreatyException {
+	public Set<URI> getRelationships() throws TreatyException {
 
 		return Collections.emptySet();
 	}
@@ -223,7 +223,7 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSubProperties(java.net.URI)
 	 */
-	public Collection<URI> getSubProperties(URI relationshipOrProperty)
+	public Set<URI> getSubProperties(URI relationshipOrProperty)
 			throws TreatyException {
 
 		return Collections.emptySet();
@@ -233,9 +233,9 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSubtypes(java.net.URI)
 	 */
-	public Collection<URI> getSubTypes(URI type) throws TreatyException {
+	public Set<URI> getSubTypes(URI type) throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 		result = new HashSet<URI>();
 
 		String name;
@@ -264,7 +264,7 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSuperProperties(java.net.URI)
 	 */
-	public Collection<URI> getSuperProperties(URI relationshipOrProperty)
+	public Set<URI> getSuperProperties(URI relationshipOrProperty)
 			throws TreatyException {
 
 		return Collections.emptySet();
@@ -274,9 +274,9 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getSupertypes(java.net.URI)
 	 */
-	public Collection<URI> getSuperTypes(URI type) throws TreatyException {
+	public Set<URI> getSuperTypes(URI type) throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 		result = new HashSet<URI>();
 
 		String name;
@@ -304,9 +304,9 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVocabulary#getTypes()
 	 */
-	public Collection<URI> getTypes() throws TreatyException {
+	public Set<URI> getTypes() throws TreatyException {
 
-		Collection<URI> result;
+		Set<URI> result;
 
 		result = new HashSet<URI>();
 

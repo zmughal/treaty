@@ -11,7 +11,7 @@
 package net.java.treaty;
 
 import java.net.URI;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * <p>
@@ -85,7 +85,7 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * 
 	 * @return The properties of this {@link ContractVocabulary}.
 	 */
-	Collection<URI> getProperties() throws TreatyException;
+	Set<URI> getProperties() throws TreatyException;
 
 	/**
 	 * <p>
@@ -111,7 +111,7 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * 
 	 * @return The relationships of this {@link ContractVocabulary}.
 	 */
-	Collection<URI> getRelationships() throws TreatyException;
+	Set<URI> getRelationships() throws TreatyException;
 
 	/**
 	 * <p>
@@ -121,12 +121,11 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * @param type
 	 *          The {@link URI} of the property whose sub properties shall be
 	 *          returned.
-	 * @return The sub properties as a {@link Collection} of {@link URI}
+	 * @return The sub properties as a {@link Set} of {@link URI}
 	 * @throws TreatyException
 	 *           Thrown if the given {@link URI} does lead to a valid property.
 	 */
-	Collection<URI> getSubProperties(URI relationshipOrProperty)
-			throws TreatyException;
+	Set<URI> getSubProperties(URI relationshipOrProperty) throws TreatyException;
 
 	/**
 	 * <p>
@@ -135,11 +134,11 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * 
 	 * @param type
 	 *          The {@link URI} of the type whose sub types shall be returned.
-	 * @return The sub types as a {@link Collection} of {@link URI}
+	 * @return The sub types as a {@link Set} of {@link URI}
 	 * @throws TreatyException
 	 *           Thrown if the given {@link URI} does lead to a valid type.
 	 */
-	Collection<URI> getSubTypes(URI type) throws TreatyException;
+	Set<URI> getSubTypes(URI type) throws TreatyException;
 
 	/**
 	 * <p>
@@ -149,11 +148,11 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * @param type
 	 *          The {@link URI} of the property whose super properties shall be
 	 *          returned.
-	 * @return The super properties as a {@link Collection} of {@link URI}
+	 * @return The super properties as a {@link Set} of {@link URI}
 	 * @throws TreatyException
 	 *           Thrown if the given {@link URI} does lead to a valid property.
 	 */
-	Collection<URI> getSuperProperties(URI relationshipOrProperty)
+	Set<URI> getSuperProperties(URI relationshipOrProperty)
 			throws TreatyException;
 
 	/**
@@ -163,11 +162,11 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * 
 	 * @param type
 	 *          The {@link URI} of the type whose super types shall be returned.
-	 * @return The super types as a {@link Collection} of {@link URI}
+	 * @return The super types as a {@link Set} of {@link URI}
 	 * @throws TreatyException
 	 *           Thrown if the given {@link URI} does lead to a valid type.
 	 */
-	Collection<URI> getSuperTypes(URI type) throws TreatyException;
+	Set<URI> getSuperTypes(URI type) throws TreatyException;
 
 	/**
 	 * <p>
@@ -176,5 +175,5 @@ public interface ContractVocabulary extends Verifier, ResourceLoader {
 	 * 
 	 * @return The types of this {@link ContractVocabulary}.
 	 */
-	Collection<URI> getTypes() throws TreatyException;
+	Set<URI> getTypes() throws TreatyException;
 }
