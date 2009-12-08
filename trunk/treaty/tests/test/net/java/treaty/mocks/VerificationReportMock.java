@@ -50,6 +50,15 @@ public class VerificationReportMock implements VerificationReport {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.VerificationReport#getVerificationResult()
+	 */
+	public VerificationResult getVerificationResult() {
+
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.VerificationReport#log(java.lang.Object,
 	 * net.java.treaty.VerificationResult, java.lang.String[])
 	 */

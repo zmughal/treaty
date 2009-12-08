@@ -32,6 +32,15 @@ public interface VerificationReport {
 
 	/**
 	 * <p>
+	 * Returns the {@link VerificationResult} of this {@link VerificationReport}.
+	 * </p>
+	 * 
+	 * @return The {@link VerificationResult} of this {@link VerificationReport}.
+	 */
+	public VerificationResult getVerificationResult();
+
+	/**
+	 * <p>
 	 * Logs an event during verification.
 	 * </p>
 	 * 
