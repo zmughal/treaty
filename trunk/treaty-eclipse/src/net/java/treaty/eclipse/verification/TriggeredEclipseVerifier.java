@@ -10,15 +10,18 @@
 
 package net.java.treaty.eclipse.verification;
 
-import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;
-import net.java.treaty.Connector;
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
+
 import net.java.treaty.Contract;
-import net.java.treaty.Resource;
-import net.java.treaty.ResourceLoader;
-import net.java.treaty.ResourceLoaderException;
-import net.java.treaty.VerificationPolicy;
-import net.java.treaty.eclipse.Logger;
+import net.java.treaty.VerificationReport;
+import net.java.treaty.action.ActionVocabulary;
+import net.java.treaty.eclipse.action.EclipseActionRegistry;
 import net.java.treaty.trigger.verification.AbstractTriggeredVerifier;
+
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 
 public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 
@@ -39,108 +42,220 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * net.java.treaty.event.verification.AbstractTriggeredVerifier#verify(net
-	 * .java.treaty.Contract)
+	 * net.java.treaty.trigger.verification.AbstractTriggeredVerifier#verify(java
+	 * .net.URI, java.util.Set)
 	 */
-	protected boolean verify(Contract contract) {
+	protected void verify(URI triggerType, Set<Contract> contracts) {
 
-		boolean result;
+		final URI triggerType2 = triggerType;
+		final Set<Contract> contracts2 = contracts;
 
-		EclipseVerificationReport eclipseVerificationReport;
-		eclipseVerificationReport = new EclipseVerificationReport();
-		eclipseVerificationReport.setContract(contract);
+		VerificationReport verificationReport;
+		verificationReport = new EclipseVerificationReport();
 
-		EclipseVerifier eclipseVerifier;
-		eclipseVerifier = new EclipseVerifier();
+		/* A {@link VerificationJobListener} used during verification. */
+		VerificationJobListener vListener = new VerificationJobListener() {
 
-		try {
-			this.loadResources(contract, eclipseVerifier);
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.eclipse.jobs.VerificationJobListener#
+			 * verificationStatusChanged()
+			 */
+			public void verificationStatusChanged() {
 
-			result =
-					contract.check(eclipseVerificationReport, eclipseVerifier,
-							VerificationPolicy.DETAILED);
-
-			/* FIXME Claas: Implement action propagation. */
-
-		} catch (ResourceLoaderException e) {
-
-			Logger.error(
-					"Unexpected ResourceLoaderException during verificatio of Contract "
-							+ contract, e);
-			result = false;
-		}
-
-		return result;
-	}
-
-	/**
-	 * <p>
-	 * A helper method that loads the {@link Resource}s required to verify a given
-	 * {@link Contract}.
-	 * </p>
-	 * 
-	 * @param contract
-	 *          The {@link Contract} whose {@link Resource}s shall be loaded.
-	 * @param loader
-	 *          The {@link ResourceLoader} used to load the {@link Resource}s.
-	 * @throws ResourceLoaderException
-	 *           Thrown, if the loading fails.
-	 */
-	private void loadResources(Contract contract, ResourceLoader loader)
-			throws ResourceLoaderException {
-
-		/* Probably load consumer resources. */
-		for (Resource resource : contract.getConsumerResources()) {
-			this.loadResource(loader, contract.getConsumer(), resource);
-		}
-		// end for.
-
-		/* Probably load supplier resources. */
-		for (Resource resource : contract.getSupplierResources()) {
-			this.loadResource(loader, contract.getSupplier(), resource);
-		}
-		// end for.
-
-		/* Probably load external resources (from legislator plug-ins). */
-		for (Resource resource : contract.getExternalResources()) {
-			loadResource(loader, resource.getOwner(), resource);
-		}
-		// end for.
-	}
-
-	/**
-	 * <p>
-	 * Loads a given {@link Resource} from a given {@link Connector} using a given
-	 * {@link ResourceLoader}.
-	 * </p>
-	 * 
-	 * @param loader
-	 *          The {@link ResourceLoader} used to load the {@link Resource}.
-	 * @param connector
-	 *          The {@link Connector} from that the {@link Resource} shall be
-	 *          loaded.
-	 * @param resource
-	 *          The {@link Resource} that shall be loaded.
-	 */
-	private void loadResource(ResourceLoader loader, Connector connector,
-			Resource resource) {
-
-		/* Check if the resource has been loaded already. */
-		if (resource.isProvided() && !resource.isLoaded()) {
-
-			/* Try to load the resource. */
-			try {
-				Object value;
-
-				value = loader.load(resource.getType(), resource.getName(), connector);
-				resource.setValue(value);
+				/* Remains empty. */
 			}
 
-			catch (ResourceLoaderException x) {
-				resource.setProperty(VERIFICATION_EXCEPTION, x);
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.eclipse.verification.VerificationJobListener#
+			 * verificationOfContractFailed(net.java.treaty.Contract,
+			 * net.java.treaty.VerificationReport)
+			 */
+			public void verificationOfContractFailed(Contract contract,
+					VerificationReport verificationReport) {
+
+				performActionVerificationOfContractFailed(triggerType2, contract,
+						verificationReport);
 			}
-			// end catch.
+
+			/*
+			 * (non-Javadoc)
+			 * @seenet.java.treaty.eclipse.verification.VerificationJobListener#
+			 * verificationOfContractSucceeded(net.java.treaty.Contract,
+			 * net.java.treaty.VerificationReport)
+			 */
+			public void verificationOfContractSucceeded(Contract contract,
+					VerificationReport verificationReport) {
+
+				performActionVerificationOfContractSucceeded(triggerType2, contract,
+						verificationReport);
+			}
+		};
+
+		/* A {@link IJobChangeListener} used during verification. */
+		IJobChangeListener jListener = new IJobChangeListener() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#aboutToRun(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void aboutToRun(IJobChangeEvent e) {
+
+				performActionBeginVerification(triggerType2, contracts2);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#awake(org.eclipse.
+			 * core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void awake(IJobChangeEvent e) {
+
+				/* Do nothing. */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#done(org.eclipse.core
+			 * .runtime.jobs.IJobChangeEvent)
+			 */
+			public void done(IJobChangeEvent event) {
+
+				VerificationJob verificationJob;
+				verificationJob = (VerificationJob) event.getJob();
+
+				verificationJob.getDoneContracts();
+				verificationJob.getFailedContracts();
+
+				performActionEndVerification(triggerType2, new HashSet<Contract>(
+						verificationJob.getDoneContracts()), new HashSet<Contract>(
+						verificationJob.getFailedContracts()));
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#running(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void running(IJobChangeEvent e) {
+
+				/* Do nothing. */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#scheduled(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void scheduled(IJobChangeEvent e) {
+
+				/* Do nothing. */
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * org.eclipse.core.runtime.jobs.IJobChangeListener#sleeping(org.eclipse
+			 * .core.runtime.jobs.IJobChangeEvent)
+			 */
+			public void sleeping(IJobChangeEvent e) {
+
+				/* Do nothing. */
+			}
+		};
+
+		/* Verify the contracts. */
+		EclipseVerifier.verify(contracts, verificationReport, vListener, jListener);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seenet.java.treaty.trigger.verification.AbstractTriggeredVerifier#
+	 * performActionBeginVerification(java.net.URI, java.util.Set)
+	 */
+	protected void performActionBeginVerification(URI triggerType,
+			Set<Contract> contracts) {
+
+		for (URI actionType : EclipseActionRegistry.INSTANCE
+				.getActionsOnBeginVerification()) {
+
+			ActionVocabulary actionVocabulary;
+			actionVocabulary =
+					EclipseActionRegistry.INSTANCE.getActionVocabulary(actionType);
+
+			actionVocabulary.performActionBeforeVerification(triggerType, actionType,
+					contracts);
 		}
-		// no else.
+		// end for.
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seenet.java.treaty.trigger.verification.AbstractTriggeredVerifier#
+	 * performActionEndVerification(java.net.URI, java.util.Set, java.util.Set)
+	 */
+	protected void performActionEndVerification(URI triggerType,
+			Set<Contract> verfiedContracts, Set<Contract> failedContracts) {
+
+		for (URI actionType : EclipseActionRegistry.INSTANCE
+				.getActionsOnEndVerification()) {
+
+			ActionVocabulary actionVocabulary;
+			actionVocabulary =
+					EclipseActionRegistry.INSTANCE.getActionVocabulary(actionType);
+
+			actionVocabulary.performActionAfterVerification(triggerType, actionType,
+					verfiedContracts, failedContracts);
+		}
+		// end for.
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seenet.java.treaty.trigger.verification.AbstractTriggeredVerifier#
+	 * performActionVerificationOfContractFailed(java.net.URI,
+	 * net.java.treaty.Contract, net.java.treaty.VerificationReport)
+	 */
+	protected void performActionVerificationOfContractFailed(URI triggerType,
+			Contract contract, VerificationReport verificationReport) {
+
+		for (URI actionType : EclipseActionRegistry.INSTANCE
+				.getActionsOnFailure(contract)) {
+			ActionVocabulary actionVocabulary;
+			actionVocabulary =
+					EclipseActionRegistry.INSTANCE.getActionVocabulary(actionType);
+
+			actionVocabulary.performActionOnFailure(triggerType, actionType,
+					contract, verificationReport);
+		}
+		// end for.
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @seenet.java.treaty.trigger.verification.AbstractTriggeredVerifier#
+	 * performActionVerificationOfContractSucceeded(java.net.URI,
+	 * net.java.treaty.Contract, net.java.treaty.VerificationReport)
+	 */
+	protected void performActionVerificationOfContractSucceeded(URI triggerType,
+			Contract contract, VerificationReport verificationReport) {
+
+		for (URI actionType : EclipseActionRegistry.INSTANCE
+				.getActionsOnSuccess(contract)) {
+			ActionVocabulary actionVocabulary;
+			actionVocabulary =
+					EclipseActionRegistry.INSTANCE.getActionVocabulary(actionType);
+
+			actionVocabulary.performActionOnSuccess(triggerType, actionType,
+					contract, verificationReport);
+		}
+		// end for.
 	}
 }
