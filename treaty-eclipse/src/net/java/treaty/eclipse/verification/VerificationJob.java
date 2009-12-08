@@ -56,8 +56,8 @@ public class VerificationJob extends Job {
 	private List<VerificationJobListener> myListeners =
 			new ArrayList<VerificationJobListener>();
 
-	/** The {@link VerificationReport} to report the results. */
-	private VerificationReport verificationReport = null;
+	/** The {@link VerificationReport}s to report the results. */
+	private List<VerificationReport> verificationReports = null;
 
 	/**
 	 * <p>
@@ -68,16 +68,13 @@ public class VerificationJob extends Job {
 	 *          The name of the {@link VerificationJob}.
 	 * @param contracts
 	 *          The {@link Contract}s that shall be verified.
-	 * @param verificationReport
-	 *          The {@link VerificationReport} to report the result.
 	 */
-	public VerificationJob(String name, Collection<Contract> contracts,
-			VerificationReport verificationReport) {
+	public VerificationJob(String name, Collection<Contract> contracts) {
 
 		super(name);
 
 		this.contracts = contracts;
-		this.verificationReport = verificationReport;
+		this.verificationReports = new ArrayList<VerificationReport>();
 	}
 
 	/**
@@ -131,14 +128,14 @@ public class VerificationJob extends Job {
 
 	/**
 	 * <p>
-	 * Returns the {@link VerificationReport} of this {@link VerificationJob}.
+	 * Returns the {@link VerificationReport}s of this {@link VerificationJob}.
 	 * </p>
 	 * 
-	 * @return The {@link VerificationReport} of this {@link VerificationJob}.
+	 * @return The {@link VerificationReport}s of this {@link VerificationJob}.
 	 */
-	public VerificationReport getVerificationReport() {
+	public List<VerificationReport> getVerificationReports() {
 
-		return this.verificationReport;
+		return this.verificationReports;
 	}
 
 	/**
@@ -219,10 +216,15 @@ public class VerificationJob extends Job {
 		for (Contract contract : contracts) {
 
 			/* TODO: contracts also fail when mandatory resources cannot be loaded. */
+			EclipseVerificationReport verificationReport;
+			verificationReport = new EclipseVerificationReport();
+
 			boolean result;
+
 			result =
 					contract.check(verificationReport, verifier,
 							VerificationPolicy.DETAILED);
+			this.verificationReports.add(verificationReport);
 
 			if (result) {
 				/* Inform listeners. */

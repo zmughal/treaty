@@ -55,14 +55,11 @@ public class EclipseVerifier implements Verifier, ResourceLoader {
 	/**
 	 * <p>
 	 * Verifies a Collection of given {@link Contract}s for a given
-	 * {@link VerificationReport}, {@link VerificationJobListener} and
-	 * {@link IJobChangeListener}.
+	 * {@link VerificationJobListener} and {@link IJobChangeListener}.
 	 * </p>
 	 * 
 	 * @param contracts
 	 *          The {@link Contract}s that shall be verified.
-	 * @param verificationReport
-	 *          The {@link VerificationReport} used to store the results.
 	 * @param verificationJobListener
 	 *          A {@link VerificationJobListener} that can be used to observe the
 	 *          progress.
@@ -76,9 +73,7 @@ public class EclipseVerifier implements Verifier, ResourceLoader {
 			IJobChangeListener jobChangeListener) {
 
 		VerificationJob job;
-		job =
-				new VerificationJob("Treaty Component Verification", contracts,
-						verificationReport);
+		job = new VerificationJob("Treaty Component Verification", contracts);
 
 		job.addVerificationJobListener(verificationJobListener);
 		job.addJobChangeListener(jobChangeListener);
