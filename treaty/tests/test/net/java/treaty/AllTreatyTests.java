@@ -14,8 +14,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import test.net.java.treaty.contractregistry.AllContractRegistryTests;
-import test.net.java.treaty.event.AllEventTests;
 import test.net.java.treaty.script.AllScriptTests;
+import test.net.java.treaty.trigger.AllTriggerTests;
 import test.net.java.treaty.vocabulary.AllVocabularyTests;
 import test.net.java.treaty.xml.AllXmlTests;
 
@@ -29,7 +29,7 @@ import test.net.java.treaty.xml.AllXmlTests;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses( { ContractTests.class, AllContractRegistryTests.class,
-		AllEventTests.class, AllScriptTests.class, AllVocabularyTests.class,
+		AllTriggerTests.class, AllScriptTests.class, AllVocabularyTests.class,
 		AllXmlTests.class })
 public class AllTreatyTests {
 	/*

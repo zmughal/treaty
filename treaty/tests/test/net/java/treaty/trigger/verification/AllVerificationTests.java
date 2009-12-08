@@ -8,24 +8,22 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package test.net.java.treaty.event;
+package test.net.java.treaty.trigger.verification;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import test.net.java.treaty.event.verification.AllVerificationTests;
-
 /**
  * <p>
  * Provides a JUnit Test Suite containing all JUnit test cases of the Treaty
- * Framework package <code>net.java.treaty.event</code>.
+ * Framework package <code>net.java.treaty.trigger.verification</code>.
  * </p>
  * 
  * @author Claas Wilke
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { AllVerificationTests.class })
-public class AllEventTests {
+@Suite.SuiteClasses( { TriggeredVerifierTest.class })
+public class AllVerificationTests {
 	/*
 	 * This class remains completely empty, being used only as a holder for the
 	 * above annotations.
