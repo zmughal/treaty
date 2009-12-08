@@ -568,14 +568,24 @@ public class TriggerActionView extends ViewPart implements
 					if (EclipseActionRegistry.INSTANCE
 							.isUniversalActionOnFailure(triggerOrAction.getUri())
 							&& EclipseActionRegistry.INSTANCE
-									.isUniversalActionOnSuccess(triggerOrAction.getUri())) {
+									.isUniversalActionOnSuccess(triggerOrAction.getUri())
+							&& EclipseActionRegistry.INSTANCE
+									.isUniversalActionOnBeginVerification(triggerOrAction
+											.getUri())
+							&& EclipseActionRegistry.INSTANCE
+									.isUniversalActionOnEndVerification(triggerOrAction.getUri())) {
 						result = ICON_YES;
 					}
 
 					else if (EclipseActionRegistry.INSTANCE
 							.isUniversalActionOnFailure(triggerOrAction.getUri())
 							|| EclipseActionRegistry.INSTANCE
-									.isUniversalActionOnSuccess(triggerOrAction.getUri())) {
+									.isUniversalActionOnSuccess(triggerOrAction.getUri())
+							|| EclipseActionRegistry.INSTANCE
+									.isUniversalActionOnBeginVerification(triggerOrAction
+											.getUri())
+							|| EclipseActionRegistry.INSTANCE
+									.isUniversalActionOnEndVerification(triggerOrAction.getUri())) {
 						result = ICON_PARTS;
 					}
 
@@ -631,8 +641,32 @@ public class TriggerActionView extends ViewPart implements
 					buffer = new StringBuffer();
 
 					if (EclipseActionRegistry.INSTANCE
+							.isUniversalActionOnBeginVerification(triggerOrAction.getUri())) {
+						buffer.append("begin");
+					}
+					// no else.
+
+					if (EclipseActionRegistry.INSTANCE
+							.isUniversalActionOnEndVerification(triggerOrAction.getUri())) {
+
+						if (buffer.length() > 0) {
+							buffer.append(" / ");
+						}
+						// no else.
+
+						buffer.append("end");
+					}
+					// no else.
+
+					if (EclipseActionRegistry.INSTANCE
 							.isUniversalActionOnFailure(triggerOrAction.getUri())) {
-						buffer.append("onFailure");
+
+						if (buffer.length() > 0) {
+							buffer.append(" / ");
+						}
+						// no else.
+
+						buffer.append("failure");
 					}
 					// no else.
 
@@ -644,7 +678,7 @@ public class TriggerActionView extends ViewPart implements
 						}
 						// no else.
 
-						buffer.append("onSuccess");
+						buffer.append("success");
 					}
 					// no else.
 

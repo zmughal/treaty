@@ -15,14 +15,18 @@ import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.java.treaty.AbstractCondition;
 import net.java.treaty.Annotatable;
@@ -39,7 +43,6 @@ import net.java.treaty.PropertySupport;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.Role;
-import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.contractregistry.ContractRegistryListener;
 import net.java.treaty.eclipse.Constants;
@@ -47,19 +50,17 @@ import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.Logger;
+import net.java.treaty.eclipse.action.EclipseActionRegistry;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.exporter.Exporter;
 import net.java.treaty.eclipse.exporter.ExporterRegistry;
 import net.java.treaty.eclipse.exporter.ExporterRegistryListener;
+import net.java.treaty.eclipse.trigger.EclipseTriggerRegistry;
 import net.java.treaty.eclipse.ui.Activator;
-import net.java.treaty.eclipse.verification.EclipseVerificationReport;
-import net.java.treaty.eclipse.verification.EclipseVerifier;
-import net.java.treaty.eclipse.verification.VerificationJob;
-import net.java.treaty.eclipse.verification.VerificationJobListener;
+import net.java.treaty.eclipse.ui.actions.UIActionVocabulary;
+import net.java.treaty.eclipse.ui.triggers.ManualTriggerVocabulary;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -1597,6 +1598,23 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	@Override
 	public void dispose() {
 
+		/* Un-Register as contract view of the UIActions. */
+		try {
+			UIActionVocabulary actionVocabulary;
+			actionVocabulary =
+					(UIActionVocabulary) EclipseActionRegistry.INSTANCE
+							.getActionVocabulary(new URI(
+									UIActionVocabulary.ACTION_TYPE_SHOW_VERIFICATION_RESULT));
+
+			actionVocabulary.setContractView(null);
+		}
+
+		catch (URISyntaxException e1) {
+			Logger.warn(
+					"ContractView could not be un-registered at the UIActionVocabulary. "
+							+ "UI might not work as excepted.", e1);
+		}
+
 		/* Disconnect from Contract Registry. */
 		EclipseContractRegistry.getInstance().removeContractRegistryListener(this);
 
@@ -1683,7 +1701,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 				myActionShowContractVizualisation
 						.setEnabled(getSelectedContract() != null);
 
-				List<Contract> selectedInstantiatedConstracts;
+				Set<Contract> selectedInstantiatedConstracts;
 				selectedInstantiatedConstracts = getSelectedInstantiatedContracts();
 
 				myActionVerifySelectedContracts
@@ -1704,6 +1722,23 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 		/* Register as listener of the ExporterRegistry. */
 		ExporterRegistry.INSTANCE.addExporterRegistryListener(this);
+
+		/* Register as contract view of the UIActions. */
+		try {
+			UIActionVocabulary actionVocabulary;
+			actionVocabulary =
+					(UIActionVocabulary) EclipseActionRegistry.INSTANCE
+							.getActionVocabulary(new URI(
+									UIActionVocabulary.ACTION_TYPE_SHOW_VERIFICATION_RESULT));
+
+			actionVocabulary.setContractView(this);
+		}
+
+		catch (URISyntaxException e1) {
+			Logger.warn(
+					"ContractView could not be registered at the UIActionVocabulary. "
+							+ "UI might not work as excepted.", e1);
+		}
 	}
 
 	/*
@@ -1817,7 +1852,61 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 	/**
 	 * <p>
-	 * Behaviour of the {@link Action} to export all instantiated {@link Contract}
+	 * Displays the verification result for a given {@link List} of verified
+	 * {@link Contract}s and a given {@link List} of violated {@link Contract}s.
+	 * </p>
+	 * 
+	 * @param allContracts
+	 *          All {@link Contract}s that have been verified.
+	 * @param failedContracts
+	 *          All {@link Contract}s whose verification failed.
+	 */
+	public void reportVerificationResult(Collection<Contract> allContracts,
+			Collection<Contract> failedContracts) {
+
+		int totalContractCount;
+		totalContractCount = allContracts.size();
+
+		int failedContractCount;
+		failedContractCount = failedContracts.size();
+
+		String message = null;
+
+		if (failedContracts.size() == 0) {
+			message =
+					totalContractCount
+							+ " Contract instances have been verified successfully.";
+		}
+
+		else {
+			message =
+					totalContractCount
+							+ " Contract instances checked, verification has failed for "
+							+ failedContractCount
+							+ " Contract instances. Verification status annotations have "
+							+ "been added to the Contract View.";
+		}
+		// end else.
+
+		final String msg;
+		msg = message;
+
+		Runnable runnable;
+		runnable = new Runnable() {
+
+			public void run() {
+
+				MessageDialog.openInformation(myViewer.getControl().getShell(),
+						"Verification result", msg);
+			}
+		};
+
+		myViewer.getControl().getDisplay().syncExec(runnable);
+	}
+
+	/**
+	 * <p>
+	 * Behavior of the {@link Action} to export all instantiated {@link Contract}
 	 * s by using a given {@link Exporter}.
 	 * </p>
 	 * 
@@ -2031,16 +2120,25 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	 */
 	private void actionVerifyAllContracts() {
 
-		/* Collect contracts. */
-		final List<Contract> contracts;
-		contracts = new ArrayList<Contract>();
+		try {
+			URI triggerVerifyAll;
+			triggerVerifyAll =
+					new URI(ManualTriggerVocabulary.TRIGGER_TYPE_VERIFY_ALL);
 
-		for (EclipsePlugin eclipsePlugin : this.myContractedPlugins) {
-			contracts.addAll(eclipsePlugin.getInstantiatedContracts());
+			ManualTriggerVocabulary manualTriggerVocabulary;
+			manualTriggerVocabulary =
+					(ManualTriggerVocabulary) EclipseTriggerRegistry.INSTANCE
+							.getTriggerVocabulary(triggerVerifyAll);
+
+			manualTriggerVocabulary.fireTriggerVerifyAll();
 		}
-		// no else.
+		// end try.
 
-		this.verify(contracts, true);
+		catch (URISyntaxException e) {
+			Logger.error(
+					"Unexpected exception during verification of all Contracts.", e);
+		}
+		// end catch.
 	}
 
 	/**
@@ -2050,11 +2148,31 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	 */
 	private void actionVerifySelectedContracts() {
 
-		List<Contract> contracts;
+		Set<Contract> contracts;
 		contracts = this.getSelectedInstantiatedContracts();
 
 		if (contracts != null && !contracts.isEmpty()) {
-			this.verify(contracts, false);
+
+			try {
+				URI triggerVerifyAll;
+				triggerVerifyAll =
+						new URI(ManualTriggerVocabulary.TRIGGER_TYPE_VERIFY_SELECTED);
+
+				ManualTriggerVocabulary manualTriggerVocabulary;
+				manualTriggerVocabulary =
+						(ManualTriggerVocabulary) EclipseTriggerRegistry.INSTANCE
+								.getTriggerVocabulary(triggerVerifyAll);
+
+				manualTriggerVocabulary.fireTriggerVerifySelected(contracts);
+			}
+			// end try.
+
+			catch (URISyntaxException e) {
+				Logger.error(
+						"Unexpected exception during verification of selected Contracts.",
+						e);
+			}
+			// end catch.
 		}
 		// no else.
 	}
@@ -2342,10 +2460,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	 * @return The instantiated {@link Contract}s that are part of the currently
 	 *         selected items in this {@link ContractView}.
 	 */
-	private List<Contract> getSelectedInstantiatedContracts() {
+	private Set<Contract> getSelectedInstantiatedContracts() {
 
-		List<Contract> result;
-		result = new ArrayList<Contract>();
+		Set<Contract> result;
+		result = new HashSet<Contract>();
 
 		Contract selectedContract;
 		selectedContract = this.getSelectedContract();
@@ -2594,60 +2712,6 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 	/**
 	 * <p>
-	 * Displays the verification result for a given {@link List} of verified
-	 * {@link Contract}s and a given {@link List} of violated {@link Contract}s.
-	 * </p>
-	 * 
-	 * @param allContracts
-	 *          All {@link Contract}s that have been verified.
-	 * @param failedContracts
-	 *          All {@link Contract}s whose verification failed.
-	 */
-	private void reportVerificationResult(List<Contract> allContracts,
-			List<Contract> failedContracts) {
-
-		int totalContractCount;
-		totalContractCount = allContracts.size();
-
-		int failedContractCount;
-		failedContractCount = failedContracts.size();
-
-		String message = null;
-
-		if (failedContracts.size() == 0) {
-			message =
-					totalContractCount
-							+ " Contract instances have been verified successfully.";
-		}
-
-		else {
-			message =
-					totalContractCount
-							+ " Contract instances checked, verification has failed for "
-							+ failedContractCount
-							+ " Contract instances. Verification status annotations have "
-							+ "been added to the Contract View.";
-		}
-		// end else.
-
-		final String msg;
-		msg = message;
-
-		Runnable runnable;
-		runnable = new Runnable() {
-
-			public void run() {
-
-				MessageDialog.openInformation(myViewer.getControl().getShell(),
-						"Verification result", msg);
-			}
-		};
-
-		myViewer.getControl().getDisplay().syncExec(runnable);
-	}
-
-	/**
-	 * <p>
 	 * A helper method that verifies and refreshes all {@link Contract}s, if the
 	 * given flag is <code>true</code>.
 	 * </p>
@@ -2667,155 +2731,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		}
 
 		/* Probably verify selected, instantiated contracts. */
-		List<Contract> instantiatedConstracts;
+		Set<Contract> instantiatedConstracts;
 		instantiatedConstracts = getSelectedInstantiatedContracts();
 
 		this.myActionVerifySelectedContracts.setEnabled(on
 				&& instantiatedConstracts != null && !instantiatedConstracts.isEmpty());
-	}
-
-	/**
-	 * <p>
-	 * Runs the verification for a given {@link List} of {@link Contract}s.
-	 * </p>
-	 * 
-	 * @param contracts
-	 *          The {@link Contract}s that shall be verified.
-	 * @param disableActions
-	 *          Indicates whether or not the actions in the toolbars and menus
-	 *          shall be disabled.
-	 */
-	private void verify(List<Contract> contracts, boolean disableActions) {
-
-		/* The {@link VerificationReport} of the verification. */
-		final VerificationReport verReport = new EclipseVerificationReport();
-
-		/* A {@link VerificationJobListener} used during verification. */
-		VerificationJobListener vListener = new VerificationJobListener() {
-
-			/*
-			 * (non-Javadoc)
-			 * @seenet.java.treaty.eclipse.jobs.VerificationJobListener#
-			 * verificationStatusChanged()
-			 */
-			public void verificationStatusChanged() {
-
-				updateTree();
-			}
-		};
-
-		/* A {@link IJobChangeListener} used during verification. */
-		IJobChangeListener jListener = new IJobChangeListener() {
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#aboutToRun(org.eclipse
-			 * .core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void aboutToRun(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#awake(org.eclipse.
-			 * core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void awake(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#done(org.eclipse.core
-			 * .runtime.jobs.IJobChangeEvent)
-			 */
-			public void done(IJobChangeEvent e) {
-
-				VerificationJob verificationJob;
-
-				updateTree();
-
-				verificationJob = (VerificationJob) e.getJob();
-				reportVerificationResult(verificationJob.getDoneContracts(),
-						verificationJob.getFailedContracts());
-
-				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-
-					/*
-					 * (non-Javadoc)
-					 * @see java.lang.Runnable#run()
-					 */
-					public void run() {
-
-						switchActions(true);
-					}
-				});
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#running(org.eclipse
-			 * .core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void running(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#scheduled(org.eclipse
-			 * .core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void scheduled(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * org.eclipse.core.runtime.jobs.IJobChangeListener#sleeping(org.eclipse
-			 * .core.runtime.jobs.IJobChangeEvent)
-			 */
-			public void sleeping(IJobChangeEvent e) {
-
-				/* Do nothing. */
-			}
-		};
-
-		/* Probably disable the actions. */
-		if (disableActions) {
-			this.switchActions(false);
-		}
-
-		/* Verify the contracts. */
-		EclipseVerifier.verify(contracts, verReport, vListener, jListener);
-	}
-
-	/**
-	 * <p>
-	 * Refreshes the tree labels of this {@link ContractView}.
-	 * </p>
-	 */
-	private void updateTree() {
-
-		Runnable r = new Runnable() {
-
-			public void run() {
-
-				myViewer.refresh(true);
-			}
-		};
-
-		this.myViewer.getTree().getDisplay().asyncExec(r);
 	}
 }

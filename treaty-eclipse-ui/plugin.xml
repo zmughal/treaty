@@ -105,5 +105,19 @@
             file="tocsamples.xml">
       </toc>
    </extension>
+   <extension
+         id="net.java.treaty.eclipse.ui.manualtrigger"
+         name="Trigger Vocabulary for Manualy Verification Events."
+         point="net.java.treaty.eclipse.triggervocabulary">
+          <triggervocabulary class="net.java.treaty.eclipse.ui.triggers.ManualTriggerVocabulary" /> 
+   </extension>
+   <extension
+         id="net.java.treaty.eclipse.ui.displayresults"
+         name="Action Vocabulary for Showing results in UI."
+         point="net.java.treaty.eclipse.actionvocabulary">
+      <actionvocabulary
+            class="net.java.treaty.eclipse.ui.actions.UIActionVocabulary">
+      </actionvocabulary>
+   </extension>
 
 </plugin>
