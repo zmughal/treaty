@@ -12,10 +12,12 @@ package test.net.java.treaty.mocks;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.java.treaty.ContractLogger;
+import net.java.treaty.TreatyException;
 import net.java.treaty.trigger.AbstractTriggerVocabulary;
 import net.java.treaty.trigger.TriggerVocabulary;
 
@@ -58,9 +60,28 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.event.TriggerVocabulary#getTriggerTypes()
 	 */
-	public Set<URI> getTriggerTypes() {
+	public Set<URI> getTriggers() {
 
 		return this.triggerTypes;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getSubTriggers(java.net.URI)
+	 */
+	public Set<URI> getSubTriggers(URI triggerType) throws TreatyException {
+	
+		return Collections.emptySet();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.TriggerVocabulary#getSuperTriggers(java.net.URI)
+	 */
+	public Set<URI> getSuperTriggers(URI triggerType) throws TreatyException {
+	
+		return Collections.emptySet();
 	}
 
 	/*

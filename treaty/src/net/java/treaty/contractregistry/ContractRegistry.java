@@ -143,8 +143,11 @@ public class ContractRegistry {
 	 * 
 	 * @return A {@link Set} of all {@link Contract}s that must be validated after
 	 *         a given {@link LifeCycleEvent} occurred.
+	 * @throws TreatyException
+	 *           Thrown, if the given trigger cannot be found.
 	 */
-	public Set<Contract> getAffectedContracts(URI triggerType, Component component) {
+	public Set<Contract> getAffectedContracts(URI triggerType, Component component)
+			throws TreatyException {
 
 		Set<Contract> result;
 		result = new LinkedHashSet<Contract>();

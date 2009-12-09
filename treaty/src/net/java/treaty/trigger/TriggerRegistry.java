@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 
 /**
  * <p>
@@ -55,18 +56,43 @@ public class TriggerRegistry implements TriggerVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.trigger.TriggerVocabulary#getTriggerTypes()
 	 */
-	public Set<URI> getTriggerTypes() {
+	public Set<URI> getTriggers() throws TreatyException {
 
 		Set<URI> result;
 		result = new HashSet<URI>();
 
 		for (TriggerVocabulary triggerVocabulary : this.triggerVocabularies) {
 
-			result.addAll(triggerVocabulary.getTriggerTypes());
+			result.addAll(triggerVocabulary.getTriggers());
 		}
 		// end for.
 
 		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getSubTriggers(java.net.URI)
+	 */
+	public Set<URI> getSubTriggers(URI triggerType) throws TreatyException {
+
+		TriggerVocabulary triggerVocabulary;
+		triggerVocabulary = this.getTriggerVocabulary(triggerType);
+
+		return triggerVocabulary.getSubTriggers(triggerType);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.TriggerVocabulary#getSuperTriggers(java.net.URI)
+	 */
+	public Set<URI> getSuperTriggers(URI triggerType) throws TreatyException {
+
+		TriggerVocabulary triggerVocabulary;
+		triggerVocabulary = this.getTriggerVocabulary(triggerType);
+
+		return triggerVocabulary.getSubTriggers(triggerType);
 	}
 
 	/**
@@ -81,7 +107,7 @@ public class TriggerRegistry implements TriggerVocabulary {
 	 *          The type ({@link URI}) of the trigger that shall be checked.
 	 * @return <code>true</code> if the trigger is a default trigger.
 	 */
-	public boolean isDefaultTrigger(URI triggerType) {
+	public boolean isDefaultTrigger(URI triggerType) throws TreatyException {
 
 		boolean result;
 
@@ -93,7 +119,7 @@ public class TriggerRegistry implements TriggerVocabulary {
 		}
 
 		else {
-			result = false;
+			throw new TreatyException("Unknown trigger type: " + triggerType);
 		}
 
 		return result;
@@ -106,7 +132,7 @@ public class TriggerRegistry implements TriggerVocabulary {
 	 * java.util.Set)
 	 */
 	public void notifyEventListners(URI triggerType, Set<Contract> contracts) {
-	
+
 		for (EventListener listener : this.eventlisteners) {
 			listener.update(triggerType, contracts);
 		}
@@ -163,29 +189,6 @@ public class TriggerRegistry implements TriggerVocabulary {
 
 	/**
 	 * <p>
-	 * Returns a {@link Set} containing the {@link URI}s of all triggers currently
-	 * registered in this {@link TriggerRegistry}.
-	 * </p>
-	 * 
-	 * @return A {@link Set} containing the {@link URI}s of all triggers currently
-	 *         registered in this {@link TriggerRegistry}.
-	 */
-	public Set<URI> getTriggers() {
-
-		Set<URI> result;
-		result = new HashSet<URI>();
-
-		for (TriggerVocabulary triggerVocabulary : this.triggerVocabularies) {
-
-			result.addAll(triggerVocabulary.getTriggerTypes());
-		}
-		// end for.
-
-		return result;
-	}
-
-	/**
-	 * <p>
 	 * Returns all {@link TriggerVocabulary}s of this {@link TriggerRegistry}.
 	 * </p>
 	 * 
@@ -199,29 +202,36 @@ public class TriggerRegistry implements TriggerVocabulary {
 	/**
 	 * <p>
 	 * Returns the {@link TriggerVocabulary} that defines a given trigger (by its
-	 * {@link URI}) or <code>null</code> if none of the registered
-	 * {@link TriggerVocabulary}s defines the given trigger.
+	 * {@link URI})..
 	 * </p>
 	 * 
 	 * @param triggerType
 	 *          The trigger type whose {@link TriggerVocabulary} shall be
 	 *          returned.
-	 * @return The defining {@link TriggerVocabulary} or <code>null</code>.
+	 * @return The defining {@link TriggerVocabulary}.
+	 * @throws TreatyException
+	 *           Thrown if the given trigger cannot be found.
 	 */
-	public TriggerVocabulary getTriggerVocabulary(URI triggerType) {
+	public TriggerVocabulary getTriggerVocabulary(URI triggerType)
+			throws TreatyException {
 
 		TriggerVocabulary result;
 		result = null;
 
 		for (TriggerVocabulary triggerVocabulary : this.triggerVocabularies) {
 
-			if (triggerVocabulary.getTriggerTypes().contains(triggerType)) {
+			if (triggerVocabulary.getTriggers().contains(triggerType)) {
 				result = triggerVocabulary;
 				break;
 			}
 			// no else.
 		}
 		// end for.
+
+		if (result == null) {
+			throw new TreatyException("The given trigger " + triggerType
+					+ " cannot be found.");
+		}
 
 		return result;
 	}
