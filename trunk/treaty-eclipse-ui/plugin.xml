@@ -109,7 +109,7 @@
          id="net.java.treaty.eclipse.ui.manualtrigger"
          name="Trigger Vocabulary for Manualy Verification Events."
          point="net.java.treaty.eclipse.triggervocabulary">
-          <triggervocabulary class="net.java.treaty.eclipse.ui.triggers.ManualTriggerVocabulary" /> 
+          <triggervocabulary class="net.java.treaty.eclipse.ui.triggers.ManualTriggerVocabulary" ontology="vocabulary/manual.owl"/> 
    </extension>
    <extension
          id="net.java.treaty.eclipse.ui.displayresults"
