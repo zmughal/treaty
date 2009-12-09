@@ -8,7 +8,7 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package net.java.treaty.eclipse.tests.trigger;
+package net.java.treaty.eclipse.tests.action;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -27,19 +27,21 @@ import net.java.treaty.contractregistry.ContractRegistry.UpdateType;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
 import net.java.treaty.eclipse.VocabularyRegistry;
+import net.java.treaty.eclipse.action.EclipseActionRegistry;
 import net.java.treaty.eclipse.contractregistry.EclipseAdapterFactory;
 import net.java.treaty.eclipse.contractregistry.EclipseConnectorAdaptationException;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.tests.Activator;
+import net.java.treaty.eclipse.tests.trigger.TriggerVocabularyMock;
 import net.java.treaty.eclipse.trigger.EclipseTriggerRegistry;
 import net.java.treaty.eclipse.verification.TriggeredEclipseVerifier;
 import net.java.treaty.trigger.verification.AbstractTriggeredVerifier;
-import net.java.treaty.trigger.verification.TriggeredVerifierListener;
 import net.java.treaty.xml.XMLContractReader;
 
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -51,7 +53,7 @@ import org.osgi.framework.Bundle;
  * 
  * @author Claas Wilke
  */
-public class TriggeredVerifierTest implements TriggeredVerifierListener {
+public class ActionTest {
 
 	/** The ID of a {@link Bundle} used during testing. */
 	private static final String CONSUMER_BUNDLE_1_ID =
@@ -75,17 +77,63 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 
 	/** The name of a {@link Contract} file used for testing. */
 	private static final String TEST_CONTRACT_1 =
-			TEST_CONTRACT_LOCATION + "test01.contract";
+			TEST_CONTRACT_LOCATION + "test03.contract";
 
 	/** The name of a {@link Contract} file used for testing. */
 	private static final String TEST_CONTRACT_2 =
-			TEST_CONTRACT_LOCATION + "test02.contract";
+			TEST_CONTRACT_LOCATION + "test04.contract";
+
+	/** The name of a {@link Contract} file used for testing. */
+	private static final String TEST_CONTRACT_3 =
+			TEST_CONTRACT_LOCATION + "test05.contract";
+
+	/** The name of a {@link Contract} file used for testing. */
+	private static final String TEST_CONTRACT_4 =
+			TEST_CONTRACT_LOCATION + "test06.contract";
 
 	/** The maximum loops to wait for a verification result. */
 	private static final int WAIT_TOTAL_LOOPS = 100;
 
 	/** The time to wait in a loop. */
 	private static final long WAIT_PAUSE_LENGTH = 50;
+
+	/**
+	 * Indicates whether or not the action
+	 * {@link ActionVocabularyMock#ACTION_TYPE_AFTER} has been called.
+	 */
+	public static Boolean afterActionWasCalled;
+
+	/**
+	 * Indicates whether or not the action
+	 * {@link ActionVocabularyMock#ACTION_TYPE_BEFORE} has been called.
+	 */
+	public static boolean beforeActionWasCalled;
+
+	/**
+	 * Indicates whether or not the action
+	 * {@link ActionVocabularyMock#ACTION_TYPE_DEFAULT_ON_FAILURE} has been
+	 * called.
+	 */
+	public static boolean onFailureActionWasCalled;
+
+	/**
+	 * Indicates whether or not the action
+	 * {@link ActionVocabularyMock#ACTION_TYPE_DEFAULT_ON_SUCCESS} has been
+	 * called.
+	 */
+	public static boolean onSuccessActionWasCalled;
+
+	/**
+	 * Indicates whether or not the action
+	 * {@link ActionVocabularyMock#ACTION_TYPE_TEST1} has been called on failure.
+	 */
+	public static boolean testAction1WasCalledOnFailure;
+
+	/**
+	 * Indicates whether or not the action
+	 * {@link ActionVocabularyMock#ACTION_TYPE_TEST1} has been called on success.
+	 */
+	public static boolean testAction1WasCalledOnSuccess;
 
 	/** A {@link Bundle} used during testing. */
 	private static Bundle consumerBundle1;
@@ -115,32 +163,17 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 	/** A {@link Contract} used during testing. */
 	private static Contract contract2;
 
-	/** The {@link TriggeredVerifier} used for testing. */
+	/** A {@link Contract} used during testing. */
+	private static Contract contract3;
+
+	/** A {@link Contract} used during testing. */
+	private static Contract contract4;
+
+	/** The {@link ActionVocabularyMock} used for testing. */
+	private static ActionVocabularyMock actionVocabularyMock;
+
+	/** The {@link TriggerVocabularyMock} used for testing. */
 	private static TriggerVocabularyMock triggerVocabularyMock;
-
-	/** Contains the verification result used during testing. */
-	private static Boolean verificationResult;
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.event.verification.TriggeredVerifierListener#verificationFailed
-	 * (java.net.URI, net.java.treaty.Contract)
-	 */
-	public void verificationFailed(URI triggerType, Contract contrac) {
-
-		verificationResult = false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @seenet.java.treaty.event.verification.TriggeredVerifierListener#
-	 * verificationSucceeded(java.net.URI, net.java.treaty.Contract)
-	 */
-	public void verificationSucceeded(URI triggerType, Contract contrac) {
-
-		verificationResult = true;
-	}
 
 	/**
 	 * <p>
@@ -209,6 +242,10 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 		}
 
 		/* Create the TriggerVocabulary. */
+		actionVocabularyMock = new ActionVocabularyMock();
+		EclipseActionRegistry.INSTANCE.addActionVocabulary(actionVocabularyMock);
+
+		/* Create the TriggerVocabulary. */
 		triggerVocabularyMock = new TriggerVocabularyMock();
 		EclipseTriggerRegistry.INSTANCE.addTriggerVocabulary(triggerVocabularyMock);
 		triggerVocabularyMock.addEventListener(TriggeredEclipseVerifier.INSTANCE);
@@ -222,7 +259,8 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 	 * 
 	 * @throws TreatyException
 	 */
-	public void tearDown() throws TreatyException {
+	@AfterClass
+	public static void tearDown() throws TreatyException {
 
 		/* Remove the contracts from the registry. */
 		EclipseContractRegistry.getInstance().updateContract(
@@ -234,6 +272,8 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 				UpdateType.REMOVE_CONTRACT, contract2, eclipseExtensionPoint1,
 				Role.CONSUMER);
 
+		EclipseActionRegistry.INSTANCE.removeActionVocabulary(actionVocabularyMock);
+
 		triggerVocabularyMock
 				.removeEventListener(TriggeredEclipseVerifier.INSTANCE);
 		EclipseTriggerRegistry.INSTANCE
@@ -242,20 +282,14 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 
 	/**
 	 * <p>
-	 * A test case testing the Triggered Verification of the
-	 * {@link AbstractTriggeredVerifier}.
-	 * </p>
-	 * 
-	 * <p>
-	 * Tests the triggered verification of a {@link Contract} that is triggered by
-	 * a trigger that is explicitly defined in the {@link Contract} and results in
-	 * a positive verification result.
+	 * A test case testing if the right actions are caused after the verification
+	 * of a {@link Contract}.
 	 * </p>
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void testVerification01() throws Exception {
+	public void testAction01() throws Exception {
 
 		/* Prepare test data. */
 		contract1 = createTestContract(TEST_CONTRACT_1);
@@ -266,20 +300,6 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 				Role.CONSUMER);
 		EclipseContractRegistry.getInstance().updateContract(
 				UpdateType.ADD_CONTRACT, contract1, eclipseExtension1, Role.SUPPLIER);
-
-		/* Get the verifier. */
-		AbstractTriggeredVerifier triggeredVerifier;
-		triggeredVerifier = TriggeredEclipseVerifier.INSTANCE;
-
-		/* Register as listener. */
-		triggeredVerifier.addListener(this);
-
-		/* Reset the verification result. */
-		verificationResult = null;
-
-		/* Trigger verification. */
-		URI triggerType;
-		triggerType = new URI(TriggerVocabularyMock.NAME_TRIGGER_1);
 
 		/* Try to get the instantiated contract. */
 		int loops;
@@ -316,12 +336,23 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 			// no else.
 		}
 
+		/* Trigger verification. */
+		URI triggerType;
+		triggerType = new URI(TriggerVocabularyMock.NAME_DEFAULT_TRIGGER);
+
+		afterActionWasCalled = null;
+		beforeActionWasCalled = false;
+		onFailureActionWasCalled = false;
+		onSuccessActionWasCalled = false;
+		testAction1WasCalledOnFailure = false;
+		testAction1WasCalledOnSuccess = false;
+
 		triggerVocabularyMock.fireTrigger(triggerType, contracts);
 
 		/* Wait for result. */
 		loops = 0;
 
-		while (verificationResult == null) {
+		while (afterActionWasCalled == null) {
 
 			/* Wait some time to improve CPU performance. */
 			try {
@@ -340,29 +371,26 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 			// no else.
 		}
 
-		/* Result should be positive. */
-		assertTrue(verificationResult);
+		assertTrue(beforeActionWasCalled);
+		assertTrue(afterActionWasCalled);
 
-		/* Unregister as listener. */
-		triggeredVerifier.removeListener(this);
+		/* Contract1 should have caused a success action for default action. */
+		assertTrue(onSuccessActionWasCalled);
+		assertFalse(onFailureActionWasCalled);
+		assertFalse(testAction1WasCalledOnFailure);
+		assertFalse(testAction1WasCalledOnSuccess);
 	}
 
 	/**
 	 * <p>
-	 * A test case testing the Triggered Verification of the
-	 * {@link AbstractTriggeredVerifier}.
-	 * </p>
-	 * 
-	 * <p>
-	 * Tests the triggered verification of a {@link Contract} that is triggered by
-	 * a trigger that is explicitly defined in the {@link Contract} and results in
-	 * a negative verification result.
+	 * A test case testing if the right actions are caused after the verification
+	 * of a {@link Contract}.
 	 * </p>
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void testVerification02() throws Exception {
+	public void testAction02() throws Exception {
 
 		/* Prepare test data. */
 		contract2 = createTestContract(TEST_CONTRACT_2);
@@ -373,20 +401,6 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 				Role.CONSUMER);
 		EclipseContractRegistry.getInstance().updateContract(
 				UpdateType.ADD_CONTRACT, contract2, eclipseExtension1, Role.SUPPLIER);
-
-		/* Get the verifier. */
-		AbstractTriggeredVerifier triggeredVerifier;
-		triggeredVerifier = TriggeredEclipseVerifier.INSTANCE;
-
-		/* Register as listener. */
-		triggeredVerifier.addListener(this);
-
-		/* Reset the verification result. */
-		verificationResult = null;
-
-		/* Trigger verification. */
-		URI triggerType;
-		triggerType = new URI(TriggerVocabularyMock.NAME_TRIGGER_1);
 
 		/* Try to get the instantiated contract. */
 		int loops;
@@ -423,12 +437,23 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 			// no else.
 		}
 
+		/* Trigger verification. */
+		URI triggerType;
+		triggerType = new URI(TriggerVocabularyMock.NAME_DEFAULT_TRIGGER);
+
+		afterActionWasCalled = null;
+		beforeActionWasCalled = false;
+		onFailureActionWasCalled = false;
+		onSuccessActionWasCalled = false;
+		testAction1WasCalledOnFailure = false;
+		testAction1WasCalledOnSuccess = false;
+
 		triggerVocabularyMock.fireTrigger(triggerType, contracts);
 
 		/* Wait for result. */
 		loops = 0;
 
-		while (verificationResult == null) {
+		while (afterActionWasCalled == null) {
 
 			/* Wait some time to improve CPU performance. */
 			try {
@@ -447,53 +472,36 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 			// no else.
 		}
 
-		/* Result should be negative. */
-		assertFalse(verificationResult);
+		assertTrue(beforeActionWasCalled);
+		assertTrue(afterActionWasCalled);
 
-		/* Unregister as listener. */
-		triggeredVerifier.removeListener(this);
+		/* Contract2 should have caused a failure action for default action. */
+		assertFalse(onSuccessActionWasCalled);
+		assertTrue(onFailureActionWasCalled);
+		assertFalse(testAction1WasCalledOnFailure);
+		assertFalse(testAction1WasCalledOnSuccess);
 	}
 
 	/**
 	 * <p>
-	 * A test case testing the Triggered Verification of the
-	 * {@link AbstractTriggeredVerifier}.
-	 * </p>
-	 * 
-	 * <p>
-	 * Tests the triggered verification of a {@link Contract} that is triggered by
-	 * a default trigger that is not explicitly defined in the {@link Contract}
-	 * and results in a positive verification result.
+	 * A test case testing if the right actions are caused after the verification
+	 * of a {@link Contract}.
 	 * </p>
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void testVerification03() throws Exception {
+	public void testAction03() throws Exception {
 
 		/* Prepare test data. */
-		contract1 = createTestContract(TEST_CONTRACT_1);
+		contract3 = createTestContract(TEST_CONTRACT_3);
 
 		/* Add the contract to the registry. */
 		EclipseContractRegistry.getInstance().updateContract(
-				UpdateType.ADD_CONTRACT, contract1, eclipseExtensionPoint1,
+				UpdateType.ADD_CONTRACT, contract3, eclipseExtensionPoint1,
 				Role.CONSUMER);
 		EclipseContractRegistry.getInstance().updateContract(
-				UpdateType.ADD_CONTRACT, contract1, eclipseExtension1, Role.SUPPLIER);
-
-		/* Get the verifier. */
-		AbstractTriggeredVerifier triggeredVerifier;
-		triggeredVerifier = TriggeredEclipseVerifier.INSTANCE;
-
-		/* Register as listener. */
-		triggeredVerifier.addListener(this);
-
-		/* Reset the verification result. */
-		verificationResult = null;
-
-		/* Trigger verification. */
-		URI triggerType;
-		triggerType = new URI(TriggerVocabularyMock.NAME_DEFAULT_TRIGGER);
+				UpdateType.ADD_CONTRACT, contract3, eclipseExtension1, Role.SUPPLIER);
 
 		/* Try to get the instantiated contract. */
 		int loops;
@@ -506,7 +514,7 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 
 			for (Contract contract : EclipseContractRegistry.getInstance()
 					.getContracts(eclipseExtension1, Role.SUPPLIER)) {
-				if (contract.getDefinition().equals(contract1)) {
+				if (contract.getDefinition().equals(contract3)) {
 					contracts.add(contract);
 				}
 				// no else.
@@ -530,12 +538,23 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 			// no else.
 		}
 
+		/* Trigger verification. */
+		URI triggerType;
+		triggerType = new URI(TriggerVocabularyMock.NAME_DEFAULT_TRIGGER);
+
+		afterActionWasCalled = null;
+		beforeActionWasCalled = false;
+		onFailureActionWasCalled = false;
+		onSuccessActionWasCalled = false;
+		testAction1WasCalledOnFailure = false;
+		testAction1WasCalledOnSuccess = false;
+
 		triggerVocabularyMock.fireTrigger(triggerType, contracts);
 
 		/* Wait for result. */
 		loops = 0;
 
-		while (verificationResult == null) {
+		while (afterActionWasCalled == null) {
 
 			/* Wait some time to improve CPU performance. */
 			try {
@@ -554,11 +573,115 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 			// no else.
 		}
 
-		/* Result should be positive. */
-		assertTrue(verificationResult);
+		assertTrue(beforeActionWasCalled);
+		assertTrue(afterActionWasCalled);
 
-		/* Unregister as listener. */
-		triggeredVerifier.removeListener(this);
+		/* Contract3 should have caused a success action for test1 action. */
+		assertTrue(onSuccessActionWasCalled);
+		assertFalse(onFailureActionWasCalled);
+		assertFalse(testAction1WasCalledOnFailure);
+		assertTrue(testAction1WasCalledOnSuccess);
+	}
+
+	/**
+	 * <p>
+	 * A test case testing if the right actions are caused after the verification
+	 * of a {@link Contract}.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testAction04() throws Exception {
+
+		/* Prepare test data. */
+		contract4 = createTestContract(TEST_CONTRACT_4);
+
+		/* Add the contract to the registry. */
+		EclipseContractRegistry.getInstance().updateContract(
+				UpdateType.ADD_CONTRACT, contract4, eclipseExtensionPoint1,
+				Role.CONSUMER);
+		EclipseContractRegistry.getInstance().updateContract(
+				UpdateType.ADD_CONTRACT, contract4, eclipseExtension1, Role.SUPPLIER);
+
+		/* Try to get the instantiated contract. */
+		int loops;
+		loops = 0;
+
+		Set<Contract> contracts;
+		contracts = new HashSet<Contract>();
+
+		while (contracts.size() == 0) {
+
+			for (Contract contract : EclipseContractRegistry.getInstance()
+					.getContracts(eclipseExtension1, Role.SUPPLIER)) {
+				if (contract.getDefinition().equals(contract4)) {
+					contracts.add(contract);
+				}
+				// no else.
+			}
+			// end for.
+
+			/* Wait some time to improve CPU performance. */
+			try {
+				Thread.sleep(WAIT_PAUSE_LENGTH);
+			}
+
+			catch (InterruptedException e) {
+				fail("Cannot ensure that testcase behaves determinisitc. Test failed.");
+			}
+			// end catch.
+
+			loops++;
+			if (loops > WAIT_TOTAL_LOOPS) {
+				fail("Contract for test was not available.");
+			}
+			// no else.
+		}
+
+		/* Trigger verification. */
+		URI triggerType;
+		triggerType = new URI(TriggerVocabularyMock.NAME_DEFAULT_TRIGGER);
+
+		afterActionWasCalled = null;
+		beforeActionWasCalled = false;
+		onFailureActionWasCalled = false;
+		onSuccessActionWasCalled = false;
+		testAction1WasCalledOnFailure = false;
+		testAction1WasCalledOnSuccess = false;
+
+		triggerVocabularyMock.fireTrigger(triggerType, contracts);
+
+		/* Wait for result. */
+		loops = 0;
+
+		while (afterActionWasCalled == null) {
+
+			/* Wait some time to improve CPU performance. */
+			try {
+				Thread.sleep(WAIT_PAUSE_LENGTH);
+			}
+
+			catch (InterruptedException e) {
+				fail("Cannot ensure that testcase behaves determinisitc. Test failed.");
+			}
+			// end catch.
+
+			loops++;
+			if (loops > WAIT_TOTAL_LOOPS) {
+				fail("Verification result was not available.");
+			}
+			// no else.
+		}
+
+		assertTrue(beforeActionWasCalled);
+		assertTrue(afterActionWasCalled);
+
+		/* Contract4 should have caused a failure action for test1 action. */
+		assertFalse(onSuccessActionWasCalled);
+		assertTrue(onFailureActionWasCalled);
+		assertTrue(testAction1WasCalledOnFailure);
+		assertFalse(testAction1WasCalledOnSuccess);
 	}
 
 	/**
