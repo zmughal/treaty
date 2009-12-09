@@ -12,12 +12,14 @@ package net.java.treaty.eclipse.systemservices;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.contractregistry.EclipseAdapterFactory;
@@ -36,27 +38,7 @@ import org.osgi.framework.BundleListener;
  * {@link BundleEvent}s.
  * </p>
  * 
- * TODO Claas: Probably provide all types of bundle events. The existing types
- * are:
- * 
- * <ul>
- * <li>BundleEvent.INSTALLED</li>
- * <li>BundleEvent.LAZY_ACTIVATION</li>
- * <li>BundleEvent.RESOLVED</li>
- * <li>BundleEvent.STARTED</li>
- * <li>
- * BundleEvent.STARTING</li>
- * <li>BundleEvent.STOPPED</li>
- * <li>
- * BundleEvent.STOPPING</li>
- * <li>BundleEvent.UNINSTALLED</li>
- * <li>
- * BundleEvent.UNRESOLVED</li>
- * <li>BundleEvent.UPDATED</li>
- * </ul>
- * 
  * @author Claas Wilke
- * 
  */
 public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 		implements BundleListener {
@@ -64,6 +46,10 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 	/** The name space's name of the {@link BundleTriggerVocabulary}. */
 	public static final String NAME_SPACE_NAME =
 			"http://www.treaty.org/trigger/bundle";
+
+	/** The name of the trigger type representing any type of {@link BundleEvent}. */
+	public static final String TRIGGER_TYPE_BUNDLE_EVENT =
+			NAME_SPACE_NAME + "#BundleEvent";
 
 	/** The name of the trigger type representing the install of a {@link Bundle}. */
 	public static final String TRIGGER_TYPE_BUNDLE_INSTALLED =
@@ -151,8 +137,12 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 	public void bundleChanged(BundleEvent event) {
 
 		URI triggerType;
-		triggerType = null;
 
+		/* Fire general bundle event trigger. */
+		triggerType = this.triggerTypes.get(TRIGGER_TYPE_BUNDLE_EVENT);
+		this.fireTrigger(event, triggerType);
+
+		/* Fire a type specific trigger as well. */
 		switch (event.getType()) {
 
 		case BundleEvent.INSTALLED:
@@ -205,35 +195,72 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 			triggerType = this.triggerTypes.get(TRIGGER_TYPE_BUNDLE_UPDATED);
 			break;
 
-		// no default.
+		default:
+			triggerType = null;
 		}
 		// end switch.
 
 		if (triggerType != null) {
-
-			EclipsePlugin eclipsePlugin;
-			eclipsePlugin =
-					EclipseAdapterFactory.getInstance().createEclipsePlugin(
-							event.getBundle());
-
-			Set<Contract> contracts;
-			contracts =
-					EclipseContractRegistry.getInstance().getAffectedContracts(
-							triggerType, eclipsePlugin);
-
-			if (contracts.size() > 0) {
-				this.notifyEventListners(triggerType, contracts);
-			}
-			// no else.
+			this.fireTrigger(event, triggerType);
 		}
 		// no else.
 	}
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getSubTriggers(java.net.URI)
+	 */
+	public Set<URI> getSubTriggers(URI triggerType) throws TreatyException {
+
+		Set<URI> result;
+
+		/*
+		 * If the given trigger is the parent bundle event trigger, return all other
+		 * triggers.
+		 */
+		if (this.triggerTypes.get(TRIGGER_TYPE_BUNDLE_EVENT).equals(triggerType)) {
+			result = this.getTriggers();
+			result.remove(triggerType);
+		}
+
+		else {
+			result = Collections.emptySet();
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.TriggerVocabulary#getSuperTriggers(java.net.URI)
+	 */
+	public Set<URI> getSuperTriggers(URI triggerType) throws TreatyException {
+
+		Set<URI> result;
+
+		if (this.getTriggers().contains(triggerType)) {
+
+			result = new HashSet<URI>();
+
+			if (!this.triggerTypes.get(TRIGGER_TYPE_BUNDLE_EVENT).equals(triggerType)) {
+				result.add(this.triggerTypes.get(TRIGGER_TYPE_BUNDLE_EVENT));
+			}
+			// no else.
+		}
+
+		else {
+			throw new TreatyException("Unknown trigger " + triggerType);
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.event.TriggerVocabulary#getTriggerTypes()
 	 */
-	public Set<URI> getTriggerTypes() {
+	public Set<URI> getTriggers() {
 
 		return new HashSet<URI>(this.triggerTypes.values());
 	}
@@ -273,6 +300,43 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 	/**
 	 * <p>
+	 * Helper method to fire a trigger for a given {@link BundleEvent} and a given
+	 * type of trigger.
+	 * </p>
+	 * 
+	 * @param event
+	 *          The {@link BundleEvent} causing the trigger.
+	 * @param triggerType
+	 *          The type of trigger to be fired.
+	 */
+	private void fireTrigger(BundleEvent event, URI triggerType) {
+
+		EclipsePlugin eclipsePlugin;
+		eclipsePlugin =
+				EclipseAdapterFactory.getInstance().createEclipsePlugin(
+						event.getBundle());
+
+		Set<Contract> contracts;
+		try {
+			contracts =
+					EclipseContractRegistry.getInstance().getAffectedContracts(
+							triggerType, eclipsePlugin);
+		}
+
+		catch (TreatyException e) {
+			contracts = Collections.emptySet();
+			Logger.error("Unexpected TreatyException during BundleEvent handling."
+					+ " Trigger will not be fired.", e);
+		}
+
+		if (contracts.size() > 0) {
+			this.notifyEventListners(triggerType, contracts);
+		}
+		// no else.
+	}
+
+	/**
+	 * <p>
 	 * Initializes the {@link BundleTriggerVocabulary}.
 	 * </p>
 	 */
@@ -284,6 +348,8 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 			this.triggerTypes = new HashMap<String, URI>();
 
 			try {
+				this.triggerTypes.put(TRIGGER_TYPE_BUNDLE_EVENT, new URI(
+						TRIGGER_TYPE_BUNDLE_EVENT));
 				this.triggerTypes.put(TRIGGER_TYPE_BUNDLE_INSTALLED, new URI(
 						TRIGGER_TYPE_BUNDLE_INSTALLED));
 				this.triggerTypes.put(TRIGGER_TYPE_BUNDLE_LAZY_ACTIVATION, new URI(
