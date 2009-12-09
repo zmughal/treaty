@@ -12,10 +12,12 @@ package net.java.treaty.eclipse.tests.trigger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.trigger.AbstractTriggerVocabulary;
 import net.java.treaty.trigger.EventListener;
@@ -58,9 +60,28 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.treaty.event.TriggerVocabulary#getTriggerTypes()
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getSubTriggers(java.net.URI)
 	 */
-	public Set<URI> getTriggerTypes() {
+	public Set<URI> getSubTriggers(URI triggerType) throws TreatyException {
+
+		return Collections.emptySet();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.TriggerVocabulary#getSuperTriggers(java.net.URI)
+	 */
+	public Set<URI> getSuperTriggers(URI triggerType) throws TreatyException {
+
+		return Collections.emptySet();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getTriggers()
+	 */
+	public Set<URI> getTriggers() throws TreatyException {
 
 		return this.triggerTypes;
 	}
@@ -74,6 +95,28 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 
 		/** Return true only for the default trigger. */
 		return triggerType.toString().equals(NAME_DEFAULT_TRIGGER);
+	}
+
+	/**
+	 * <p>
+	 * Fires a trigger to all listening {@link EventListener}s.
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The type of trigger that shall be fired.
+	 * @param contracts
+	 *          The {@link Contract}s for that the trigger shall be fired.
+	 * @throws TreatyException
+	 *           Thrown, if the given trigger type does not exist.
+	 */
+	public void fireTrigger(URI triggerType, Set<Contract> contracts)
+			throws TreatyException {
+
+		if (this.getTriggers().contains(triggerType)) {
+
+			this.notifyEventListners(triggerType, contracts);
+		}
+		// no else.
 	}
 
 	/**
@@ -125,25 +168,6 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 
 				this.triggerTypes = null;
 			}
-		}
-		// no else.
-	}
-
-	/**
-	 * <p>
-	 * Fires a trigger to all listening {@link EventListener}s.
-	 * </p>
-	 * 
-	 * @param triggerType
-	 *          The type of trigger that shall be fired.
-	 * @param contracts
-	 *          The {@link Contract}s for that the trigger shall be fired.
-	 */
-	public void fireTrigger(URI triggerType, Set<Contract> contracts) {
-
-		if (this.getTriggerTypes().contains(triggerType)) {
-
-			this.notifyEventListners(triggerType, contracts);
 		}
 		// no else.
 	}
