@@ -157,13 +157,14 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 		URI triggerType;
 		triggerType = new URI(TriggerVocabularyMock.NAME_TRIGGER_1);
 
-		Set<Contract> contracts;
-		contracts =
-				contractRegistry.getAffectedContracts(triggerType, consumerComponent);
-
 		AbstractTriggerVocabulary triggerVocabulary;
 		triggerVocabulary = new TriggerVocabularyMock();
 		triggerVocabulary.addEventListener(triggeredVerifier);
+		triggerRegistry.addTriggerVocabulary(triggerVocabulary);
+
+		Set<Contract> contracts;
+		contracts =
+				contractRegistry.getAffectedContracts(triggerType, consumerComponent);
 
 		triggerVocabulary.notifyEventListners(triggerType, contracts);
 
@@ -257,13 +258,14 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 		URI triggerType;
 		triggerType = new URI(TriggerVocabularyMock.NAME_TRIGGER_2);
 
-		Set<Contract> contracts;
-		contracts =
-				contractRegistry.getAffectedContracts(triggerType, consumerComponent);
-
 		AbstractTriggerVocabulary triggerVocabulary;
 		triggerVocabulary = new TriggerVocabularyMock();
 		triggerVocabulary.addEventListener(triggeredVerifier);
+		triggerRegistry.addTriggerVocabulary(triggerVocabulary);
+
+		Set<Contract> contracts;
+		contracts =
+				contractRegistry.getAffectedContracts(triggerType, consumerComponent);
 
 		triggerVocabulary.notifyEventListners(triggerType, contracts);
 

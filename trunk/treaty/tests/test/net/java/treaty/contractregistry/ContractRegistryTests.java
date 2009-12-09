@@ -811,7 +811,7 @@ public class ContractRegistryTests {
 	 * </p>
 	 */
 	@Test
-	public void testGetAffectedContracts01() {
+	public void testGetAffectedContracts01() throws TreatyException {
 
 		ComponentMock consumerComponentMock;
 		consumerComponentMock = new ComponentMock("Consumer Component 1");
@@ -909,7 +909,7 @@ public class ContractRegistryTests {
 	 * </p>
 	 */
 	@Test
-	public void testGetAffectedContracts02() {
+	public void testGetAffectedContracts02() throws TreatyException {
 
 		ComponentMock consumer1ComponentMock;
 		consumer1ComponentMock = new ComponentMock("Consumer Component 1");
@@ -1007,7 +1007,7 @@ public class ContractRegistryTests {
 	 * </p>
 	 */
 	@Test
-	public void testGetAffectedContracts03() {
+	public void testGetAffectedContracts03() throws TreatyException {
 
 		ComponentMock legislator1ComponentMock;
 		legislator1ComponentMock = new ComponentMock("Legislator Component 1");
@@ -1141,7 +1141,7 @@ public class ContractRegistryTests {
 	 * </p>
 	 */
 	@Test
-	public void testGetAffectedContracts04() {
+	public void testGetAffectedContracts04() throws TreatyException {
 
 		ComponentMock legislator1ComponentMock;
 		legislator1ComponentMock = new ComponentMock("Legislator Component 1");
@@ -1275,7 +1275,7 @@ public class ContractRegistryTests {
 	 * </p>
 	 */
 	@Test
-	public void testGetAffectedContracts05() {
+	public void testGetAffectedContracts05() throws TreatyException {
 
 		ComponentMock consumerComponentMock;
 		consumerComponentMock = new ComponentMock("Consumer Component 1");
@@ -1396,7 +1396,7 @@ public class ContractRegistryTests {
 	 * </p>
 	 */
 	@Test
-	public void testGetAffectedContracts06() {
+	public void testGetAffectedContracts06() throws TreatyException {
 
 		ComponentMock consumerComponentMock;
 		consumerComponentMock = new ComponentMock("Consumer Component 1");

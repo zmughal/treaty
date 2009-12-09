@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 
 /**
  * <p>
@@ -33,8 +34,45 @@ public interface TriggerVocabulary extends EventProvider {
 	 * 
 	 * @return A {@link Set} containing the {@link URI}s of all trigger types this
 	 *         {@link TriggerVocabulary} defines.
+	 * @throws TreatyException
+	 *           Thrown, if this {@link TriggerVocabulary} has not been
+	 *           instantiated appropriately.
 	 */
-	public Set<URI> getTriggerTypes();
+	public Set<URI> getTriggers() throws TreatyException;
+
+	/**
+	 * <p>
+	 * Returns a {@link Set} containing the {@link URI}s of all sub trigger types
+	 * for a given trigger type (as a {@link URI}).
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The trigger type (as a {@link URI}) whose sub types shall be
+	 *          returned.
+	 * @return A {@link Set} containing the {@link URI}s of all trigger types this
+	 *         {@link TriggerVocabulary} defines.
+	 * @throws TreatyException
+	 *           Thrown, if the given {@link URI} is not valid for this
+	 *           {@link TriggerVocabulary}
+	 */
+	public Set<URI> getSubTriggers(URI triggerType) throws TreatyException;
+
+	/**
+	 * <p>
+	 * Returns a {@link Set} containing the {@link URI}s of all super trigger
+	 * types for a given trigger type (as a {@link URI}).
+	 * </p>
+	 * 
+	 * @param triggerType
+	 *          The trigger type (as a {@link URI}) whose super types shall be
+	 *          returned.
+	 * @return A {@link Set} containing the {@link URI}s of all trigger types this
+	 *         {@link TriggerVocabulary} defines.
+	 * @throws TreatyException
+	 *           Thrown, if the given {@link URI} is not valid for this
+	 *           {@link TriggerVocabulary}
+	 */
+	public Set<URI> getSuperTriggers(URI triggerType) throws TreatyException;
 
 	/**
 	 * <p>
@@ -47,7 +85,7 @@ public interface TriggerVocabulary extends EventProvider {
 	 * </p>
 	 * 
 	 * <p>
-	 * <strong>Attention:</strong> Default triggers can consume a large ammount of
+	 * <strong>Attention:</strong> Default triggers can consume a large amount of
 	 * resources, especially when many {@link Contract}s exists. Thus, default
 	 * triggers should be used rarely.
 	 * </p>
@@ -55,6 +93,10 @@ public interface TriggerVocabulary extends EventProvider {
 	 * @param triggerType
 	 *          The type ({@link URI}) of the trigger that shall be checked.
 	 * @return <code>true</code> if the trigger is a default trigger.
+	 * 
+	 * @throws TreatyException
+	 *           Thrown, if the given {@link URI} is not valid for this
+	 *           {@link TriggerVocabulary}
 	 */
-	public boolean isDefaultTrigger(URI triggerType);
+	public boolean isDefaultTrigger(URI triggerType) throws TreatyException;
 }
