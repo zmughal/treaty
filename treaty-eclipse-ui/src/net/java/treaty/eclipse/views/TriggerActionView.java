@@ -14,7 +14,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Set;
 
+import net.java.treaty.TreatyException;
 import net.java.treaty.action.ActionVocabulary;
+import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.action.EclipseActionRegistry;
 import net.java.treaty.eclipse.trigger.EclipseTriggerRegistry;
 import net.java.treaty.eclipse.ui.Activator;
@@ -289,6 +291,9 @@ public class TriggerActionView extends ViewPart implements
 	private class ViewContentProvider implements IStructuredContentProvider,
 			ITreeContentProvider {
 
+		/** Maximum depth of the tree. Used to avoid cycles. */
+		private static final int MAX_DEPTH = 42;
+
 		/** The root {@link TreeParent} object of the view. */
 		private TreeParent invisibleRoot;
 
@@ -483,9 +488,16 @@ public class TriggerActionView extends ViewPart implements
 			for (TriggerVocabulary triggerVocabulary : triggerVocabularies) {
 
 				/* Add all triggers of the vocabulary. */
-				for (URI trigger : triggerVocabulary.getTriggerTypes()) {
+				try {
+					for (URI trigger : triggerVocabulary.getTriggers()) {
 
-					this.addTriggerNodes(parent, trigger, triggerVocabulary);
+						this.addTriggerNode(parent, trigger, triggerVocabulary, 0);
+					}
+				}
+
+				catch (TreatyException e) {
+					Logger.error(
+							"Unexpected TreatyException during LoggerActionView update.", e);
 				}
 				// end for.
 			}
@@ -503,16 +515,48 @@ public class TriggerActionView extends ViewPart implements
 		 *          The trigger type {@link URI}.
 		 * @param triggerVocabulary
 		 *          The owning {@link TriggerVocabulary}.
+		 * @param depth
+		 *          The current depth of the tree.
 		 */
-		private void addTriggerNodes(TreeParent parent, URI type,
-				TriggerVocabulary triggerVocabulary) {
+		private void addTriggerNode(TreeParent parent, URI type,
+				TriggerVocabulary triggerVocabulary, int depth) {
 
-			TriggerOrAction node;
-			node =
-					new TriggerOrAction(type, TriggerOrActionType.Trigger,
-							triggerVocabulary.toString());
+			if (depth <= MAX_DEPTH) {
+				try {
 
-			parent.addChild(node);
+					Set<URI> subTriggers;
+					subTriggers = triggerVocabulary.getSubTriggers(type);
+
+					if (subTriggers.size() == 0) {
+						TriggerOrAction node;
+						node =
+								new TriggerOrAction(type, TriggerOrActionType.Trigger,
+										triggerVocabulary.toString());
+
+						parent.addChild(node);
+					}
+
+					else {
+						TreeParent node;
+						node =
+								new TreeParent(type, TriggerOrActionType.Trigger,
+										triggerVocabulary.toString());
+						for (URI subTrigger : subTriggers) {
+							this.addTriggerNode(node, subTrigger, triggerVocabulary, depth++);
+						}
+
+						parent.addChild(node);
+					}
+				}
+
+				catch (TreatyException e) {
+					Logger
+							.error(
+									"Unexpected TreatyEception during update of LoggerActionView.",
+									e);
+				}
+			}
+			// no else (max depth reached).
 		}
 	}
 
@@ -593,12 +637,18 @@ public class TriggerActionView extends ViewPart implements
 				}
 
 				else if (triggerOrAction.getType() == TriggerOrActionType.Trigger) {
-					if (EclipseTriggerRegistry.INSTANCE.isDefaultTrigger(triggerOrAction
-							.getUri())) {
-						result = ICON_YES;
+					try {
+						if (EclipseTriggerRegistry.INSTANCE
+								.isDefaultTrigger(triggerOrAction.getUri())) {
+							result = ICON_YES;
+						}
+
+						else {
+							result = ICON_NO;
+						}
 					}
 
-					else {
+					catch (TreatyException e) {
 						result = ICON_NO;
 					}
 				}
@@ -640,7 +690,7 @@ public class TriggerActionView extends ViewPart implements
 
 					if (EclipseActionRegistry.INSTANCE.isBeforeAction(triggerOrAction
 							.getUri())) {
-						buffer.append("begin");
+						buffer.append("before");
 					}
 					// no else.
 
@@ -652,7 +702,7 @@ public class TriggerActionView extends ViewPart implements
 						}
 						// no else.
 
-						buffer.append("end");
+						buffer.append("after");
 					}
 					// no else.
 
@@ -664,7 +714,7 @@ public class TriggerActionView extends ViewPart implements
 						}
 						// no else.
 
-						buffer.append("failure");
+						buffer.append("onFailure");
 					}
 					// no else.
 
@@ -676,7 +726,7 @@ public class TriggerActionView extends ViewPart implements
 						}
 						// no else.
 
-						buffer.append("success");
+						buffer.append("onSuccess");
 					}
 					// no else.
 
@@ -690,12 +740,18 @@ public class TriggerActionView extends ViewPart implements
 
 				else if (triggerOrAction.getType() == TriggerOrActionType.Trigger) {
 
-					if (EclipseTriggerRegistry.INSTANCE.isDefaultTrigger(triggerOrAction
-							.getUri())) {
-						result = "yes";
+					try {
+						if (EclipseTriggerRegistry.INSTANCE
+								.isDefaultTrigger(triggerOrAction.getUri())) {
+							result = "yes";
+						}
+
+						else {
+							result = "no";
+						}
 					}
 
-					else {
+					catch (TreatyException e) {
 						result = "no";
 					}
 				}

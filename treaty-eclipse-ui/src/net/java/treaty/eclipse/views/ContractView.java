@@ -43,6 +43,7 @@ import net.java.treaty.PropertySupport;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.Role;
+import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.contractregistry.ContractRegistryListener;
@@ -2147,6 +2148,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			Logger.error(
 					"Unexpected exception during verification of all Contracts.", e);
 		}
+
+		catch (TreatyException e) {
+			Logger.error(
+					"Unexpected exception during verification of all Contracts.", e);
+		}
 		// end catch.
 	}
 
@@ -2180,6 +2186,11 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 				Logger.error(
 						"Unexpected exception during verification of selected Contracts.",
 						e);
+			}
+
+			catch (TreatyException e) {
+				Logger.error(
+						"Unexpected exception during verification of all Contracts.", e);
 			}
 			// end catch.
 		}
