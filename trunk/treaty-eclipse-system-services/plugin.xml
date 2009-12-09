@@ -5,7 +5,7 @@
          id="net.java.treaty.eclipse.systemservices.bundletrigger"
          name="Trigger Vocabulary for OSGI Bundle Events."
          point="net.java.treaty.eclipse.triggervocabulary">
-          <triggervocabulary class="net.java.treaty.eclipse.systemservices.BundleTriggerVocabulary" /> 
+          <triggervocabulary class="net.java.treaty.eclipse.systemservices.BundleTriggerVocabulary" ontology="vocabulary/bundle.owl"/> 
    </extension>
    <extension
          id="net.java.treaty.eclipse.systemservices.loggeraction"
