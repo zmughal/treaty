@@ -12,18 +12,21 @@ package net.java.treaty.eclipse.ui.triggers;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
-import net.java.treaty.TreatyException;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.trigger.AbstractEclipseTriggerVocabulary;
-import net.java.treaty.trigger.TriggerVocabulary;
+import net.java.treaty.eclipse.ui.Activator;
+import net.java.treaty.trigger.TriggerOntology;
+import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
+
+import org.osgi.framework.Bundle;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * <p>
@@ -44,20 +47,20 @@ public class ManualTriggerVocabulary extends AbstractEclipseTriggerVocabulary {
 	 * {@link Contract}s.
 	 */
 	public static final String TRIGGER_TYPE_VERIFY_ALL =
-			NAME_SPACE_NAME + "#verifyAll";
+			NAME_SPACE_NAME + "#VerifyAll";
 
 	/**
 	 * The name of the trigger type representing the manual verification of a
 	 * {@link Set} of selected {@link Contract}s.
 	 */
 	public static final String TRIGGER_TYPE_VERIFY_SELECTED =
-			NAME_SPACE_NAME + "#verifySelected";
+			NAME_SPACE_NAME + "#VerifySelected";
 
-	/**
-	 * The Trigger types of this {@link TriggerVocabulary} as a {@link Map} of
-	 * {@link URI}s identified by their {@link String} representation.
-	 */
-	private Map<String, URI> triggerTypes;
+	/** The location of this {@link TriggerOntology}'s ontology. */
+	private static final String ONTOLOGY_LOCATION = "vocabulary/manual.owl";
+
+	/** The {@link OntModel} of the {@link JavaVocabulary}. */
+	private OntModel myOntology = null;
 
 	/**
 	 * <p>
@@ -66,65 +69,26 @@ public class ManualTriggerVocabulary extends AbstractEclipseTriggerVocabulary {
 	 */
 	public ManualTriggerVocabulary() {
 
-		this.initialize();
+		super();
 	}
 
-	/**
-	 * <p>
-	 * Initializes the {@link BundleTriggerVocabulary}.
-	 * </p>
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerOntology#getOntology()
 	 */
-	private void initialize() {
+	public OntModel getOntology() {
 
-		/* Probably initialize the trigger Types */
-		if (this.triggerTypes == null) {
+		/* Probably load the ontology. */
+		if (this.myOntology == null) {
+			Bundle myBundle;
+			myBundle = Activator.getDefault().getBundle();
 
-			this.triggerTypes = new HashMap<String, URI>();
-
-			try {
-				this.triggerTypes.put(TRIGGER_TYPE_VERIFY_ALL, new URI(
-						TRIGGER_TYPE_VERIFY_ALL));
-				this.triggerTypes.put(TRIGGER_TYPE_VERIFY_SELECTED, new URI(
-						TRIGGER_TYPE_VERIFY_SELECTED));
-			}
-
-			catch (URISyntaxException e) {
-				Logger.warn("Error during initialization of ManualTriggerVocabulary. "
-						+ "Probably some trigger types are not available.", e);
-			}
-			// end catch.
+			this.myOntology = ModelFactory.createOntologyModel();
+			this.myOntology.read(myBundle.getResource(ONTOLOGY_LOCATION).toString());
 		}
-		// no else (already initialized).
-	}
+		// no else.
 
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.trigger.TriggerVocabulary#getSubTriggers(java.net.URI)
-	 */
-	public Set<URI> getSubTriggers(URI triggerType) throws TreatyException {
-	
-		/* This vocabulary does not define hierarchical triggers. */
-		return Collections.emptySet();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.trigger.TriggerVocabulary#getSuperTriggers(java.net.URI)
-	 */
-	public Set<URI> getSuperTriggers(URI triggerType) throws TreatyException {
-	
-		/* This vocabulary does not define hierarchical triggers. */
-		return Collections.emptySet();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.event.TriggerVocabulary#getTriggerTypes()
-	 */
-	public Set<URI> getTriggers() {
-
-		return new HashSet<URI>(this.triggerTypes.values());
+		return this.myOntology;
 	}
 
 	/*
@@ -134,8 +98,13 @@ public class ManualTriggerVocabulary extends AbstractEclipseTriggerVocabulary {
 	 */
 	public boolean isDefaultTrigger(URI triggerType) {
 
+		boolean result;
+
 		/* All triggers of this vocabulary are default triggers. */
-		return this.triggerTypes.values().contains(triggerType);
+		result = TRIGGER_TYPE_VERIFY_ALL.equals(triggerType.toString());
+		result |= TRIGGER_TYPE_VERIFY_SELECTED.equals(triggerType.toString());
+
+		return result;
 	}
 
 	/*
@@ -171,8 +140,13 @@ public class ManualTriggerVocabulary extends AbstractEclipseTriggerVocabulary {
 				new HashSet<Contract>(EclipseContractRegistry.getInstance()
 						.getInstantiatedContracts());
 
-		this.notifyEventListners(this.triggerTypes.get(TRIGGER_TYPE_VERIFY_ALL),
-				contracts);
+		try {
+			this.notifyEventListners(new URI(TRIGGER_TYPE_VERIFY_ALL), contracts);
+		}
+
+		catch (URISyntaxException e) {
+			Logger.error("Unexpected Exception during fire Verify_All trigger.", e);
+		}
 	}
 
 	/**
@@ -186,7 +160,13 @@ public class ManualTriggerVocabulary extends AbstractEclipseTriggerVocabulary {
 	 */
 	public void fireTriggerVerifySelected(Set<Contract> contracts) {
 
-		this.notifyEventListners(this.triggerTypes
-				.get(TRIGGER_TYPE_VERIFY_SELECTED), contracts);
+		try {
+			this
+					.notifyEventListners(new URI(TRIGGER_TYPE_VERIFY_SELECTED), contracts);
+		}
+
+		catch (URISyntaxException e) {
+			Logger.error("Unexpected Exception during fire Verify_All trigger.", e);
+		}
 	}
 }
