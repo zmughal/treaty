@@ -21,7 +21,6 @@ import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.trigger.AbstractEclipseTriggerVocabulary;
 import net.java.treaty.eclipse.ui.Activator;
 import net.java.treaty.trigger.TriggerOntology;
-import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
 
 import org.osgi.framework.Bundle;
 
@@ -59,7 +58,7 @@ public class ManualTriggerVocabulary extends AbstractEclipseTriggerVocabulary {
 	/** The location of this {@link TriggerOntology}'s ontology. */
 	private static final String ONTOLOGY_LOCATION = "vocabulary/manual.owl";
 
-	/** The {@link OntModel} of the {@link JavaVocabulary}. */
+	/** The {@link OntModel} of this {@link TriggerOntology}. */
 	private OntModel myOntology = null;
 
 	/**
