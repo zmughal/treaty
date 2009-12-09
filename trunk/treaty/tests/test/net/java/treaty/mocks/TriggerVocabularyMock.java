@@ -12,8 +12,9 @@ package test.net.java.treaty.mocks;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.ContractLogger;
@@ -38,13 +39,17 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 			NAME_SPACE + "#defaultTrigger";
 
 	/** The name of a test trigger. */
+	public static final String NAME_PARENT_TRIGGER_1 =
+			NAME_SPACE + "#parentTrigger1";
+
+	/** The name of a test trigger. */
 	public static final String NAME_TRIGGER_1 = NAME_SPACE + "#trigger1";
 
 	/** The name of a test trigger. */
 	public static final String NAME_TRIGGER_2 = NAME_SPACE + "#trigger2";
 
 	/** The trigger types of this {@link TriggerVocabulary}. */
-	private Set<URI> triggerTypes;
+	private Map<String, URI> triggerTypes;
 
 	/**
 	 * <p>
@@ -62,7 +67,7 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 	 */
 	public Set<URI> getTriggers() {
 
-		return this.triggerTypes;
+		return new HashSet<URI>(this.triggerTypes.values());
 	}
 
 	/*
@@ -70,8 +75,17 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 	 * @see net.java.treaty.trigger.TriggerVocabulary#getSubTriggers(java.net.URI)
 	 */
 	public Set<URI> getSubTriggers(URI triggerType) throws TreatyException {
-	
-		return Collections.emptySet();
+
+		Set<URI> result;
+		result = new HashSet<URI>();
+
+		/* ParentTrigger1 is super trigger of Trigger1. */
+		if (this.triggerTypes.get(NAME_PARENT_TRIGGER_1).equals(triggerType)) {
+			result.add(this.getTrigger(NAME_TRIGGER_1));
+		}
+		// no else.
+
+		return result;
 	}
 
 	/*
@@ -80,8 +94,17 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 	 * net.java.treaty.trigger.TriggerVocabulary#getSuperTriggers(java.net.URI)
 	 */
 	public Set<URI> getSuperTriggers(URI triggerType) throws TreatyException {
-	
-		return Collections.emptySet();
+
+		Set<URI> result;
+		result = new HashSet<URI>();
+
+		/* ParentTrigger1 is super trigger of Trigger1. */
+		if (this.triggerTypes.get(NAME_TRIGGER_1).equals(triggerType)) {
+			result.add(this.getTrigger(NAME_PARENT_TRIGGER_1));
+		}
+		// no else.
+
+		return result;
 	}
 
 	/*
@@ -110,7 +133,7 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 		URI result;
 		result = null;
 
-		for (URI triggerType : this.triggerTypes) {
+		for (URI triggerType : this.getTriggers()) {
 			if (triggerType.toString().equals(name)) {
 				result = triggerType;
 				break;
@@ -131,12 +154,15 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 
 		/* Probably initialize. */
 		if (this.triggerTypes == null) {
-			this.triggerTypes = new HashSet<URI>();
+			this.triggerTypes = new HashMap<String, URI>();
 
 			try {
-				this.triggerTypes.add(new URI(NAME_TRIGGER_1));
-				this.triggerTypes.add(new URI(NAME_TRIGGER_2));
-				this.triggerTypes.add(new URI(NAME_DEFAULT_TRIGGER));
+				this.triggerTypes.put(NAME_TRIGGER_1, new URI(NAME_TRIGGER_1));
+				this.triggerTypes.put(NAME_TRIGGER_2, new URI(NAME_TRIGGER_2));
+				this.triggerTypes.put(NAME_DEFAULT_TRIGGER, new URI(
+						NAME_DEFAULT_TRIGGER));
+				this.triggerTypes.put(NAME_PARENT_TRIGGER_1, new URI(
+						NAME_PARENT_TRIGGER_1));
 			}
 
 			catch (URISyntaxException e) {

@@ -15,6 +15,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -165,7 +166,7 @@ public class ContractRegistry {
 
 						/* Only add contracts that have the right trigger type. */
 						if (this.myTriggerRegistry.isDefaultTrigger(triggerType)
-								|| contract.getTriggers().contains(triggerType)) {
+								|| this.isSubTrigger(contract.getTriggers(), triggerType)) {
 							result.addAll(this.getInstantiatedContracts(contract));
 						}
 						// no else.
@@ -182,7 +183,7 @@ public class ContractRegistry {
 
 						/* Only add contracts that have the right trigger type. */
 						if (this.myTriggerRegistry.isDefaultTrigger(triggerType)
-								|| contract.getTriggers().contains(triggerType)) {
+								|| this.isSubTrigger(contract.getTriggers(), triggerType)) {
 							result.addAll(this.getInstantiatedContracts(contract));
 						}
 						// no else.
@@ -194,6 +195,52 @@ public class ContractRegistry {
 				break;
 			}
 			// end switch.
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Checks whether or not a given trigger (as a {@link URI}) is a trigger of a
+	 * given {@link List} of triggers or a sub trigger of one of these triggers.
+	 * </p>
+	 * 
+	 * @param triggers
+	 *          The triggers which shall contain the trigger or one of it's super
+	 *          triggers.
+	 * @param triggerType
+	 * @return <code>true</code> if the trigger is a sub trigger.
+	 */
+	private boolean isSubTrigger(List<URI> triggers, URI triggerType) {
+
+		boolean result;
+		result = false;
+
+		if (triggers.contains(triggerType)) {
+			result = true;
+		}
+
+		else {
+
+			try {
+				for (URI superTrigger : this.myTriggerRegistry
+						.getSuperTriggers(triggerType)) {
+
+					if (this.isSubTrigger(triggers, superTrigger)) {
+						result = true;
+						break;
+					}
+					// no else.
+				}
+				// end for.
+			}
+			// end try.
+
+			catch (TreatyException e) {
+				result = false;
+			}
+			// end for.
 		}
 
 		return result;

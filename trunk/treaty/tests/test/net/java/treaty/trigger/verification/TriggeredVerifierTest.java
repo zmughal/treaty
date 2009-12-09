@@ -11,6 +11,7 @@
 package test.net.java.treaty.trigger.verification;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -65,6 +66,10 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 	/** The name of a {@link Contract} file used for testing. */
 	private static final String TEST_CONTRACT_2 =
 			TEST_CONTRACT_LOCATION + "test05.contract";
+
+	/** The name of a {@link Contract} file used for testing. */
+	private static final String TEST_CONTRACT_3 =
+			TEST_CONTRACT_LOCATION + "test06.contract";
 
 	/** The maximum loops to wait for a verification result. */
 	private static final int WAIT_TOTAL_LOOPS = 20;
@@ -293,6 +298,312 @@ public class TriggeredVerifierTest implements TriggeredVerifierListener {
 
 		/* Result should be negative. */
 		assertFalse(this.verificationResult);
+
+		/* Unregister as listener. */
+		triggeredVerifier.removeListener(this);
+	}
+
+	/**
+	 * <p>
+	 * A test case testing the Triggered Verification of the
+	 * {@link AbstractTriggeredVerifier} with a super trigger defined in a
+	 * {@link Contract}.
+	 * </p>
+	 * 
+	 * @throws TreatyException
+	 *           If thrown, the test case fails.
+	 * @throws URISyntaxException
+	 *           If thrown, the test case fails.
+	 */
+	@Test
+	public void testVerification03() throws TreatyException, URISyntaxException {
+
+		/* Prepare test data. */
+		TriggerRegistry triggerRegistry;
+		triggerRegistry = new TriggerRegistry();
+
+		ContractRegistry contractRegistry;
+		contractRegistry =
+				new ContractRegistry(new ResourceManagerMock(), triggerRegistry);
+
+		Component consumerComponent;
+		consumerComponent = new ComponentMock("consumercomponent");
+
+		Connector consumer;
+		consumer =
+				new ConnectorMock("consumercomponent.consumer", consumerComponent,
+						ConnectorType.CONSUMER);
+
+		Component supplierComponent;
+		supplierComponent = new ComponentMock("suppliercomponent");
+
+		Connector supplier;
+		supplier =
+				new ConnectorMock("suppliercomponent.supplier", supplierComponent,
+						ConnectorType.SUPPLIER);
+
+		Contract contract;
+		contract = this.createTestContract(TEST_CONTRACT_3);
+
+		contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
+				consumer, Role.CONSUMER);
+		contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contractRegistry
+				.getContracts(consumer, Role.CONSUMER).iterator().next(), supplier,
+				Role.SUPPLIER);
+
+		/* Create the verifier. */
+		AbstractTriggeredVerifier triggeredVerifier;
+		triggeredVerifier = new TriggeredVerifierMock();
+
+		/* Register as listener. */
+		triggeredVerifier.addListener(this);
+
+		/* Reset the verification result. */
+		this.verificationResult = null;
+
+		/* Trigger verification. */
+		URI triggerType;
+		triggerType = new URI(TriggerVocabularyMock.NAME_PARENT_TRIGGER_1);
+
+		AbstractTriggerVocabulary triggerVocabulary;
+		triggerVocabulary = new TriggerVocabularyMock();
+		triggerVocabulary.addEventListener(triggeredVerifier);
+		triggerRegistry.addTriggerVocabulary(triggerVocabulary);
+
+		Set<Contract> contracts;
+		contracts =
+				contractRegistry.getAffectedContracts(triggerType, consumerComponent);
+
+		triggerVocabulary.notifyEventListners(triggerType, contracts);
+
+		/* Wait for result. */
+		int loops;
+		loops = 0;
+
+		while (verificationResult == null) {
+			/* Wait some time to improve CPU performance. */
+			try {
+				Thread.sleep(WAIT_PAUSE_LENGTH);
+			}
+
+			catch (InterruptedException e) {
+				fail("Cannot ensure that testcase behaves determinisitc. Test failed.");
+			}
+			// end catch.
+
+			loops++;
+			if (loops > WAIT_TOTAL_LOOPS) {
+				fail("Verification result was not available.");
+			}
+			// no else.
+		}
+
+		/* Result should be positive. */
+		assertTrue(this.verificationResult);
+
+		/* Unregister as listener. */
+		triggeredVerifier.removeListener(this);
+	}
+
+	/**
+	 * <p>
+	 * A test case testing the Triggered Verification of the
+	 * {@link AbstractTriggeredVerifier} with a sub trigger of a super trigger
+	 * defined in a {@link Contract}.
+	 * </p>
+	 * 
+	 * @throws TreatyException
+	 *           If thrown, the test case fails.
+	 * @throws URISyntaxException
+	 *           If thrown, the test case fails.
+	 */
+	@Test
+	public void testVerification04() throws TreatyException, URISyntaxException {
+
+		/* Prepare test data. */
+		TriggerRegistry triggerRegistry;
+		triggerRegistry = new TriggerRegistry();
+
+		ContractRegistry contractRegistry;
+		contractRegistry =
+				new ContractRegistry(new ResourceManagerMock(), triggerRegistry);
+
+		Component consumerComponent;
+		consumerComponent = new ComponentMock("consumercomponent");
+
+		Connector consumer;
+		consumer =
+				new ConnectorMock("consumercomponent.consumer", consumerComponent,
+						ConnectorType.CONSUMER);
+
+		Component supplierComponent;
+		supplierComponent = new ComponentMock("suppliercomponent");
+
+		Connector supplier;
+		supplier =
+				new ConnectorMock("suppliercomponent.supplier", supplierComponent,
+						ConnectorType.SUPPLIER);
+
+		Contract contract;
+		contract = this.createTestContract(TEST_CONTRACT_3);
+
+		contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
+				consumer, Role.CONSUMER);
+		contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contractRegistry
+				.getContracts(consumer, Role.CONSUMER).iterator().next(), supplier,
+				Role.SUPPLIER);
+
+		/* Create the verifier. */
+		AbstractTriggeredVerifier triggeredVerifier;
+		triggeredVerifier = new TriggeredVerifierMock();
+
+		/* Register as listener. */
+		triggeredVerifier.addListener(this);
+
+		/* Reset the verification result. */
+		this.verificationResult = null;
+
+		/* Should Trigger verification. */
+		URI triggerType;
+		triggerType = new URI(TriggerVocabularyMock.NAME_TRIGGER_1);
+
+		AbstractTriggerVocabulary triggerVocabulary;
+		triggerVocabulary = new TriggerVocabularyMock();
+		triggerVocabulary.addEventListener(triggeredVerifier);
+		triggerRegistry.addTriggerVocabulary(triggerVocabulary);
+
+		Set<Contract> contracts;
+		contracts =
+				contractRegistry.getAffectedContracts(triggerType, consumerComponent);
+
+		triggerVocabulary.notifyEventListners(triggerType, contracts);
+
+		/* Wait for result. */
+		int loops;
+		loops = 0;
+
+		while (verificationResult == null) {
+			/* Wait some time to improve CPU performance. */
+			try {
+				Thread.sleep(WAIT_PAUSE_LENGTH);
+			}
+
+			catch (InterruptedException e) {
+				fail("Cannot ensure that testcase behaves determinisitc. Test failed.");
+			}
+			// end catch.
+
+			loops++;
+			if (loops > WAIT_TOTAL_LOOPS) {
+				fail("Verification result was not available.");
+			}
+			// no else.
+		}
+
+		/* Result should be positive. */
+		assertTrue(this.verificationResult);
+
+		/* Unregister as listener. */
+		triggeredVerifier.removeListener(this);
+	}
+
+	/**
+	 * <p>
+	 * A test case testing the Triggered Verification of the
+	 * {@link AbstractTriggeredVerifier} with a trigger that is not a sub trigger
+	 * of a super trigger defined in a {@link Contract}.
+	 * </p>
+	 * 
+	 * @throws TreatyException
+	 *           If thrown, the test case fails.
+	 * @throws URISyntaxException
+	 *           If thrown, the test case fails.
+	 */
+	@Test
+	public void testVerification05() throws TreatyException, URISyntaxException {
+
+		/* Prepare test data. */
+		TriggerRegistry triggerRegistry;
+		triggerRegistry = new TriggerRegistry();
+
+		ContractRegistry contractRegistry;
+		contractRegistry =
+				new ContractRegistry(new ResourceManagerMock(), triggerRegistry);
+
+		Component consumerComponent;
+		consumerComponent = new ComponentMock("consumercomponent");
+
+		Connector consumer;
+		consumer =
+				new ConnectorMock("consumercomponent.consumer", consumerComponent,
+						ConnectorType.CONSUMER);
+
+		Component supplierComponent;
+		supplierComponent = new ComponentMock("suppliercomponent");
+
+		Connector supplier;
+		supplier =
+				new ConnectorMock("suppliercomponent.supplier", supplierComponent,
+						ConnectorType.SUPPLIER);
+
+		Contract contract;
+		contract = this.createTestContract(TEST_CONTRACT_3);
+
+		contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
+				consumer, Role.CONSUMER);
+		contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contractRegistry
+				.getContracts(consumer, Role.CONSUMER).iterator().next(), supplier,
+				Role.SUPPLIER);
+
+		/* Create the verifier. */
+		AbstractTriggeredVerifier triggeredVerifier;
+		triggeredVerifier = new TriggeredVerifierMock();
+
+		/* Register as listener. */
+		triggeredVerifier.addListener(this);
+
+		/* Reset the verification result. */
+		this.verificationResult = null;
+
+		/* Should not Trigger verification. */
+		URI triggerType;
+		triggerType = new URI(TriggerVocabularyMock.NAME_TRIGGER_2);
+
+		AbstractTriggerVocabulary triggerVocabulary;
+		triggerVocabulary = new TriggerVocabularyMock();
+		triggerVocabulary.addEventListener(triggeredVerifier);
+		triggerRegistry.addTriggerVocabulary(triggerVocabulary);
+
+		Set<Contract> contracts;
+		contracts =
+				contractRegistry.getAffectedContracts(triggerType, consumerComponent);
+
+		triggerVocabulary.notifyEventListners(triggerType, contracts);
+
+		/* Wait for result. */
+		int loops;
+		loops = 0;
+
+		while (verificationResult == null) {
+			/* Wait some time to improve CPU performance. */
+			try {
+				Thread.sleep(WAIT_PAUSE_LENGTH);
+			}
+
+			catch (InterruptedException e) {
+				fail("Cannot ensure that testcase behaves determinisitc. Test failed.");
+			}
+			// end catch.
+
+			loops++;
+			if (loops > WAIT_TOTAL_LOOPS) {
+				break;
+			}
+			// no else.
+		}
+
+		/* Result should be null. */
+		assertNull(this.verificationResult);
 
 		/* Unregister as listener. */
 		triggeredVerifier.removeListener(this);
