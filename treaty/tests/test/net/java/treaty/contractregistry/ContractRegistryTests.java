@@ -48,6 +48,18 @@ import test.net.java.treaty.mocks.TriggerVocabularyMock;
  */
 public class ContractRegistryTests {
 
+	/** The location of the test {@link Contract}s used for testing. */
+	private static final String TEST_CONTRACT_LOCATION =
+			"tests/test/net/java/treaty/mocks/";
+
+	/** The name of a test {@link Contract} used for testing. */
+	private static final String TEST_CONTRACT_01 =
+			TEST_CONTRACT_LOCATION + "test03.contract";
+
+	/** The name of a test {@link Contract} used for testing. */
+	private static final String TEST_CONTRACT_02 =
+			TEST_CONTRACT_LOCATION + "test07.contract";
+
 	/** The URI of a trigger used for testing. */
 	private static URI triggerType1;
 
@@ -56,6 +68,9 @@ public class ContractRegistryTests {
 
 	/** The URI of a trigger used for testing. */
 	private static URI triggerType3;
+
+	/** The URI of a trigger used for testing. */
+	private static URI triggerType4;
 
 	/** The {@link TriggerRegistry} used during testing. */
 	private static TriggerRegistry triggerRegistry;
@@ -83,6 +98,10 @@ public class ContractRegistryTests {
 		triggerType3 =
 				triggerVocabularyMock
 						.getTrigger(TriggerVocabularyMock.NAME_DEFAULT_TRIGGER);
+
+		triggerType4 =
+				triggerVocabularyMock
+						.getTrigger(TriggerVocabularyMock.NAME_PARENT_TRIGGER_1);
 	}
 
 	/**
@@ -104,7 +123,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Legislator 1", componentMock, ConnectorType.CONSUMER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -176,7 +195,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Consumer 1", componentMock, ConnectorType.CONSUMER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -248,7 +267,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -288,7 +307,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -360,7 +379,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Consumer 1", componentMock, ConnectorType.CONSUMER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -404,7 +423,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Consumer 1", componentMock, ConnectorType.CONSUMER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -498,7 +517,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -591,7 +610,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -711,7 +730,7 @@ public class ContractRegistryTests {
 				new ConnectorMock("Supplier 1", componentMock, ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -838,7 +857,7 @@ public class ContractRegistryTests {
 						ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -936,7 +955,7 @@ public class ContractRegistryTests {
 						ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -1042,7 +1061,7 @@ public class ContractRegistryTests {
 						ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -1176,7 +1195,7 @@ public class ContractRegistryTests {
 						ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -1302,7 +1321,7 @@ public class ContractRegistryTests {
 						ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -1423,7 +1442,7 @@ public class ContractRegistryTests {
 						ConnectorType.SUPPLIER);
 
 		Contract contract;
-		contract = this.createTestContract();
+		contract = this.createTestContract(TEST_CONTRACT_01);
 
 		ResourceManagerMock resourceManagerMock;
 		resourceManagerMock = new ResourceManagerMock();
@@ -1488,13 +1507,223 @@ public class ContractRegistryTests {
 
 	/**
 	 * <p>
+	 * Tests the method
+	 * {@link ContractRegistry#getAffectedContracts(net.java.treaty.event.LifeCycleEvent)}
+	 * .
+	 * </p>
+	 * 
+	 * <p>
+	 * Tests the method using a trigger that is not defined in the
+	 * {@link Contract} but has a super trigger that is defined in the
+	 * {@link Contract}.
+	 * </p>
+	 */
+	@Test
+	public void testGetAffectedContracts07() throws TreatyException {
+
+		ComponentMock consumerComponentMock;
+		consumerComponentMock = new ComponentMock("Consumer Component 1");
+
+		ComponentMock supplier1ComponentMock;
+		supplier1ComponentMock = new ComponentMock("Supplier Component 1");
+
+		ComponentMock supplier2ComponentMock;
+		supplier2ComponentMock = new ComponentMock("Supplier Component 2");
+
+		ConnectorMock consumerMock;
+		consumerMock =
+				new ConnectorMock("Consumer 1", consumerComponentMock,
+						ConnectorType.CONSUMER);
+
+		ConnectorMock supplierMock1;
+		supplierMock1 =
+				new ConnectorMock("Supplier 1", supplier1ComponentMock,
+						ConnectorType.SUPPLIER);
+
+		ConnectorMock supplierMock2;
+		supplierMock2 =
+				new ConnectorMock("Supplier 2", supplier2ComponentMock,
+						ConnectorType.SUPPLIER);
+
+		Contract contract;
+		contract = this.createTestContract(TEST_CONTRACT_02);
+
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
+		ContractRegistry contractRegistry;
+		contractRegistry =
+				new ContractRegistry(resourceManagerMock, triggerRegistry);
+
+		/* Add the consumer contract. */
+		try {
+			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
+					consumerMock, Role.CONSUMER);
+		}
+
+		catch (TreatyException e) {
+			fail("Unexpected TreatyException: " + e.getMessage());
+		}
+		// end catch.
+
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				consumerComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
+
+		/* Add a supplier contract. */
+		try {
+			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
+					supplierMock1, Role.SUPPLIER);
+		}
+
+		catch (TreatyException e) {
+			fail("Unexpected TreatyException: " + e.getMessage());
+		}
+		// end catch.
+
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				consumerComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
+
+		/* Add a supplier contract. */
+		try {
+			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
+					supplierMock2, Role.SUPPLIER);
+		}
+
+		catch (TreatyException e) {
+			fail("Unexpected TreatyException: " + e.getMessage());
+		}
+		// end catch.
+
+		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+				consumerComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier1ComponentMock).size());
+		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+				supplier2ComponentMock).size());
+	}
+
+	/**
+	 * <p>
+	 * Tests the method
+	 * {@link ContractRegistry#getAffectedContracts(net.java.treaty.event.LifeCycleEvent)}
+	 * .
+	 * </p>
+	 * 
+	 * <p>
+	 * Tests the method using a trigger that is not defined in the
+	 * {@link Contract} but is a super trigger of the trigger that is defined in
+	 * the {@link Contract}.
+	 * </p>
+	 */
+	@Test
+	public void testGetAffectedContracts08() throws TreatyException {
+
+		ComponentMock consumerComponentMock;
+		consumerComponentMock = new ComponentMock("Consumer Component 1");
+
+		ComponentMock supplier1ComponentMock;
+		supplier1ComponentMock = new ComponentMock("Supplier Component 1");
+
+		ComponentMock supplier2ComponentMock;
+		supplier2ComponentMock = new ComponentMock("Supplier Component 2");
+
+		ConnectorMock consumerMock;
+		consumerMock =
+				new ConnectorMock("Consumer 1", consumerComponentMock,
+						ConnectorType.CONSUMER);
+
+		ConnectorMock supplierMock1;
+		supplierMock1 =
+				new ConnectorMock("Supplier 1", supplier1ComponentMock,
+						ConnectorType.SUPPLIER);
+
+		ConnectorMock supplierMock2;
+		supplierMock2 =
+				new ConnectorMock("Supplier 2", supplier2ComponentMock,
+						ConnectorType.SUPPLIER);
+
+		Contract contract;
+		contract = this.createTestContract(TEST_CONTRACT_01);
+
+		ResourceManagerMock resourceManagerMock;
+		resourceManagerMock = new ResourceManagerMock();
+		ContractRegistry contractRegistry;
+		contractRegistry =
+				new ContractRegistry(resourceManagerMock, triggerRegistry);
+
+		/* Add the consumer contract. */
+		try {
+			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
+					consumerMock, Role.CONSUMER);
+		}
+
+		catch (TreatyException e) {
+			fail("Unexpected TreatyException: " + e.getMessage());
+		}
+		// end catch.
+
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+				consumerComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+				supplier2ComponentMock).size());
+
+		/* Add a supplier contract. */
+		try {
+			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
+					supplierMock1, Role.SUPPLIER);
+		}
+
+		catch (TreatyException e) {
+			fail("Unexpected TreatyException: " + e.getMessage());
+		}
+		// end catch.
+
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+				consumerComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+				supplier2ComponentMock).size());
+
+		/* Add a supplier contract. */
+		try {
+			contractRegistry.updateContract(UpdateType.ADD_CONTRACT, contract,
+					supplierMock2, Role.SUPPLIER);
+		}
+
+		catch (TreatyException e) {
+			fail("Unexpected TreatyException: " + e.getMessage());
+		}
+		// end catch.
+
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+				consumerComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+				supplier1ComponentMock).size());
+		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+				supplier2ComponentMock).size());
+	}
+
+	/**
+	 * <p>
 	 * A helper method that initializes a simple {@link Contract} used during
 	 * testing.
 	 * </p>
 	 * 
+	 * @param fileName
+	 *          The file Name of the {@link Contract} that shall be created.
 	 * @return A simple {@link Contract} used during testing.
 	 */
-	private Contract createTestContract() {
+	private Contract createTestContract(String fileName) {
 
 		Contract result;
 		result = null;
@@ -1505,7 +1734,7 @@ public class ContractRegistryTests {
 		/* Try to read the contract. */
 		try {
 			File file;
-			file = new File("tests/test/net/java/treaty/mocks/test03.contract");
+			file = new File(fileName);
 
 			location = file.toURI().toURL();
 

@@ -92,7 +92,7 @@ public class TriggerRegistry implements TriggerVocabulary {
 		TriggerVocabulary triggerVocabulary;
 		triggerVocabulary = this.getTriggerVocabulary(triggerType);
 
-		return triggerVocabulary.getSubTriggers(triggerType);
+		return triggerVocabulary.getSuperTriggers(triggerType);
 	}
 
 	/**
