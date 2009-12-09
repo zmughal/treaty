@@ -24,7 +24,7 @@ import test.net.java.treaty.trigger.verification.AllVerificationTests;
  * @author Claas Wilke
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { AllVerificationTests.class })
+@Suite.SuiteClasses( { AllVerificationTests.class, TriggerOntologyTest.class })
 public class AllTriggerTests {
 	/*
 	 * This class remains completely empty, being used only as a holder for the
