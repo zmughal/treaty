@@ -12,12 +12,14 @@ package net.java.treaty.eclipse.ui.triggers;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.contractregistry.EclipseContractRegistry;
 import net.java.treaty.eclipse.trigger.AbstractEclipseTriggerVocabulary;
@@ -97,9 +99,30 @@ public class ManualTriggerVocabulary extends AbstractEclipseTriggerVocabulary {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getSubTriggers(java.net.URI)
+	 */
+	public Set<URI> getSubTriggers(URI triggerType) throws TreatyException {
+	
+		/* This vocabulary does not define hierarchical triggers. */
+		return Collections.emptySet();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.TriggerVocabulary#getSuperTriggers(java.net.URI)
+	 */
+	public Set<URI> getSuperTriggers(URI triggerType) throws TreatyException {
+	
+		/* This vocabulary does not define hierarchical triggers. */
+		return Collections.emptySet();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.event.TriggerVocabulary#getTriggerTypes()
 	 */
-	public Set<URI> getTriggerTypes() {
+	public Set<URI> getTriggers() {
 
 		return new HashSet<URI>(this.triggerTypes.values());
 	}
