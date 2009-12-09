@@ -10,7 +10,7 @@
 
 package net.java.treaty.eclipse.trigger;
 
-import net.java.treaty.trigger.AbstractTriggerVocabulary;
+import net.java.treaty.trigger.TriggerOntology;
 import net.java.treaty.trigger.TriggerVocabulary;
 
 /**
@@ -20,8 +20,7 @@ import net.java.treaty.trigger.TriggerVocabulary;
  * 
  * @author Claas Wilke
  */
-public abstract class AbstractEclipseTriggerVocabulary extends
-		AbstractTriggerVocabulary {
+public abstract class AbstractEclipseTriggerVocabulary extends TriggerOntology {
 
 	/**
 	 * <p>
