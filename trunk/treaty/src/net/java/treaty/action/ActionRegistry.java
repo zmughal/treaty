@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
 
 /**
@@ -36,8 +37,8 @@ public class ActionRegistry implements ActionVocabulary {
 	 * java.net.URI, java.util.Set)
 	 */
 	public void after(URI triggerType, URI actionType,
-			Set<VerificationReport> verificationReports) {
-	
+			Set<VerificationReport> verificationReports) throws TreatyException {
+
 		this.getActionVocabulary(actionType).after(triggerType, actionType,
 				verificationReports);
 	}
@@ -48,8 +49,8 @@ public class ActionRegistry implements ActionVocabulary {
 	 * java.net.URI, java.util.Set)
 	 */
 	public void before(URI triggerType, URI actionType,
-			Set<Contract> contractsToVerify) {
-	
+			Set<Contract> contractsToVerify) throws TreatyException {
+
 		this.getActionVocabulary(actionType).before(triggerType, actionType,
 				contractsToVerify);
 	}
@@ -58,7 +59,7 @@ public class ActionRegistry implements ActionVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.action.ActionVocabulary#getActionTypes()
 	 */
-	public Set<URI> getActionTypes() {
+	public Set<URI> getActionTypes() throws TreatyException {
 
 		Set<URI> result;
 		result = new HashSet<URI>();
@@ -76,7 +77,7 @@ public class ActionRegistry implements ActionVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.action.ActionVocabulary#isAfterAction(java.net.URI)
 	 */
-	public boolean isAfterAction(URI actionType) {
+	public boolean isAfterAction(URI actionType) throws TreatyException {
 
 		boolean result;
 
@@ -98,7 +99,7 @@ public class ActionRegistry implements ActionVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.action.ActionVocabulary#isBeforeAction(java.net.URI)
 	 */
-	public boolean isBeforeAction(URI actionType) {
+	public boolean isBeforeAction(URI actionType) throws TreatyException {
 
 		boolean result;
 
@@ -121,7 +122,7 @@ public class ActionRegistry implements ActionVocabulary {
 	 * @see
 	 * net.java.treaty.action.ActionVocabulary#isDefaultOnFailure(java.net.URI)
 	 */
-	public boolean isDefaultOnFailure(URI actionType) {
+	public boolean isDefaultOnFailure(URI actionType) throws TreatyException {
 
 		boolean result;
 
@@ -144,7 +145,7 @@ public class ActionRegistry implements ActionVocabulary {
 	 * @see
 	 * net.java.treaty.action.ActionVocabulary#isDefaultOnSuccess(java.net.URI)
 	 */
-	public boolean isDefaultOnSuccess(URI actionType) {
+	public boolean isDefaultOnSuccess(URI actionType) throws TreatyException {
 
 		boolean result;
 
@@ -168,8 +169,8 @@ public class ActionRegistry implements ActionVocabulary {
 	 * java.net.URI, net.java.treaty.VerificationReport)
 	 */
 	public void perform(URI triggerType, URI actionType,
-			VerificationReport verificationReport) {
-	
+			VerificationReport verificationReport) throws TreatyException {
+
 		this.getActionVocabulary(actionType).perform(triggerType, actionType,
 				verificationReport);
 	}
@@ -198,8 +199,12 @@ public class ActionRegistry implements ActionVocabulary {
 	 *          The type {@link URI} of action whose {@link ActionVocabulary}
 	 *          shall be returned.
 	 * @return The found {@link ActionVocabulary} or <code>null</code>.
+	 * @throws TreatyException
+	 *           Thrown if the given action does not exist in this
+	 *           {@link ActionVocabulary}.
 	 */
-	public ActionVocabulary getActionVocabulary(URI action) {
+	public ActionVocabulary getActionVocabulary(URI action)
+			throws TreatyException {
 
 		ActionVocabulary result;
 		result = null;
@@ -238,8 +243,11 @@ public class ActionRegistry implements ActionVocabulary {
 	 * 
 	 * @return All actions that shall be performed after finishing a verification
 	 *         as a {@link Set} of {@link URI}s.
+	 * @throws TreatyException
+	 *           Throw, if the initialization of the {@link ActionRegistry} or at
+	 *           least one of its {@link ActionVocabulary}s failed.
 	 */
-	public Set<URI> getAfterActions() {
+	public Set<URI> getAfterActions() throws TreatyException {
 
 		Set<URI> result;
 		result = new HashSet<URI>();
@@ -265,8 +273,11 @@ public class ActionRegistry implements ActionVocabulary {
 	 * 
 	 * @return All actions that shall be performed for the beginning of a
 	 *         verification as a {@link Set} of {@link URI}s.
+	 * @throws TreatyException
+	 *           Throw, if the initialization of the {@link ActionRegistry} or at
+	 *           least one of its {@link ActionVocabulary}s failed.
 	 */
-	public Set<URI> getBeforeActions() {
+	public Set<URI> getBeforeActions() throws TreatyException {
 
 		Set<URI> result;
 		result = new HashSet<URI>();
@@ -293,8 +304,11 @@ public class ActionRegistry implements ActionVocabulary {
 	 *          {@link Contract} for which the actions shall be returned.
 	 * @return All actions that shall be performed after finishing a
 	 *         {@link Contract}'s verification not successfully.
+	 * @throws TreatyException
+	 *           Throw, if the initialization of the {@link ActionRegistry} or at
+	 *           least one of its {@link ActionVocabulary}s failed.
 	 */
-	public Set<URI> getOnFailureActions(Contract contract) {
+	public Set<URI> getOnFailureActions(Contract contract) throws TreatyException {
 
 		Set<URI> result;
 		result = new HashSet<URI>();
@@ -322,8 +336,11 @@ public class ActionRegistry implements ActionVocabulary {
 	 *          {@link Contract} for which the actions shall be returned.
 	 * @return All actions that shall be performed after finishing a
 	 *         {@link Contract}'s verification successfully.
+	 * @throws TreatyException
+	 *           Throw, if the initialization of the {@link ActionRegistry} or at
+	 *           least one of its {@link ActionVocabulary}s failed.
 	 */
-	public Set<URI> getOnSuccessActions(Contract contract) {
+	public Set<URI> getOnSuccessActions(Contract contract) throws TreatyException {
 
 		Set<URI> result;
 		result = new HashSet<URI>();

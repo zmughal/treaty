@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
 
 /**
@@ -35,8 +36,11 @@ public interface ActionVocabulary {
 	 * 
 	 * @return A {@link Set} containing the {@link URI}s of all action types this
 	 *         {@link ActionVocabulary} defines.
+	 * @param TreatyException
+	 *          Thrown if the initialization of this {@link ActionVocabulary}
+	 *          failed.
 	 */
-	public Set<URI> getActionTypes();
+	public Set<URI> getActionTypes() throws TreatyException;
 
 	/**
 	 * <p>
@@ -49,8 +53,11 @@ public interface ActionVocabulary {
 	 *          The type ({@link URI}) of the action.
 	 * @return <code>true</code>, if the action is universal before starting a
 	 *         verification job.
+	 * @throws TreatyException
+	 *           Thrown if the given action does not exist in this
+	 *           {@link ActionVocabulary}.
 	 */
-	public boolean isBeforeAction(URI actionType);
+	public boolean isBeforeAction(URI actionType) throws TreatyException;
 
 	/**
 	 * <p>
@@ -63,8 +70,11 @@ public interface ActionVocabulary {
 	 *          The type ({@link URI}) of the action.
 	 * @return <code>true</code>, if the action is universal after finishing a
 	 *         verification job.
+	 * @throws TreatyException
+	 *           Thrown if the given action does not exist in this
+	 *           {@link ActionVocabulary}.
 	 */
-	public boolean isAfterAction(URI actionType);
+	public boolean isAfterAction(URI actionType) throws TreatyException;
 
 	/**
 	 * <p>
@@ -78,8 +88,11 @@ public interface ActionVocabulary {
 	 *          The type ({@link URI}) of the action.
 	 * @return <code>true</code>, if the action is universal for unsuccessful
 	 *         verification results.
+	 * @throws TreatyException
+	 *           Thrown if the given action does not exist in this
+	 *           {@link ActionVocabulary}.
 	 */
-	public boolean isDefaultOnFailure(URI actionType);
+	public boolean isDefaultOnFailure(URI actionType) throws TreatyException;
 
 	/**
 	 * <p>
@@ -93,8 +106,11 @@ public interface ActionVocabulary {
 	 *          The type ({@link URI}) of the action.
 	 * @return <code>true</code>, if the action is universal for successful
 	 *         verification results.
+	 * @throws TreatyException
+	 *           Thrown if the given action does not exist in this
+	 *           {@link ActionVocabulary}.
 	 */
-	public boolean isDefaultOnSuccess(URI actionType);
+	public boolean isDefaultOnSuccess(URI actionType) throws TreatyException;
 
 	/**
 	 * <p>
@@ -109,9 +125,12 @@ public interface ActionVocabulary {
 	 * @param verificationReports
 	 *          The {@link Set} of {@link VerificationReport}s describing the
 	 *          {@link Contract}s that have been verified.
+	 * @throws TreatyException
+	 *           Thrown if the given action does not exist in this
+	 *           {@link ActionVocabulary}.
 	 */
 	public void after(URI triggerType, URI actionType,
-			Set<VerificationReport> verificationReports);
+			Set<VerificationReport> verificationReports) throws TreatyException;
 
 	/**
 	 * <p>
@@ -125,9 +144,12 @@ public interface ActionVocabulary {
 	 *          The type of the action to be performed.
 	 * @param contractsToVerify
 	 *          The {@link Set} of {@link Contract}s that shall be verified.
+	 * @throws TreatyException
+	 *           Thrown if the given action does not exist in this
+	 *           {@link ActionVocabulary}.
 	 */
 	public void before(URI triggerType, URI actionType,
-			Set<Contract> contractsToVerify);
+			Set<Contract> contractsToVerify) throws TreatyException;
 
 	/**
 	 * <p>
@@ -143,7 +165,10 @@ public interface ActionVocabulary {
 	 * @param verificationReport
 	 *          The {@link VerificationReport} of the {@link Contract}s
 	 *          verification.
+	 * @throws TreatyException
+	 *           Thrown if the given action does not exist in this
+	 *           {@link ActionVocabulary}.
 	 */
 	public void perform(URI triggerType, URI actionType,
-			VerificationReport verificationReport);
+			VerificationReport verificationReport) throws TreatyException;
 }

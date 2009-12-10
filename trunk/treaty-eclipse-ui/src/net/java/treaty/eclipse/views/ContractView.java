@@ -1617,6 +1617,12 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 							+ "UI might not work as excepted.", e1);
 		}
 
+		catch (TreatyException e) {
+			Logger.warn(
+					"ContractView could not be un-registered at the UIActionVocabulary. "
+							+ "UI might not work as excepted.", e);
+		}
+
 		/* Disconnect from Contract Registry. */
 		EclipseContractRegistry.getInstance().removeContractRegistryListener(this);
 
@@ -1740,6 +1746,12 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			Logger.warn(
 					"ContractView could not be registered at the UIActionVocabulary. "
 							+ "UI might not work as excepted.", e1);
+		}
+
+		catch (TreatyException e) {
+			Logger.warn(
+					"ContractView could not be registered at the UIActionVocabulary. "
+							+ "UI might not work as excepted.", e);
 		}
 	}
 
