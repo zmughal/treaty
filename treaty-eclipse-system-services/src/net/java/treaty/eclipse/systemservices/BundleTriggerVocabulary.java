@@ -12,7 +12,7 @@ package net.java.treaty.eclipse.systemservices;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import net.java.treaty.Contract;
@@ -69,15 +69,15 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 	public static final String TRIGGER_TYPE_BUNDLE_RESOLVED =
 			NAME_SPACE_NAME + "#BundleResolved";
 
-	/** The name of the trigger type representing the start of a {@link Bundle}. */
-	public static final String TRIGGER_TYPE_BUNDLE_STARTED =
-			NAME_SPACE_NAME + "#BundleStarted";
-
 	/**
 	 * The name of the trigger type representing the starting of a {@link Bundle}.
 	 */
 	public static final String TRIGGER_TYPE_BUNDLE_STARTING =
 			NAME_SPACE_NAME + "#BundleStarting";
+
+	/** The name of the trigger type representing the start of a {@link Bundle}. */
+	public static final String TRIGGER_TYPE_BUNDLE_STARTED =
+			NAME_SPACE_NAME + "#BundleStarted";
 
 	/** The name of the trigger type representing the start of a {@link Bundle}. */
 	public static final String TRIGGER_TYPE_BUNDLE_STOPPED =
@@ -109,6 +109,130 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 	public static final String TRIGGER_TYPE_BUNDLE_UPDATED =
 			NAME_SPACE_NAME + "#BundleUpdated";
 
+	/** The name of the trigger type representing any type of {@link BundleEvent}. */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_EVENT =
+			NAME_SPACE_NAME + "#ConsumerBundleEvent";
+
+	/** The name of the trigger type representing the install of a {@link Bundle}. */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_INSTALLED =
+			NAME_SPACE_NAME + "#ConsumerBundleInstalled";
+
+	/**
+	 * The name of the trigger type representing the lazy activation of a
+	 * {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_LAZY_ACTIVATION =
+			NAME_SPACE_NAME + "#ConsumerBundleLazyActivation";
+
+	/**
+	 * The name of the trigger type representing the resolving of a {@link Bundle}
+	 * .
+	 */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_RESOLVED =
+			NAME_SPACE_NAME + "#ConsumerBundleResolved";
+
+	/**
+	 * The name of the trigger type representing the starting of a {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_STARTING =
+			NAME_SPACE_NAME + "#ConsumerBundleStarting";
+
+	/** The name of the trigger type representing the start of a {@link Bundle}. */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_STARTED =
+			NAME_SPACE_NAME + "#ConsumerBundleStarted";
+
+	/** The name of the trigger type representing the start of a {@link Bundle}. */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_STOPPED =
+			NAME_SPACE_NAME + "#ConsumerBundleStopped";
+
+	/**
+	 * The name of the trigger type representing the stopping of a {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_STOPPING =
+			NAME_SPACE_NAME + "#ConsumerBundleStopping";
+
+	/**
+	 * The name of the trigger type representing the uninstall of a {@link Bundle}
+	 * .
+	 */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_UNINSTALLED =
+			NAME_SPACE_NAME + "#ConsumerBundleUninstalled";
+
+	/**
+	 * The name of the trigger type representing the unresolving of a
+	 * {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_UNRESOLVED =
+			NAME_SPACE_NAME + "#ConsumerBundleUnresolved";
+
+	/**
+	 * The name of the trigger type representing the updating of a {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_CONSUMER_BUNDLE_UPDATED =
+			NAME_SPACE_NAME + "#ConsumerBundleUpdated";
+
+	/** The name of the trigger type representing any type of {@link BundleEvent}. */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_EVENT =
+			NAME_SPACE_NAME + "#SupplierBundleEvent";
+
+	/** The name of the trigger type representing the install of a {@link Bundle}. */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_INSTALLED =
+			NAME_SPACE_NAME + "#SupplierBundleInstalled";
+
+	/**
+	 * The name of the trigger type representing the lazy activation of a
+	 * {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_LAZY_ACTIVATION =
+			NAME_SPACE_NAME + "#SupplierBundleLazyActivation";
+
+	/**
+	 * The name of the trigger type representing the resolving of a {@link Bundle}
+	 * .
+	 */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_RESOLVED =
+			NAME_SPACE_NAME + "#SupplierBundleResolved";
+
+	/**
+	 * The name of the trigger type representing the starting of a {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_STARTING =
+			NAME_SPACE_NAME + "#SupplierBundleStarting";
+
+	/** The name of the trigger type representing the start of a {@link Bundle}. */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_STARTED =
+			NAME_SPACE_NAME + "#SupplierBundleStarted";
+
+	/** The name of the trigger type representing the start of a {@link Bundle}. */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_STOPPED =
+			NAME_SPACE_NAME + "#SupplierBundleStopped";
+
+	/**
+	 * The name of the trigger type representing the stopping of a {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_STOPPING =
+			NAME_SPACE_NAME + "#SupplierBundleStopping";
+
+	/**
+	 * The name of the trigger type representing the uninstall of a {@link Bundle}
+	 * .
+	 */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_UNINSTALLED =
+			NAME_SPACE_NAME + "#SupplierBundleUninstalled";
+
+	/**
+	 * The name of the trigger type representing the unresolving of a
+	 * {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_UNRESOLVED =
+			NAME_SPACE_NAME + "#SupplierBundleUnresolved";
+
+	/**
+	 * The name of the trigger type representing the updating of a {@link Bundle}.
+	 */
+	public static final String TRIGGER_TYPE_SUPPLIER_BUNDLE_UPDATED =
+			NAME_SPACE_NAME + "#SupplierBundleUpdated";
+
 	/** The location of this {@link TriggerOntology}'s ontology. */
 	private static final String ONTOLOGY_LOCATION = "vocabulary/bundle.owl";
 
@@ -138,73 +262,230 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 		try {
 			URI triggerType;
+			Set<Contract> contracts;
 
-			/* Fire general bundle event trigger. */
-			triggerType = new URI(TRIGGER_TYPE_BUNDLE_EVENT);
-			this.fireTrigger(event, triggerType);
+			EclipsePlugin eclipsePlugin;
+			eclipsePlugin =
+					EclipseAdapterFactory.getInstance().createEclipsePlugin(
+							event.getBundle());
 
-			/* Fire a type specific trigger as well. */
+			/* Fire a bundle trigger depending on event type. */
 			switch (event.getType()) {
 
 			case BundleEvent.INSTALLED:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_INSTALLED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_INSTALLED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_INSTALLED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			case BundleEvent.LAZY_ACTIVATION:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_LAZY_ACTIVATION);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_LAZY_ACTIVATION);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_LAZY_ACTIVATION);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			case BundleEvent.RESOLVED:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_RESOLVED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_RESOLVED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_RESOLVED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			case BundleEvent.STARTED:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_STARTED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_STARTED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_STARTED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			case BundleEvent.STARTING:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_STARTING);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_STARTING);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_STARTING);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			case BundleEvent.STOPPED:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_STOPPED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_STOPPED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_STOPPED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			case BundleEvent.STOPPING:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_STOPPING);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_STOPPING);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_STOPPING);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			case BundleEvent.UNINSTALLED:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_UNINSTALLED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_UNINSTALLED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_UNINSTALLED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			case BundleEvent.UNRESOLVED:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_UNRESOLVED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_UNRESOLVED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_UNRESOLVED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			case BundleEvent.UPDATED:
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_UPDATED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_CONSUMER_BUNDLE_UPDATED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.CONSUMER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
+
+				triggerType = new URI(TRIGGER_TYPE_SUPPLIER_BUNDLE_UPDATED);
+				contracts =
+						this.getContractsForRole(eclipsePlugin, BundleRole.SUPPLIER,
+								triggerType);
+				this.fireTrigger(event, triggerType, contracts);
 				break;
 
 			default:
 				triggerType = null;
 			}
 			// end switch.
-
-			if (triggerType != null) {
-				this.fireTrigger(event, triggerType);
-			}
-			// no else.
 		}
 		// end try.
 
@@ -277,30 +558,96 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 	 *          The {@link BundleEvent} causing the trigger.
 	 * @param triggerType
 	 *          The type of trigger to be fired.
+	 * @param contracts
+	 *          The {@link Contract}s for that the trigger shall be fired.
 	 */
-	private void fireTrigger(BundleEvent event, URI triggerType) {
-
-		EclipsePlugin eclipsePlugin;
-		eclipsePlugin =
-				EclipseAdapterFactory.getInstance().createEclipsePlugin(
-						event.getBundle());
-
-		Set<Contract> contracts;
-		try {
-			contracts =
-					EclipseContractRegistry.getInstance().getAffectedContracts(
-							triggerType, eclipsePlugin);
-		}
-
-		catch (TreatyException e) {
-			contracts = Collections.emptySet();
-			Logger.error("Unexpected TreatyException during BundleEvent handling."
-					+ " Trigger will not be fired.", e);
-		}
+	private void fireTrigger(BundleEvent event, URI triggerType,
+			Set<Contract> contracts) {
 
 		if (contracts.size() > 0) {
 			this.notifyEventListners(triggerType, contracts);
 		}
 		// no else.
+	}
+
+	/** Different roles a Bundle can play in a {@link Contract}. */
+	enum BundleRole {
+		CONSUMER, SUPPLIER, BOTH
+	};
+
+	/**
+	 * <p>
+	 * Returns all {@link Contract}s for that a given {@link EclipsePlugin} plays
+	 * a given {@link BundleRole}.
+	 * </p>
+	 * 
+	 * @param eclipsePlugin
+	 *          The {@link EclipsePlugin}.
+	 * @param role
+	 *          The {@link BundleRole}.
+	 * @param triggerType
+	 *          A {@link URI} representing the triggerType whose {@link Contract}s
+	 *          shall be returned.
+	 * @return A {@link Set} of {@link Contract}s.
+	 */
+	private Set<Contract> getContractsForRole(EclipsePlugin eclipsePlugin,
+			BundleRole role, URI triggerType) {
+
+		Set<Contract> result;
+		result = new HashSet<Contract>();
+
+		try {
+			Set<Contract> affectedContracts;
+
+			affectedContracts =
+					EclipseContractRegistry.getInstance().getAffectedContracts(
+							triggerType, eclipsePlugin);
+
+			/* Filter according to the role. */
+			switch (role) {
+
+			case CONSUMER:
+				for (Contract contract : affectedContracts) {
+					if (contract.getConsumer().getOwner().equals(eclipsePlugin)
+							&& !contract.getSupplier().getOwner().equals(eclipsePlugin)) {
+						result.add(contract);
+					}
+					// no else.
+				}
+				// end for.
+				break;
+
+			case SUPPLIER:
+				for (Contract contract : affectedContracts) {
+					if (!contract.getConsumer().getOwner().equals(eclipsePlugin)
+							&& contract.getSupplier().getOwner().equals(eclipsePlugin)) {
+						result.add(contract);
+					}
+					// no else.
+				}
+				// end for.
+				break;
+
+			case BOTH:
+				for (Contract contract : affectedContracts) {
+					if (contract.getConsumer().getOwner().equals(eclipsePlugin)
+							&& contract.getSupplier().getOwner().equals(eclipsePlugin)) {
+						result.add(contract);
+					}
+					// no else.
+				}
+				// end for.
+				break;
+
+			// no default.
+			}
+		}
+
+		catch (TreatyException e) {
+			Logger.error("Unexpected TreatyException during BundleEvent handling."
+					+ " Trigger will not be fired.", e);
+		}
+
+		return result;
 	}
 }
