@@ -10,6 +10,7 @@
 package net.java.treaty.eclipse.vocabulary.junit.ui;
 
 import java.net.URI;
+import java.net.URL;
 
 import net.java.treaty.eclipse.vocabulary.junit.JUnitVocabulary;
 
@@ -18,32 +19,84 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
- * Provider for icons representing types in user interfaces.
- * Extensions provide concrete subclasses.
+ * Provider for icons representing types in user interfaces. Extensions provide
+ * concrete subclasses.
+ * 
  * @author Jens Dietrich
  */
 
 public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
-	
+
 	/**
 	 * Get the icon
-	 * @param type the type
-	 * @param isVariable whether the resource is a variable
+	 * 
+	 * @param type
+	 *          the type
+	 * @param isVariable
+	 *          whether the resource is a variable
 	 * @return
 	 */
-	public Image getIcon(URI type,boolean isVariable) {
-		String t = type.toString();
-		ImageDescriptor d = null;
-		if (JUnitVocabulary.TESTCASE.equals(t)) {
-			d = isVariable?getImageDescriptor("icons/junit_var.gif"):getImageDescriptor("icons/junit.gif");
+	protected Image getIcon(URI type, boolean isVariable) {
+
+		String typeName;
+		typeName = type.toString();
+
+		ImageDescriptor imageDescriptor;
+		imageDescriptor = null;
+
+		if (JUnitVocabulary.TESTCASE.equals(typeName)) {
+
+			if (isVariable) {
+				imageDescriptor = this.getImageDescriptor("icons/junit_var.gif");
+			}
+
+			else {
+				imageDescriptor = this.getImageDescriptor("icons/junit.gif");
+			}
 		}
-		if (d!=null) {
-			return d.createImage();
+		// no else.
+
+		if (imageDescriptor != null) {
+			return imageDescriptor.createImage();
 		}
+		// no else.
+
 		return null;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.views.IconProvider#getIconURL(java.net.URI,
+	 * boolean)
+	 */
+	protected URL getIconURL(URI type, boolean isVariable) {
+
+		URL result;
+
+		String typeName;
+		typeName = type.toString();
+
+		result = null;
+
+		if (JUnitVocabulary.TESTCASE.equals(typeName)) {
+			if (isVariable) {
+				result =
+						Activator.getDefault().getBundle().getResource(
+								"icons/junit_var.gif");
+			}
+
+			else {
+				result =
+						Activator.getDefault().getBundle().getResource("icons/junit.gif");
+			}
+		}
+
+		return result;
+	}
+
 	private ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path); 
+
+		return AbstractUIPlugin
+				.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path);
 	}
 }
