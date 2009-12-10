@@ -276,7 +276,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_INSTALLED);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -297,7 +297,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_LAZY_ACTIVATION);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -318,7 +318,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_RESOLVED);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -339,7 +339,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_STARTED);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -360,7 +360,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_STARTING);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -381,7 +381,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_STOPPED);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -402,7 +402,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_STOPPING);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -423,7 +423,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_UNINSTALLED);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -444,7 +444,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_UNRESOLVED);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -465,7 +465,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 				triggerType = new URI(TRIGGER_TYPE_BUNDLE_UPDATED);
 				contracts =
-						this.getContractsForRole(eclipsePlugin, BundleRole.BOTH,
+						this.getContractsForRole(eclipsePlugin, BundleRole.ANY,
 								triggerType);
 				this.fireTrigger(event, triggerType, contracts);
 
@@ -572,7 +572,7 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 
 	/** Different roles a Bundle can play in a {@link Contract}. */
 	enum BundleRole {
-		CONSUMER, SUPPLIER, BOTH
+		CONSUMER, SUPPLIER, ANY
 	};
 
 	/**
@@ -628,15 +628,9 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 				// end for.
 				break;
 
-			case BOTH:
-				for (Contract contract : affectedContracts) {
-					if (contract.getConsumer().getOwner().equals(eclipsePlugin)
-							&& contract.getSupplier().getOwner().equals(eclipsePlugin)) {
-						result.add(contract);
-					}
-					// no else.
-				}
-				// end for.
+			case ANY:
+				
+				result = affectedContracts;
 				break;
 
 			// no default.
