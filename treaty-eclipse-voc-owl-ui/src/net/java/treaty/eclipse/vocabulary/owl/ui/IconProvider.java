@@ -10,6 +10,7 @@
 package net.java.treaty.eclipse.vocabulary.owl.ui;
 
 import java.net.URI;
+import java.net.URL;
 
 import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
 
@@ -31,7 +32,7 @@ public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
 	 * @see net.java.treaty.eclipse.views.IconProvider#getIcon(java.net.URI,
 	 * boolean)
 	 */
-	public org.eclipse.swt.graphics.Image getIcon(URI type, boolean isVariable) {
+	protected org.eclipse.swt.graphics.Image getIcon(URI type, boolean isVariable) {
 
 		String typeName = type.toString();
 		ImageDescriptor imageDescriptor = null;
@@ -52,6 +53,37 @@ public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
 			return imageDescriptor.createImage();
 		}
 		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.views.IconProvider#getIconURL(java.net.URI,
+	 * boolean)
+	 */
+	protected URL getIconURL(URI type, boolean isVariable) {
+
+		URL result;
+		result = null;
+
+		String typeName = type.toString();
+
+		if (OWLVocabulary.TYPE_NAME_ONTOLOGY.equals(typeName)) {
+
+			if (isVariable) {
+				result =
+						Activator.getDefault().getBundle().getResource(
+								"icons/ontology_var.gif");
+			}
+
+			else {
+				result =
+						Activator.getDefault().getBundle()
+								.getResource("icons/ontology.gif");
+			}
+		}
+		// no else.
+
+		return result;
 	}
 
 	/**

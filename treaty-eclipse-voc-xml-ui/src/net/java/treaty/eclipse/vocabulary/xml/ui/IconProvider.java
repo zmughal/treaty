@@ -10,6 +10,7 @@
 package net.java.treaty.eclipse.vocabulary.xml.ui;
 
 import java.net.URI;
+import java.net.URL;
 
 import net.java.treaty.vocabulary.builtins.xml.XMLVocabulary;
 
@@ -38,7 +39,7 @@ public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
 	 *          Indicates whether or not the resource is a variable.
 	 * @return The icon for a given type (as {@link URI}).
 	 */
-	public Image getIcon(URI type, boolean isVariable) {
+	protected Image getIcon(URI type, boolean isVariable) {
 
 		String typeName;
 		typeName = type.toString();
@@ -72,6 +73,44 @@ public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
 		else {
 			return null;
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.views.IconProvider#getIconURL(java.net.URI,
+	 * boolean)
+	 */
+	protected URL getIconURL(URI type, boolean isVariable) {
+
+		URL result;
+		result = null;
+
+		String typeName;
+		typeName = type.toString();
+
+		if (XMLVocabulary.TYPE_NAME_XML_SCHEMA.equals(typeName)) {
+			result =
+					isVariable ? Activator.getDefault().getBundle().getResource(
+							"icons/xsd_var.gif") : Activator.getDefault().getBundle()
+							.getResource("icons/xsd.gif");
+		}
+
+		else if (XMLVocabulary.TYPE_NAME_XML_INSTANCE.equals(typeName)) {
+			result =
+					isVariable ? Activator.getDefault().getBundle().getResource(
+							"icons/xml_var.gif") : Activator.getDefault().getBundle()
+							.getResource("icons/xml.gif");
+		}
+
+		else if (XMLVocabulary.TYPE_NAME_DTD.equals(typeName)) {
+			result =
+					isVariable ? Activator.getDefault().getBundle().getResource(
+							"icons/dtd_var.gif") : Activator.getDefault().getBundle()
+							.getResource("icons/dtd.gif");
+		}
+		// no else.
+
+		return result;
 	}
 
 	/**

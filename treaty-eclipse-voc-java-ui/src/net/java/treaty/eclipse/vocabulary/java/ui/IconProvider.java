@@ -10,6 +10,7 @@
 package net.java.treaty.eclipse.vocabulary.java.ui;
 
 import java.net.URI;
+import java.net.URL;
 
 import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
 
@@ -32,7 +33,7 @@ public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
 	 * @see net.java.treaty.eclipse.views.IconProvider#getIcon(java.net.URI,
 	 * boolean)
 	 */
-	public Image getIcon(URI type, boolean isVariable) {
+	protected Image getIcon(URI type, boolean isVariable) {
 
 		Image result;
 
@@ -68,6 +69,51 @@ public class IconProvider extends net.java.treaty.eclipse.views.IconProvider {
 
 		else {
 			result = null;
+		}
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.eclipse.views.IconProvider#getIconURL(java.net.URI,
+	 * boolean)
+	 */
+	protected URL getIconURL(URI type, boolean isVariable) {
+
+		URL result;
+		result = null;
+
+		String typeURI;
+		typeURI = type.toString();
+
+		if (JavaVocabulary.TYPE_INSTANTIABLE_CLASS.equals(typeURI)) {
+
+			if (isVariable) {
+				result =
+						Activator.getDefault().getBundle().getResource(
+								"icons/class_var.gif");
+			}
+
+			else {
+				result =
+						Activator.getDefault().getBundle().getResource("icons/class.gif");
+			}
+		}
+
+		else if (JavaVocabulary.TYPE_ABSTRACT_TYPE.equals(typeURI)) {
+
+			if (isVariable) {
+				result =
+						Activator.getDefault().getBundle().getResource(
+								"icons/interface_var.gif");
+			}
+
+			else {
+				result =
+						Activator.getDefault().getBundle().getResource(
+								"icons/interface.gif");
+			}
 		}
 
 		return result;
