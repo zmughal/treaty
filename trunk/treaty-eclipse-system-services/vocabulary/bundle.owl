@@ -1,0 +1,130 @@
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns="http://www.treaty.org/trigger/bundle#"
+  xml:base="http://www.treaty.org/trigger/bundle">
+  
+  <owl:Ontology rdf:about=""/>   
+  
+  <owl:Class rdf:ID="BundleEvent" />
+  <owl:Class rdf:ID="BundleInstalled">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleLazyActivation">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleResolved">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleStarted">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleStarting">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleStopped">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleStopping">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleUninstalled">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleUnresolved">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleUpdated">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+ 
+  <owl:Class rdf:ID="ConsumerBundleEvent">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleInstalled">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleInstalled"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleLazyActivation">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleLazyActivation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleResolved">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleResolved"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleStarted">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleStarting">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStarting"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleStopped">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStopped"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleStopping">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStopping"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleUninstalled">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUninstalled"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleUnresolved">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUnresolved"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleUpdated">
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUpdated"/>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SupplierBundleEvent">
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleInstalled">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleInstalled"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleLazyActivation">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleLazyActivation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleResolved">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleResolved"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleStarted">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleStarting">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStarting"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleStopped">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStopped"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleStopping">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStopping"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleUninstalled">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUninstalled"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleUnresolved">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUnresolved"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleUpdated">
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUpdated"/>
+  </owl:Class>
+  
+</rdf:RDF>
