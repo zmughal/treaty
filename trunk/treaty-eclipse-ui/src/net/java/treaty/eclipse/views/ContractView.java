@@ -659,17 +659,17 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 				parent.addChild(node);
 				this.addContractContentNodes(node, contract);
 
-				/* Add a node for instantiating extensions. */
-				node = new TreeParent(LABEL_INSTANCES);
-				parent.addChild(node);
-
-				/* Add children nodes for all extensions that instantiate the contract. */
 				List<EclipseExtension> eclipseExtensions;
 				eclipseExtensions =
 						new ArrayList<EclipseExtension>(eclipseExtensionPoint
 								.getExtensions());
 				Collections.sort(eclipseExtensions);
 
+				/* Add a node for instantiating extensions. */
+				node = new TreeParent(eclipseExtensions.size() + " " + LABEL_INSTANCES);
+				parent.addChild(node);
+
+				/* Add children nodes for all extensions that instantiate the contract. */
 				for (EclipseExtension eclipseExtension : eclipseExtensions) {
 					// TreeParent node2 = new TreeParent(x.getOwner());
 					// node.addChild(node2);
@@ -706,11 +706,12 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			Collections.sort(contracts);
 
 			for (Contract contract : contracts) {
-				TreeParent node2;
-				node2 = new TreeParent(contract);
-
-				node.addChild(node2);
-				this.addInstantiatedContractNodes(node2, contract);
+				// TreeParent node2;
+				// node2 = new TreeParent(contract);
+				//
+				// node.addChild(node2);
+				// this.addInstantiatedContractNodes(node2, contract);
+				this.addInstantiatedContractNodes(node, contract);
 			}
 			// end for.
 		}
@@ -823,6 +824,24 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 					this.addConditionNodes(parent, c, ownerTypes);
 				}
 				// end else.
+			}
+			// end for.
+
+			/* Add nodes for triggers. */
+			for (URI triggerType : contract.getTriggers()) {
+				this.addTriggerNode(parent, triggerType);
+			}
+			// end for.
+
+			/* Add nodes for on failure actions. */
+			for (URI actionType : contract.getOnVerificationFailsActions()) {
+				this.addActionNode(parent, actionType, KEY_ON_FAILURE_ACTION);
+			}
+			// end for.
+
+			/* Add nodes for on success actions. */
+			for (URI actionType : contract.getOnVerificationSucceedsActions()) {
+				this.addActionNode(parent, actionType, KEY_ON_SUCCESS_ACTION);
 			}
 			// end for.
 		}
@@ -1000,6 +1019,43 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 		/**
 		 * <p>
+		 * A helper method that adds nodes to a given {@link TreeParent} for a given
+		 * trigger (as a {@link URI}).
+		 * 
+		 * @param parent
+		 *          The {@link TreeParent} to that the nodes shall be added.
+		 * @param triggerType
+		 *          The trigger that shall be added.
+		 */
+		private void addTriggerNode(TreeParent parent, URI triggerType) {
+
+			parent.addChild(new TreeObject(new KeyValueNode(KEY_TRIGGER, triggerType
+					.toString())));
+		}
+
+		/**
+		 * <p>
+		 * A helper method that adds nodes to a given {@link TreeParent} for a given
+		 * action (as a {@link URI}).
+		 * </p>
+		 * 
+		 * @param parent
+		 *          The {@link TreeParent} to that the nodes shall be added.
+		 * @param actionType
+		 *          The action that shall be added.
+		 * @param kind
+		 *          Indentifies the type of action. Use either
+		 *          {@link ContractView#KEY_ON_FAILURE_ACTION} or
+		 *          {@link ContractView#KEY_ON_SUCCESS_ACTION}.
+		 */
+		private void addActionNode(TreeParent parent, URI actionType, String kind) {
+
+			parent.addChild(new TreeObject(new KeyValueNode(kind, actionType
+					.toString())));
+		}
+
+		/**
+		 * <p>
 		 * Returns a new {@link String} that is append to a given {@link String} and
 		 * describes a given {@link Connector}.
 		 * </p>
@@ -1144,6 +1200,22 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 						result = getIcon("link.gif");
 					}
 
+					else if (adaptedObject instanceof KeyValueNode
+							&& ((((KeyValueNode) adaptedObject).key
+									.equals(KEY_ON_SUCCESS_ACTION)) || ((KeyValueNode) adaptedObject).key
+									.equals(KEY_ON_FAILURE_ACTION))) {
+
+						/* (Action). */
+						result = getIcon("action.gif");
+					}
+
+					else if (adaptedObject instanceof KeyValueNode
+							&& (((KeyValueNode) adaptedObject).key.equals(KEY_TRIGGER))) {
+
+						/* (Action). */
+						result = getIcon("trigger.gif");
+					}
+
 					else if (node instanceof TreeParent) {
 						return PlatformUI.getWorkbench().getSharedImages().getImage(
 								ISharedImages.IMG_OBJ_FOLDER);
@@ -1263,6 +1335,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 					}
 
 					else if (adaptedObject instanceof KeyValueNode) {
+
 						KeyValueNode keyValueNode;
 						keyValueNode = (KeyValueNode) adaptedObject;
 
@@ -1515,6 +1588,15 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			return result;
 		}
 	}
+
+	/** Key used for {@link KeyValueNode}s representing actions. */
+	private static final String KEY_ON_FAILURE_ACTION = "onFailure";
+
+	/** Key used for {@link KeyValueNode}s representing actions. */
+	private static final String KEY_ON_SUCCESS_ACTION = "onSuccess";
+
+	/** Key used for {@link KeyValueNode}s representing triggers. */
+	private static final String KEY_TRIGGER = "verification caused by";
 
 	/** The number of the column used to display the {@link Contract}'s labels. */
 	private static int LABEL_COLUMN = 0;
