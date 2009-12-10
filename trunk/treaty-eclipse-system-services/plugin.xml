@@ -13,4 +13,12 @@
          point="net.java.treaty.eclipse.actionvocabulary">
           <actionvocabulary class="net.java.treaty.eclipse.systemservices.LoggerActionVocabulary" /> 
    </extension>
+   <extension
+         id="net.java.treaty.eclipse.systemservices.bundleaction"
+         name="Action Vocabulary for Bundles."
+         point="net.java.treaty.eclipse.actionvocabulary">
+      <actionvocabulary
+            class="net.java.treaty.eclipse.systemservices.BundleActionVocabulary">
+      </actionvocabulary>
+   </extension>
 </plugin>

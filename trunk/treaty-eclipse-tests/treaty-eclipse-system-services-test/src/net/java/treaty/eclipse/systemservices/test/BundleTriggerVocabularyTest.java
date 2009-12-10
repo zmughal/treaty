@@ -11,14 +11,16 @@
 package net.java.treaty.eclipse.systemservices.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import net.java.treaty.Contract;
@@ -82,7 +84,7 @@ public class BundleTriggerVocabularyTest {
 			PROVIDER_BUNDLE_1_ID + ".x1";
 
 	/** The maximum loops to wait for a verification result. */
-	private static final int WAIT_TOTAL_LOOPS = 40;
+	private static final int WAIT_TOTAL_LOOPS = 80;
 
 	/** The time to wait in a loop. */
 	private static final long WAIT_PAUSE_LENGTH = 50;
@@ -121,8 +123,8 @@ public class BundleTriggerVocabularyTest {
 	/** An {@link IExtension} used during testing. */
 	private static IExtension extension2;
 
-	/** Indicates whether or not an expected event has been fired. */
-	private Boolean wasRightEventFired;
+	/** Contains the triggers that have been fired. */
+	private List<URI> eventsFired = new ArrayList<URI>();
 
 	/**
 	 * <p>
@@ -226,7 +228,7 @@ public class BundleTriggerVocabularyTest {
 						BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_EVENT));
 
 		assertNotNull(subTriggers);
-		assertEquals(10, subTriggers.size());
+		assertEquals(32, subTriggers.size());
 
 		assertTrue(subTriggers.contains(new URI(
 				BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_INSTALLED)));
@@ -248,6 +250,52 @@ public class BundleTriggerVocabularyTest {
 				BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_UNRESOLVED)));
 		assertTrue(subTriggers.contains(new URI(
 				BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_UPDATED)));
+
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_EVENT)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_INSTALLED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_LAZY_ACTIVATION)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_RESOLVED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_STARTED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_STARTING)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_STOPPED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_STOPPING)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_UNINSTALLED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_UNRESOLVED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_UPDATED)));
+
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_EVENT)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_INSTALLED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_LAZY_ACTIVATION)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_RESOLVED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_STARTED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_STARTING)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_STOPPED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_STOPPING)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_UNINSTALLED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_UNRESOLVED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_UPDATED)));
 	}
 
 	/**
@@ -267,6 +315,33 @@ public class BundleTriggerVocabularyTest {
 		subTriggers =
 				bundleTriggerVocabulary.getSubTriggers(new URI(
 						BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_INSTALLED));
+
+		assertNotNull(subTriggers);
+		assertEquals(2, subTriggers.size());
+
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_INSTALLED)));
+		assertTrue(subTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_SUPPLIER_BUNDLE_INSTALLED)));
+	}
+
+	/**
+	 * <p>
+	 * Tests the method {@link BundleTriggerVocabulary#getSubTriggers(URI)}.
+	 * </p>
+	 * 
+	 * @throws URISyntaxException
+	 */
+	@Test
+	public void testSubTriggers03() throws TreatyException, URISyntaxException {
+
+		BundleTriggerVocabulary bundleTriggerVocabulary;
+		bundleTriggerVocabulary = new BundleTriggerVocabulary();
+
+		Set<URI> subTriggers;
+		subTriggers =
+				bundleTriggerVocabulary.getSubTriggers(new URI(
+						BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_INSTALLED));
 
 		assertNotNull(subTriggers);
 		assertEquals(0, subTriggers.size());
@@ -321,12 +396,43 @@ public class BundleTriggerVocabularyTest {
 
 	/**
 	 * <p>
+	 * Tests the method {@link BundleTriggerVocabulary#getSubTriggers(URI)}.
+	 * </p>
+	 * 
+	 * @throws URISyntaxException
+	 */
+	@Test
+	public void testSuperTriggers03() throws TreatyException, URISyntaxException {
+
+		BundleTriggerVocabulary bundleTriggerVocabulary;
+		bundleTriggerVocabulary = new BundleTriggerVocabulary();
+
+		Set<URI> superTriggers;
+		superTriggers =
+				bundleTriggerVocabulary.getSuperTriggers(new URI(
+						BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_INSTALLED));
+
+		assertNotNull(superTriggers);
+		assertEquals(3, superTriggers.size());
+
+		assertTrue(superTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_EVENT)));
+		assertTrue(superTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_INSTALLED)));
+		assertTrue(superTriggers.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_CONSUMER_BUNDLE_EVENT)));
+	}
+
+	/**
+	 * <p>
 	 * Tests that a {@link BundleEvent} causes the right trigger for verification
 	 * if the trigger is defined in a contract of the {@link Bundle}.
 	 * </p>
+	 * 
+	 * @throws URISyntaxException
 	 */
 	@Test
-	public void testBundleEvent01() {
+	public void testBundleEvent01() throws URISyntaxException {
 
 		/* Wait for the ContractRegistry getting ready. */
 		int loops;
@@ -362,7 +468,7 @@ public class BundleTriggerVocabularyTest {
 		BundleTriggerVocabulary bundleTriggerVocabulary;
 		bundleTriggerVocabulary = new BundleTriggerVocabulary();
 
-		this.wasRightEventFired = null;
+		this.eventsFired.clear();
 
 		/* Register a listener. */
 		bundleTriggerVocabulary.addEventListener(new EventListener() {
@@ -374,9 +480,7 @@ public class BundleTriggerVocabularyTest {
 			 */
 			public void update(URI triggerType, Set<Contract> contracts) {
 
-				wasRightEventFired =
-						BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_STARTED
-								.equals(triggerType.toString());
+				eventsFired.add(triggerType);
 			}
 		});
 
@@ -387,9 +491,7 @@ public class BundleTriggerVocabularyTest {
 		bundleTriggerVocabulary.bundleChanged(bundleEvent);
 
 		/* Wait for result. */
-		loops = 0;
-
-		while (wasRightEventFired == null) {
+		for (int index = 0; index <= WAIT_TOTAL_LOOPS; index++) {
 
 			/* Wait some time to improve CPU performance. */
 			try {
@@ -400,16 +502,14 @@ public class BundleTriggerVocabularyTest {
 				fail("Cannot ensure that testcase behaves determinisitc. Test failed.");
 			}
 			// end catch.
-
-			loops++;
-			if (loops > WAIT_TOTAL_LOOPS) {
-				fail("Triggered event was not available.");
-			}
-			// no else.
 		}
 		// end while.
 
-		assertTrue(wasRightEventFired);
+		assertFalse(eventsFired.isEmpty());
+		assertEquals(1, eventsFired.size());
+
+		assertTrue(eventsFired.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_STARTED)));
 	}
 
 	/**
@@ -456,7 +556,7 @@ public class BundleTriggerVocabularyTest {
 		BundleTriggerVocabulary bundleTriggerVocabulary;
 		bundleTriggerVocabulary = new BundleTriggerVocabulary();
 
-		this.wasRightEventFired = null;
+		this.eventsFired.clear();
 
 		/* Register a listener. */
 		bundleTriggerVocabulary.addEventListener(new EventListener() {
@@ -468,9 +568,7 @@ public class BundleTriggerVocabularyTest {
 			 */
 			public void update(URI triggerType, Set<Contract> contracts) {
 
-				wasRightEventFired =
-						BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_STARTED
-								.equals(triggerType.toString());
+				eventsFired.add(triggerType);
 			}
 		});
 
@@ -481,9 +579,7 @@ public class BundleTriggerVocabularyTest {
 		bundleTriggerVocabulary.bundleChanged(bundleEvent);
 
 		/* Wait for result. */
-		loops = 0;
-
-		while (wasRightEventFired == null) {
+		for (int index = 0; index < WAIT_TOTAL_LOOPS; index++) {
 
 			/* Wait some time to improve CPU performance. */
 			try {
@@ -494,16 +590,10 @@ public class BundleTriggerVocabularyTest {
 				fail("Cannot ensure that testcase behaves determinisitc. Test failed.");
 			}
 			// end catch.
-
-			loops++;
-			if (loops > WAIT_TOTAL_LOOPS) {
-				break;
-			}
-			// no else.
 		}
 		// end while.
 
-		assertNull(wasRightEventFired);
+		assertTrue(eventsFired.isEmpty());
 	}
 
 	/**
@@ -512,9 +602,11 @@ public class BundleTriggerVocabularyTest {
 	 * if the trigger not defined but a super trigger of the trigger is defined in
 	 * a contract of the {@link Bundle}.
 	 * </p>
+	 * 
+	 * @throws URISyntaxException
 	 */
 	@Test
-	public void testBundleEvent03() {
+	public void testBundleEvent03() throws URISyntaxException {
 
 		/* Wait for the ContractRegistry getting ready. */
 		int loops;
@@ -550,7 +642,7 @@ public class BundleTriggerVocabularyTest {
 		BundleTriggerVocabulary bundleTriggerVocabulary;
 		bundleTriggerVocabulary = new BundleTriggerVocabulary();
 
-		this.wasRightEventFired = null;
+		this.eventsFired.clear();
 
 		/* Register a listener. */
 		bundleTriggerVocabulary.addEventListener(new EventListener() {
@@ -562,22 +654,18 @@ public class BundleTriggerVocabularyTest {
 			 */
 			public void update(URI triggerType, Set<Contract> contracts) {
 
-				wasRightEventFired =
-						BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_STARTED
-								.equals(triggerType.toString());
+				eventsFired.add(triggerType);
 			}
 		});
 
 		/* Cause Event. */
 		BundleEvent bundleEvent;
-		bundleEvent = new BundleEvent(BundleEvent.STARTED, consumerBundle2);
+		bundleEvent = new BundleEvent(BundleEvent.STARTED, consumerBundle1);
 
 		bundleTriggerVocabulary.bundleChanged(bundleEvent);
 
 		/* Wait for result. */
-		loops = 0;
-
-		while (wasRightEventFired == null) {
+		for (int index = 0; index < WAIT_TOTAL_LOOPS; index++) {
 
 			/* Wait some time to improve CPU performance. */
 			try {
@@ -588,15 +676,13 @@ public class BundleTriggerVocabularyTest {
 				fail("Cannot ensure that testcase behaves determinisitc. Test failed.");
 			}
 			// end catch.
-
-			loops++;
-			if (loops > WAIT_TOTAL_LOOPS) {
-				fail("Triggered event was not available.");
-			}
-			// no else.
 		}
 		// end while.
 
-		assertTrue(wasRightEventFired);
+		assertFalse(eventsFired.isEmpty());
+		assertEquals(1, eventsFired.size());
+
+		assertTrue(eventsFired.contains(new URI(
+				BundleTriggerVocabulary.TRIGGER_TYPE_BUNDLE_STARTED)));
 	}
 }
