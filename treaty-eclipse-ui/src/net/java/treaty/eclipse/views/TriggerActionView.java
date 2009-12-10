@@ -439,9 +439,17 @@ public class TriggerActionView extends ViewPart implements
 			for (ActionVocabulary actionVocabulary : actionVocabularies) {
 
 				/* Add all triggers of the vocabulary. */
-				for (URI trigger : actionVocabulary.getActionTypes()) {
+				try {
+					for (URI trigger : actionVocabulary.getActionTypes()) {
 
-					this.addActionNodes(parent, trigger, actionVocabulary);
+						this.addActionNodes(parent, trigger, actionVocabulary);
+					}
+				}
+
+				catch (TreatyException e) {
+					Logger.error(
+							"Unexpected TreatyException during update of LoggerActionView.",
+							e);
 				}
 				// end for.
 			}
@@ -608,39 +616,28 @@ public class TriggerActionView extends ViewPart implements
 
 			else if (collumn == 1) {
 
-				if (triggerOrAction.getType() == TriggerOrActionType.Action) {
-					if (EclipseActionRegistry.INSTANCE.isDefaultOnFailure(triggerOrAction
-							.getUri())
-							&& EclipseActionRegistry.INSTANCE
-									.isDefaultOnSuccess(triggerOrAction.getUri())
-							&& EclipseActionRegistry.INSTANCE.isBeforeAction(triggerOrAction
-									.getUri())
-							&& EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
-									.getUri())) {
-						result = ICON_YES;
-					}
-
-					else if (EclipseActionRegistry.INSTANCE
-							.isDefaultOnFailure(triggerOrAction.getUri())
-							|| EclipseActionRegistry.INSTANCE
-									.isDefaultOnSuccess(triggerOrAction.getUri())
-							|| EclipseActionRegistry.INSTANCE.isBeforeAction(triggerOrAction
-									.getUri())
-							|| EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
-									.getUri())) {
-						result = ICON_PARTS;
-					}
-
-					else {
-						result = ICON_NO;
-					}
-				}
-
-				else if (triggerOrAction.getType() == TriggerOrActionType.Trigger) {
-					try {
-						if (EclipseTriggerRegistry.INSTANCE
-								.isDefaultTrigger(triggerOrAction.getUri())) {
+				try {
+					if (triggerOrAction.getType() == TriggerOrActionType.Action) {
+						if (EclipseActionRegistry.INSTANCE
+								.isDefaultOnFailure(triggerOrAction.getUri())
+								&& EclipseActionRegistry.INSTANCE
+										.isDefaultOnSuccess(triggerOrAction.getUri())
+								&& EclipseActionRegistry.INSTANCE
+										.isBeforeAction(triggerOrAction.getUri())
+								&& EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
+										.getUri())) {
 							result = ICON_YES;
+						}
+
+						else if (EclipseActionRegistry.INSTANCE
+								.isDefaultOnFailure(triggerOrAction.getUri())
+								|| EclipseActionRegistry.INSTANCE
+										.isDefaultOnSuccess(triggerOrAction.getUri())
+								|| EclipseActionRegistry.INSTANCE
+										.isBeforeAction(triggerOrAction.getUri())
+								|| EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
+										.getUri())) {
+							result = ICON_PARTS;
 						}
 
 						else {
@@ -648,11 +645,30 @@ public class TriggerActionView extends ViewPart implements
 						}
 					}
 
-					catch (TreatyException e) {
-						result = ICON_NO;
+					else if (triggerOrAction.getType() == TriggerOrActionType.Trigger) {
+						try {
+							if (EclipseTriggerRegistry.INSTANCE
+									.isDefaultTrigger(triggerOrAction.getUri())) {
+								result = ICON_YES;
+							}
+
+							else {
+								result = ICON_NO;
+							}
+						}
+
+						catch (TreatyException e) {
+							result = ICON_NO;
+						}
 					}
+					// no else.
 				}
-				// no else.
+
+				catch (TreatyException e) {
+					Logger.error(
+							"Unexpected TreatyException during update of LoggerActionView.",
+							e);
+				}
 			}
 
 			else if (collumn == 2) {
@@ -685,57 +701,67 @@ public class TriggerActionView extends ViewPart implements
 
 				if (triggerOrAction.getType() == TriggerOrActionType.Action) {
 
-					StringBuffer buffer;
-					buffer = new StringBuffer();
+					try {
+						StringBuffer buffer;
+						buffer = new StringBuffer();
 
-					if (EclipseActionRegistry.INSTANCE.isBeforeAction(triggerOrAction
-							.getUri())) {
-						buffer.append("before");
-					}
-					// no else.
-
-					if (EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
-							.getUri())) {
-
-						if (buffer.length() > 0) {
-							buffer.append(" / ");
+						if (EclipseActionRegistry.INSTANCE.isBeforeAction(triggerOrAction
+								.getUri())) {
+							buffer.append("before");
 						}
 						// no else.
 
-						buffer.append("after");
-					}
-					// no else.
+						if (EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
+								.getUri())) {
 
-					if (EclipseActionRegistry.INSTANCE.isDefaultOnFailure(triggerOrAction
-							.getUri())) {
+							if (buffer.length() > 0) {
+								buffer.append(" / ");
+							}
+							// no else.
 
-						if (buffer.length() > 0) {
-							buffer.append(" / ");
+							buffer.append("after");
 						}
 						// no else.
 
-						buffer.append("onFailure");
-					}
-					// no else.
+						if (EclipseActionRegistry.INSTANCE
+								.isDefaultOnFailure(triggerOrAction.getUri())) {
 
-					if (EclipseActionRegistry.INSTANCE.isDefaultOnSuccess(triggerOrAction
-							.getUri())) {
+							if (buffer.length() > 0) {
+								buffer.append(" / ");
+							}
+							// no else.
 
-						if (buffer.length() > 0) {
-							buffer.append(" / ");
+							buffer.append("onFailure");
 						}
 						// no else.
 
-						buffer.append("onSuccess");
-					}
-					// no else.
+						if (EclipseActionRegistry.INSTANCE
+								.isDefaultOnSuccess(triggerOrAction.getUri())) {
 
-					if (buffer.length() == 0) {
-						buffer.append("no");
-					}
-					// no else.
+							if (buffer.length() > 0) {
+								buffer.append(" / ");
+							}
+							// no else.
 
-					result = buffer.toString();
+							buffer.append("onSuccess");
+						}
+						// no else.
+
+						if (buffer.length() == 0) {
+							buffer.append("no");
+						}
+						// no else.
+
+						result = buffer.toString();
+					}
+
+					catch (TreatyException e) {
+						Logger
+								.error(
+										"Unexpected TreatyException during update of LoggerActionView.",
+										e);
+						result = "";
+					}
 				}
 
 				else if (triggerOrAction.getType() == TriggerOrActionType.Trigger) {

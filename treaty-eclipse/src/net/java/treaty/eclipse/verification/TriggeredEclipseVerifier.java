@@ -15,7 +15,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
+import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.action.EclipseActionRegistry;
 import net.java.treaty.trigger.verification.AbstractTriggeredVerifier;
 
@@ -179,8 +181,15 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 	protected void performActionBeginVerification(URI triggerType,
 			Set<Contract> contracts) {
 
-		for (URI actionType : EclipseActionRegistry.INSTANCE.getBeforeActions()) {
-			EclipseActionRegistry.INSTANCE.before(triggerType, actionType, contracts);
+		try {
+			for (URI actionType : EclipseActionRegistry.INSTANCE.getBeforeActions()) {
+				EclipseActionRegistry.INSTANCE.before(triggerType, actionType,
+						contracts);
+			}
+		}
+
+		catch (TreatyException e) {
+			Logger.error("Unexpected TreatyException during performing actions.", e);
 		}
 	}
 
@@ -192,9 +201,15 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 	protected void performActionEndVerification(URI triggerType,
 			Set<VerificationReport> verificationReports) {
 
-		for (URI actionType : EclipseActionRegistry.INSTANCE.getAfterActions()) {
-			EclipseActionRegistry.INSTANCE.after(triggerType, actionType,
-					verificationReports);
+		try {
+			for (URI actionType : EclipseActionRegistry.INSTANCE.getAfterActions()) {
+				EclipseActionRegistry.INSTANCE.after(triggerType, actionType,
+						verificationReports);
+			}
+		}
+
+		catch (TreatyException e) {
+			Logger.error("Unexpected TreatyException during performing actions.", e);
 		}
 	}
 
@@ -207,10 +222,16 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 	protected void performActionVerificationOfContractFailed(URI triggerType,
 			Contract contract, VerificationReport verificationReport) {
 
-		for (URI actionType : EclipseActionRegistry.INSTANCE
-				.getOnFailureActions(contract)) {
-			EclipseActionRegistry.INSTANCE.perform(triggerType, actionType,
-					verificationReport);
+		try {
+			for (URI actionType : EclipseActionRegistry.INSTANCE
+					.getOnFailureActions(contract)) {
+				EclipseActionRegistry.INSTANCE.perform(triggerType, actionType,
+						verificationReport);
+			}
+		}
+
+		catch (TreatyException e) {
+			Logger.error("Unexpected TreatyException during performing actions.", e);
 		}
 
 		this.notifyListenersVerificationSucceeded(triggerType, contract);
@@ -225,10 +246,16 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 	protected void performActionVerificationOfContractSucceeded(URI triggerType,
 			Contract contract, VerificationReport verificationReport) {
 
-		for (URI actionType : EclipseActionRegistry.INSTANCE
-				.getOnSuccessActions(contract)) {
-			EclipseActionRegistry.INSTANCE.perform(triggerType, actionType,
-					verificationReport);
+		try {
+			for (URI actionType : EclipseActionRegistry.INSTANCE
+					.getOnSuccessActions(contract)) {
+				EclipseActionRegistry.INSTANCE.perform(triggerType, actionType,
+						verificationReport);
+			}
+		}
+
+		catch (TreatyException e) {
+			Logger.error("Unexpected TreatyException during performing actions.", e);
 		}
 
 		this.notifyListenersVerificationSucceeded(triggerType, contract);
