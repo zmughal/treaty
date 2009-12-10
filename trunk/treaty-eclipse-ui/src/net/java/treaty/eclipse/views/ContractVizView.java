@@ -16,10 +16,13 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Stroke;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+
 import net.java.treaty.AbstractCondition;
 import net.java.treaty.Annotatable;
 import net.java.treaty.Connector;
@@ -33,15 +36,11 @@ import net.java.treaty.VerificationResult;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseExtension;
 import net.java.treaty.eclipse.EclipseExtensionPoint;
-import net.java.treaty.viz.ContractView.Node;
-
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.snippets.Snippet156;
 
 /**
  * <p>
- * The {@link ContractVizView} can be used to display one
- * {@link Contract} instance in a graph-based view.
+ * The {@link ContractVizView} can be used to display one {@link Contract}
+ * instance in a graph-based view.
  * </p>
  * 
  * @author Claas Wilke
@@ -53,8 +52,7 @@ public class ContractVizView extends net.java.treaty.viz.ContractView {
 
 	/**
 	 * <p>
-	 * Creates a new {@link ContractVizView} for a given
-	 * {@link Contract}.
+	 * Creates a new {@link ContractVizView} for a given {@link Contract}.
 	 * </p>
 	 */
 	public ContractVizView() {
@@ -73,11 +71,11 @@ public class ContractVizView extends net.java.treaty.viz.ContractView {
 		boolean isVariable;
 		isVariable = resource.getName() == null;
 
-		Image image;
-		image = IconProvider.findIcon(resource.getType(), isVariable);
+		URL iconURL;
+		iconURL = IconProvider.findIconURL(resource.getType(), isVariable);
 
-		if (image != null) {
-			result = new ImageIcon(Snippet156.convertToAWT(image.getImageData()));
+		if (iconURL != null) {
+			result = new ImageIcon(iconURL);
 		}
 
 		else {
@@ -192,7 +190,7 @@ public class ContractVizView extends net.java.treaty.viz.ContractView {
 			// no else.
 
 			properties.put("id", connector.getId());
-			properties.put("plugin (owner)",connector.getOwner().getId());
+			properties.put("plugin (owner)", connector.getOwner().getId());
 		}
 
 		else {

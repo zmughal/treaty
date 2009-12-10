@@ -10,6 +10,7 @@
 package net.java.treaty.eclipse.views;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,9 @@ public abstract class IconProvider {
 
 	/** A {@link List} of Icons used already. */
 	private static Map<String, Image> icons = new HashMap<String, Image>();
+
+	/** A {@link List} of {@link URL}s of Icons used already. */
+	private static Map<String, URL> urls = new HashMap<String, URL>();
 
 	/**
 	 * <p>
@@ -90,6 +94,53 @@ public abstract class IconProvider {
 
 	/**
 	 * <p>
+	 * Searches for an icon (as an {@link Image}) for a given type (as {@link URI}
+	 * ).
+	 * </p>
+	 * 
+	 * @param type
+	 *          The type whose icon shall be returned.
+	 * @param isVariable
+	 *          Indicates whether or not the resource is a variable.
+	 * @return The icon (as a {@link URL}) for a given type (as {@link URI}).
+	 */
+	public static URL findIconURL(URI type, boolean isVariable) {
+
+		URL result;
+		String name;
+
+		name = type.toString();
+
+		if (isVariable) {
+			name += "_v";
+		}
+
+		else {
+			name += "_c";
+		}
+
+		result = urls.get(name);
+
+		if (result == null) {
+
+			for (IconProvider provider : getProviders()) {
+				result = provider.getIconURL(type, isVariable);
+
+				if (result != null) {
+					urls.put(name, result);
+					break;
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// no else.
+
+		return result;
+	}
+
+	/**
+	 * <p>
 	 * Clears the lists of {@link IconProvider}s and icons. Disposes all
 	 * {@link Image}s.
 	 * </p>
@@ -118,6 +169,19 @@ public abstract class IconProvider {
 	 * @return The icon (as an {@link Image}) for a given type (as {@link URI}).
 	 */
 	protected abstract Image getIcon(URI type, boolean isVariable);
+
+	/**
+	 * <p>
+	 * Returns the icon (as a {@link URL}) for a given type (as {@link URI}).
+	 * </p>
+	 * 
+	 * @param type
+	 *          The type whose icon shall be returned.
+	 * @param isVariable
+	 *          Indicates whether or not the resource is a variable.
+	 * @return The icon (as a {@link URL}) for a given type (as {@link URI}).
+	 */
+	protected abstract URL getIconURL(URI type, boolean isVariable);
 
 	/**
 	 * <p>
