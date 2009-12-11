@@ -6,7 +6,8 @@ Bundle-Version: 2.0.0
 Bundle-Activator: net.java.treaty.eclipse.example.clock.Activator
 Bundle-Vendor: Jens Dietrich, Massey University
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ net.java.treaty.eclipse.vocabulary.junit;bundle-version="2.0.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: net.java.treaty.eclipse.example.clock
 Bundle-ClassPath: .,
