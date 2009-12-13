@@ -1,0 +1,70 @@
+-- This file contains some OCL constraints that specify the class diagram
+-- contained in treaty.vpp in more details.
+
+
+context Contract
+derive isInstantiated: Boolean =
+(not self.consumer.oclIsUndefined())
+and
+(not self.supplier.oclIsUndefined())
+and
+(self.constraints->forAll(isInstantiated()))
+
+
+context Component
+derive contracts : Set(Contract) =
+Contract.allInstances()
+  ->select(contract : Contract | 
+    contract.supplier.owner = self or contract.consumer.owner = self)
+
+
+context ContractParty
+derive roles: Set(Role) =
+self.getVocabularyContributorRole()
+->including(self.getConsumerRole())
+->including(self.getSupplierRole())
+->including(self.getLegislatorRole())
+->including(self.getExternalLegislatorRole())
+
+-- Returns a Set containing the VocabularyContributor role
+-- or an empty Set.
+def getVocabularyContributorRole(): Set(Role) =
+if (self.contract.consumer.oclIsKindOf(VocabularyContribution) 
+    and self.contract.consumer.owner = self.component)
+  then Set { Role:VocabularyContributor }
+  else Set { }
+endif
+
+-- Returns a Set containing the Consumer role
+-- or an empty Set.
+def getConsumerRole(): Set(Role) =
+if (self.contract.consumer.owner = self.component)
+  then Set { Role:Consumer }
+  else Set { }
+endif
+
+-- Returns a Set containing the Supplier role
+-- or an empty Set.
+def getSupplierRole(): Set(Role) =
+if (self.contract.supplier.owner = self.component)
+  then Set { Role:Supplier }
+  else Set { }
+endif
+
+-- Returns a Set containing the Legislator role
+-- or an empty Set.
+def getLegislatorRole(): Set(Role) =
+if self.contract.owner.owner = self.component
+  then Set { Role:Legislator }
+  else Set { }
+endif
+
+-- Returns a Set containing the ExternalLegislator role
+-- or an empty Set.
+def getLegislatorRole(): Set(Role) =
+if (self.contract.owner.owner = self.component
+    and (self.contract.owner <> self.contract.supplier
+         and self.contract.owner <> self.contract.consumer))
+  then Set { Role:ExternalLegislator }
+  else Set { }
+endif
