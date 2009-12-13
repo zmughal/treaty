@@ -61,16 +61,16 @@ public class ContractRegistryTests {
 			TEST_CONTRACT_LOCATION + "test07.contract";
 
 	/** The URI of a trigger used for testing. */
-	private static URI triggerType1;
+	private static URI trigger1;
 
 	/** The URI of a trigger used for testing. */
-	private static URI triggerType2;
+	private static URI trigger2;
 
 	/** The URI of a trigger used for testing. */
-	private static URI triggerType3;
+	private static URI defaultTrigger;
 
 	/** The URI of a trigger used for testing. */
-	private static URI triggerType4;
+	private static URI parentTrigger1;
 
 	/** The {@link TriggerRegistry} used during testing. */
 	private static TriggerRegistry triggerRegistry;
@@ -89,17 +89,17 @@ public class ContractRegistryTests {
 		triggerRegistry = new TriggerRegistry();
 		triggerRegistry.addTriggerVocabulary(triggerVocabularyMock);
 
-		triggerType1 =
+		trigger1 =
 				triggerVocabularyMock.getTrigger(TriggerVocabularyMock.NAME_TRIGGER_1);
 
-		triggerType2 =
+		trigger2 =
 				triggerVocabularyMock.getTrigger(TriggerVocabularyMock.NAME_TRIGGER_2);
 
-		triggerType3 =
+		defaultTrigger =
 				triggerVocabularyMock
 						.getTrigger(TriggerVocabularyMock.NAME_DEFAULT_TRIGGER);
 
-		triggerType4 =
+		parentTrigger1 =
 				triggerVocabularyMock
 						.getTrigger(TriggerVocabularyMock.NAME_PARENT_TRIGGER_1);
 	}
@@ -876,11 +876,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -894,11 +894,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumerComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -912,11 +912,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(2, contractRegistry.getAffectedContracts(trigger1,
 				consumerComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 	}
 
@@ -974,11 +974,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer2ComponentMock).size());
 
 		/* Add a consumer contract. */
@@ -992,11 +992,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer2ComponentMock).size());
 
 		/* Add a consumer contract. */
@@ -1010,11 +1010,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(2, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumer2ComponentMock).size());
 	}
 
@@ -1080,13 +1080,13 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				legislator1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 
 		/* Add the consumer contract. */
@@ -1100,13 +1100,13 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				legislator1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1121,13 +1121,13 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				legislator1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1142,13 +1142,13 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				legislator1ComponentMock).size());
-		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(2, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 	}
 
@@ -1214,13 +1214,13 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				legislator1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer2ComponentMock).size());
 
 		/* Add the supplier contract. */
@@ -1234,13 +1234,13 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				legislator1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer2ComponentMock).size());
 
 		/* Add a consumer contract. */
@@ -1255,13 +1255,13 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				legislator1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumer2ComponentMock).size());
 
 		/* Add a consumer contract. */
@@ -1276,13 +1276,13 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				legislator1ComponentMock).size());
-		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(2, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumer1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumer2ComponentMock).size());
 	}
 
@@ -1340,17 +1340,17 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger2,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger2,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger2,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1364,17 +1364,17 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumerComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger2,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger2,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger2,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1388,17 +1388,17 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(2, contractRegistry.getAffectedContracts(trigger1,
 				consumerComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger2,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger2,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType2,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger2,
 				supplier2ComponentMock).size());
 	}
 
@@ -1461,11 +1461,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType3,
+		assertEquals(0, contractRegistry.getAffectedContracts(defaultTrigger,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType3,
+		assertEquals(0, contractRegistry.getAffectedContracts(defaultTrigger,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType3,
+		assertEquals(0, contractRegistry.getAffectedContracts(defaultTrigger,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1479,11 +1479,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType3,
+		assertEquals(1, contractRegistry.getAffectedContracts(defaultTrigger,
 				consumerComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType3,
+		assertEquals(1, contractRegistry.getAffectedContracts(defaultTrigger,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType3,
+		assertEquals(0, contractRegistry.getAffectedContracts(defaultTrigger,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1497,11 +1497,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(2, contractRegistry.getAffectedContracts(triggerType3,
+		assertEquals(2, contractRegistry.getAffectedContracts(defaultTrigger,
 				consumerComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType3,
+		assertEquals(1, contractRegistry.getAffectedContracts(defaultTrigger,
 				supplier1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType3,
+		assertEquals(1, contractRegistry.getAffectedContracts(defaultTrigger,
 				supplier2ComponentMock).size());
 	}
 
@@ -1565,11 +1565,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1583,11 +1583,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				consumerComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(0, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1601,11 +1601,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(2, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(2, contractRegistry.getAffectedContracts(trigger1,
 				consumerComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier1ComponentMock).size());
-		assertEquals(1, contractRegistry.getAffectedContracts(triggerType1,
+		assertEquals(1, contractRegistry.getAffectedContracts(trigger1,
 				supplier2ComponentMock).size());
 	}
 
@@ -1669,11 +1669,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+		assertEquals(0, contractRegistry.getAffectedContracts(parentTrigger1,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+		assertEquals(0, contractRegistry.getAffectedContracts(parentTrigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+		assertEquals(0, contractRegistry.getAffectedContracts(parentTrigger1,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1687,11 +1687,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+		assertEquals(0, contractRegistry.getAffectedContracts(parentTrigger1,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+		assertEquals(0, contractRegistry.getAffectedContracts(parentTrigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+		assertEquals(0, contractRegistry.getAffectedContracts(parentTrigger1,
 				supplier2ComponentMock).size());
 
 		/* Add a supplier contract. */
@@ -1705,11 +1705,11 @@ public class ContractRegistryTests {
 		}
 		// end catch.
 
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+		assertEquals(0, contractRegistry.getAffectedContracts(parentTrigger1,
 				consumerComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+		assertEquals(0, contractRegistry.getAffectedContracts(parentTrigger1,
 				supplier1ComponentMock).size());
-		assertEquals(0, contractRegistry.getAffectedContracts(triggerType4,
+		assertEquals(0, contractRegistry.getAffectedContracts(parentTrigger1,
 				supplier2ComponentMock).size());
 	}
 

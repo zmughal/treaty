@@ -218,6 +218,24 @@ public class Contract extends PropertySupport implements ConditionContext,
 				visitor.endVisitConditions(this.myConstraints);
 			}
 			// no else.
+
+			/* Visit the triggers of this Contract. */
+			for (URI triggerType : this.myTriggers) {
+				visitor.visitTrigger(triggerType);
+			}
+			// end for.
+
+			/* Visit the onFailureActions of this Contract. */
+			for (URI actionType : this.myOnVerificationFailsActions) {
+				visitor.visitOnFailureAction(actionType);
+			}
+			// end for.
+
+			/* Visit the onSuccessActions of this Contract. */
+			for (URI actionType : this.myOnVerificationSucceedsActions) {
+				visitor.visitOnSuccessAction(actionType);
+			}
+			// end for.
 		}
 		// no else (visitor will not enter).
 
