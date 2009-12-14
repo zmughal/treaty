@@ -475,26 +475,20 @@ public class VocabularyView extends ViewPart implements
 				Iterator<? extends OntProperty> subPropertyIterator;
 				subPropertyIterator = ontProperty.listSubProperties(true);
 
+				TreeParent node;
+				node = new TreeParent(ontProperty);
+
 				/* Probably add children as well. */
 				if (subPropertyIterator.hasNext()) {
-					TreeParent node;
-					node = new TreeParent(ontProperty);
 
 					while (subPropertyIterator.hasNext()) {
 						this.addNodes(node, subPropertyIterator.next(), level + 1);
 					}
 					// end while.
-
-					parent.addChild(node);
 				}
+				// no else.
 
-				else {
-					TreeObject node;
-					node = new TreeObject(ontProperty);
-
-					parent.addChild(node);
-				}
-				// end else.
+				parent.addChild(node);
 			}
 			// no else.
 		}
