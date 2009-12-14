@@ -13,7 +13,8 @@ package net.java.treaty.viz;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;import java.awt.LayoutManager;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Stroke;
@@ -54,16 +55,16 @@ import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import net.java.treaty.Condition;
 import net.java.treaty.Annotatable;
 import net.java.treaty.ComplexCondition;
-import net.java.treaty.Conjunction;
+import net.java.treaty.ConjunctiveCondition;
 import net.java.treaty.Connector;
 import net.java.treaty.Contract;
-import net.java.treaty.Disjunction;
+import net.java.treaty.DisjunctiveCondition;
 import net.java.treaty.ExistsCondition;
-import net.java.treaty.Negation;
+import net.java.treaty.NegatedCondition;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
-import net.java.treaty.XDisjunction;
+import net.java.treaty.ExclusiveDisjunctiveCondition;
 
 /**
  * Swing component to visualise contracts.
@@ -580,11 +581,11 @@ public class ContractView extends JPanel {
 		if (c instanceof ComplexCondition) {
 			ComplexCondition cplxCond = (ComplexCondition) c;
 			CompositionNodeType type = null;
-			if (cplxCond instanceof Conjunction)
+			if (cplxCond instanceof ConjunctiveCondition)
 				type = CompositionNodeType.AND;
-			else if (cplxCond instanceof Disjunction)
+			else if (cplxCond instanceof DisjunctiveCondition)
 				type = CompositionNodeType.OR;
-			else if (cplxCond instanceof XDisjunction)
+			else if (cplxCond instanceof ExclusiveDisjunctiveCondition)
 				type = CompositionNodeType.XOR;
 			CompositionNode comp1 = new CompositionNode(type,cplxCond);
 			graph.addVertex(comp1);
@@ -604,8 +605,8 @@ public class ContractView extends JPanel {
 					if (c instanceof RelationshipCondition) {
 						return 1;
 					}
-					else if (c instanceof Negation) {
-						return countRelationshipConditions(((Negation)c).getNegatedCondition());
+					else if (c instanceof NegatedCondition) {
+						return countRelationshipConditions(((NegatedCondition)c).getNegatedCondition());
 					}
 					else if (c instanceof ComplexCondition) {
 						int count = 0;
@@ -625,8 +626,8 @@ public class ContractView extends JPanel {
 			}
 		}
 
-		else if (c instanceof Negation) {
-			Negation neg = (Negation) c;
+		else if (c instanceof NegatedCondition) {
+			NegatedCondition neg = (NegatedCondition) c;
 			CompositionNodeType type = CompositionNodeType.NOT;
 			/*
 			 * CompositionNode comp = new CompositionNode(type);

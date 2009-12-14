@@ -19,17 +19,17 @@ import java.util.Map;
  * 
  * @author Jens Dietrich
  */
-public class Negation extends Condition implements ConditionContext {
+public class NegatedCondition extends Condition implements ConditionContext {
 
-	/** The {@link Condition} that is negated by this {@link Negation}. */
+	/** The {@link Condition} that is negated by this {@link NegatedCondition}. */
 	private Condition myNegatedCondition = null;
 
 	/**
 	 * <p>
-	 * Creates a new {@link Negation}.
+	 * Creates a new {@link NegatedCondition}.
 	 * </p>
 	 */
-	public Negation() {
+	public NegatedCondition() {
 
 		super();
 	}
@@ -54,7 +54,7 @@ public class Negation extends Condition implements ConditionContext {
 	/**
 	 * <p>
 	 * Will set the {@link Condition} that is negated by this
-	 * {@link Negation}.
+	 * {@link NegatedCondition}.
 	 * </p>
 	 * 
 	 * @see net.java.treaty.ConditionContext#addCondition(net.java.treaty.Condition
@@ -121,9 +121,9 @@ public class Negation extends Condition implements ConditionContext {
 	 */
 	public Condition replaceResources(Map<String, Resource> resources) {
 
-		Negation result;
+		NegatedCondition result;
 
-		result = new Negation();
+		result = new NegatedCondition();
 		result.setNegatedCondition(this.myNegatedCondition
 				.replaceResources(resources));
 
@@ -145,11 +145,11 @@ public class Negation extends Condition implements ConditionContext {
 	/**
 	 * <p>
 	 * Returns the {@link Condition} that is negated by this
-	 * {@link Negation}.
+	 * {@link NegatedCondition}.
 	 * </p>
 	 * 
 	 * @return The {@link Condition} that is negated by this
-	 *         {@link Negation}.
+	 *         {@link NegatedCondition}.
 	 */
 	public Condition getNegatedCondition() {
 
@@ -158,13 +158,13 @@ public class Negation extends Condition implements ConditionContext {
 
 	/**
 	 * <p>
-	 * Sets the {@link Condition} that is negated by this {@link Negation}
+	 * Sets the {@link Condition} that is negated by this {@link NegatedCondition}
 	 * .
 	 * </p>
 	 * 
 	 * @param negatedCondition
 	 *          The {@link Condition} that is negated by this
-	 *          {@link Negation}.
+	 *          {@link NegatedCondition}.
 	 */
 	public void setNegatedCondition(Condition negatedCondition) {
 

@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import net.java.treaty.Conjunction;
+import net.java.treaty.ConjunctiveCondition;
 import net.java.treaty.Contract;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.ExistsCondition;
@@ -14,7 +14,7 @@ import net.java.treaty.PropertyCondition;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.TreatyException;
-import net.java.treaty.XDisjunction;
+import net.java.treaty.ExclusiveDisjunctiveCondition;
 import net.java.treaty.script.TreatyScript;
 import net.java.treaty.vocabulary.CompositeContractOntology;
 import net.java.treaty.vocabulary.builtins.BasicOpVocabulary;
@@ -89,7 +89,7 @@ public class TreatyScriptTests {
 		assertEquals(1, contract.getOnVerificationSucceedsActions().size());
 		assertEquals(new URI("action:osgi.log.debug.$bundle"), contract.getOnVerificationSucceedsActions().get(0));
 		
-		Conjunction conjunction = (Conjunction)contract.getConstraints().get(0);
+		ConjunctiveCondition conjunction = (ConjunctiveCondition)contract.getConstraints().get(0);
 		assertEquals(2, conjunction.getParts().size());
 		assertTrue(conjunction.getParts().get(0) instanceof RelationshipCondition);
 		assertTrue(conjunction.getParts().get(1) instanceof ExistsCondition);
@@ -181,14 +181,14 @@ public class TreatyScriptTests {
 		assertEquals("serviceprovider/@formatdef",r5.getRef());
 		
 		assertEquals(1,contract.getConstraints().size());
-		assertTrue(contract.getConstraints().get(0) instanceof XDisjunction);
+		assertTrue(contract.getConstraints().get(0) instanceof ExclusiveDisjunctiveCondition);
 		
-		XDisjunction xor = (XDisjunction)contract.getConstraints().get(0);
+		ExclusiveDisjunctiveCondition xor = (ExclusiveDisjunctiveCondition)contract.getConstraints().get(0);
 		assertEquals(2,xor.getParts().size());
-		assertTrue(xor.getParts().get(0) instanceof Conjunction);
+		assertTrue(xor.getParts().get(0) instanceof ConjunctiveCondition);
 		assertTrue(xor.getParts().get(1) instanceof RelationshipCondition);
 		
-		Conjunction and = (Conjunction)xor.getParts().get(0);
+		ConjunctiveCondition and = (ConjunctiveCondition)xor.getParts().get(0);
 		assertEquals(4,and.getParts().size());
 		assertTrue(and.getParts().get(0) instanceof RelationshipCondition);
 		assertTrue(and.getParts().get(1) instanceof ExistsCondition);

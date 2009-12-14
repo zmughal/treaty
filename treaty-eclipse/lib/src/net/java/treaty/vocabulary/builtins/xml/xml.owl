@@ -1,0 +1,28 @@
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns="http://www.treaty.org/xml#"
+  xml:base="http://www.treaty.org/xml">
+  
+  <owl:Ontology rdf:about=""/>   
+  
+  <owl:Class rdf:ID="XMLInstance">
+    <rdfs:subClassOf rdf:resource="http://www.treaty.org#Resource"/>
+  </owl:Class>
+  <owl:Class rdf:ID="XMLSchema">
+  	<rdfs:subClassOf rdf:resource="#XMLInstance"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DTD">
+  	<rdfs:subClassOf rdf:resource="http://www.treaty.org#Resource"/>
+  </owl:Class>
+ 
+  <owl:ObjectProperty rdf:ID="instantiates">
+    <rdfs:range rdf:resource="#XMLSchema"/>
+    <rdfs:domain rdf:resource="#XMLInstance"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="instantiatesDTD">
+    <rdfs:range rdf:resource="#DTD"/>
+    <rdfs:domain rdf:resource="#XMLInstance"/>
+  </owl:ObjectProperty>
+</rdf:RDF>

@@ -15,13 +15,13 @@ import static org.junit.Assert.*;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
-import net.java.treaty.Conjunction;
+import net.java.treaty.ConjunctiveCondition;
 import net.java.treaty.Contract;
 import net.java.treaty.ContractReader;
 import net.java.treaty.ExistsCondition;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
-import net.java.treaty.XDisjunction;
+import net.java.treaty.ExclusiveDisjunctiveCondition;
 import net.java.treaty.vocabulary.CompositeContractOntology;
 import net.java.treaty.vocabulary.builtins.BasicOpVocabulary;
 import net.java.treaty.vocabulary.builtins.owl.OWLVocabulary;
@@ -122,14 +122,14 @@ public class XMLContractReaderTests {
 		assertEquals("serviceprovider/@formatdef", r5.getRef());
 
 		assertEquals(1, contract.getConstraints().size());
-		assertTrue(contract.getConstraints().get(0) instanceof XDisjunction);
+		assertTrue(contract.getConstraints().get(0) instanceof ExclusiveDisjunctiveCondition);
 
-		XDisjunction xor = (XDisjunction) contract.getConstraints().get(0);
+		ExclusiveDisjunctiveCondition xor = (ExclusiveDisjunctiveCondition) contract.getConstraints().get(0);
 		assertEquals(2, xor.getParts().size());
-		assertTrue(xor.getParts().get(0) instanceof Conjunction);
+		assertTrue(xor.getParts().get(0) instanceof ConjunctiveCondition);
 		assertTrue(xor.getParts().get(1) instanceof RelationshipCondition);
 
-		Conjunction and = (Conjunction) xor.getParts().get(0);
+		ConjunctiveCondition and = (ConjunctiveCondition) xor.getParts().get(0);
 		assertEquals(4, and.getParts().size());
 		assertTrue(and.getParts().get(0) instanceof RelationshipCondition);
 		assertTrue(and.getParts().get(1) instanceof ExistsCondition);
