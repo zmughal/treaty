@@ -45,7 +45,7 @@ public class BuiltInOpTests {
 		BasicOpVocabulary vocabulary;
 		vocabulary = new BasicOpVocabulary();
 
-		assertEquals(5, vocabulary.getTypes().size());
+		assertEquals(6, vocabulary.getTypes().size());
 	}
 
 	/**
@@ -65,23 +65,23 @@ public class BuiltInOpTests {
 		URI aURI;
 
 		aURI = new URI(BasicOpVocabulary.TYPE_NAME_BOOLEAN);
-		assertEquals(0, vocabulary.getSuperTypes(aURI).size());
+		assertEquals(2, vocabulary.getSuperTypes(aURI).size());
 
 		aURI = new URI(BasicOpVocabulary.TYPE_NAME_DOUBLE);
-		assertEquals(0, vocabulary.getSuperTypes(aURI).size());
+		assertEquals(2, vocabulary.getSuperTypes(aURI).size());
 
 		aURI = new URI(BasicOpVocabulary.TYPE_NAME_INT);
-		assertEquals(1, vocabulary.getSuperTypes(aURI).size());
+		assertEquals(3, vocabulary.getSuperTypes(aURI).size());
 		assertTrue(vocabulary.getSuperTypes(aURI).contains(
 				new URI(BasicOpVocabulary.TYPE_NAME_DOUBLE)));
 
 		aURI = new URI(BasicOpVocabulary.TYPE_NAME_INTEGER);
-		assertEquals(1, vocabulary.getSuperTypes(aURI).size());
+		assertEquals(3, vocabulary.getSuperTypes(aURI).size());
 		assertTrue(vocabulary.getSuperTypes(aURI).contains(
 				new URI(BasicOpVocabulary.TYPE_NAME_DOUBLE)));
 
 		aURI = new URI(BasicOpVocabulary.TYPE_NAME_STRING);
-		assertEquals(0, vocabulary.getSuperTypes(aURI).size());
+		assertEquals(2, vocabulary.getSuperTypes(aURI).size());
 	}
 
 	/**

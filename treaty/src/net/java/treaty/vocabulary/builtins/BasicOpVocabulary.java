@@ -11,10 +11,6 @@
 package net.java.treaty.vocabulary.builtins;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import net.java.treaty.Connector;
 import net.java.treaty.ContractLogger;
@@ -24,8 +20,12 @@ import net.java.treaty.PropertyCondition;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
 import net.java.treaty.ResourceLoaderException;
-import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationException;
+import net.java.treaty.vocabulary.ContractOntology;
+import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * <p>
@@ -34,11 +34,13 @@ import net.java.treaty.VerificationException;
  * 
  * @author Jens Dietrich
  */
-public class BasicOpVocabulary implements ContractVocabulary {
+public class BasicOpVocabulary extends ContractOntology {
 
-	/** The name space of the {@link BasicOpVocabulary}. */
+	/** FIXME Claas: Can this namespace be used?
+	 * 
+	 * The name space of the {@link BasicOpVocabulary}. */
 	public static final String NAME_SPACE_NAME =
-			"http://www.w3.org/2001/XMLSchema";
+			"http://www.treaty.org/basic";
 
 	/** The name of the Boolean type of the {@link BasicOpVocabulary}. */
 	public static final String TYPE_NAME_BOOLEAN = NAME_SPACE_NAME + "#boolean";
@@ -55,11 +57,12 @@ public class BasicOpVocabulary implements ContractVocabulary {
 	/** The name of the String type of the {@link BasicOpVocabulary}. */
 	public static final String TYPE_NAME_STRING = NAME_SPACE_NAME + "#string";
 
-	/** The default domain of the {@link BasicOpVocabulary}. */
-	private URI default_domain;
+	/** The location of the {@link BasicOpVocabulary}'s ontology. */
+	private static final String ONTOLOGY_LOCATION =
+			"/net/java/treaty/vocabulary/builtins/basic.owl";
 
-	/** The default range of the {@link BasicOpVocabulary}. */
-	private URI default_range;
+	/** The {@link OntModel} of the {@link BasicOpVocabulary}. */
+	private OntModel myOntology = null;
 
 	/*
 	 * (non-Javadoc)
@@ -135,195 +138,18 @@ public class BasicOpVocabulary implements ContractVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#checkDomain(java.net.URI,
-	 * java.net.URI)
+	 * @see net.java.treaty.vocabulary.ContractOntology#getOntology()
 	 */
-	public boolean checkDomain(URI relationshipOrProperty, URI domain)
-			throws TreatyException {
+	public OntModel getOntology() {
 
-		/* It does not matter if it is defined here. */
-		return this.definesProperty(relationshipOrProperty);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#checkRange(java.net.URI,
-	 * java.net.URI)
-	 */
-	public boolean checkRange(URI relationshipOrProperty, URI range)
-			throws TreatyException {
-
-		/* It does not matter if it is defined here. */
-		return this.definesProperty(relationshipOrProperty);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getDomain(java.net.URI)
-	 */
-	public URI getDomain(URI relationshipOrProperty) throws TreatyException {
-
-		if (this.default_domain == null) {
-
-			try {
-				/* Everything goes, types are not enforced for built-in ops. */
-				this.default_domain = new URI("http://www.w3.org/2002/07/owl#");
-			} catch (URISyntaxException e) {
-				throw new TreatyException();
-			}
-			// end catch.
-		}
-		// no else.
-
-		return this.default_domain;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getProperties()
-	 */
-	public Set<URI> getProperties() throws TreatyException {
-
-		return BuiltInOperators.INSTANCE.getOpIds();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getRange(java.net.URI)
-	 */
-	public URI getRange(URI relationshipOrProperty) throws TreatyException {
-
-		if (this.default_range == null) {
-
-			try {
-				/* Everything goes, types are not enforced for built-in ops. */
-				this.default_range = new URI("http://www.w3.org/2002/07/owl#");
-			}
-
-			catch (URISyntaxException e) {
-				throw new TreatyException();
-			}
-			// end catch.
-		}
-		// no else.
-
-		return this.default_range;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getRelationships()
-	 */
-	public Set<URI> getRelationships() throws TreatyException {
-
-		return Collections.emptySet();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getSubProperties(java.net.URI)
-	 */
-	public Set<URI> getSubProperties(URI relationshipOrProperty)
-			throws TreatyException {
-
-		return Collections.emptySet();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getSubtypes(java.net.URI)
-	 */
-	public Set<URI> getSubTypes(URI type) throws TreatyException {
-
-		Set<URI> result;
-		result = new HashSet<URI>();
-
-		String name;
-		name = type.toString();
-
-		if (name.equals(TYPE_NAME_DOUBLE)) {
-
-			try {
-				result.add(new URI(TYPE_NAME_INT));
-				result.add(new URI(TYPE_NAME_INTEGER));
-			}
-
-			catch (URISyntaxException e) {
-				ContractLogger.LOGGER.error(
-						"Error during returning super types of type in BasicOpVocabulary.",
-						e);
-			}
-			// end catch.
-		}
-		// no else.
-
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getSuperProperties(java.net.URI)
-	 */
-	public Set<URI> getSuperProperties(URI relationshipOrProperty)
-			throws TreatyException {
-
-		return Collections.emptySet();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getSupertypes(java.net.URI)
-	 */
-	public Set<URI> getSuperTypes(URI type) throws TreatyException {
-
-		Set<URI> result;
-		result = new HashSet<URI>();
-
-		String name;
-		name = type.toString();
-
-		if (name.equals(TYPE_NAME_INT) || name.equals(TYPE_NAME_INTEGER)) {
-
-			try {
-				result.add(new URI(TYPE_NAME_DOUBLE));
-			}
-
-			catch (URISyntaxException e) {
-				ContractLogger.LOGGER.error(
-						"Error during returning super types of type in BasicOpVocabulary.",
-						e);
-			}
-			// end catch.
-		}
-		// no else.
-
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.ContractVocabulary#getTypes()
-	 */
-	public Set<URI> getTypes() throws TreatyException {
-
-		Set<URI> result;
-
-		result = new HashSet<URI>();
-
-		try {
-			result.add(new URI(TYPE_NAME_BOOLEAN));
-			result.add(new URI(TYPE_NAME_DOUBLE));
-			result.add(new URI(TYPE_NAME_INT));
-			result.add(new URI(TYPE_NAME_INTEGER));
-			result.add(new URI(TYPE_NAME_STRING));
+		/* Probably initialize the ontology. */
+		if (this.myOntology == null) {
+			this.myOntology = ModelFactory.createOntologyModel();
+			this.myOntology.read(JavaVocabulary.class.getResource(ONTOLOGY_LOCATION)
+					.toString());
 		}
 
-		catch (URISyntaxException e) {
-			ContractLogger.LOGGER.error(
-					"Error during returning types of BasicOpVocabulary.", e);
-		}
-
-		return result;
+		return this.myOntology;
 	}
 
 	/*
@@ -459,19 +285,5 @@ public class BasicOpVocabulary implements ContractVocabulary {
 			throw new VerificationException("Unsupported data type: " + type);
 		}
 		// end else.
-	}
-
-	/**
-	 * <p>
-	 * Checks, whether or not the {@link BasicOpVocabulary} defines a built-in
-	 * operator for the given {@link URI}.
-	 * </p>
-	 * 
-	 * @param uri
-	 *          The {@link URI} for that a built-in operator shall be found.
-	 */
-	private boolean definesProperty(URI uri) {
-
-		return BuiltInOperators.INSTANCE.getInstance(uri) != null;
 	}
 }
