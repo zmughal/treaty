@@ -63,7 +63,6 @@ public class Disjunction extends ComplexCondition {
 		boolean result;
 		result = false;
 
-		/* FIXME Claas: No difference between if- and else-clause. */
 		if (policy == VerificationPolicy.DETAILED) {
 
 			for (Condition condition : this.myParts) {
@@ -84,7 +83,7 @@ public class Disjunction extends ComplexCondition {
 		else {
 
 			for (Condition condition : this.myParts) {
-				result = result | condition.check(report, verifier, policy);
+				result = result || condition.check(report, verifier, policy);
 			}
 
 			if (result) {

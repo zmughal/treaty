@@ -63,7 +63,6 @@ public class Conjunction extends ComplexCondition {
 
 		boolean result;
 
-		/* FIXME Claas: No difference between if and else clause. */
 		if (policy == VerificationPolicy.DETAILED) {
 
 			result = true;
@@ -89,7 +88,7 @@ public class Conjunction extends ComplexCondition {
 			result = true;
 
 			for (Condition abstractCondition : this.myParts) {
-				result = result & abstractCondition.check(report, verifier, policy);
+				result = result && abstractCondition.check(report, verifier, policy);
 			}
 			// end for.
 
