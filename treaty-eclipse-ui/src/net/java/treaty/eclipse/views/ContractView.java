@@ -27,8 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.java.treaty.AbstractCondition;
+import net.java.treaty.Condition;
 import net.java.treaty.Annotatable;
 import net.java.treaty.ComplexCondition;
 import net.java.treaty.Component;
@@ -810,12 +809,12 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			// no else.
 
 			/* Add nodes for the contracts conditions. */
-			for (AbstractCondition c : contract.getConstraints()) {
+			for (Condition c : contract.getConstraints()) {
 
 				/* The top level conjunction is displayed as set. */
 				if (c instanceof Conjunction) {
 
-					for (AbstractCondition c2 : ((Conjunction) c).getParts()) {
+					for (Condition c2 : ((Conjunction) c).getParts()) {
 						this.addConditionNodes(parent, c2, ownerTypes);
 					}
 				}
@@ -889,7 +888,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 *          The given {@link Resource}s and {@link OwnerType}s.
 		 */
 		private void addConditionNodes(TreeParent parent,
-				AbstractCondition condition, Map<Resource, Role> ownerTypes) {
+				Condition condition, Map<Resource, Role> ownerTypes) {
 
 			if (condition instanceof RelationshipCondition) {
 
@@ -961,7 +960,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 				parent.addChild(node);
 
-				for (AbstractCondition part : complexCondition.getParts()) {
+				for (Condition part : complexCondition.getParts()) {
 					this.addConditionNodes(node, part, ownerTypes);
 				}
 			}
@@ -974,8 +973,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 				node = new TreeParent(negation);
 
 				parent.addChild(node);
-				this
-						.addConditionNodes(node, negation.getNegatedCondition(), ownerTypes);
+				this.addConditionNodes(node, negation.getNegatedCondition(), ownerTypes);
 			}
 		}
 
@@ -1161,7 +1159,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 						result = getIcon("contract.gif");
 					}
 
-					else if (adaptedObject instanceof AbstractCondition
+					else if (adaptedObject instanceof Condition
 							&& !(adaptedObject instanceof ComplexCondition)) {
 						result = getIcon("constraint.gif");
 					}

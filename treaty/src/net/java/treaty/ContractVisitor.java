@@ -115,13 +115,13 @@ public interface ContractVisitor {
 
 	/**
 	 * <p>
-	 * Ends a visit of a List of {@link AbstractCondition}s.
+	 * Ends a visit of a List of {@link Condition}s.
 	 * </p>
 	 * 
 	 * @param conditions
-	 *          The {@link AbstractCondition}s that have been visited.
+	 *          The {@link Condition}s that have been visited.
 	 */
-	public void endVisitConditions(Collection<AbstractCondition> conditions);
+	public void endVisitConditions(Collection<Condition> conditions);
 
 	/**
 	 * <p>
@@ -293,15 +293,15 @@ public interface ContractVisitor {
 
 	/**
 	 * <p>
-	 * Visits a List of {@link AbstractCondition}s.
+	 * Visits a List of {@link Condition}s.
 	 * </p>
 	 * 
 	 * @param conditions
-	 *          The List of {@link AbstractCondition}s that shall be visited.
+	 *          The List of {@link Condition}s that shall be visited.
 	 * @return <code>true</code> if children elements of the
-	 *         {@link AbstractCondition}s shall be visited as well.
+	 *         {@link Condition}s shall be visited as well.
 	 */
-	public boolean visitConditions(List<AbstractCondition> conditions);
+	public boolean visitConditions(List<Condition> conditions);
 
 	/**
 	 * <p>

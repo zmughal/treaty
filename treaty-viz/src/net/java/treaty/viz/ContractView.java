@@ -51,7 +51,7 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
-import net.java.treaty.AbstractCondition;
+import net.java.treaty.Condition;
 import net.java.treaty.Annotatable;
 import net.java.treaty.ComplexCondition;
 import net.java.treaty.Conjunction;
@@ -154,14 +154,14 @@ public class ContractView extends JPanel {
 	}
 
 	public class CompositionNode extends Node {
-		public CompositionNode(CompositionNodeType type,AbstractCondition condition) {
+		public CompositionNode(CompositionNodeType type,Condition condition) {
 			super();
 			this.type = type;
 			this.condition = condition;
 		}
 
 		CompositionNodeType type = CompositionNodeType.AND;
-		AbstractCondition condition = null;
+		Condition condition = null;
 
 		public String toString() {
 			return "[" + type + "]";
@@ -498,8 +498,8 @@ public class ContractView extends JPanel {
 	}
 
 	private void buildGraph(EndNode consumerNode, EndNode supplierNode,
-			List<AbstractCondition> constraints) {
-		for (AbstractCondition constraint : constraints) {
+			List<Condition> constraints) {
+		for (Condition constraint : constraints) {
 			buildGraph(consumerNode, supplierNode, constraint);
 		}
 		// optional: identifier nodes representing same resource in the same
@@ -576,7 +576,7 @@ public class ContractView extends JPanel {
 		}
 	}
 
-	private void buildGraph(Node consumerSideNode, Node supplierSideNode,AbstractCondition c) {
+	private void buildGraph(Node consumerSideNode, Node supplierSideNode,Condition c) {
 		if (c instanceof ComplexCondition) {
 			ComplexCondition cplxCond = (ComplexCondition) c;
 			CompositionNodeType type = null;
@@ -592,15 +592,15 @@ public class ContractView extends JPanel {
 			CompositionNode comp2 = new CompositionNode(type,cplxCond);
 			graph.addVertex(comp2);
 			graph.addEdge(new Edge(), supplierSideNode, comp2);
-			List<AbstractCondition> parts = cplxCond.getParts();
-			Collections.sort(parts,new Comparator<AbstractCondition>(){
+			List<Condition> parts = cplxCond.getParts();
+			Collections.sort(parts,new Comparator<Condition>(){
 				@Override
-				public int compare(AbstractCondition c1,AbstractCondition c2) {
+				public int compare(Condition c1,Condition c2) {
 					//int neg = (c2 instanceof Negation?1:0)-(c1 instanceof Negation?1:0);
 					//if (neg!=0) return neg;
 					return countRelationshipConditions(c2)-countRelationshipConditions(c1);
 				}
-				private int countRelationshipConditions(AbstractCondition c) {
+				private int countRelationshipConditions(Condition c) {
 					if (c instanceof RelationshipCondition) {
 						return 1;
 					}
@@ -609,7 +609,7 @@ public class ContractView extends JPanel {
 					}
 					else if (c instanceof ComplexCondition) {
 						int count = 0;
-						for (AbstractCondition p:((ComplexCondition)c).getParts()) {
+						for (Condition p:((ComplexCondition)c).getParts()) {
 							count = count+countRelationshipConditions(p);
 						}
 						return count;
@@ -620,7 +620,7 @@ public class ContractView extends JPanel {
 			});
 			
 			// recursion
-			for (AbstractCondition part:parts) {
+			for (Condition part:parts) {
 				buildGraph(comp1, comp2, part);
 			}
 		}
@@ -965,7 +965,7 @@ public class ContractView extends JPanel {
 		return this.asHTMLTable(properties);
 	}
 
-	protected String getToolTip(CompositionNodeType r,AbstractCondition condition) {
+	protected String getToolTip(CompositionNodeType r,Condition condition) {
 		return r.name();
 	}
 	protected String getToolTip(Connector c) {

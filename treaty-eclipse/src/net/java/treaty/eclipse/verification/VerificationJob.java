@@ -12,12 +12,10 @@ package net.java.treaty.eclipse.verification;
 
 import static net.java.treaty.eclipse.Constants.VERIFICATION_EXCEPTION;
 import static net.java.treaty.eclipse.Constants.VERIFICATION_RESULT;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import net.java.treaty.AbstractCondition;
+import net.java.treaty.Condition;
 import net.java.treaty.Annotatable;
 import net.java.treaty.ComplexCondition;
 import net.java.treaty.Connector;
@@ -28,7 +26,6 @@ import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.VerificationPolicy;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -394,7 +391,7 @@ public class VerificationJob extends Job {
 	 *          The {@link AbstractCondition} whose verification status shall be
 	 *          reset.
 	 */
-	private void resetVerificationStatus(AbstractCondition condition) {
+	private void resetVerificationStatus(Condition condition) {
 
 		condition.removeProperty(VERIFICATION_RESULT);
 		condition.removeProperty(VERIFICATION_EXCEPTION);
@@ -404,7 +401,7 @@ public class VerificationJob extends Job {
 			ComplexCondition complexCondition;
 			complexCondition = (ComplexCondition) condition;
 
-			for (AbstractCondition part : complexCondition.getParts()) {
+			for (Condition part : complexCondition.getParts()) {
 				resetVerificationStatus(part);
 			}
 			// end for.
@@ -425,7 +422,7 @@ public class VerificationJob extends Job {
 		contract.removeProperty(VERIFICATION_RESULT);
 		contract.removeProperty(VERIFICATION_EXCEPTION);
 
-		for (AbstractCondition condition : contract.getConstraints()) {
+		for (Condition condition : contract.getConstraints()) {
 			resetVerificationStatus(condition);
 		}
 		// end for.
@@ -468,7 +465,7 @@ public class VerificationJob extends Job {
 	 */
 	private void propagateResults(Contract contract) {
 
-		for (AbstractCondition condition : contract.getConstraints()) {
+		for (Condition condition : contract.getConstraints()) {
 
 			this.combineVerificationResults(contract, condition);
 

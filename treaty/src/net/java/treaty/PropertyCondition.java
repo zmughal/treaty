@@ -20,7 +20,7 @@ import java.util.Map;
  * 
  * @author Jens Dietrich
  */
-public class PropertyCondition extends AbstractCondition {
+public class PropertyCondition extends Condition {
 
 	/** The {@link Resource} of the {@link PropertyCondition}. */
 	private Resource myResource = null;
@@ -119,7 +119,7 @@ public class PropertyCondition extends AbstractCondition {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.AbstractCondition#replaceResources(java.util.Map)
 	 */
-	public AbstractCondition replaceResources(Map<String, Resource> resources) {
+	public Condition replaceResources(Map<String, Resource> resources) {
 
 		PropertyCondition result;
 

@@ -215,6 +215,7 @@ public class ContractViewTester extends JFrame {
 		f.setVisible(true);
 		//f.revalidate();
 		//f.repaint();
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	private void loadContract(File f) throws Exception {

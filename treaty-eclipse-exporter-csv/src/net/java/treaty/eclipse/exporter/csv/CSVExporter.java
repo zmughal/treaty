@@ -22,8 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.java.treaty.AbstractCondition;
+import net.java.treaty.Condition;
 import net.java.treaty.AbstractContractVisitor;
 import net.java.treaty.Contract;
 import net.java.treaty.ContractVisitor;
@@ -35,7 +34,6 @@ import net.java.treaty.VerificationResult;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.exporter.Exporter;
-
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -456,7 +454,7 @@ public class CSVExporter extends Exporter {
 			 * @param condition
 			 *          The AbstractCondition that shall be visited.
 			 */
-			private void doVisit(AbstractCondition condition) {
+			private void doVisit(Condition condition) {
 
 				list.add(this.getResult(condition));
 			}
@@ -471,7 +469,7 @@ public class CSVExporter extends Exporter {
 			 *          The AbstractCondition that shall be visited.
 			 * @return The name of the file containing the result.
 			 */
-			private String getResult(AbstractCondition condition) {
+			private String getResult(Condition condition) {
 
 				VerificationResult verificationResult;
 				verificationResult =

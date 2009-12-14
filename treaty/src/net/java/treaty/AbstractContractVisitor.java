@@ -28,7 +28,7 @@ public class AbstractContractVisitor implements ContractVisitor {
 	 * @see
 	 * net.java.treaty.ContractVisitor#endVisitConditions(java.util.Collection)
 	 */
-	public void endVisitConditions(Collection<AbstractCondition> conditions) {
+	public void endVisitConditions(Collection<Condition> conditions) {
 	
 	}
 
@@ -166,7 +166,7 @@ public class AbstractContractVisitor implements ContractVisitor {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVisitor#visitConditions(java.util.List)
 	 */
-	public boolean visitConditions(List<AbstractCondition> name) {
+	public boolean visitConditions(List<Condition> name) {
 	
 		return true;
 	}

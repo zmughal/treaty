@@ -43,7 +43,7 @@ public class Conjunction extends ComplexCondition {
 		/* Probably visit all parts as well. */
 		if (visitSuccessfull) {
 
-			for (AbstractCondition condition : this.myParts) {
+			for (Condition condition : this.myParts) {
 				condition.accept(visitor);
 			}
 			// end for.
@@ -68,7 +68,7 @@ public class Conjunction extends ComplexCondition {
 
 			result = true;
 
-			for (AbstractCondition abstractCondition : this.myParts) {
+			for (Condition abstractCondition : this.myParts) {
 				result = result & abstractCondition.check(report, verifier, policy);
 			}
 			// end for.
@@ -88,7 +88,7 @@ public class Conjunction extends ComplexCondition {
 
 			result = true;
 
-			for (AbstractCondition abstractCondition : this.myParts) {
+			for (Condition abstractCondition : this.myParts) {
 				result = result & abstractCondition.check(report, verifier, policy);
 			}
 			// end for.
@@ -121,12 +121,12 @@ public class Conjunction extends ComplexCondition {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.AbstractCondition#replaceResources(java.util.Map)
 	 */
-	public AbstractCondition replaceResources(Map<String, Resource> resources) {
+	public Condition replaceResources(Map<String, Resource> resources) {
 
 		Conjunction result;
 		result = new Conjunction();
 
-		for (AbstractCondition condition : this.myParts) {
+		for (Condition condition : this.myParts) {
 			result.addCondition(condition.replaceResources(resources));
 		}
 		// end for.

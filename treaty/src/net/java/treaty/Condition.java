@@ -19,15 +19,15 @@ import java.util.Map;
  * 
  * @author Jens Dietrich
  */
-public abstract class AbstractCondition extends PropertySupport implements
+public abstract class Condition extends PropertySupport implements
 		Visitable, Constraint {
 
 	/**
 	 * <p>
-	 * Creates a new {@link AbstractCondition}.
+	 * Creates a new {@link Condition}.
 	 * </p>
 	 */
-	public AbstractCondition() {
+	public Condition() {
 
 		super();
 	}
@@ -36,13 +36,13 @@ public abstract class AbstractCondition extends PropertySupport implements
 	 * <p>
 	 * Replaces the {@link Resource}s referenced in conditions by the
 	 * {@link Resource}s in the given {@link Map}. The original
-	 * {@link AbstractCondition} will not be changed, a new
-	 * {@link AbstractCondition} will be returned.
+	 * {@link Condition} will not be changed, a new
+	 * {@link Condition} will be returned.
 	 * </p>
 	 * 
 	 * @param resources
 	 *          A {@link Map} of {@link Resource}s that shall be replaced.
 	 */
-	public abstract AbstractCondition replaceResources(
+	public abstract Condition replaceResources(
 			Map<String, Resource> resources);
 }

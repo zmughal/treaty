@@ -21,7 +21,7 @@ import java.util.Map;
  * 
  * @author Jens Dietrich
  */
-public class ExistsCondition extends AbstractCondition {
+public class ExistsCondition extends Condition {
 
 	/** The {@link Resource} of this {@link ExistsCondition}. */
 	private Resource myResource = null;
@@ -99,7 +99,7 @@ public class ExistsCondition extends AbstractCondition {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.AbstractCondition#replaceResources(java.util.Map)
 	 */
-	public AbstractCondition replaceResources(Map<String, Resource> resources) {
+	public Condition replaceResources(Map<String, Resource> resources) {
 
 		ExistsCondition result;
 		result = new ExistsCondition();
