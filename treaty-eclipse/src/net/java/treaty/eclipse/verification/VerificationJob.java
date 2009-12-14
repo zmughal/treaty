@@ -53,6 +53,9 @@ public class VerificationJob extends Job {
 	private List<VerificationJobListener> myListeners =
 			new ArrayList<VerificationJobListener>();
 
+	/** The {@link VerificationPolicy}s of this {@link VerificationJob}. */
+	private VerificationPolicy verificationPolicy;
+
 	/** The {@link VerificationReport}s to report the results. */
 	private List<VerificationReport> verificationReports = null;
 
@@ -65,13 +68,17 @@ public class VerificationJob extends Job {
 	 *          The name of the {@link VerificationJob}.
 	 * @param contracts
 	 *          The {@link Contract}s that shall be verified.
+	 * @param verificationPolicy
+	 *          The {@link VerificationPolicy}s of this {@link VerificationJob}.
 	 */
-	public VerificationJob(String name, Collection<Contract> contracts) {
+	public VerificationJob(String name, Collection<Contract> contracts,
+			VerificationPolicy verificationPolicy) {
 
 		super(name);
 
 		this.contracts = contracts;
 		this.verificationReports = new ArrayList<VerificationReport>();
+		this.verificationPolicy = verificationPolicy;
 	}
 
 	/**
@@ -218,9 +225,7 @@ public class VerificationJob extends Job {
 
 			boolean result;
 
-			result =
-					contract.check(verificationReport, verifier,
-							VerificationPolicy.DETAILED);
+			result = contract.check(verificationReport, verifier, verificationPolicy);
 			this.verificationReports.add(verificationReport);
 
 			if (result) {

@@ -16,6 +16,7 @@ import java.util.Set;
 
 import net.java.treaty.Contract;
 import net.java.treaty.TreatyException;
+import net.java.treaty.VerificationPolicy;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.action.EclipseActionRegistry;
@@ -31,6 +32,12 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 			new TriggeredEclipseVerifier();
 
 	/**
+	 * The {@link VerificationPolicy} used by the {@link TriggeredEclipseVerifier}
+	 * .
+	 */
+	private VerificationPolicy verificationPolicy = VerificationPolicy.DETAILED;
+
+	/**
 	 * <p>
 	 * Private constructor for singleton pattern.
 	 * </p>
@@ -38,6 +45,34 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 	public TriggeredEclipseVerifier() {
 
 		/* Remains empty. */
+	}
+
+	/**
+	 * <p>
+	 * Returns the {@link VerificationPolicy} used by the
+	 * {@link TriggeredEclipseVerifier}.
+	 * </p>
+	 * 
+	 * @return The {@link VerificationPolicy} used by the
+	 *         {@link TriggeredEclipseVerifier}.
+	 */
+	public VerificationPolicy getVerificationPolicy() {
+
+		return this.verificationPolicy;
+	}
+
+	/**
+	 * <p>
+	 * Sets the {@link VerificationPolicy} used by the
+	 * {@link TriggeredEclipseVerifier}.
+	 * </p>
+	 * 
+	 * @return The {@link VerificationPolicy} used by the
+	 *         {@link TriggeredEclipseVerifier}.
+	 */
+	public void setVerificationPolicy(VerificationPolicy verificationPolicy) {
+
+		this.verificationPolicy = verificationPolicy;
 	}
 
 	/*
@@ -170,7 +205,8 @@ public class TriggeredEclipseVerifier extends AbstractTriggeredVerifier {
 		};
 
 		/* Verify the contracts. */
-		EclipseVerifier.verify(contracts, verificationReport, vListener, jListener);
+		EclipseVerifier.verify(contracts, verificationReport, vListener, jListener,
+				this.verificationPolicy);
 	}
 
 	/*
