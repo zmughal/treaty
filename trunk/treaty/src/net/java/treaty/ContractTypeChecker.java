@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import net.java.treaty.action.ActionVocabulary;
 import net.java.treaty.trigger.TriggerVocabulary;
 
@@ -191,7 +190,7 @@ public class ContractTypeChecker implements ContractVisitor {
 	 * @see
 	 * net.java.treaty.ContractVisitor#endVisitConditions(java.util.Collection)
 	 */
-	public void endVisitConditions(Collection<AbstractCondition> conditions) {
+	public void endVisitConditions(Collection<Condition> conditions) {
 
 		/* Do nothing on end. */
 	}
@@ -355,7 +354,7 @@ public class ContractTypeChecker implements ContractVisitor {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.ContractVisitor#visitConditions(java.util.List)
 	 */
-	public boolean visitConditions(List<AbstractCondition> conditions) {
+	public boolean visitConditions(List<Condition> conditions) {
 
 		/* Do not visit AbstractConditions and their children. */
 		return false;
