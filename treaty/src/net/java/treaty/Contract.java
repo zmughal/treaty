@@ -519,7 +519,6 @@ public class Contract extends PropertySupport implements ConditionContext,
 			report.setContract(this);
 			result = true;
 
-			/* FIXME Claas: No difference between if and else clause. */
 			if (policy == VerificationPolicy.DETAILED) {
 				for (Condition Condition : this.myConstraints) {
 					result = result & Condition.check(report, verifier, policy);
