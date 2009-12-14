@@ -14,19 +14,19 @@ import java.util.Map;
 
 /**
  * <p>
- * Exclusive disjunction (xor).
+ * Disjunction (or).
  * </p>
  * 
  * @author Jens Dietrich
  */
-public class XDisjunction extends ComplexCondition {
+public class DisjunctiveCondition extends ComplexCondition {
 
 	/**
 	 * <p>
-	 * Creates a new {@link XDisjunction}.
+	 * Creates a new {@link DisjunctiveCondition}.
 	 * </p>
 	 */
-	public XDisjunction() {
+	public DisjunctiveCondition() {
 
 		super();
 	}
@@ -41,6 +41,7 @@ public class XDisjunction extends ComplexCondition {
 		willVisitChildren = visitor.visit(this);
 
 		if (willVisitChildren) {
+
 			for (Condition condition : this.myParts) {
 				condition.accept(visitor);
 			}
@@ -59,32 +60,44 @@ public class XDisjunction extends ComplexCondition {
 	public boolean check(VerificationReport report, Verifier verifier,
 			VerificationPolicy policy) {
 
-		int okCount;
-		okCount = 0;
+		boolean result;
+		result = false;
 
-		/* Count the conditions that can be verified successfully. */
-		for (Condition condition : this.myParts) {
-			okCount = okCount + (condition.check(report, verifier, policy) ? 1 : 0);
-		}
-		// end for.
+		if (policy == VerificationPolicy.DETAILED) {
 
-		/* Check if exactly one condition has been verified successfully. */
-		if (okCount == 1) {
-			report.log(this, VerificationResult.SUCCESS);
-		}
+			for (Condition condition : this.myParts) {
+				result = result | condition.check(report, verifier, policy);
+			}
 
-		else if (okCount == 0) {
-			report.log(this, VerificationResult.FAILURE,
-					"No part of this condition is satisfied.");
+			if (result) {
+				report.log(this, VerificationResult.SUCCESS);
+			}
+
+			else {
+				report.log(this, VerificationResult.FAILURE,
+						"no part of this condition is satisfied");
+			}
+			// end else.
 		}
 
 		else {
-			report.log(this, VerificationResult.FAILURE,
-					"Too many parts of this condition are satisfied.");
-		}
-		// end else.
 
-		return okCount == 1;
+			for (Condition condition : this.myParts) {
+				result = result || condition.check(report, verifier, policy);
+			}
+
+			if (result) {
+				report.log(this, VerificationResult.SUCCESS);
+			}
+
+			else {
+				report.log(this, VerificationResult.FAILURE,
+						"no part of this condition is satisfied");
+			}
+			// end else.
+		}
+
+		return result;
 	}
 
 	/*
@@ -93,7 +106,7 @@ public class XDisjunction extends ComplexCondition {
 	 */
 	public String getConnective() {
 	
-		return "xor";
+		return "or";
 	}
 
 	/*
@@ -102,7 +115,7 @@ public class XDisjunction extends ComplexCondition {
 	 */
 	public Condition replaceResources(Map<String, Resource> resources) {
 
-		XDisjunction result = new XDisjunction();
+		DisjunctiveCondition result = new DisjunctiveCondition();
 
 		for (Condition condition : this.myParts) {
 			result.addCondition(condition.replaceResources(resources));
@@ -130,7 +143,9 @@ public class XDisjunction extends ComplexCondition {
 
 		else {
 			result = false;
+
 			for (Condition part : this.myParts) {
+
 				if (part.isInstantiated()) {
 					result = true;
 					break;

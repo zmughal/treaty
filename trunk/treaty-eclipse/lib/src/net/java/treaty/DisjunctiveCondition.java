@@ -19,14 +19,14 @@ import java.util.Map;
  * 
  * @author Jens Dietrich
  */
-public class Disjunction extends ComplexCondition {
+public class DisjunctiveCondition extends ComplexCondition {
 
 	/**
 	 * <p>
-	 * Creates a new {@link Disjunction}.
+	 * Creates a new {@link DisjunctiveCondition}.
 	 * </p>
 	 */
-	public Disjunction() {
+	public DisjunctiveCondition() {
 
 		super();
 	}
@@ -115,7 +115,7 @@ public class Disjunction extends ComplexCondition {
 	 */
 	public Condition replaceResources(Map<String, Resource> resources) {
 
-		Disjunction result = new Disjunction();
+		DisjunctiveCondition result = new DisjunctiveCondition();
 
 		for (Condition condition : this.myParts) {
 			result.addCondition(condition.replaceResources(resources));

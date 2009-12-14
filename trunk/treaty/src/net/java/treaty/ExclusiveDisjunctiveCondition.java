@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Jens Dietrich
+ * Copyright (C) 2008-2009 Jens Dietrich
  * Licensed under the Apache License, Version 2.0 (the "License"); 
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
@@ -14,19 +14,19 @@ import java.util.Map;
 
 /**
  * <p>
- * Conjunction (and) used in {@link Contract}'s conditions.
+ * Exclusive disjunction (xor).
  * </p>
  * 
  * @author Jens Dietrich
  */
-public class Conjunction extends ComplexCondition {
+public class ExclusiveDisjunctiveCondition extends ComplexCondition {
 
 	/**
 	 * <p>
-	 * Creates a new {@link Conjunction}.
+	 * Creates a new {@link ExclusiveDisjunctiveCondition}.
 	 * </p>
 	 */
-	public Conjunction() {
+	public ExclusiveDisjunctiveCondition() {
 
 		super();
 	}
@@ -37,12 +37,10 @@ public class Conjunction extends ComplexCondition {
 	 */
 	public void accept(ContractVisitor visitor) {
 
-		boolean visitSuccessfull;
-		visitSuccessfull = visitor.visit(this);
+		boolean willVisitChildren;
+		willVisitChildren = visitor.visit(this);
 
-		/* Probably visit all parts as well. */
-		if (visitSuccessfull) {
-
+		if (willVisitChildren) {
 			for (Condition condition : this.myParts) {
 				condition.accept(visitor);
 			}
@@ -61,50 +59,32 @@ public class Conjunction extends ComplexCondition {
 	public boolean check(VerificationReport report, Verifier verifier,
 			VerificationPolicy policy) {
 
-		boolean result;
+		int okCount;
+		okCount = 0;
 
-		if (policy == VerificationPolicy.DETAILED) {
+		/* Count the conditions that can be verified successfully. */
+		for (Condition condition : this.myParts) {
+			okCount = okCount + (condition.check(report, verifier, policy) ? 1 : 0);
+		}
+		// end for.
 
-			result = true;
+		/* Check if exactly one condition has been verified successfully. */
+		if (okCount == 1) {
+			report.log(this, VerificationResult.SUCCESS);
+		}
 
-			for (Condition abstractCondition : this.myParts) {
-				result = result & abstractCondition.check(report, verifier, policy);
-			}
-			// end for.
-
-			if (result) {
-				report.log(this, VerificationResult.SUCCESS);
-			}
-
-			else {
-				report.log(this, VerificationResult.FAILURE,
-						"Some parts of this condition are not satisfied.");
-			}
-			// end else.
+		else if (okCount == 0) {
+			report.log(this, VerificationResult.FAILURE,
+					"No part of this condition is satisfied.");
 		}
 
 		else {
-
-			result = true;
-
-			for (Condition abstractCondition : this.myParts) {
-				result = result && abstractCondition.check(report, verifier, policy);
-			}
-			// end for.
-
-			if (result) {
-				report.log(this, VerificationResult.SUCCESS);
-			}
-
-			else {
-				report.log(this, VerificationResult.FAILURE,
-						"Some parts of this condition are not satisfied.");
-			}
-			// end else.
+			report.log(this, VerificationResult.FAILURE,
+					"Too many parts of this condition are satisfied.");
 		}
 		// end else.
 
-		return result;
+		return okCount == 1;
 	}
 
 	/*
@@ -113,7 +93,7 @@ public class Conjunction extends ComplexCondition {
 	 */
 	public String getConnective() {
 	
-		return "and";
+		return "xor";
 	}
 
 	/*
@@ -122,13 +102,44 @@ public class Conjunction extends ComplexCondition {
 	 */
 	public Condition replaceResources(Map<String, Resource> resources) {
 
-		Conjunction result;
-		result = new Conjunction();
+		ExclusiveDisjunctiveCondition result = new ExclusiveDisjunctiveCondition();
 
 		for (Condition condition : this.myParts) {
 			result.addCondition(condition.replaceResources(resources));
 		}
-		// end for.
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.ComplexCondition#isInstantiated()
+	 */
+	@Override
+	public boolean isInstantiated() {
+
+		boolean result;
+
+		if (this.myParts == null) {
+			result = false;
+		}
+
+		else if (this.myParts.size() == 0) {
+			result = true;
+		}
+
+		else {
+			result = false;
+			for (Condition part : this.myParts) {
+				if (part.isInstantiated()) {
+					result = true;
+					break;
+				}
+				// no else.
+			}
+			// end for.
+		}
+		// end else.
 
 		return result;
 	}

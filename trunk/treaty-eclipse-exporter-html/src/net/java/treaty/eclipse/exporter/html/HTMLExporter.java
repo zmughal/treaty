@@ -24,26 +24,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import net.java.treaty.Condition;
-import net.java.treaty.Annotatable;
-import net.java.treaty.Conjunction;
-import net.java.treaty.Connector;
-import net.java.treaty.Constraint;
-import net.java.treaty.Contract;
-import net.java.treaty.ContractVisitor;
-import net.java.treaty.Disjunction;
-import net.java.treaty.ExistsCondition;
-import net.java.treaty.Negation;
-import net.java.treaty.PropertyCondition;
-import net.java.treaty.RelationshipCondition;
-import net.java.treaty.Resource;
-import net.java.treaty.VerificationResult;
-import net.java.treaty.XDisjunction;
+import net.java.treaty.*;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseInstantiationContext;
 import net.java.treaty.eclipse.Logger;
 import net.java.treaty.eclipse.exporter.Exporter;
-
 import org.eclipse.core.runtime.IExtensionPoint;
 
 /**
@@ -594,9 +579,9 @@ public class HTMLExporter extends Exporter {
 			/*
 			 * (non-Javadoc)
 			 * @see
-			 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Conjunction)
+			 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.ConjunctiveCondition)
 			 */
-			public void endVisit(Conjunction condition) {
+			public void endVisit(ConjunctiveCondition condition) {
 
 				/* Print an end node for the conjunction. */
 				printEndTreeNode(outputStream, condition);
@@ -621,9 +606,9 @@ public class HTMLExporter extends Exporter {
 			/*
 			 * (non-Javadoc)
 			 * @see
-			 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Disjunction)
+			 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.DisjunctiveCondition)
 			 */
-			public void endVisit(Disjunction condition) {
+			public void endVisit(DisjunctiveCondition condition) {
 
 				/* Print an end node for the disjunction. */
 				printEndTreeNode(outputStream, condition);
@@ -643,9 +628,9 @@ public class HTMLExporter extends Exporter {
 
 			/*
 			 * (non-Javadoc)
-			 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.Negation)
+			 * @see net.java.treaty.ContractVisitor#endVisit(net.java.treaty.NegatedCondition)
 			 */
-			public void endVisit(Negation condition) {
+			public void endVisit(NegatedCondition condition) {
 
 				/* Print an end node for the negation. */
 				printEndTreeNode(outputStream, condition);
@@ -686,9 +671,9 @@ public class HTMLExporter extends Exporter {
 			/*
 			 * (non-Javadoc)
 			 * @see
-			 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.XDisjunction)
+			 * net.java.treaty.ContractVisitor#endVisit(net.java.treaty.ExclusiveDisjunctiveCondition)
 			 */
-			public void endVisit(XDisjunction condition) {
+			public void endVisit(ExclusiveDisjunctiveCondition condition) {
 
 				/* Print an end node for the xdisjunction. */
 				printEndTreeNode(outputStream, condition);
@@ -769,9 +754,9 @@ public class HTMLExporter extends Exporter {
 
 			/*
 			 * (non-Javadoc)
-			 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Conjunction)
+			 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.ConjunctiveCondition)
 			 */
-			public boolean visit(Conjunction condition) {
+			public boolean visit(ConjunctiveCondition condition) {
 
 				/* Print an and node for the conjunction. */
 				printStartTreeNode(outputStream, getStyle(condition), "and", condition);
@@ -798,9 +783,9 @@ public class HTMLExporter extends Exporter {
 
 			/*
 			 * (non-Javadoc)
-			 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Disjunction)
+			 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.DisjunctiveCondition)
 			 */
-			public boolean visit(Disjunction condition) {
+			public boolean visit(DisjunctiveCondition condition) {
 
 				/* Print an or node for the disjunction. */
 				printStartTreeNode(outputStream, getStyle(condition), "or", condition);
@@ -837,9 +822,9 @@ public class HTMLExporter extends Exporter {
 
 			/*
 			 * (non-Javadoc)
-			 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.Negation)
+			 * @see net.java.treaty.ContractVisitor#visit(net.java.treaty.NegatedCondition)
 			 */
-			public boolean visit(Negation condition) {
+			public boolean visit(NegatedCondition condition) {
 
 				/* Print a not node for the negation. */
 				printStartTreeNode(outputStream, getStyle(condition), "not", condition);
@@ -940,7 +925,7 @@ public class HTMLExporter extends Exporter {
 			 * @see
 			 * net.java.treaty.ContractVisitor#visit(net.java.treaty.XDisjunction)
 			 */
-			public boolean visit(XDisjunction condition) {
+			public boolean visit(ExclusiveDisjunctiveCondition condition) {
 
 				/* Print an xor node for the xdisjunction. */
 				printStartTreeNode(outputStream, getStyle(condition), "xor", condition);
