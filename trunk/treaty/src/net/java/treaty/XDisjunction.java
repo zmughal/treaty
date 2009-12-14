@@ -41,7 +41,7 @@ public class XDisjunction extends ComplexCondition {
 		willVisitChildren = visitor.visit(this);
 
 		if (willVisitChildren) {
-			for (AbstractCondition condition : this.myParts) {
+			for (Condition condition : this.myParts) {
 				condition.accept(visitor);
 			}
 			// end for.
@@ -63,7 +63,7 @@ public class XDisjunction extends ComplexCondition {
 		okCount = 0;
 
 		/* Count the conditions that can be verified successfully. */
-		for (AbstractCondition condition : this.myParts) {
+		for (Condition condition : this.myParts) {
 			okCount = okCount + (condition.check(report, verifier, policy) ? 1 : 0);
 		}
 		// end for.
@@ -100,11 +100,11 @@ public class XDisjunction extends ComplexCondition {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.AbstractCondition#replaceResources(java.util.Map)
 	 */
-	public AbstractCondition replaceResources(Map<String, Resource> resources) {
+	public Condition replaceResources(Map<String, Resource> resources) {
 
 		XDisjunction result = new XDisjunction();
 
-		for (AbstractCondition condition : this.myParts) {
+		for (Condition condition : this.myParts) {
 			result.addCondition(condition.replaceResources(resources));
 		}
 
@@ -130,7 +130,7 @@ public class XDisjunction extends ComplexCondition {
 
 		else {
 			result = false;
-			for (AbstractCondition part : this.myParts) {
+			for (Condition part : this.myParts) {
 				if (part.isInstantiated()) {
 					result = true;
 					break;

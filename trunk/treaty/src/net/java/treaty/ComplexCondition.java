@@ -20,12 +20,12 @@ import java.util.List;
  * 
  * @author Jens Dietrich
  */
-public abstract class ComplexCondition extends AbstractCondition implements
+public abstract class ComplexCondition extends Condition implements
 		ConditionContext {
 
-	/** All parts ({@link AbstractCondition}s) of this {@link ComplexCondition}. */
-	protected List<AbstractCondition> myParts =
-			new ArrayList<AbstractCondition>();
+	/** All parts ({@link Condition}s) of this {@link ComplexCondition}. */
+	protected List<Condition> myParts =
+			new ArrayList<Condition>();
 
 	/**
 	 * <p>
@@ -39,13 +39,13 @@ public abstract class ComplexCondition extends AbstractCondition implements
 
 	/**
 	 * <p>
-	 * Adds a given {@link AbstractCondition} to this {@link ComplexCondition}.
+	 * Adds a given {@link Condition} to this {@link ComplexCondition}.
 	 * </p>
 	 * 
 	 * @param condition
-	 *          The {@link AbstractCondition} that shall be added.
+	 *          The {@link Condition} that shall be added.
 	 */
-	public void addCondition(AbstractCondition condition) {
+	public void addCondition(Condition condition) {
 
 		this.myParts.add(condition);
 	}
@@ -54,7 +54,7 @@ public abstract class ComplexCondition extends AbstractCondition implements
 	 * <p>
 	 * Checks whether or not this {@link ComplexCondition} is instantiated. A
 	 * {@link ComplexCondition} is instantiated if all its
-	 * {@link AbstractCondition}s are instantiated.
+	 * {@link Condition}s are instantiated.
 	 * </p>
 	 * 
 	 * @return <code>true</code> if this {@link ComplexCondition} is instantiated.
@@ -64,7 +64,7 @@ public abstract class ComplexCondition extends AbstractCondition implements
 		boolean result;
 		result = true;
 
-		for (AbstractCondition condition : this.myParts) {
+		for (Condition condition : this.myParts) {
 
 			if (!condition.isInstantiated()) {
 				result = false;
@@ -90,13 +90,13 @@ public abstract class ComplexCondition extends AbstractCondition implements
 
 	/**
 	 * <p>
-	 * Returns all parts (the {@link AbstractCondition}s of this
+	 * Returns all parts (the {@link Condition}s of this
 	 * {@link ComplexCondition}).
 	 * </p>
 	 * 
-	 * @return The {@link AbstractCondition}s of this {@link ComplexCondition}
+	 * @return The {@link Condition}s of this {@link ComplexCondition}
 	 */
-	public List<AbstractCondition> getParts() {
+	public List<Condition> getParts() {
 
 		return this.myParts;
 	}

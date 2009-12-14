@@ -24,8 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import net.java.treaty.AbstractCondition;
+import net.java.treaty.Condition;
 import net.java.treaty.Annotatable;
 import net.java.treaty.Conjunction;
 import net.java.treaty.Connector;
@@ -701,7 +700,7 @@ public class HTMLExporter extends Exporter {
 			 * net.java.treaty.ContractVisitor#endVisitConditions(java.util.Collection
 			 * )
 			 */
-			public void endVisitConditions(Collection<AbstractCondition> conditions) {
+			public void endVisitConditions(Collection<Condition> conditions) {
 
 				/* Do nothing. */
 			}
@@ -954,7 +953,7 @@ public class HTMLExporter extends Exporter {
 			 * (non-Javadoc)
 			 * @see net.java.treaty.ContractVisitor#visitConditions(java.util.List)
 			 */
-			public boolean visitConditions(List<AbstractCondition> name) {
+			public boolean visitConditions(List<Condition> name) {
 
 				/* Visit children. */
 				return true;

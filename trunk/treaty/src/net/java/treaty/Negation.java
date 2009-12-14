@@ -19,10 +19,10 @@ import java.util.Map;
  * 
  * @author Jens Dietrich
  */
-public class Negation extends AbstractCondition implements ConditionContext {
+public class Negation extends Condition implements ConditionContext {
 
-	/** The {@link AbstractCondition} that is negated by this {@link Negation}. */
-	private AbstractCondition myNegatedCondition = null;
+	/** The {@link Condition} that is negated by this {@link Negation}. */
+	private Condition myNegatedCondition = null;
 
 	/**
 	 * <p>
@@ -53,14 +53,14 @@ public class Negation extends AbstractCondition implements ConditionContext {
 
 	/**
 	 * <p>
-	 * Will set the {@link AbstractCondition} that is negated by this
+	 * Will set the {@link Condition} that is negated by this
 	 * {@link Negation}.
 	 * </p>
 	 * 
-	 * @see net.java.treaty.ConditionContext#addCondition(net.java.treaty.AbstractCondition
+	 * @see net.java.treaty.ConditionContext#addCondition(net.java.treaty.Condition
 	 *      )
 	 */
-	public void addCondition(AbstractCondition condition) {
+	public void addCondition(Condition condition) {
 
 		this.setNegatedCondition(condition);
 	}
@@ -119,7 +119,7 @@ public class Negation extends AbstractCondition implements ConditionContext {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.AbstractCondition#replaceResources(java.util.Map)
 	 */
-	public AbstractCondition replaceResources(Map<String, Resource> resources) {
+	public Condition replaceResources(Map<String, Resource> resources) {
 
 		Negation result;
 
@@ -144,29 +144,29 @@ public class Negation extends AbstractCondition implements ConditionContext {
 
 	/**
 	 * <p>
-	 * Returns the {@link AbstractCondition} that is negated by this
+	 * Returns the {@link Condition} that is negated by this
 	 * {@link Negation}.
 	 * </p>
 	 * 
-	 * @return The {@link AbstractCondition} that is negated by this
+	 * @return The {@link Condition} that is negated by this
 	 *         {@link Negation}.
 	 */
-	public AbstractCondition getNegatedCondition() {
+	public Condition getNegatedCondition() {
 
 		return this.myNegatedCondition;
 	}
 
 	/**
 	 * <p>
-	 * Sets the {@link AbstractCondition} that is negated by this {@link Negation}
+	 * Sets the {@link Condition} that is negated by this {@link Negation}
 	 * .
 	 * </p>
 	 * 
 	 * @param negatedCondition
-	 *          The {@link AbstractCondition} that is negated by this
+	 *          The {@link Condition} that is negated by this
 	 *          {@link Negation}.
 	 */
-	public void setNegatedCondition(AbstractCondition negatedCondition) {
+	public void setNegatedCondition(Condition negatedCondition) {
 
 		this.myNegatedCondition = negatedCondition;
 	}

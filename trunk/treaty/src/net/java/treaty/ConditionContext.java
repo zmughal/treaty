@@ -22,11 +22,11 @@ public interface ConditionContext {
 
 	/**
 	 * <p>
-	 * Adds an {@link AbstractCondition} to this {@link ConditionContext}.
+	 * Adds an {@link Condition} to this {@link ConditionContext}.
 	 * </p>
 	 * 
 	 * @param condition
-	 *          The {@link AbstractCondition} that shall be added.
+	 *          The {@link Condition} that shall be added.
 	 */
-	public abstract void addCondition(AbstractCondition condition);
+	public abstract void addCondition(Condition condition);
 }

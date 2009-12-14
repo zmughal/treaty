@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import net.java.treaty.AbstractCondition;
+import net.java.treaty.Condition;
 import net.java.treaty.Component;
 import net.java.treaty.Connector;
 import net.java.treaty.ConnectorType;
@@ -198,7 +198,7 @@ public class ContractTests {
 		 * All conditions of the contract should be bound to the consumer or the
 		 * supplier resources.
 		 */
-		for (AbstractCondition condition : boundContract.getConstraints()) {
+		for (Condition condition : boundContract.getConstraints()) {
 
 			if (condition instanceof ExistsCondition) {
 				ExistsCondition existsCondition;

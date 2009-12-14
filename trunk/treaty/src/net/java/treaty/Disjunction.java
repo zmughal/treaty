@@ -42,7 +42,7 @@ public class Disjunction extends ComplexCondition {
 
 		if (willVisitChildren) {
 
-			for (AbstractCondition condition : this.myParts) {
+			for (Condition condition : this.myParts) {
 				condition.accept(visitor);
 			}
 			// end for.
@@ -66,7 +66,7 @@ public class Disjunction extends ComplexCondition {
 		/* FIXME Claas: No difference between if- and else-clause. */
 		if (policy == VerificationPolicy.DETAILED) {
 
-			for (AbstractCondition condition : this.myParts) {
+			for (Condition condition : this.myParts) {
 				result = result | condition.check(report, verifier, policy);
 			}
 
@@ -83,7 +83,7 @@ public class Disjunction extends ComplexCondition {
 
 		else {
 
-			for (AbstractCondition condition : this.myParts) {
+			for (Condition condition : this.myParts) {
 				result = result | condition.check(report, verifier, policy);
 			}
 
@@ -114,11 +114,11 @@ public class Disjunction extends ComplexCondition {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.AbstractCondition#replaceResources(java.util.Map)
 	 */
-	public AbstractCondition replaceResources(Map<String, Resource> resources) {
+	public Condition replaceResources(Map<String, Resource> resources) {
 
 		Disjunction result = new Disjunction();
 
-		for (AbstractCondition condition : this.myParts) {
+		for (Condition condition : this.myParts) {
 			result.addCondition(condition.replaceResources(resources));
 		}
 
@@ -145,7 +145,7 @@ public class Disjunction extends ComplexCondition {
 		else {
 			result = false;
 
-			for (AbstractCondition part : this.myParts) {
+			for (Condition part : this.myParts) {
 
 				if (part.isInstantiated()) {
 					result = true;

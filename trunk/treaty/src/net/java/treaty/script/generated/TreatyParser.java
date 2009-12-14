@@ -290,7 +290,7 @@ public class TreatyParser extends Parser {
 
         Resource externalResource5 = null;
 
-        AbstractCondition constraint6 = null;
+        Condition constraint6 = null;
 
         URI onFailure7 = null;
 
@@ -840,8 +840,8 @@ public class TreatyParser extends Parser {
 
     // $ANTLR start "constraint"
     // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:219:1: constraint returns [AbstractCondition value] : 'constraint' xorConstraint ;
-    public final AbstractCondition constraint() throws RecognitionException {
-        AbstractCondition value = null;
+    public final Condition constraint() throws RecognitionException {
+        Condition value = null;
         int constraint_StartIndex = input.index();
         TreatyParser.xorConstraint_return xorConstraint24 = null;
 
@@ -879,7 +879,7 @@ public class TreatyParser extends Parser {
     // $ANTLR end "constraint"
 
     public static class xorConstraint_return extends ParserRuleReturnScope {
-        public AbstractCondition value;
+        public Condition value;
         public XDisjunction xDisjunction;
     };
 
@@ -1076,7 +1076,7 @@ public class TreatyParser extends Parser {
     // $ANTLR end "xorConstraint"
 
     public static class orConstraint_return extends ParserRuleReturnScope {
-        public AbstractCondition value;
+        public Condition value;
         public Disjunction disjunction;
     };
 
@@ -1273,7 +1273,7 @@ public class TreatyParser extends Parser {
     // $ANTLR end "orConstraint"
 
     public static class andConstraint_return extends ParserRuleReturnScope {
-        public AbstractCondition value;
+        public Condition value;
         public Conjunction conjunction;
     };
 
@@ -1470,7 +1470,7 @@ public class TreatyParser extends Parser {
     // $ANTLR end "andConstraint"
 
     public static class notConstraint_return extends ParserRuleReturnScope {
-        public AbstractCondition value;
+        public Condition value;
         public Negation negation;
     };
 

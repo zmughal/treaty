@@ -19,11 +19,9 @@ import java.awt.Stroke;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-
-import net.java.treaty.AbstractCondition;
+import net.java.treaty.Condition;
 import net.java.treaty.Annotatable;
 import net.java.treaty.Connector;
 import net.java.treaty.Contract;
@@ -152,7 +150,7 @@ public class ContractVizView extends net.java.treaty.viz.ContractView {
 	 * .CompositionNodeType, net.java.treaty.AbstractCondition)
 	 */
 	protected String getToolTip(CompositionNodeType nodeType,
-			AbstractCondition condition) {
+			Condition condition) {
 
 		Map<String, Object> properties;
 		properties = new LinkedHashMap<String, Object>();

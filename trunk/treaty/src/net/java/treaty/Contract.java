@@ -43,8 +43,8 @@ public class Contract extends PropertySupport implements ConditionContext,
 	 * Contains all {@link AbstractCondition}s that belong to this
 	 * {@link Contract} after the {@link Contract} has been read.
 	 */
-	private List<AbstractCondition> myConstraints =
-			new ArrayList<AbstractCondition>();
+	private List<Condition> myConstraints =
+			new ArrayList<Condition>();
 
 	/**
 	 * The {@link Connector} playing the {@link Role#CONSUMER} role in this
@@ -211,7 +211,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 			/* Probably visit the conditions of this Contract. */
 			if (visitor.visitConditions(this.myConstraints)) {
 
-				for (AbstractCondition condition : getConstraints()) {
+				for (Condition condition : getConstraints()) {
 					condition.accept(visitor);
 				}
 
@@ -245,9 +245,9 @@ public class Contract extends PropertySupport implements ConditionContext,
 	/*
 	 * (non-Javadoc)
 	 * @seenz.ac.massey.treaty.ConditionOwner#addCondition(nz.ac.massey.treaty.
-	 * AbstractCondition)
+	 * Condition)
 	 */
-	public void addCondition(AbstractCondition condition) {
+	public void addCondition(Condition condition) {
 
 		this.myConstraints.add(condition);
 	}
@@ -529,14 +529,14 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 			/* FIXME Claas: No difference between if and else clause. */
 			if (policy == VerificationPolicy.DETAILED) {
-				for (AbstractCondition abstractCondition : this.myConstraints) {
-					result = result & abstractCondition.check(report, verifier, policy);
+				for (Condition Condition : this.myConstraints) {
+					result = result & Condition.check(report, verifier, policy);
 				}
 				// end for.
 			}
 			else {
-				for (AbstractCondition abstractCondition : this.myConstraints) {
-					result = result && abstractCondition.check(report, verifier, policy);
+				for (Condition Condition : this.myConstraints) {
+					result = result && Condition.check(report, verifier, policy);
 				}
 				// end for.
 			}
@@ -564,14 +564,14 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 	/**
 	 * <p>
-	 * Returns all {@link AbstractCondition}s that belong to this {@link Contract}
+	 * Returns all {@link Condition}s that belong to this {@link Contract}
 	 * after the {@link Contract} has been read.
 	 * </p>
 	 * 
-	 * @return All {@link AbstractCondition}s that belong to this {@link Contract}
+	 * @return All {@link Condition}s that belong to this {@link Contract}
 	 *         .
 	 */
-	public List<AbstractCondition> getConstraints() {
+	public List<Condition> getConstraints() {
 
 		return this.myConstraints;
 	}
@@ -818,7 +818,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 		boolean result;
 		result = true;
 
-		for (AbstractCondition condition : this.getConstraints()) {
+		for (Condition condition : this.getConstraints()) {
 
 			if (!condition.isInstantiated()) {
 				result = false;
@@ -864,7 +864,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 		boolean hasOnlyConjunctions;
 		hasOnlyConjunctions = true;
 
-		for (AbstractCondition constraint : myConstraints) {
+		for (Condition constraint : myConstraints) {
 			hasOnlyConjunctions =
 					hasOnlyConjunctions && (constraint instanceof Conjunction);
 		}
@@ -886,12 +886,12 @@ public class Contract extends PropertySupport implements ConditionContext,
 			result.myConsumerResources = this.myConsumerResources;
 			result.mySupplierResources = this.mySupplierResources;
 			result.myLegislatorResources = this.myLegislatorResources;
-			result.myConstraints = new ArrayList<AbstractCondition>();
+			result.myConstraints = new ArrayList<Condition>();
 
-			for (AbstractCondition condition : myConstraints) {
+			for (Condition condition : myConstraints) {
 				Conjunction conjunction = (Conjunction) condition;
 
-				for (AbstractCondition conjunctionPart : conjunction.getParts()) {
+				for (Condition conjunctionPart : conjunction.getParts()) {
 					result.myConstraints.add(conjunctionPart);
 				}
 				// end for.
@@ -1295,7 +1295,7 @@ public class Contract extends PropertySupport implements ConditionContext,
 			}
 
 			/* Replace add all instantiated resources. */
-			for (AbstractCondition condition : this.myConstraints) {
+			for (Condition condition : this.myConstraints) {
 
 				switch (role) {
 

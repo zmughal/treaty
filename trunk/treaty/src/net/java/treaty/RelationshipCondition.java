@@ -21,7 +21,7 @@ import java.util.Map;
  * 
  * @author Jens Dietrich
  */
-public class RelationshipCondition extends AbstractCondition {
+public class RelationshipCondition extends Condition {
 
 	/** The first {@link Resource} of this {@link RelationshipCondition}. */
 	private Resource myResource1 = null;
@@ -135,7 +135,7 @@ public class RelationshipCondition extends AbstractCondition {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.AbstractCondition#replaceResources(java.util.Map)
 	 */
-	public AbstractCondition replaceResources(Map<String, Resource> resources) {
+	public Condition replaceResources(Map<String, Resource> resources) {
 
 		RelationshipCondition result;
 		result = new RelationshipCondition();
