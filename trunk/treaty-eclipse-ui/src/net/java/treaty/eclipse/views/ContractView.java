@@ -27,7 +27,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.java.treaty.*;
+import net.java.treaty.Condition;
+import net.java.treaty.Annotatable;
+import net.java.treaty.ComplexCondition;
+import net.java.treaty.Component;
+import net.java.treaty.Conjunction;
+import net.java.treaty.Connector;
+import net.java.treaty.ConnectorType;
+import net.java.treaty.Contract;
+import net.java.treaty.ContractTypeChecker;
+import net.java.treaty.ExistsCondition;
+import net.java.treaty.Negation;
+import net.java.treaty.PropertyCondition;
+import net.java.treaty.PropertySupport;
+import net.java.treaty.RelationshipCondition;
+import net.java.treaty.Resource;
+import net.java.treaty.Role;
+import net.java.treaty.TreatyException;
+import net.java.treaty.VerificationPolicy;
+import net.java.treaty.VerificationReport;
+import net.java.treaty.VerificationResult;
 import net.java.treaty.contractregistry.ContractRegistryListener;
 import net.java.treaty.eclipse.Constants;
 import net.java.treaty.eclipse.EclipseExtension;
@@ -43,6 +62,8 @@ import net.java.treaty.eclipse.trigger.EclipseTriggerRegistry;
 import net.java.treaty.eclipse.ui.Activator;
 import net.java.treaty.eclipse.ui.actions.UIActionVocabulary;
 import net.java.treaty.eclipse.ui.triggers.ManualTriggerVocabulary;
+import net.java.treaty.eclipse.verification.TriggeredEclipseVerifier;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -794,9 +815,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			for (Condition c : contract.getConstraints()) {
 
 				/* The top level conjunction is displayed as set. */
-				if (c instanceof ConjunctiveCondition) {
+				if (c instanceof Conjunction) {
 
-					for (Condition c2 : ((ConjunctiveCondition) c).getParts()) {
+					for (Condition c2 : ((Conjunction) c).getParts()) {
 						this.addConditionNodes(parent, c2, ownerTypes);
 					}
 				}
@@ -869,8 +890,8 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		 * @param ownerTypes
 		 *          The given {@link Resource}s and {@link OwnerType}s.
 		 */
-		private void addConditionNodes(TreeParent parent,
-				Condition condition, Map<Resource, Role> ownerTypes) {
+		private void addConditionNodes(TreeParent parent, Condition condition,
+				Map<Resource, Role> ownerTypes) {
 
 			if (condition instanceof RelationshipCondition) {
 
@@ -947,15 +968,16 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 				}
 			}
 
-			else if (condition instanceof NegatedCondition) {
-				NegatedCondition negation;
-				negation = (NegatedCondition) condition;
+			else if (condition instanceof Negation) {
+				Negation negation;
+				negation = (Negation) condition;
 
 				TreeParent node;
 				node = new TreeParent(negation);
 
 				parent.addChild(node);
-				this.addConditionNodes(node, negation.getNegatedCondition(), ownerTypes);
+				this
+						.addConditionNodes(node, negation.getNegatedCondition(), ownerTypes);
 			}
 		}
 
@@ -1338,7 +1360,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 						result = ((ComplexCondition) adaptedObject).getConnective();
 					}
 
-					else if (adaptedObject instanceof NegatedCondition) {
+					else if (adaptedObject instanceof Negation) {
 						result = "not";
 					}
 
@@ -1591,11 +1613,21 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	private static int STATUS_COLUMN = 1;
 
 	/**
+	 * Indicates which {@link VerificationPolicy} shall be used. If enabled,
+	 * {@link VerificationPolicy#FAST} is used. Else
+	 * {@link VerificationPolicy#DETAILED} is used.
+	 */
+	private boolean isFastVerificationEnabled = false;
+
+	/**
 	 * A boolean that specifies whether or not the {@link ContractView} has been
 	 * updated after the {@link EclipseContractRegistry} changed for the last
 	 * time.
 	 */
 	private boolean isUpdated;
+
+	/** {@link Action} to enable or disable fast verification. */
+	private Action myActionEnableFastVerifaction;
 
 	/** {@link Action} to print the current stack trace. */
 	private Action myActionPrintStackTrace;
@@ -1611,6 +1643,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 	/** {@link Action} to display a {@link Contract}'s vizualisation. */
 	private Action myActionShowContractVizualisation;
+
+	/** {@link Action} to check types of actions and triggers in {@link Contract}s. */
+	private Action myActionTypeCheck;
 
 	/**
 	 * {@link Action} to verify all {@link Contract}s provided by this
@@ -1990,6 +2025,67 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 
 	/**
 	 * <p>
+	 * Behavior of the {@link Action} to check the trigger and action types in all
+	 * {@link Contract}s.
+	 * </p>
+	 */
+	private void actionContracTypeCheck() {
+
+		ContractTypeChecker contractTypeChecker;
+		contractTypeChecker =
+				new ContractTypeChecker(EclipseActionRegistry.INSTANCE,
+						EclipseTriggerRegistry.INSTANCE);
+
+		Set<TreatyException> warnings;
+		warnings =
+				contractTypeChecker.checkContracts(EclipseContractRegistry
+						.getInstance().getInstantiatedContracts());
+
+		final String msg;
+
+		if (warnings.size() == 0) {
+			msg = "All Trigger and Action types are defined.";
+		}
+
+		else {
+			StringBuffer msgBuffer;
+			msgBuffer = new StringBuffer();
+
+			msgBuffer
+					.append("Some Trigger or Action types used in Contracts are not defined:\n");
+
+			int index;
+			index = 0;
+			for (TreatyException treatyException : warnings) {
+				msgBuffer.append("\n" + treatyException.getMessage());
+				index++;
+
+				if (index > 5) {
+					msgBuffer.append("\n" + (warnings.size() - 5) + " more...");
+					break;
+				}
+				// no else.
+			}
+			// end for.
+
+			msg = msgBuffer.toString();
+		}
+
+		Runnable runnable;
+		runnable = new Runnable() {
+
+			public void run() {
+
+				MessageDialog.openInformation(myViewer.getControl().getShell(),
+						"Contract Type Check Result", msg);
+			}
+		};
+
+		this.myViewer.getControl().getDisplay().syncExec(runnable);
+	}
+
+	/**
+	 * <p>
 	 * Behavior of the {@link Action} to export all instantiated {@link Contract}
 	 * s by using a given {@link Exporter}.
 	 * </p>
@@ -2365,11 +2461,13 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	private void fillContextMenu(IMenuManager manager) {
 
 		manager.add(this.myActionRefresh);
+		manager.add(this.myActionEnableFastVerifaction);
 		manager.add(this.myActionVerifyAllContracts);
 		manager.add(this.myActionVerifySelectedContracts);
 		manager.add(this.myActionPrintStackTrace);
 		manager.add(this.myActionShowContractSource);
 		manager.add(this.myActionShowContractVizualisation);
+		manager.add(this.myActionTypeCheck);
 
 		manager.add(new Separator());
 
@@ -2398,6 +2496,10 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		manager.removeAll();
 
 		manager.add(this.myActionRefresh);
+
+		manager.add(new Separator());
+
+		manager.add(this.myActionEnableFastVerifaction);
 
 		manager.add(new Separator());
 
@@ -2802,6 +2904,53 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			this.createExportAction(exporter);
 		}
 		// end for.
+
+		this.myActionTypeCheck = new Action() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.jface.action.Action#run()
+			 */
+			public void run() {
+
+				actionContracTypeCheck();
+			}
+		};
+
+		this.myActionTypeCheck.setText("Check all Trigger and Action Types.");
+		this.myActionTypeCheck
+				.setToolTipText("Checks if all used Trigger and Actions Types are defined.");
+		this.myActionTypeCheck.setEnabled(true);
+
+		this.myActionEnableFastVerifaction = new Action() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.jface.action.Action#run()
+			 */
+			public void run() {
+
+				/* Disable or enable. */
+				isFastVerificationEnabled = !isFastVerificationEnabled;
+				myActionEnableFastVerifaction.setChecked(isFastVerificationEnabled);
+
+				if (isFastVerificationEnabled) {
+					TriggeredEclipseVerifier.INSTANCE
+							.setVerificationPolicy(VerificationPolicy.FAST);
+				}
+
+				else {
+					TriggeredEclipseVerifier.INSTANCE
+							.setVerificationPolicy(VerificationPolicy.DETAILED);
+				}
+			}
+		};
+
+		this.myActionEnableFastVerifaction.setEnabled(true);
+		this.myActionEnableFastVerifaction.setChecked(isFastVerificationEnabled);
+		this.myActionEnableFastVerifaction.setText("Use fast Verification");
+		this.myActionEnableFastVerifaction
+				.setToolTipText("If enabled fast verification is used for AND and OR conditions.");
 	}
 
 	/**
