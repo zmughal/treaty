@@ -718,7 +718,7 @@ public class ContractRegistry {
 		result = new LinkedHashSet<Contract>();
 
 		/* Check if the contract itself is completely instantiated. */
-		if (!contract.isShadow() && contract.getConsumer() != null
+		if (contract.getConsumer() != null
 				&& contract.getSupplier() != null) {
 			result.add(contract);
 		}
