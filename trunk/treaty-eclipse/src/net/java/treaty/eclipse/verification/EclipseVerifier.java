@@ -21,6 +21,7 @@ import net.java.treaty.RelationshipCondition;
 import net.java.treaty.ResourceLoader;
 import net.java.treaty.ResourceLoaderException;
 import net.java.treaty.VerificationException;
+import net.java.treaty.VerificationPolicy;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.Verifier;
@@ -66,14 +67,20 @@ public class EclipseVerifier implements Verifier, ResourceLoader {
 	 * @param jobChangeListener
 	 *          An {@link IJobChangeListener} that can be used to observe the
 	 *          progress.
+	 * @param verificationPolicy
+	 *          The {@link VerificationPolicy}s used to verify the
+	 *          {@link Contract}s.
 	 */
 	public static void verify(Collection<Contract> contracts,
 			VerificationReport verificationReport,
 			VerificationJobListener verificationJobListener,
-			IJobChangeListener jobChangeListener) {
+			IJobChangeListener jobChangeListener,
+			VerificationPolicy verificationPolicy) {
 
 		VerificationJob job;
-		job = new VerificationJob("Treaty Component Verification", contracts);
+		job =
+				new VerificationJob("Treaty Component Verification", contracts,
+						verificationPolicy);
 
 		job.addVerificationJobListener(verificationJobListener);
 		job.addJobChangeListener(jobChangeListener);

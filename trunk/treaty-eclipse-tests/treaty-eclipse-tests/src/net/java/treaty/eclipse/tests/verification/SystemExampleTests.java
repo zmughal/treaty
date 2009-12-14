@@ -21,6 +21,7 @@ import java.util.List;
 
 import net.java.treaty.Contract;
 import net.java.treaty.Role;
+import net.java.treaty.VerificationPolicy;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.Verifier;
 import net.java.treaty.eclipse.EclipseExtension;
@@ -395,8 +396,9 @@ public class SystemExampleTests {
 
 		this.hasJobFinished = false;
 
-		EclipseVerifier.verify(contracts, verificationReport,
-				verificationJobListener, jobChangeListener);
+		EclipseVerifier
+				.verify(contracts, verificationReport, verificationJobListener,
+						jobChangeListener, VerificationPolicy.DETAILED);
 
 		/* Wait till the job finished. */
 		while (!this.hasJobFinished) {
@@ -477,8 +479,9 @@ public class SystemExampleTests {
 
 		this.hasJobFinished = false;
 
-		EclipseVerifier.verify(contracts, verificationReport,
-				verificationJobListener, jobChangeListener);
+		EclipseVerifier
+				.verify(contracts, verificationReport, verificationJobListener,
+						jobChangeListener, VerificationPolicy.DETAILED);
 
 		/* Wait till the job finished. */
 		while (!this.hasJobFinished) {
@@ -559,8 +562,9 @@ public class SystemExampleTests {
 
 		this.hasJobFinished = false;
 
-		EclipseVerifier.verify(contracts, verificationReport,
-				verificationJobListener, jobChangeListener);
+		EclipseVerifier
+				.verify(contracts, verificationReport, verificationJobListener,
+						jobChangeListener, VerificationPolicy.DETAILED);
 
 		/* Wait till the job finished. */
 		while (!this.hasJobFinished) {
