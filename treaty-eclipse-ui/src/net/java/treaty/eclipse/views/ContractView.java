@@ -31,13 +31,13 @@ import net.java.treaty.Condition;
 import net.java.treaty.Annotatable;
 import net.java.treaty.ComplexCondition;
 import net.java.treaty.Component;
-import net.java.treaty.Conjunction;
+import net.java.treaty.ConjunctiveCondition;
 import net.java.treaty.Connector;
 import net.java.treaty.ConnectorType;
 import net.java.treaty.Contract;
 import net.java.treaty.ContractTypeChecker;
 import net.java.treaty.ExistsCondition;
-import net.java.treaty.Negation;
+import net.java.treaty.NegatedCondition;
 import net.java.treaty.PropertyCondition;
 import net.java.treaty.PropertySupport;
 import net.java.treaty.RelationshipCondition;
@@ -815,9 +815,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 			for (Condition c : contract.getConstraints()) {
 
 				/* The top level conjunction is displayed as set. */
-				if (c instanceof Conjunction) {
+				if (c instanceof ConjunctiveCondition) {
 
-					for (Condition c2 : ((Conjunction) c).getParts()) {
+					for (Condition c2 : ((ConjunctiveCondition) c).getParts()) {
 						this.addConditionNodes(parent, c2, ownerTypes);
 					}
 				}
@@ -968,9 +968,9 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 				}
 			}
 
-			else if (condition instanceof Negation) {
-				Negation negation;
-				negation = (Negation) condition;
+			else if (condition instanceof NegatedCondition) {
+				NegatedCondition negation;
+				negation = (NegatedCondition) condition;
 
 				TreeParent node;
 				node = new TreeParent(negation);
@@ -1360,7 +1360,7 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 						result = ((ComplexCondition) adaptedObject).getConnective();
 					}
 
-					else if (adaptedObject instanceof Negation) {
+					else if (adaptedObject instanceof NegatedCondition) {
 						result = "not";
 					}
 
