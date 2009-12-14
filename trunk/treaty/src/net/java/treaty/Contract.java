@@ -30,14 +30,6 @@ import java.util.Map;
 public class Contract extends PropertySupport implements ConditionContext,
 		Visitable, Comparable<Contract> {
 
-	/**
-	 * A flag indicating that {@link Contract}s refer types and predicates that
-	 * are unknown. This is used when vocabularies are defined in a modular
-	 * manner. It is then possible that {@link Contract}s are loaded, but the
-	 * referenced variables are not available if this flag is <code>true</code>,
-	 * it is generally not possible to check/verify this {@link Contract}.
-	 */
-	private boolean isShadow = false;
 
 	/**
 	 * Contains all {@link AbstractCondition}s that belong to this
@@ -833,22 +825,6 @@ public class Contract extends PropertySupport implements ConditionContext,
 
 	/**
 	 * <p>
-	 * Returns a flag indicating that {@link Contract}s refer types and predicates
-	 * that are unknown. This is used when vocabularies are defined in a modular
-	 * manner. It is then possible that {@link Contract}s are loaded, but the
-	 * referenced variables are not available if this flag is <code>true</code>,
-	 * it is generally not possible to check/verify this {@link Contract}.
-	 * </p>
-	 * 
-	 * @return <code>true</code> if this {@link Contract} is shadow.
-	 */
-	public boolean isShadow() {
-
-		return this.isShadow;
-	}
-
-	/**
-	 * <p>
 	 * Convert the {@link Contract} to an equivalent, more compact form. This is
 	 * not yet fully recursive, it just removes top-level conjunction in order to
 	 * flatten the structure.
@@ -998,23 +974,6 @@ public class Contract extends PropertySupport implements ConditionContext,
 	public void setExternalResources(Map<String, Resource> externalResources) {
 
 		this.myLegislatorResources = externalResources;
-	}
-
-	/**
-	 * <p>
-	 * Sets a flag indicating that {@link Contract}s refer types and predicates
-	 * that are unknown. This is used when vocabularies are defined in a modular
-	 * manner. It is then possible that {@link Contract}s are loaded, but the
-	 * referenced variables are not available if this flag is <code>true</code>,
-	 * it is generally not possible to check/verify this {@link Contract}.
-	 * </p>
-	 * 
-	 * @param isShadowContract
-	 *          Use <code>true</code> if this {@link Contract} is shadow.
-	 */
-	public void setIsShadow(boolean isShadowContract) {
-
-		this.isShadow = isShadowContract;
 	}
 
 	/**
