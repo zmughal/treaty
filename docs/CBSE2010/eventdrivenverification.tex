@@ -1,10 +1,10 @@
-
-
 \documentclass{llncs}
+
 \usepackage{listings}
 
-
 \bibliographystyle{alpha}
+
+
 
 \begin{document}
 
@@ -14,9 +14,10 @@
 \author{Jens Dietrich\inst{1} \and Claas Wilke\inst{2}}
 
 \institute{Massey University, Institute of Information Sciences and Technology,\\ Palmerston North, New Zealand \and
-Technische Universitaet Dresden, Germany}
+Institut f\"ur Software- und Multimediatechnik,\\ Technische Universit\"at Dresden, Germany}
 
 \maketitle
+
 
 
 \begin{abstract}
@@ -25,6 +26,8 @@ We propose ActiveTreaty, a novel contract and verification model suitable for dy
 A proof-of-concept implementation for the OSGi/Eclipse component model is presented. 
 
 \end{abstract}
+
+
 
 \section{Introduction}
 
@@ -38,38 +41,20 @@ In this paper, we propose an extension to make Treaty this dynamic by including 
 
 The rest of this paper is organised as follows. In the next section, we review related work. We then sketch the Treaty framework. For a detailed description, the reader is referred to \cite{Treaty.JOT2009}. In section 3, we introduce active treaty. TODO:complete 
 
+
+
 \section{Related Work}
 
 % TODO Jens: the next two paragraphs are copied from the TKDE submission, need to ve rephrased
 
-To the best of our knowledge our approach is unique in that it addresses the
-problem of different contract types in dynamic, heterogeneous component models. 
-In \cite{Dong2003}, the authors propose the use of Prolog to express contracts
-between design components. In contrast to our work, the authors do not consider
-dynamic and heterogeneous component models. Some authors have explored the
-possibility of manual and automated contract extraction from Java
-\cite{Henkel03,MilanovicMalek2004} and .NET programs \cite{ArnoutMeyer2003a},
-and the formal representation of these contracts. Arnout and Meyer went on and
-tried to show the benefits of an a posteriori addition of contracts
-\cite{ArnoutMeyer2003b}. They set out to resolve the ``closet contract
-conjecture'' \cite{ArnoutMeyer2003b}. This conjecture states that there are
-implicit contracts in software ``lurking under the cover'', and that making
-these contract explicit can significantly improve the quality of systems. The
-intention of this study is very similar to ours. However, the contract language
-and the nature of the component models analysed are very different. Arnout and
-Meyer distinguish between ``A Posteriori Contracting'' vs. ``Contracting from
-the Start''. Treaty goes one step further and supports the combination and
-aggregations of internal and external contracts. 
-%TODO see above
-Semantic web technology has been successfully used to represent contracts in
-other areas, such as SLA contracts \cite{PaschkeDietrich2005}, business
-contracts \cite{Linington04}, \cite{Governatori06} ,\cite{Governatori05} and
-the provisions for exception handling in electronic contracts \cite{SweetDeal}.
-These languages are significantly more complex than the Treaty language, and
-often include features from deontic, temporal or other non-classical logics to
-gain more expressiveness. The integration of events into the contract logic in
-some of these approaches is an interesting feature that has great potential for
-contract-based verification in dynamic component systems. 
+To the best of our knowledge our approach is unique in that it addresses the problem of different contract types in dynamic, heterogeneous component models. In \cite{Dong2003}, the authors propose the use of Prolog to express contracts between design components. In contrast to our work, the authors do not consider dynamic and heterogeneous component models. Some authors have explored the possibility of manual and automated contract extraction from Java \cite{Henkel03,MilanovicMalek2004} and .NET programs \cite{ArnoutMeyer2003a}, and the formal representation of these contracts. Arnout and Meyer went on and tried to show the benefits of an a posteriori addition of contracts \cite{ArnoutMeyer2003b}. They set out to resolve the ``closet contract
+conjecture'' \cite{ArnoutMeyer2003b}. This conjecture states that there are implicit contracts in software ``lurking under the cover'', and that making
+these contract explicit can significantly improve the quality of systems. The intention of this study is very similar to ours. However, the contract language and the nature of the component models analysed are very different. Arnout and Meyer distinguish between ``A Posteriori Contracting'' vs. ``Contracting from the Start''. Treaty goes one step further and supports the combination and aggregations of internal and external contracts. 
+%TODO see above 
+
+Semantic web technology has been successfully used to represent contracts in other areas, such as SLA contracts \cite{PaschkeDietrich2005}, business
+contracts \cite{Linington04}, \cite{Governatori06} ,\cite{Governatori05} and the provisions for exception handling in electronic contracts \cite{SweetDeal}. These languages are significantly more complex than the Treaty language, and often include features from deontic, temporal or other non-classical logics to gain more expressiveness. The integration of events into the contract logic in some of these approaches is an interesting feature that has great potential for contract-based verification in dynamic component systems. 
+
 
 
 \section{The Treaty Contract Language}
@@ -81,7 +66,18 @@ contract-based verification in dynamic component systems.
 \item vocabulary contributions
 \end{itemize}
 
+
+
 \section{Active Treaty}
+
+\begin{itemize}
+  \item dynamic update of contract registry
+  \item dynamic update of vocabulary
+  \item use (and dynamic update) of trigger and action vocabularies
+  \item dynamic verification triggered by triggers
+  \item dynamic reaction triggered by verification
+\end{itemize}
+
 
 \subsection{Syntax}
 
@@ -90,25 +86,39 @@ contract-based verification in dynamic component systems.
 \item example
 \end{itemize}
 
+
 \subsection{Semantics}
 
 use event calculus here? or UML activity diagrams
+
+
 
 \section{A Role Model for Components}
 
 Consumer
 Provider
-Legislator - can also be consumer
+Legislator - can also be consumer (or supplier, not in Eclipse. E.g., Client/Server)
 Vocabulary Contributor
+
 
 
 \section{A Case Study: Adding Active Contracts to Eclipse}
 
-\section{}
+
+
+\section{Conclusion}
+
+
+\subsection{Future Works}
+
+\begin{itemize}
+	\item support OCL in contracts
+	\item implement (Active)Treaty for other component models
+\end{itemize}
+
+
 
 %TODO change to LNCS style
-\bibliography{bibliography} 
-  
-  
+\bibliography{bibliography}  
     
 \end{document}
