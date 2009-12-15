@@ -11,20 +11,21 @@
 package net.java.treaty.eclipse.ui.actions;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
-import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
-import net.java.treaty.action.ActionVocabulary;
+import net.java.treaty.action.ActionOntology;
 import net.java.treaty.eclipse.Logger;
+import net.java.treaty.eclipse.ui.Activator;
 import net.java.treaty.eclipse.views.ContractView;
 
-public class UIActionVocabulary implements ActionVocabulary {
+import org.osgi.framework.Bundle;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+
+public class UIActionVocabulary extends ActionOntology {
 
 	/** The name space's name of the {@link UIActionVocabulary}. */
 	public static final String NAME_SPACE_NAME =
@@ -37,11 +38,8 @@ public class UIActionVocabulary implements ActionVocabulary {
 	public static final String ACTION_TYPE_SHOW_VERIFICATION_RESULT =
 			NAME_SPACE_NAME + "#ShowResult";
 
-	/**
-	 * The action types of this {@link ActionVocabulary} as a {@link Map} of
-	 * {@link URI}s identified by their {@link String} representation.
-	 */
-	private Map<String, URI> actionTypes;
+	/** The location of this {@link ActionOntology}'s ontology. */
+	private static final String ONTOLOGY_LOCATION = "vocabulary/ui.owl";
 
 	/**
 	 * The {@link ContractView} on which the actions of this
@@ -49,23 +47,26 @@ public class UIActionVocabulary implements ActionVocabulary {
 	 */
 	private ContractView contractView;
 
-	/**
-	 * <p>
-	 * Creates a new {@link UIActionVocabulary}.
-	 * </p>
-	 */
-	public UIActionVocabulary() {
-
-		this.initialize();
-	}
+	/** The {@link OntModel} of this {@link ActionOntology}. */
+	private OntModel myOntology = null;
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#getActionTypes()
+	 * @see net.java.treaty.action.ActionOntology#getOntology()
 	 */
-	public Set<URI> getActions() {
+	public OntModel getOntology() {
 
-		return new HashSet<URI>(this.actionTypes.values());
+		/* Probably load the ontology. */
+		if (this.myOntology == null) {
+			Bundle myBundle;
+			myBundle = Activator.getDefault().getBundle();
+
+			this.myOntology = ModelFactory.createOntologyModel();
+			this.myOntology.read(myBundle.getResource(ONTOLOGY_LOCATION).toString());
+		}
+		// no else.
+
+		return this.myOntology;
 	}
 
 	/*
@@ -105,46 +106,6 @@ public class UIActionVocabulary implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#getDescription(java.net.URI)
-	 */
-	public String getDescription(URI actionType) throws TreatyException {
-
-		String result;
-
-		if (this.actionTypes.get(ACTION_TYPE_SHOW_VERIFICATION_RESULT).equals(
-				actionType)) {
-			result = "Shows a summary of all verified contracts after verification.";
-		}
-
-		else {
-			throw new TreatyException("Unknown action type " + actionType);
-		}
-
-		return result;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#isAfterAction(java.net.URI)
-	 */
-	public boolean isAfterAction(URI actionType) {
-
-		/* The show verification action is universal on end. */
-		return ACTION_TYPE_SHOW_VERIFICATION_RESULT.equals(actionType.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#isBeforeAction(java.net.URI)
-	 */
-	public boolean isBeforeAction(URI actionType) {
-
-		/* This vocabulary does not provide any actions on begin verification. */
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see net.java.treaty.action.ActionVocabulary#perform(java.net.URI,
 	 * java.net.URI, net.java.treaty.VerificationReport)
 	 */
@@ -155,28 +116,6 @@ public class UIActionVocabulary implements ActionVocabulary {
 		 * This vocabulary does not provide any actions on verification of single
 		 * contracts.
 		 */
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isDefaultOnFailure(java.net.URI)
-	 */
-	public boolean isDefaultOnFailure(URI actionType) {
-
-		/* This vocabulary does not provide any actions on failed verification. */
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isDefaultOnSuccess(java.net.URI)
-	 */
-	public boolean isDefaultOnSuccess(URI actionType) {
-
-		/* This vocabulary does not provide any actions on successful verification. */
-		return false;
 	}
 
 	/*
@@ -202,31 +141,5 @@ public class UIActionVocabulary implements ActionVocabulary {
 	public void setContractView(ContractView contractView) {
 
 		this.contractView = contractView;
-	}
-
-	/**
-	 * <p>
-	 * Initializes the {@link BundleTriggerVocabulary}.
-	 * </p>
-	 */
-	private void initialize() {
-
-		/* Probably initialize the action Types */
-		if (this.actionTypes == null) {
-
-			this.actionTypes = new HashMap<String, URI>();
-
-			try {
-				this.actionTypes.put(ACTION_TYPE_SHOW_VERIFICATION_RESULT, new URI(
-						ACTION_TYPE_SHOW_VERIFICATION_RESULT));
-			}
-
-			catch (URISyntaxException e) {
-				Logger.warn("Error during initialization of UIActionVocabulary. "
-						+ "Probably some action types are not available.", e);
-			}
-			// end catch.
-		}
-		// no else (already initialized).
 	}
 }
