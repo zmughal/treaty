@@ -117,9 +117,9 @@ public class ActionVocabularyMock implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#getActionTypes()
+	 * @see net.java.treaty.action.ActionVocabulary#getActions()
 	 */
-	public Set<URI> getActionTypes() {
+	public Set<URI> getActions() {
 
 		return new HashSet<URI>(actionTypes.values());
 	}
