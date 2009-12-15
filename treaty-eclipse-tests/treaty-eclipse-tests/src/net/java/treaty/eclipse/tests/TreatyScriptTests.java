@@ -15,16 +15,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 
 import net.java.treaty.ConjunctiveCondition;
 import net.java.treaty.Contract;
+import net.java.treaty.ContractReader;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.ExclusiveDisjunctiveCondition;
 import net.java.treaty.ExistsCondition;
 import net.java.treaty.RelationshipCondition;
 import net.java.treaty.Resource;
+import net.java.treaty.eclipse.EclipseResourceManager;
 import net.java.treaty.eclipse.VocabularyRegistry;
+import net.java.treaty.script.ScriptContractReader;
 import net.java.treaty.script.TreatyScript;
 
 import org.junit.Test;
@@ -47,7 +51,7 @@ public class TreatyScriptTests {
 	 * @throws Exception
 	 */
 	@Test
-	public void testClockScript() throws Exception {
+	public void testClockScript01() throws Exception {
 
 		Contract contract =
 				TreatyScript
@@ -178,6 +182,152 @@ public class TreatyScriptTests {
 		assertEquals("DateFormatDef", rel4.getResource2().getId());
 		assertEquals(new URI("http://www.treaty.org/xml#instantiates"), rel4
 				.getRelationship());
+	}
+
+	/**
+	 * <p>
+	 * Tests {@link TreatyScript} with a contract using the JUnit vocabulary.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testClockScript02() throws Exception {
+
+		Contract contract;
+		contract = null;
+
+		URL location;
+		location = null;
+
+		/* Try to read the contract. */
+		location =
+				Activator.getDefault().getBundle().getResource(
+						"resources/testcontracts/clock01.contract");
+
+		ContractReader reader;
+		reader = new ScriptContractReader(EclipseResourceManager.INSTANCE);
+
+		contract = reader.read(location.openStream(), VocabularyRegistry.INSTANCE);
+
+		assertNotNull(contract);
+
+		assertEquals("Claas", contract.getProperty("dc:author"));
+		assertEquals("15/12/09", contract.getProperty("dc:date"));
+
+		assertEquals(1, contract.getTriggers().size());
+		assertEquals(new URI(
+				"http://www.treaty.org/trigger/bundle#SupplierBundleStarted"), contract
+				.getTriggers().get(0));
+
+		assertEquals(0, contract.getOnVerificationSucceedsActions().size());
+
+		assertEquals(1, contract.getOnVerificationFailsActions().size());
+		assertEquals(new URI(
+				"http://www.treaty.org/trigger/bundle#SupplierBundleStarted"), contract
+				.getOnVerificationFailsActions().get(0));
+
+		assertEquals(4, contract.getConsumerResources().size());
+
+		Resource resource0;
+		resource0 = findResource(contract.getConsumerResources(), "Interface");
+		assertNotNull(resource0);
+		assertEquals(new URI("http://www.treaty.org/java#AbstractType"), resource0
+				.getType());
+		assertEquals("net.java.treaty.eclipse.example.clock.DateFormatter",
+				resource0.getName());
+
+		Resource resource1;
+		resource1 = findResource(contract.getConsumerResources(), "QoSTests");
+		assertNotNull(resource1);
+		assertEquals(new URI("http://www.treaty.org/junit#TestCase"), resource1
+				.getType());
+		assertEquals(
+				"net.java.treaty.eclipse.example.clock.DateFormatterPerformanceTests",
+				resource1.getName());
+
+		Resource resource2;
+		resource2 =
+				findResource(contract.getConsumerResources(), "FunctionalTests");
+		assertNotNull(resource2);
+		assertEquals(new URI("http://www.treaty.org/junit#TestCase"), resource2
+				.getType());
+		assertEquals(
+				"net.java.treaty.eclipse.example.clock.DateFormatterFunctionalTests",
+				resource2.getName());
+
+		Resource resource3;
+		resource3 = findResource(contract.getConsumerResources(), "DateFormatDef");
+		assertNotNull(resource3);
+		assertEquals(new URI("http://www.treaty.org/xml#XMLSchema"), resource3
+				.getType());
+		assertEquals("/dateformat.xsd", resource3.getName());
+
+		assertEquals(2, contract.getSupplierResources().size());
+
+		Resource resource4;
+		resource4 = findResource(contract.getSupplierResources(), "Formatter");
+		assertNotNull(resource4);
+		assertEquals(new URI("http://www.treaty.org/java#InstantiableClass"),
+				resource4.getType());
+		assertEquals("serviceprovider/@class", resource4.getRef());
+
+		Resource resource5;
+		resource5 = findResource(contract.getSupplierResources(), "FormatString");
+		assertNotNull(resource5);
+		assertEquals(new URI("http://www.treaty.org/xml#XMLInstance"), resource5
+				.getType());
+		assertEquals("serviceprovider/@formatdef", resource5.getRef());
+
+		assertEquals(1, contract.getConstraints().size());
+		assertTrue(contract.getConstraints().get(0) instanceof ExclusiveDisjunctiveCondition);
+
+		ExclusiveDisjunctiveCondition xor;
+		xor = (ExclusiveDisjunctiveCondition) contract.getConstraints().get(0);
+		assertEquals(2, xor.getParts().size());
+		assertTrue(xor.getParts().get(0) instanceof ConjunctiveCondition);
+		assertTrue(xor.getParts().get(1) instanceof RelationshipCondition);
+
+		ConjunctiveCondition and;
+		and = (ConjunctiveCondition) xor.getParts().get(0);
+		assertEquals(4, and.getParts().size());
+		assertTrue(and.getParts().get(0) instanceof RelationshipCondition);
+		assertTrue(and.getParts().get(1) instanceof ExistsCondition);
+		assertTrue(and.getParts().get(2) instanceof RelationshipCondition);
+		assertTrue(and.getParts().get(3) instanceof RelationshipCondition);
+
+		RelationshipCondition reletationshipCondition0;
+		reletationshipCondition0 = (RelationshipCondition) and.getParts().get(0);
+		assertEquals("Formatter", reletationshipCondition0.getResource1().getId());
+		assertEquals("Interface", reletationshipCondition0.getResource2().getId());
+		assertEquals(new URI("http://www.treaty.org/java#implements"),
+				reletationshipCondition0.getRelationship());
+
+		ExistsCondition existsCondition1;
+		existsCondition1 = (ExistsCondition) and.getParts().get(1);
+		assertEquals("Formatter", existsCondition1.getResource().getId());
+
+		RelationshipCondition relationshipCondition2;
+		relationshipCondition2 = (RelationshipCondition) and.getParts().get(2);
+		assertEquals("Formatter", relationshipCondition2.getResource1().getId());
+		assertEquals("FunctionalTests", relationshipCondition2.getResource2()
+				.getId());
+		assertEquals(new URI("http://www.treaty.org/junit#verifies"),
+				relationshipCondition2.getRelationship());
+
+		RelationshipCondition relationshipCondition3;
+		relationshipCondition3 = (RelationshipCondition) and.getParts().get(3);
+		assertEquals("Formatter", relationshipCondition3.getResource1().getId());
+		assertEquals("QoSTests", relationshipCondition3.getResource2().getId());
+		assertEquals(new URI("http://www.treaty.org/junit#verifies"),
+				relationshipCondition3.getRelationship());
+
+		RelationshipCondition relationshipCondition4;
+		relationshipCondition4 = (RelationshipCondition) xor.getParts().get(1);
+		assertEquals("FormatString", relationshipCondition4.getResource1().getId());
+		assertEquals("DateFormatDef", relationshipCondition4.getResource2().getId());
+		assertEquals(new URI("http://www.treaty.org/xml#instantiates"),
+				relationshipCondition4.getRelationship());
 	}
 
 	/**
