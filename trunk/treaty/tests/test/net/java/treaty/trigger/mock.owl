@@ -6,12 +6,15 @@
   xml:base="http://www.treaty.org/trigger/mock">
   
   <owl:Ontology rdf:about=""/>   
-  
+
   <owl:Class rdf:ID="SuperTrigger">
   </owl:Class>
   <owl:Class rdf:ID="SubTrigger">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Subclass for testing.</rdfs:comment>
   	<rdfs:subClassOf rdf:resource="#SuperTrigger"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DefaultTrigger">
+     <rdfs:label>default</rdfs:label>
   </owl:Class>
  
 </rdf:RDF>

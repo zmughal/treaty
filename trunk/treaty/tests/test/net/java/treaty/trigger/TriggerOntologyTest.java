@@ -11,6 +11,7 @@
 package test.net.java.treaty.trigger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -46,12 +47,16 @@ public class TriggerOntologyTest {
 		triggerOntology = new TriggerOntologyMock();
 
 		assertNotNull(triggerOntology.getTriggers());
-		assertEquals(2, triggerOntology.getTriggers().size());
+		assertEquals(3, triggerOntology.getTriggers().size());
 
 		assertTrue(triggerOntology.getTriggers().contains(
 				new URI(TriggerOntologyMock.NAME_SUB_TRIGGER)));
 		assertTrue(triggerOntology.getTriggers().contains(
 				new URI(TriggerOntologyMock.NAME_SUPER_TRIGGER)));
+		assertTrue(triggerOntology.getTriggers().contains(
+				new URI(TriggerOntologyMock.NAME_DEFAULT_TRIGGER)));
+		assertFalse(triggerOntology.getTriggers().contains(
+				new URI(TriggerOntologyMock.NAME_UNDEFINED_TRIGGER)));
 	}
 
 	/**
@@ -200,6 +205,64 @@ public class TriggerOntologyTest {
 
 		/* Should cause an exception. */
 		triggerOntology.getDescription(new URI(
+				TriggerOntologyMock.NAME_UNDEFINED_TRIGGER));
+	}
+
+	/**
+	 * <p>
+	 * Tests the method {@link TriggerOntology#isDefaultTrigger(URI)}.
+	 * </p>
+	 * 
+	 * @throws URISyntaxException
+	 * @throws TreatyException
+	 */
+	@Test
+	public void testIsDefaultTrigger01() throws TreatyException,
+			URISyntaxException {
+
+		TriggerOntology triggerOntology;
+		triggerOntology = new TriggerOntologyMock();
+
+		assertFalse(triggerOntology.isDefaultTrigger(new URI(
+				TriggerOntologyMock.NAME_SUB_TRIGGER)));
+	}
+
+	/**
+	 * <p>
+	 * Tests the method {@link TriggerOntology#isDefaultTrigger(URI)}.
+	 * </p>
+	 * 
+	 * @throws URISyntaxException
+	 * @throws TreatyException
+	 */
+	@Test
+	public void testIsDefaultTrigger02() throws TreatyException,
+			URISyntaxException {
+
+		TriggerOntology triggerOntology;
+		triggerOntology = new TriggerOntologyMock();
+
+		assertTrue(triggerOntology.isDefaultTrigger(new URI(
+				TriggerOntologyMock.NAME_DEFAULT_TRIGGER)));
+	}
+
+	/**
+	 * <p>
+	 * Tests the method {@link TriggerOntology#isDefaultTrigger(URI)}.
+	 * </p>
+	 * 
+	 * @throws URISyntaxException
+	 * @throws TreatyException
+	 */
+	@Test(expected = TreatyException.class)
+	public void testIsDefaultTrigger03() throws TreatyException,
+			URISyntaxException {
+
+		TriggerOntology triggerOntology;
+		triggerOntology = new TriggerOntologyMock();
+
+		/* Should cause an exception. */
+		triggerOntology.isDefaultTrigger(new URI(
 				TriggerOntologyMock.NAME_UNDEFINED_TRIGGER));
 	}
 }
