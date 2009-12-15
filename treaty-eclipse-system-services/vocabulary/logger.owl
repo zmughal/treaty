@@ -1,0 +1,24 @@
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns="http://www.treaty.org/action/logger#"
+  xml:base="http://www.treaty.org/action/logger">
+  
+  <owl:Ontology rdf:about=""/>   
+  
+  <owl:Class rdf:ID="LogInfo">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Logs an info for the verified contract.</rdfs:comment>
+    <rdfs:label>after</rdfs:label>
+    <rdfs:label>before</rdfs:label>
+    <rdfs:label>defaultOnSuccess</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="LogWarning">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Logs a warning for the verified contract.</rdfs:comment>
+    <rdfs:label>defaultOnFailure</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="LogError">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Logs an error for the verified contract.</rdfs:comment>
+  </owl:Class>
+ 
+</rdf:RDF>

@@ -1,0 +1,23 @@
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns="http://www.treaty.org/action/bundle#"
+  xml:base="http://www.treaty.org/action/bundle">
+  
+  <owl:Ontology rdf:about=""/>   
+  
+  <owl:Class rdf:ID="StopConsumerBundle">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stops the consumer's bundle of the verified contract.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="StopSupplierBundle">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stops the supplier's bundle of the verified contract.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="UninstallConsumerBundle">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Uninstalls the consumer's bundle of the verified contract.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="UninstallSupplierBundle">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Uninstalls the consumer's bundle of the verified contract.</rdfs:comment>
+  </owl:Class>
+ 
+</rdf:RDF>

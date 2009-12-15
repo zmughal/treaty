@@ -11,18 +11,20 @@
 package net.java.treaty.eclipse.systemservices;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
 import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
+import net.java.treaty.action.ActionOntology;
 import net.java.treaty.action.ActionVocabulary;
 import net.java.treaty.eclipse.Logger;
+
+import org.osgi.framework.Bundle;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * <p>
@@ -32,7 +34,7 @@ import net.java.treaty.eclipse.Logger;
  * 
  * @author Claas Wilke
  */
-public class LoggerActionVocabulary implements ActionVocabulary {
+public class LoggerActionVocabulary extends ActionOntology {
 
 	/** The name space's name of the {@link LoggerActionVocabulary}. */
 	public static final String NAME_SPACE_NAME =
@@ -59,30 +61,11 @@ public class LoggerActionVocabulary implements ActionVocabulary {
 	public static final String ACTION_TYPE_LOG_ERROR =
 			NAME_SPACE_NAME + "#LogError";
 
-	/**
-	 * The action types of this {@link ActionVocabulary} as a {@link Map} of
-	 * {@link URI}s identified by their {@link String} representation.
-	 */
-	private Map<String, URI> actionTypes;
+	/** The location of this {@link ActionOntology}'s ontology. */
+	private static final String ONTOLOGY_LOCATION = "vocabulary/logger.owl";
 
-	/**
-	 * <p>
-	 * Creates a new {@link BundleTriggerVocabulary}.
-	 * </p>
-	 */
-	public LoggerActionVocabulary() {
-
-		this.initialize();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#getActionTypes()
-	 */
-	public Set<URI> getActionTypes() {
-
-		return new HashSet<URI>(this.actionTypes.values());
-	}
+	/** The {@link OntModel} of this {@link ActionOntology}. */
+	private OntModel myOntology = null;
 
 	/*
 	 * (non-Javadoc)
@@ -92,44 +75,53 @@ public class LoggerActionVocabulary implements ActionVocabulary {
 	public void after(URI triggerType, URI actionType,
 			Set<VerificationReport> verificationReports) {
 
-		if (this.getActionTypes().contains(actionType)) {
+		try {
+			if (this.getActions().contains(actionType)) {
 
-			StringBuffer buffer;
-			buffer = new StringBuffer();
+				StringBuffer buffer;
+				buffer = new StringBuffer();
 
-			buffer.append("Verification finished. ");
-			buffer.append(verificationReports.size());
-			buffer.append(" Contracts were verified, verification of ");
+				buffer.append("Verification finished. ");
+				buffer.append(verificationReports.size());
+				buffer.append(" Contracts were verified, verification of ");
 
-			int failedContracts;
-			failedContracts = 0;
+				int failedContracts;
+				failedContracts = 0;
 
-			for (VerificationReport verificationReport : verificationReports) {
+				for (VerificationReport verificationReport : verificationReports) {
 
-				if (verificationReport.getVerificationResult() != VerificationResult.SUCCESS) {
-					failedContracts++;
+					if (verificationReport.getVerificationResult() != VerificationResult.SUCCESS) {
+						failedContracts++;
+					}
+					// no else.
 				}
-				// no else.
-			}
-			// end for.
+				// end for.
 
-			buffer.append(failedContracts + " Contracts failed. ");
-			buffer.append("Verification was triggered by trigger ");
-			buffer.append(triggerType.toString());
+				buffer.append(failedContracts + " Contracts failed. ");
+				buffer.append("Verification was triggered by trigger ");
+				buffer.append(triggerType.toString());
 
-			if (ACTION_TYPE_LOG_ERROR.equals(actionType.toString())) {
-				Logger.error(buffer.toString());
-			}
+				if (ACTION_TYPE_LOG_ERROR.equals(actionType.toString())) {
+					Logger.error(buffer.toString());
+				}
 
-			else if (ACTION_TYPE_LOG_INFO.equals(actionType.toString())) {
-				Logger.info(buffer.toString());
-			}
+				else if (ACTION_TYPE_LOG_INFO.equals(actionType.toString())) {
+					Logger.info(buffer.toString());
+				}
 
-			else if (ACTION_TYPE_LOG_WARNING.equals(actionType.toString())) {
-				Logger.warn(buffer.toString());
+				else if (ACTION_TYPE_LOG_WARNING.equals(actionType.toString())) {
+					Logger.warn(buffer.toString());
+				}
 			}
+			// no else (wrong type of action).
 		}
-		// no else (wrong type of action).
+		// end try.
+
+		catch (TreatyException e) {
+			Logger.error(
+					"Unexpected TreatyException during performing after action.", e);
+		}
+		// end catch.
 	}
 
 	/*
@@ -140,99 +132,39 @@ public class LoggerActionVocabulary implements ActionVocabulary {
 	public void before(URI triggerType, URI actionType,
 			Set<Contract> contractsToVerify) {
 
-		if (this.getActionTypes().contains(actionType)) {
+		try {
+			if (this.getActions().contains(actionType)) {
 
-			StringBuffer buffer;
-			buffer = new StringBuffer();
+				StringBuffer buffer;
+				buffer = new StringBuffer();
 
-			buffer.append("Verification started. ");
-			buffer.append(contractsToVerify.size());
-			buffer.append(" Contracts will be verified. ");
-			buffer.append("Verification was triggered by trigger ");
-			buffer.append(triggerType.toString());
+				buffer.append("Verification started. ");
+				buffer.append(contractsToVerify.size());
+				buffer.append(" Contracts will be verified. ");
+				buffer.append("Verification was triggered by trigger ");
+				buffer.append(triggerType.toString());
 
-			if (ACTION_TYPE_LOG_ERROR.equals(actionType.toString())) {
-				Logger.error(buffer.toString());
+				if (ACTION_TYPE_LOG_ERROR.equals(actionType.toString())) {
+					Logger.error(buffer.toString());
+				}
+
+				else if (ACTION_TYPE_LOG_INFO.equals(actionType.toString())) {
+					Logger.info(buffer.toString());
+				}
+
+				else if (ACTION_TYPE_LOG_WARNING.equals(actionType.toString())) {
+					Logger.warn(buffer.toString());
+				}
 			}
-
-			else if (ACTION_TYPE_LOG_INFO.equals(actionType.toString())) {
-				Logger.info(buffer.toString());
-			}
-
-			else if (ACTION_TYPE_LOG_WARNING.equals(actionType.toString())) {
-				Logger.warn(buffer.toString());
-			}
+			// no else (wrong type of action).
 		}
-		// no else (wrong type of action).
-	}
+		// end try.
 
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#getDescription(java.net.URI)
-	 */
-	public String getDescription(URI actionType) throws TreatyException {
-
-		String result;
-
-		if (this.actionTypes.get(ACTION_TYPE_LOG_INFO).equals(actionType)) {
-			result = "Logs an info for the verified contract.";
+		catch (TreatyException e) {
+			Logger.error(
+					"Unexpected TreatyException during performing before action.", e);
 		}
-
-		else if (this.actionTypes.get(ACTION_TYPE_LOG_WARNING).equals(actionType)) {
-			result = "Logs a warning for the verified contract.";
-		}
-
-		else if (this.actionTypes.get(ACTION_TYPE_LOG_ERROR).equals(actionType)) {
-			result = "Logs an error for the verified contract.";
-		}
-
-		else {
-			throw new TreatyException("Unknown action type " + actionType);
-		}
-
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#isAfterAction(java.net.URI)
-	 */
-	public boolean isAfterAction(URI actionType) {
-
-		/* Only the log info action is universal on end of verification. */
-		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#isBeforeAction(java.net.URI)
-	 */
-	public boolean isBeforeAction(URI actionType) {
-
-		/* Only the log info action is universal on begin of verification. */
-		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isDefaultOnFailure(java.net.URI)
-	 */
-	public boolean isDefaultOnFailure(URI actionType) {
-
-		/* Only the log warning action is universal on success. */
-		return ACTION_TYPE_LOG_WARNING.equals(actionType.toString());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isDefaultOnSuccess(java.net.URI)
-	 */
-	public boolean isDefaultOnSuccess(URI actionType) {
-
-		/* Only the log info action is universal on success. */
-		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
+		// end catch.
 	}
 
 	/*
@@ -280,41 +212,41 @@ public class LoggerActionVocabulary implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionOntology#getOntology()
+	 */
+	public OntModel getOntology() {
+
+		/* Probably load the ontology. */
+		if (this.myOntology == null) {
+			Bundle myBundle;
+			myBundle = Activator.getDefault().getBundle();
+
+			this.myOntology = ModelFactory.createOntologyModel();
+			this.myOntology.read(myBundle.getResource(ONTOLOGY_LOCATION).toString());
+		}
+		// no else.
+
+		return this.myOntology;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.action.ActionVocabulary#isDefaultOnSuccess(java.net.URI)
+	 */
+	public boolean isDefaultOnSuccess(URI actionType) {
+
+		/* Only the log info action is universal on success. */
+		return ACTION_TYPE_LOG_INFO.equals(actionType.toString());
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 
 		return NAME_SPACE_NAME;
-	}
-
-	/**
-	 * <p>
-	 * Initializes the {@link LoggerActionVocabulary}.
-	 * </p>
-	 */
-	private void initialize() {
-
-		/* Probably initialize the action Types */
-		if (this.actionTypes == null) {
-
-			this.actionTypes = new HashMap<String, URI>();
-
-			try {
-				this.actionTypes.put(ACTION_TYPE_LOG_INFO,
-						new URI(ACTION_TYPE_LOG_INFO));
-				this.actionTypes.put(ACTION_TYPE_LOG_WARNING, new URI(
-						ACTION_TYPE_LOG_WARNING));
-				this.actionTypes.put(ACTION_TYPE_LOG_ERROR, new URI(
-						ACTION_TYPE_LOG_ERROR));
-			}
-
-			catch (URISyntaxException e) {
-				Logger.warn("Error during initialization of LoggerActionVocabulary. "
-						+ "Probably some action types are not available.", e);
-			}
-			// end catch.
-		}
-		// no else (already initialized).
 	}
 }

@@ -11,20 +11,20 @@
 package net.java.treaty.eclipse.systemservices;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
-import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
+import net.java.treaty.action.ActionOntology;
 import net.java.treaty.action.ActionVocabulary;
 import net.java.treaty.eclipse.EclipsePlugin;
 import net.java.treaty.eclipse.Logger;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * <p>
@@ -34,7 +34,7 @@ import org.osgi.framework.BundleException;
  * 
  * @author Claas Wilke
  */
-public class BundleActionVocabulary implements ActionVocabulary {
+public class BundleActionVocabulary extends ActionOntology {
 
 	/** The name space's name of the {@link BundleActionVocabulary}. */
 	public static final String NAME_SPACE_NAME =
@@ -68,21 +68,11 @@ public class BundleActionVocabulary implements ActionVocabulary {
 	public static final String ACTION_TYPE_UNINSTALL_SUPPLIER_BUNDLE =
 			NAME_SPACE_NAME + "#UninstallSupplierBundle";
 
-	/**
-	 * The action types of this {@link ActionVocabulary} as a {@link Map} of
-	 * {@link URI}s identified by their {@link String} representation.
-	 */
-	private Map<String, URI> actionTypes;
+	/** The location of this {@link ActionOntology}'s ontology. */
+	private static final String ONTOLOGY_LOCATION = "vocabulary/bundleAction.owl";
 
-	/**
-	 * <p>
-	 * Creates a new {@link BundleTriggerVocabulary}.
-	 * </p>
-	 */
-	public BundleActionVocabulary() {
-
-		this.initialize();
-	}
+	/** The {@link OntModel} of this {@link ActionOntology}. */
+	private OntModel myOntology = null;
 
 	/*
 	 * (non-Javadoc)
@@ -108,88 +98,21 @@ public class BundleActionVocabulary implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#getActionTypes()
+	 * @see net.java.treaty.action.ActionOntology#getOntology()
 	 */
-	public Set<URI> getActionTypes() {
+	public OntModel getOntology() {
 
-		return new HashSet<URI>(this.actionTypes.values());
-	}
+		/* Probably load the ontology. */
+		if (this.myOntology == null) {
+			Bundle myBundle;
+			myBundle = Activator.getDefault().getBundle();
 
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#getDescription(java.net.URI)
-	 */
-	public String getDescription(URI actionType) throws TreatyException {
-
-		String result;
-
-		if (this.actionTypes.get(ACTION_TYPE_STOP_CONSUMER_BUNDLE).equals(
-				actionType)) {
-			result = "Stops the consumer's bundle of the verified contract.";
+			this.myOntology = ModelFactory.createOntologyModel();
+			this.myOntology.read(myBundle.getResource(ONTOLOGY_LOCATION).toString());
 		}
+		// no else.
 
-		else if (this.actionTypes.get(ACTION_TYPE_STOP_SUPPLIER_BUNDLE).equals(
-				actionType)) {
-			result = "Stops the supplier's bundle of the verified contract.";
-		}
-
-		else if (this.actionTypes.get(ACTION_TYPE_UNINSTALL_CONSUMER_BUNDLE)
-				.equals(actionType)) {
-			result = "Uninstalls the consumer's bundle of the verified contract.";
-		}
-
-		else if (this.actionTypes.get(ACTION_TYPE_UNINSTALL_SUPPLIER_BUNDLE)
-				.equals(actionType)) {
-			result = "Uninstalls the consumer's bundle of the verified contract.";
-		}
-
-		else {
-			throw new TreatyException("Unknown action type " + actionType);
-		}
-
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#isAfterAction(java.net.URI)
-	 */
-	public boolean isAfterAction(URI actionType) {
-
-		/* This vocabulary does not define any after actions. */
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.java.treaty.action.ActionVocabulary#isBeforeAction(java.net.URI)
-	 */
-	public boolean isBeforeAction(URI actionType) {
-
-		/* This vocabulary does not define any before actions. */
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isDefaultOnFailure(java.net.URI)
-	 */
-	public boolean isDefaultOnFailure(URI actionType) {
-
-		/* This vocabulary does not define any default actions. */
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.action.ActionVocabulary#isDefaultOnSuccess(java.net.URI)
-	 */
-	public boolean isDefaultOnSuccess(URI actionType) {
-
-		/* This vocabulary does not define any default actions. */
-		return false;
+		return this.myOntology;
 	}
 
 	/*
@@ -284,37 +207,5 @@ public class BundleActionVocabulary implements ActionVocabulary {
 	public String toString() {
 
 		return NAME_SPACE_NAME;
-	}
-
-	/**
-	 * <p>
-	 * Initializes the {@link BundleActionVocabulary}.
-	 * </p>
-	 */
-	private void initialize() {
-
-		/* Probably initialize the action Types */
-		if (this.actionTypes == null) {
-
-			this.actionTypes = new HashMap<String, URI>();
-
-			try {
-				this.actionTypes.put(ACTION_TYPE_STOP_CONSUMER_BUNDLE, new URI(
-						ACTION_TYPE_STOP_CONSUMER_BUNDLE));
-				this.actionTypes.put(ACTION_TYPE_STOP_SUPPLIER_BUNDLE, new URI(
-						ACTION_TYPE_STOP_SUPPLIER_BUNDLE));
-				this.actionTypes.put(ACTION_TYPE_UNINSTALL_CONSUMER_BUNDLE, new URI(
-						ACTION_TYPE_UNINSTALL_CONSUMER_BUNDLE));
-				this.actionTypes.put(ACTION_TYPE_UNINSTALL_SUPPLIER_BUNDLE, new URI(
-						ACTION_TYPE_UNINSTALL_SUPPLIER_BUNDLE));
-			}
-
-			catch (URISyntaxException e) {
-				Logger.warn("Error during initialization of BundleActionVocabulary. "
-						+ "Probably some action types are not available.", e);
-			}
-			// end catch.
-		}
-		// no else (already initialized).
 	}
 }
