@@ -30,11 +30,13 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -858,6 +860,12 @@ public class TriggerActionView extends ViewPart implements
 	/** The {@link Action} used to refresh this {@link TriggerActionView}. */
 	private Action actionRefresh;
 
+	/**
+	 * The {@link Action} to show the details for an entry in the
+	 * {@link TriggerActionView}.
+	 */
+	private Action actionShowDetails;
+
 	/** The {@link DrillDownAdapter} of this {@link TriggerActionView}. */
 	private DrillDownAdapter drillDownAdapter;
 
@@ -1009,7 +1017,9 @@ public class TriggerActionView extends ViewPart implements
 	 */
 	private void fillContextMenu(IMenuManager manager) {
 
-		manager.add(actionRefresh);
+		manager.add(this.actionRefresh);
+		manager.add(this.actionShowDetails);
+
 		manager.add(new Separator());
 
 		this.drillDownAdapter.addNavigationActions(manager);
@@ -1029,7 +1039,9 @@ public class TriggerActionView extends ViewPart implements
 	 */
 	private void fillLocalPullDown(IMenuManager manager) {
 
-		manager.add(actionRefresh);
+		manager.add(this.actionRefresh);
+		manager.add(this.actionShowDetails);
+
 	}
 
 	/**
@@ -1120,6 +1132,149 @@ public class TriggerActionView extends ViewPart implements
 		this.actionRefresh.setToolTipText("Reload Triggers and Actions");
 		this.actionRefresh.setImageDescriptor(this
 				.getImageDescriptor("icons/refresh.gif"));
+
+		this.actionShowDetails = new Action() {
+
+			/*
+			 * (non-Javadoc)
+			 * @see org.eclipse.jface.action.Action#run()
+			 */
+			public void run() {
+
+				showDetails();
+			}
+		};
+
+		this.actionShowDetails.setText("Show details");
+		this.actionShowDetails
+				.setToolTipText("Shows details for a trigger or action.");
+	}
+
+	/**
+	 * <p>
+	 * Action behavior to show the details for an entry in the
+	 * {@link TriggerActionView}.
+	 * </p>
+	 */
+	private void showDetails() {
+
+		ITreeSelection selection;
+		selection = (ITreeSelection) this.viewer.getSelection();
+
+		StringBuffer detailsBuffer;
+		detailsBuffer = new StringBuffer();
+
+		if (selection != null) {
+			Object selectedEntry;
+			selectedEntry = selection.getFirstElement();
+
+			if (selectedEntry instanceof TriggerOrAction) {
+
+				TriggerOrAction triggerOrAction;
+				triggerOrAction = (TriggerOrAction) selectedEntry;
+
+				switch (triggerOrAction.type) {
+
+				case Action:
+
+					detailsBuffer.append("Action: " + triggerOrAction.getUri().toString()
+							+ "\n\n");
+
+					try {
+						String description;
+						description =
+								EclipseActionRegistry.INSTANCE.getDescription(triggerOrAction
+										.getUri());
+
+						if (description != null && description.length() > 0) {
+							detailsBuffer.append("Description:\n" + description + "\n");
+						}
+						// no else.
+
+						if (EclipseActionRegistry.INSTANCE.isBeforeAction(triggerOrAction
+								.getUri())) {
+							detailsBuffer.append("\nCaused before each verification.");
+						}
+						// no else.
+
+						if (EclipseActionRegistry.INSTANCE.isAfterAction(triggerOrAction
+								.getUri())) {
+							detailsBuffer.append("\nCaused after each verification.");
+						}
+						// no else.
+
+						if (EclipseActionRegistry.INSTANCE
+								.isDefaultOnFailure(triggerOrAction.getUri())) {
+							detailsBuffer
+									.append("\nCaused after failed verification of every contract.");
+						}
+						// no else.
+
+						if (EclipseActionRegistry.INSTANCE
+								.isDefaultOnSuccess(triggerOrAction.getUri())) {
+							detailsBuffer
+									.append("\nCaused after successfull verification of every contract.");
+						}
+						// no else.
+						
+						detailsBuffer
+						.append("\nCaused after failed or successfull verification when explicitely declared in the contract.");
+					}
+
+					catch (TreatyException e) {
+						/* Do nothing. */
+					}
+
+					break;
+
+				case Trigger:
+					
+					detailsBuffer.append("Trigger: " + triggerOrAction.getUri().toString()
+							+ "\n\n");
+
+					try {
+						String description;
+						description =
+								EclipseTriggerRegistry.INSTANCE.getDescription(triggerOrAction
+										.getUri());
+
+						if (description != null && description.length() > 0) {
+							detailsBuffer.append("Description:\n" + description + "\n");
+						}
+						// no else.
+
+						if (EclipseTriggerRegistry.INSTANCE.isDefaultTrigger(triggerOrAction
+								.getUri())) {
+							detailsBuffer.append("\nCan trigger verification of every contract.");
+						}
+						
+						else  {
+							detailsBuffer.append("\nTriggers a contract's verification only if declared in the contract.");
+						}
+					}
+
+					catch (TreatyException e) {
+						/* Do nothing. */
+					}
+
+					break;
+
+				// no default.
+				}
+				// end switch.
+			}
+
+			else {
+				detailsBuffer.append("Unknown type of selected element.");
+			}
+		}
+
+		else {
+			detailsBuffer.append("No Entry selected to show details.");
+		}
+
+		MessageDialog.openInformation(this.viewer.getControl().getShell(),
+				"Entry details", detailsBuffer.toString());
 	}
 
 	/**

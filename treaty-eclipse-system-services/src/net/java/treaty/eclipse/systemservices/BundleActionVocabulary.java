@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.action.ActionVocabulary;
 import net.java.treaty.eclipse.EclipsePlugin;
@@ -112,6 +113,41 @@ public class BundleActionVocabulary implements ActionVocabulary {
 	public Set<URI> getActionTypes() {
 
 		return new HashSet<URI>(this.actionTypes.values());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#getDescription(java.net.URI)
+	 */
+	public String getDescription(URI actionType) throws TreatyException {
+
+		String result;
+
+		if (this.actionTypes.get(ACTION_TYPE_STOP_CONSUMER_BUNDLE).equals(
+				actionType)) {
+			result = "Stops the consumer's bundle of the verified contract.";
+		}
+
+		else if (this.actionTypes.get(ACTION_TYPE_STOP_SUPPLIER_BUNDLE).equals(
+				actionType)) {
+			result = "Stops the supplier's bundle of the verified contract.";
+		}
+
+		else if (this.actionTypes.get(ACTION_TYPE_UNINSTALL_CONSUMER_BUNDLE)
+				.equals(actionType)) {
+			result = "Uninstalls the consumer's bundle of the verified contract.";
+		}
+
+		else if (this.actionTypes.get(ACTION_TYPE_UNINSTALL_SUPPLIER_BUNDLE)
+				.equals(actionType)) {
+			result = "Uninstalls the consumer's bundle of the verified contract.";
+		}
+
+		else {
+			throw new TreatyException("Unknown action type " + actionType);
+		}
+
+		return result;
 	}
 
 	/*
