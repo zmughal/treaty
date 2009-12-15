@@ -25,6 +25,37 @@ public abstract class TriggerOntology extends AbstractTriggerVocabulary {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getDescription(java.net.URI)
+	 */
+	public String getDescription(URI triggerType) throws TreatyException {
+
+		String result;
+
+		OntClass triggerClass;
+		triggerClass = this.getOntology().getOntClass(triggerType.toString());
+
+		if (triggerClass == null) {
+
+			throw new TreatyException("Trigger type " + triggerType
+					+ " cannot be found.");
+		}
+
+		else {
+
+			/* Parameter can be null. Don't care about language. */
+			result = triggerClass.getComment(null);
+		}
+
+		if (result == null) {
+			result = "";
+		}
+		// no else.
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.trigger.TriggerVocabulary#getSubTriggers(java.net.URI)
 	 */
 	public Set<URI> getSubTriggers(URI triggerType) throws TreatyException {

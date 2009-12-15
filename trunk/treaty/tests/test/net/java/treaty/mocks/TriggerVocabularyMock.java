@@ -63,6 +63,15 @@ public class TriggerVocabularyMock extends AbstractTriggerVocabulary {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getDescription(java.net.URI)
+	 */
+	public String getDescription(URI triggerType) throws TreatyException {
+
+		return "";
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.event.TriggerVocabulary#getTriggerTypes()
 	 */
 	public Set<URI> getTriggers() {

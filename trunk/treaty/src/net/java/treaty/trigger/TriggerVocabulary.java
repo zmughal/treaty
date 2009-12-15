@@ -28,6 +28,21 @@ public interface TriggerVocabulary extends EventProvider {
 
 	/**
 	 * <p>
+	 * Returns a description of the given trigger type (as a {@link URI}) or
+	 * returns an empty {@link String} if no description has been set.
+	 * 
+	 * @param triggerType
+	 *          The trigger (as a {@link URI}) whose description shall be
+	 *          returned.
+	 * @return The description or an empty {@link String}.
+	 * @throws TreatyException
+	 *           Thrown, if the given {@link URI} is not valid for this
+	 *           {@link TriggerVocabulary}
+	 */
+	public String getDescription(URI triggerType) throws TreatyException;
+
+	/**
+	 * <p>
 	 * Returns a {@link Set} containing the {@link URI}s of all trigger types this
 	 * {@link TriggerVocabulary} defines.
 	 * </p>

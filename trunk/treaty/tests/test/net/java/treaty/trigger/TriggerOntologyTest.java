@@ -143,4 +143,63 @@ public class TriggerOntologyTest {
 		assertEquals(0, triggerOntology.getSuperTriggers(
 				new URI(TriggerOntologyMock.NAME_SUPER_TRIGGER)).size());
 	}
+
+	/**
+	 * <p>
+	 * Tests the method {@link TriggerOntology#getDescription(URI)}.
+	 * </p>
+	 * 
+	 * @throws URISyntaxException
+	 * @throws TreatyException
+	 */
+	@Test
+	public void testGetDescription01() throws TreatyException, URISyntaxException {
+
+		TriggerOntology triggerOntology;
+		triggerOntology = new TriggerOntologyMock();
+
+		assertNotNull(triggerOntology.getDescription(new URI(
+				TriggerOntologyMock.NAME_SUPER_TRIGGER)));
+		assertEquals("", triggerOntology.getDescription(new URI(
+				TriggerOntologyMock.NAME_SUPER_TRIGGER)));
+	}
+
+	/**
+	 * <p>
+	 * Tests the method {@link TriggerOntology#getDescription(URI)}.
+	 * </p>
+	 * 
+	 * @throws URISyntaxException
+	 * @throws TreatyException
+	 */
+	@Test
+	public void testGetDescription02() throws TreatyException, URISyntaxException {
+
+		TriggerOntology triggerOntology;
+		triggerOntology = new TriggerOntologyMock();
+
+		assertNotNull(triggerOntology.getDescription(new URI(
+				TriggerOntologyMock.NAME_SUB_TRIGGER)));
+		assertEquals("A Subclass for testing.", triggerOntology
+				.getDescription(new URI(TriggerOntologyMock.NAME_SUB_TRIGGER)));
+	}
+
+	/**
+	 * <p>
+	 * Tests the method {@link TriggerOntology#getDescription(URI)}.
+	 * </p>
+	 * 
+	 * @throws URISyntaxException
+	 * @throws TreatyException
+	 */
+	@Test(expected = TreatyException.class)
+	public void testGetDescription03() throws TreatyException, URISyntaxException {
+
+		TriggerOntology triggerOntology;
+		triggerOntology = new TriggerOntologyMock();
+
+		/* Should cause an exception. */
+		triggerOntology.getDescription(new URI(
+				TriggerOntologyMock.NAME_UNDEFINED_TRIGGER));
+	}
 }

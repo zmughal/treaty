@@ -54,6 +54,15 @@ public class TriggerRegistry implements TriggerVocabulary {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.trigger.TriggerVocabulary#getDescription(java.net.URI)
+	 */
+	public String getDescription(URI triggerType) throws TreatyException {
+	
+		return this.getTriggerVocabulary(triggerType).getDescription(triggerType);
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.trigger.TriggerVocabulary#getTriggerTypes()
 	 */
 	public Set<URI> getTriggers() throws TreatyException {

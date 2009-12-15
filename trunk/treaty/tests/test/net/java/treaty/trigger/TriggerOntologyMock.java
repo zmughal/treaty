@@ -31,6 +31,12 @@ public class TriggerOntologyMock extends TriggerOntology {
 	/** The name of a test trigger. */
 	public static final String NAME_SUB_TRIGGER = NAME_SPACE + "#SubTrigger";
 
+	/**
+	 * The name of a test trigger that <strong>IS NOT</strong> defined by this
+	 * {@link TriggerOntology}.
+	 */
+	public static final String NAME_UNDEFINED_TRIGGER = NAME_SPACE + "#Undefined";
+
 	/** The location of this {@link TriggerOntology}'s ontology. */
 	private static final String ONTOLOGY_LOCATION =
 			"/test/net/java/treaty/trigger/mock.owl";
