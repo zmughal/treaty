@@ -515,17 +515,6 @@ public class BundleTriggerVocabulary extends AbstractEclipseTriggerVocabulary
 		return this.myOntology;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.trigger.TriggerVocabulary#isDefaultTrigger(java.net.URI)
-	 */
-	public boolean isDefaultTrigger(URI triggerType) {
-
-		/* This vocabulary does not define any default triggers. */
-		return false;
-	}
-
 	/**
 	 * <p>
 	 * Called before the {@link EclipseTriggerRegistry} is torn down.
