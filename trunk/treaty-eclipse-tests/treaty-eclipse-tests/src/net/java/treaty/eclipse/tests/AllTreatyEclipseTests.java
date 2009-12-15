@@ -28,7 +28,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses( { AllActionTests.class, AllContractRegistryTests.class,
-		AllTriggerTests.class, AllVerificationTests.class })
+		AllTriggerTests.class, AllVerificationTests.class, TreatyScriptTests.class })
 public class AllTreatyEclipseTests {
 	/*
 	 * This class remains completely empty, being used only as a holder for the
