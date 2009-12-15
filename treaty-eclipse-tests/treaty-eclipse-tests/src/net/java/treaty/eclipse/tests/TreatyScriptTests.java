@@ -212,7 +212,7 @@ public class TreatyScriptTests {
 
 		assertNotNull(contract);
 
-		assertEquals("Claas", contract.getProperty("dc:author"));
+		assertEquals("Claas Wilke", contract.getProperty("dc:author"));
 		assertEquals("15/12/09", contract.getProperty("dc:date"));
 
 		assertEquals(1, contract.getTriggers().size());
