@@ -75,6 +75,15 @@ public class ActionRegistry implements ActionVocabulary {
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#getDescription(java.net.URI)
+	 */
+	public String getDescription(URI actionType) throws TreatyException {
+
+		return this.getActionVocabulary(actionType).getDescription(actionType);
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see net.java.treaty.action.ActionVocabulary#isAfterAction(java.net.URI)
 	 */
 	public boolean isAfterAction(URI actionType) throws TreatyException {

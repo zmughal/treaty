@@ -30,6 +30,20 @@ public interface ActionVocabulary {
 
 	/**
 	 * <p>
+	 * Returns a description of the given action type (as a {@link URI}) or
+	 * returns an empty {@link String} if no description has been set.
+	 * 
+	 * @param actionType
+	 *          The action (as a {@link URI}) whose description shall be returned.
+	 * @return The description or an empty {@link String}.
+	 * @throws TreatyException
+	 *           Thrown, if the given {@link URI} is not valid for this
+	 *           {@link ActionVocabulary}
+	 */
+	public String getDescription(URI actionType) throws TreatyException;
+
+	/**
+	 * <p>
 	 * Returns a {@link Set} containing the {@link URI}s of all action types this
 	 * {@link ActionVocabulary} defines.
 	 * </p>
