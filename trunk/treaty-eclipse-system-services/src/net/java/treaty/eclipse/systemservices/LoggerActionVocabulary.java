@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.action.ActionVocabulary;
@@ -163,6 +164,33 @@ public class LoggerActionVocabulary implements ActionVocabulary {
 			}
 		}
 		// no else (wrong type of action).
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#getDescription(java.net.URI)
+	 */
+	public String getDescription(URI actionType) throws TreatyException {
+
+		String result;
+
+		if (this.actionTypes.get(ACTION_TYPE_LOG_INFO).equals(actionType)) {
+			result = "Logs an info for the verified contract.";
+		}
+
+		else if (this.actionTypes.get(ACTION_TYPE_LOG_WARNING).equals(actionType)) {
+			result = "Logs a warning for the verified contract.";
+		}
+
+		else if (this.actionTypes.get(ACTION_TYPE_LOG_ERROR).equals(actionType)) {
+			result = "Logs an error for the verified contract.";
+		}
+
+		else {
+			throw new TreatyException("Unknown action type " + actionType);
+		}
+
+		return result;
 	}
 
 	/*

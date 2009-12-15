@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.VerificationResult;
 import net.java.treaty.action.ActionVocabulary;
@@ -121,6 +122,15 @@ public class ActionVocabularyMock implements ActionVocabulary {
 	public Set<URI> getActionTypes() {
 
 		return new HashSet<URI>(actionTypes.values());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#getDescription(java.net.URI)
+	 */
+	public String getDescription(URI actionType) throws TreatyException {
+
+		return "";
 	}
 
 	/*

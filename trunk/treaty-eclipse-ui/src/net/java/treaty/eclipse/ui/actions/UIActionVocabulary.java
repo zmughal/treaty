@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.java.treaty.Contract;
+import net.java.treaty.TreatyException;
 import net.java.treaty.VerificationReport;
 import net.java.treaty.action.ActionVocabulary;
 import net.java.treaty.eclipse.Logger;
@@ -102,6 +103,26 @@ public class UIActionVocabulary implements ActionVocabulary {
 		/* This vocabulary does not provide any actions on begin verification. */
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.java.treaty.action.ActionVocabulary#getDescription(java.net.URI)
+	 */
+	public String getDescription(URI actionType) throws TreatyException {
+
+		String result;
+
+		if (this.actionTypes.get(ACTION_TYPE_SHOW_VERIFICATION_RESULT).equals(
+				actionType)) {
+			result = "Shows a summary of all verified contracts after verification.";
+		}
+
+		else {
+			throw new TreatyException("Unknown action type " + actionType);
+		}
+
+		return result;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see net.java.treaty.action.ActionVocabulary#isAfterAction(java.net.URI)
