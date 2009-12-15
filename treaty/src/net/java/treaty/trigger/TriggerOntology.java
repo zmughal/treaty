@@ -145,6 +145,30 @@ public abstract class TriggerOntology extends AbstractTriggerVocabulary {
 		return result;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * net.java.treaty.trigger.TriggerVocabulary#isDefaultTrigger(java.net.URI)
+	 */
+	public boolean isDefaultTrigger(URI triggerType) throws TreatyException {
+
+		boolean result;
+
+		OntClass triggerClass;
+		triggerClass = this.getOntology().getOntClass(triggerType.toString());
+
+		if (triggerClass != null) {
+
+			result = triggerClass.hasLabel("default", null);
+		}
+
+		else {
+			throw new TreatyException("Unknown trigger type " + triggerType);
+		}
+
+		return result;
+	}
+
 	/**
 	 * <p>
 	 * Returns an {@link OntModel} representing this {@link TriggerVocabulary}.

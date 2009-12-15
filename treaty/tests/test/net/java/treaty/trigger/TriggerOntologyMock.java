@@ -10,15 +10,12 @@
 
 package test.net.java.treaty.trigger;
 
-import java.net.URI;
-
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-
-import net.java.treaty.TreatyException;
 import net.java.treaty.trigger.TriggerOntology;
 import net.java.treaty.trigger.TriggerVocabulary;
 import net.java.treaty.vocabulary.builtins.java.JavaVocabulary;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class TriggerOntologyMock extends TriggerOntology {
 
@@ -30,6 +27,10 @@ public class TriggerOntologyMock extends TriggerOntology {
 
 	/** The name of a test trigger. */
 	public static final String NAME_SUB_TRIGGER = NAME_SPACE + "#SubTrigger";
+
+	/** The name of a test trigger. */
+	public static final String NAME_DEFAULT_TRIGGER =
+			NAME_SPACE + "#DefaultTrigger";
 
 	/**
 	 * The name of a test trigger that <strong>IS NOT</strong> defined by this
@@ -59,15 +60,5 @@ public class TriggerOntologyMock extends TriggerOntology {
 		// no else.
 
 		return this.myOntology;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * net.java.treaty.trigger.TriggerVocabulary#isDefaultTrigger(java.net.URI)
-	 */
-	public boolean isDefaultTrigger(URI triggerType) throws TreatyException {
-
-		return false;
 	}
 }
