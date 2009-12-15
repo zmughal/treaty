@@ -93,22 +93,6 @@ public class ManualTriggerVocabulary extends AbstractEclipseTriggerVocabulary {
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * net.java.treaty.trigger.TriggerVocabulary#isDefaultTrigger(java.net.URI)
-	 */
-	public boolean isDefaultTrigger(URI triggerType) {
-
-		boolean result;
-
-		/* All triggers of this vocabulary are default triggers. */
-		result = TRIGGER_TYPE_VERIFY_ALL.equals(triggerType.toString());
-		result |= TRIGGER_TYPE_VERIFY_SELECTED.equals(triggerType.toString());
-
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
 	 * net.java.treaty.eclipse.trigger.AbstractEclipseTriggerVocabulary#tearDown()
 	 */
 	public void tearDown() {
