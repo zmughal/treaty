@@ -1,6 +1,8 @@
 \documentclass{llncs}
 
 \usepackage{listings}
+\usepackage{graphicx}
+\usepackage{url}
 
 \bibliographystyle{alpha}
 
@@ -55,9 +57,37 @@ these contract explicit can significantly improve the quality of systems. The in
 Semantic web technology has been successfully used to represent contracts in other areas, such as SLA contracts \cite{PaschkeDietrich2005}, business
 contracts \cite{Linington04}, \cite{Governatori06} ,\cite{Governatori05} and the provisions for exception handling in electronic contracts \cite{SweetDeal}. These languages are significantly more complex than the Treaty language, and often include features from deontic, temporal or other non-classical logics to gain more expressiveness. The integration of events into the contract logic in some of these approaches is an interesting feature that has great potential for contract-based verification in dynamic component systems. 
 
+\section{Metamodel}
+
+
 
 
 \section{The Treaty Contract Language}
+
+In this section, we provide a brief introduction into Treaty. For more details, the reader is referred to \cite{Treaty.JOT2009}. Treaty is a framework to manage different types of contracts in dynamic component systems. It is based on the idea 
+that components interact through connectors by providing and consuming resources. Examples for (dynamic) components are Eclipse plugins and OSGi bundles, examples for connectors are Eclipse extensions and extension points, respectively. Contracts describe this interaction. The requirements in these contracts are themselves expressed through resources that are usually provided by the consumer. Examples for this
+are Java interfaces and XML Schemas. Suppliers of services provide other resources that have to have certain typed relationships with consumer side resources. For instance, they provide classes that must \textit{implement} (consumer-side) 
+interfaces and XML documents that must \textit{instantiate} XML Schemas. Treaty contracts consist of these typed relationships or boolean expressions built from these relationships. Besides relationships, simple properties (comparisons) and 
+resource existence conditions can also be expressed. It turns out that this representation is very appropriate to express many types of contracts in existing component models. In particular in the case of Eclipse,  both logically complex conditions and contracts using resource types other than Java types are indeed required. The type system used by Treaty is based on RDF/OWL \cite{RDF,OWL}. I.e., resource, property and relationship types are represented by URIs and reasoning features such as subtype and subproperty reasoning are supported. 
+
+Treaty is suitable for dynamic component models using late binding since contracts can be defined without explicit reference to a supplier or a consumer. The missing resources can be referenced by function symbols representing 
+queries to component meta-data. Once the supplier or consumer is known (at runtime), the contract is instantiated by executing these queries against the component meta data and replacing the functions by the actual resources. 
+This process is called \textit{binding}. In the Treaty proof-of-concept implementation for Eclipse, these functions are XPath expressions that are resolved against the \texttt{plugin.xml} meta data file of the supplier plugins when 
+binding occurs. 
+
+Figure \ref{fig1} depicts the Treaty model. This model is simplified, in particular, the type hierarchy for Condition representing complex conditions is missing. Treaty supports the a posteriori association of contracts with components. 
+This is achieved by using special legislator (contract owner) components that provides contracts for other components.  There are numerous use cases for this, including context-depended contracts and retrofitting existing component-based systems for verification\footnote{see \url{http://www-ist.massey.ac.nz/jbdietrich/treaty/treatyout/index.html} for an experiment where Eclipse has been retrofitted with contracts and verified}.   
+ 
+ 
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{RoleModel1.pdf}
+\caption{Treaty Structure}
+\label{fig1}
+\end{figure}
+
+
 
 \begin{itemize}
 \item resources
@@ -69,6 +99,13 @@ contracts \cite{Linington04}, \cite{Governatori06} ,\cite{Governatori05} and the
 
 
 \section{Active Treaty}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=1.0\textwidth]{RoleModel2.pdf}
+\caption{Active Treaty and Contract Roles}
+\label{fig1}
+\end{figure}
 
 \begin{itemize}
   \item dynamic update of contract registry
