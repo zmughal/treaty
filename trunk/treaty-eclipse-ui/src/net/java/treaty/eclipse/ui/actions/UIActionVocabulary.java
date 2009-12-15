@@ -63,7 +63,7 @@ public class UIActionVocabulary implements ActionVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.action.ActionVocabulary#getActionTypes()
 	 */
-	public Set<URI> getActionTypes() {
+	public Set<URI> getActions() {
 
 		return new HashSet<URI>(this.actionTypes.values());
 	}

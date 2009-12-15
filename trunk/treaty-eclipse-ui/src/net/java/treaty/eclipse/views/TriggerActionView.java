@@ -442,7 +442,7 @@ public class TriggerActionView extends ViewPart implements
 
 				/* Add all triggers of the vocabulary. */
 				try {
-					for (URI trigger : actionVocabulary.getActionTypes()) {
+					for (URI trigger : actionVocabulary.getActions()) {
 
 						this.addActionNodes(parent, trigger, actionVocabulary);
 					}
