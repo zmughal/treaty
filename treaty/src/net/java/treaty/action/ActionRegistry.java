@@ -59,14 +59,14 @@ public class ActionRegistry implements ActionVocabulary {
 	 * (non-Javadoc)
 	 * @see net.java.treaty.action.ActionVocabulary#getActionTypes()
 	 */
-	public Set<URI> getActionTypes() throws TreatyException {
+	public Set<URI> getActions() throws TreatyException {
 
 		Set<URI> result;
 		result = new HashSet<URI>();
 
 		for (ActionVocabulary triggerVocabulary : this.actionVocabularies) {
 
-			result.addAll(triggerVocabulary.getActionTypes());
+			result.addAll(triggerVocabulary.getActions());
 		}
 		// end for.
 
@@ -220,7 +220,7 @@ public class ActionRegistry implements ActionVocabulary {
 
 		for (ActionVocabulary actionVocabulary : this.actionVocabularies) {
 
-			if (actionVocabulary.getActionTypes().contains(action)) {
+			if (actionVocabulary.getActions().contains(action)) {
 				result = actionVocabulary;
 				break;
 			}
@@ -261,7 +261,7 @@ public class ActionRegistry implements ActionVocabulary {
 		Set<URI> result;
 		result = new HashSet<URI>();
 
-		for (URI actionType : this.getActionTypes()) {
+		for (URI actionType : this.getActions()) {
 
 			if (this.isAfterAction(actionType)) {
 				result.add(actionType);
@@ -291,7 +291,7 @@ public class ActionRegistry implements ActionVocabulary {
 		Set<URI> result;
 		result = new HashSet<URI>();
 
-		for (URI actionType : this.getActionTypes()) {
+		for (URI actionType : this.getActions()) {
 
 			if (this.isBeforeAction(actionType)) {
 				result.add(actionType);
@@ -322,7 +322,7 @@ public class ActionRegistry implements ActionVocabulary {
 		Set<URI> result;
 		result = new HashSet<URI>();
 
-		for (URI actionType : this.getActionTypes()) {
+		for (URI actionType : this.getActions()) {
 
 			if (this.isDefaultOnFailure(actionType)
 					|| contract.getOnVerificationFailsActions().contains(actionType)) {
@@ -354,7 +354,7 @@ public class ActionRegistry implements ActionVocabulary {
 		Set<URI> result;
 		result = new HashSet<URI>();
 
-		for (URI actionType : this.getActionTypes()) {
+		for (URI actionType : this.getActions()) {
 
 			if (this.isDefaultOnSuccess(actionType)
 					|| contract.getOnVerificationSucceedsActions().contains(actionType)) {

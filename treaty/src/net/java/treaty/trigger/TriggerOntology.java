@@ -21,7 +21,18 @@ import net.java.treaty.TreatyException;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 
+/**
+ * <p>
+ * An implementation of the {@link TriggerVocabulary} interface based on an OWL
+ * ontology file.
+ * </p>
+ * 
+ * @author Claas Wilke
+ */
 public abstract class TriggerOntology extends AbstractTriggerVocabulary {
+
+	/** The label used in Ontology files to label default triggers. */
+	private static final String LABEL_DEFAULT_TRIGGER = "default";
 
 	/*
 	 * (non-Javadoc)
@@ -159,7 +170,7 @@ public abstract class TriggerOntology extends AbstractTriggerVocabulary {
 
 		if (triggerClass != null) {
 
-			result = triggerClass.hasLabel("default", null);
+			result = triggerClass.hasLabel(LABEL_DEFAULT_TRIGGER, null);
 		}
 
 		else {

@@ -54,7 +54,7 @@ public interface ActionVocabulary {
 	 *          Thrown if the initialization of this {@link ActionVocabulary}
 	 *          failed.
 	 */
-	public Set<URI> getActionTypes() throws TreatyException;
+	public Set<URI> getActions() throws TreatyException;
 
 	/**
 	 * <p>

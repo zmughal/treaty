@@ -391,7 +391,7 @@ public class ContractTypeChecker implements ContractVisitor {
 	public boolean visitOnFailureAction(URI uri) {
 
 		try {
-			if (!this.actionVocabulary.getActionTypes().contains(uri)) {
+			if (!this.actionVocabulary.getActions().contains(uri)) {
 				this.warnings.add(new TreatyException("Action " + uri
 						+ " used in Contract " + this.currentContract
 						+ " as onFailure Action does not exist."));
@@ -414,7 +414,7 @@ public class ContractTypeChecker implements ContractVisitor {
 	public boolean visitOnSuccessAction(URI uri) {
 
 		try {
-			if (!this.actionVocabulary.getActionTypes().contains(uri)) {
+			if (!this.actionVocabulary.getActions().contains(uri)) {
 				this.warnings.add(new TreatyException("Action " + uri
 						+ " used in Contract " + this.currentContract
 						+ " as onSuccess Action does not exist."));
