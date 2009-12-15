@@ -12,10 +12,14 @@ package net.java.treaty.eclipse;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.java.treaty.Contract;
 import net.java.treaty.ContractReader;
 import net.java.treaty.TreatyException;
+import net.java.treaty.script.ScriptContractReader;
 import net.java.treaty.xml.XMLContractReader;
 
 /**
@@ -31,6 +35,9 @@ public class EclipseContractFactory {
 	/** The singleton instance of the {@link EclipseContractFactory}. */
 	public static EclipseContractFactory INSTANCE = new EclipseContractFactory();
 
+	/** The different {@link ContractReader}s used to read {@link Contract}s. */
+	private List<ContractReader> contractReaders;
+
 	/**
 	 * <p>
 	 * Creates a new {@link EclipseContractFactory}. Private constructor for
@@ -39,7 +46,11 @@ public class EclipseContractFactory {
 	 */
 	private EclipseContractFactory() {
 
-		/* Remains empty. */
+		this.contractReaders = new LinkedList<ContractReader>();
+
+		this.contractReaders.add(new XMLContractReader());
+		this.contractReaders.add(new ScriptContractReader(
+				EclipseResourceManager.INSTANCE));
 	}
 
 	/**
@@ -61,20 +72,13 @@ public class EclipseContractFactory {
 
 		Contract result;
 
-		result = null;
+		try {
+			/* Check if the given URL is not null. */
+			if (location != null) {
 
-		/* Check if the given URL is not null. */
-		if (location != null) {
+				Logger.info("Loading contract from " + location);
 
-			ContractReader reader;
-
-			Logger.info("Loading contract from " + location);
-			reader = new XMLContractReader();
-
-			/* Try to read the contract. */
-			try {
-				result =
-						reader.read(location.openStream(), VocabularyRegistry.INSTANCE);
+				result = this.readContract(location);
 				result.setLocation(location);
 
 				/* If the owner of the contract is not null, set the owner. */
@@ -84,14 +88,82 @@ public class EclipseContractFactory {
 				// no else.
 			}
 
-			catch (TreatyException e) {
-				Logger.error("Exception loading contract from " + location, e);
+			else {
+				result = null;
 			}
-
-			catch (IOException e) {
-				Logger.error("Exception loading contract from " + location, e);
-			}
+			// end else.
 		}
+		// end try.
+
+		catch (TreatyException e) {
+			Logger.error("Cannot create Contract.", e);
+			result = null;
+		}
+		// end catch.
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Tries to read a {@link Contract} from a given location.
+	 * </p>
+	 * 
+	 * @param location
+	 *          The {@link URL} location from that the Contract shall be read.
+	 * @return The read {@link Contract}.
+	 * @throws TreatyException
+	 *           Thrown, if the {@link Contract} cannot be read.
+	 */
+	private Contract readContract(URL location) throws TreatyException {
+
+		Contract result;
+		result = null;
+
+		/* Should not happen unless the list of readers has been altered. */
+		if (this.contractReaders.size() == 0) {
+			Logger.warn("No ContractReader found to read Contracts.");
+		}
+		// no else.
+
+		else {
+			Iterator<ContractReader> readerIterator;
+			readerIterator = this.contractReaders.iterator();
+
+			while (readerIterator.hasNext()) {
+
+				try {
+					result =
+							readerIterator.next().read(location.openStream(),
+									VocabularyRegistry.INSTANCE);
+
+					/* If the loading was successfull, break the chain. */
+					if (result != null) {
+						break;
+					}
+					// no else.
+				}
+
+				catch (TreatyException e) {
+					/* Do nothing. Try the next reader. */
+				}
+
+				catch (IOException e) {
+					throw new TreatyException(
+							"The given URL cannot be read as a Contract.", e);
+				}
+				// end catch.
+			}
+			// end while.
+		}
+		// end else.
+
+		if (result == null) {
+			throw new TreatyException(
+					"None of the ContractReaders was able to read the Contract "
+							+ "from the location " + location);
+		}
+		// no else.
 
 		return result;
 	}
