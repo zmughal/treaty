@@ -14,7 +14,7 @@
   	<rdfs:subClassOf rdf:resource="#SuperTrigger"/>
   </owl:Class>
   <owl:Class rdf:ID="DefaultTrigger">
-     <rdfs:label>default</rdfs:label>
+    <rdfs:label>default</rdfs:label>
   </owl:Class>
  
 </rdf:RDF>

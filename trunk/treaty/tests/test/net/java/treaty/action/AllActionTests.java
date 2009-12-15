@@ -8,31 +8,22 @@
  * See the License for the specific language governing permissions and limitations under the License. 
  */
 
-package test.net.java.treaty;
+package test.net.java.treaty.action;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import test.net.java.treaty.action.ActionOntologyTest;
-import test.net.java.treaty.contractregistry.AllContractRegistryTests;
-import test.net.java.treaty.script.AllScriptTests;
-import test.net.java.treaty.trigger.AllTriggerTests;
-import test.net.java.treaty.vocabulary.AllVocabularyTests;
-import test.net.java.treaty.xml.AllXmlTests;
-
 /**
  * <p>
  * Provides a JUnit Test Suite containing all JUnit test cases of the Treaty
- * Framework.
+ * Framework package <code>net.java.treaty.action</code>.
  * </p>
  * 
  * @author Claas Wilke
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( { ActionOntologyTest.class, ContractTests.class,
-		AllContractRegistryTests.class, AllTriggerTests.class,
-		AllScriptTests.class, AllVocabularyTests.class, AllXmlTests.class })
-public class AllTreatyTests {
+@Suite.SuiteClasses( { ActionOntologyTest.class })
+public class AllActionTests {
 	/*
 	 * This class remains completely empty, being used only as a holder for the
 	 * above annotations.
