@@ -6,6 +6,22 @@
 
 \bibliographystyle{alpha}
 
+% Default settings for listings. %
+\lstset{ %
+basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+numbers=left,                   % where to put the line-numbers
+numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+stepnumber=1,                   % the step between two line-numbers. If it's 1 each line will be numbered
+numbersep=5pt,                  % how far the line-numbers are from the code
+showspaces=false,               % show spaces adding particular underscores
+showstringspaces=false,         % underline spaces within strings
+showtabs=false,                 % show tabs within strings adding particular underscores
+tabsize=2,	                % sets default tabsize to 2 spaces
+captionpos=b,                   % sets the caption-position to bottom
+breaklines=true,                % sets automatic line breaking
+breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+escapeinside={\%*}{*)}          % if you want to add a comment within your code
+}
 
 
 \begin{document}
@@ -101,11 +117,78 @@ upon verification results to the contracts. I.e., we propose to use Event-Condit
 
 \subsection{Syntax}
 
-TODO.Claas: could you do this, use an example here. We could just stick to the XML syntax??
+In \cite{Treaty.JOT2009} we presented a simple example for a Treaty contract to precise the relationship between a component that prints
+dates (clock view) and a component that provides a date formatting service (date to string). The contract is shown in Figure \ref{lst:clock01}. The contract can be separated into three sections: a \textit{consumer}, a \textit{supplier} and a \textit{constraints section}. The consumer and supplier section define the resources provided by the components playing the consumer or the supplier role in the contract, respectively. The constraints section defines the constraints that shall be checked during the contract's verification. Further details on these sections can be found in \cite{Treaty.JOT2009}.
+
+% TODO: Format the listing in a appropriate way. %
+\begin{figure}
+  \lstset{ language=XML }
+  \lstinputlisting{clock01.contract}
+  \caption{A contract for a clock example.}
+  \label{lst:clock01}
+\end{figure}
+
+To extend the Treaty contracts to ActiveTreaty contracts, we had to support a possibility to define events or actions in respect to support the expression of ECA rules in Treaty. Thus, we introduced two new sections, a trigger and an action section. Figure \ref{lst:clock02} shows an extended contract for the clock example (the already presented sections are not shown completely).
+
+% TODO: Format the listing in a appropriate way. %
+\begin{figure}[t]
+  \lstset{ language=XML }
+  \lstinputlisting{clock02.contract}
+  \caption{An extended contract for a clock example including triggers and actions.}
+  \label{lst:clock02}
+\end{figure}
+
+In the trigger section, various different triggers for events can be defined that shall cause the verification of the contract. E.g., a trigger can describe the change of the consumer or supplier component's state as the component's activation (TODO line 4) or installation. ActiveTreaty allows to define multiple triggers for the same contract. They are implicitly connected via an OR connective. Thus, the contract will be verified if any of the described events is triggered. Currently, ActiveTreaty does not allow event composition to event chains because we want to keep the framework as simple as possible.
+
+%TODO Claas: Continue revision here. %
+The action section allows the definition of multiple actions that shall be performed either if the contract is violated or verified successfully. ActiveTreaty separates between \textit{on success} and \textit{on failure} actions. E.g., an action could describe the logging of a message, warning or exception (TODO lines 5-6) or the deactivation or uninstallation of a component (TODO line 7). In ActiveTreaty actions are implicitely connected via an AND connective. Thus, if the contract is verified successfully, all onSuccess actions are performed, if the contract's verification fails all onFailure actions are performed.
+	
+
 
 \subsection{Event and Action Syntax} 
 
-TODO.Claas: could you do this? Idea: basically talk about the implementation but use a UML model. 
+Similar to the implementation of contract vocabularies which allows to extend the syntax of Treaty contracts with new resource and condition types \ref{Treaty.JOT2009}, the trigger and action types are implemented in an open way and can be extended by user specific implementations or extensions of ActiveTreaty.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=1.0\textwidth]{ContributorModel1.pdf}
+\caption{Trigger and Action Contribution in ActiveTreaty.}
+\label{fig:contributuon}
+\end{figure}
+
+Figure \ref{fig:contributuon} shows the interfaces TriggerContribution and ActionContribution that are used by ActiveTreaty to describe a set of existing triggers or actions respectively. Triggers and actions are both defined as URLs and do not contain further information about themselves. Nevertheless, the Trigger- and ActionContribution provide a method to return a description that contains more information about the trigger or action. Furthermore, triggers can be defined hierarchically and thus methods to check for sub and super triggers exists as well. E.g., a trigger \textit{BundleStarted} could contain the sub triggers \textit{ConsumerBundleStarted} and \textit{SupplierBundleStarted}. Action types cannot be defined hierarchically because actions must always be declared specifically. On the one hand a contract's trigger can be described abstractly, meaning the contract should be verified if any of the sub events is triggered. On the other hand a contract's action cannot be declare abstractly. We have to specify which specific actions we want to execute after the contract's failed or successful verification.
+
+
+\subsubsection{Default Triggers and Actions}
+
+ActiveTreaty supports triggers to be defined as \textit{default triggers}. Default triggers are used to specify a trigger that can cause a contract's verification although the trigger is not declared in the contract. E.g., this is useful to define a trigger that can be used to verify all selected contracts as caused by a GUI component that displays a set of contracts. In ActiveTreaty, \textit{default actions} can be defined as well, although actions can have four different kinds of default action:
+
+\begin{enumerate}
+	\item Actions can be declared as default before the verification of a set of contracts. E.g., an action to log a message how many contracts will be verified.
+	\item Actions can be declared as default after the verification of a set of contracts. E.g., to log a message how many contracts have been violated or to show a similar message in a GUI dialog.
+	\item Actions can be declared as default after a contract's successful verification. E.g., to log a message that the contract has been verified successfully.
+	\item Actions can be declared as default after a contract's failed verification. E.g., to log a warning including the verification's stack trace.
+\end{enumerate}
+
+Please note, that the actions before and after the verification of a set of contracts cannot be defined in a contract itself but only in the trigger contribution. A contract can only define which actions shall be performed after its successful or failed verification. To check, if triggers or actions are declared as default, the contribution interface provide methods to check these conditions for a given trigger or action. Both the trigger and action contribution come with a default implementation that implements the \textit{Composite Pattern} \cite{TODO GOF Book} which allows to separate the contributions into different classes and to extend them dynamically during runtime.
+
+\subsubsection{How to trigger events}
+
+If a trigger contribution provides event types that can be defined in ActiveTreaty contracts, the trigger contribution is also responsible to delegate these events to the treaty verifier if they occur. Thus, a trigger contribution knows a list of event listeners that must be informed if any of its provided events occur. E.g., the ActiveTreaty implementation for Eclipse provides trigger types such as \textit{BundleStarted} and \textit{BundleStopped}. To delegate these events, the bundle trigger contribution implements the interface org.osgi.framework.BundleListener. Each time, the state of a bundle changed, the bundle trigger contribution informs its events listeners about the occurred event by sending the URI of the specific trigger type and a set of all contracts that must be verified caused by this trigger type. During startup, the triggered verifier of ActiveTreaty for Eclipse registers itself as a listener of the trigger contributions to be aware of all triggered events.
+
+\subsubsection{How to perform actions}
+
+To perform the different action types a action contribution provides it has to implement three methods that are called by the triggered verifier of ActiveTreaty. One method is used to perform actions before a set of contracts is verified, another method is used to perform actions after a set of actions is verified. The third method exists to perform the onSuccess and onFailure methods of a contract's verification result.
+
+\subsubsection{Ontology-based implementation}
+
+Both action and trigger contributions can be implemented on a ontology-based default implementation that uses an OWL ontology to reason on the provided types, their descriptions, inheritance relationships and the possible different default settings. These ontology-based implementations are similar to the implementation used for ontology-based contract vocabularies \cite{Treaty.JOT2009}.
+
+\subsubsection{Dynamic Contributions}
+
+The new prototypically implementation of ActiveTreaty for Eclipse is able to update their contributions dynamically. All, vocabulary, trigger and action contributions are composed of different provided contributions that are registered at ActiveTreaty for Eclipse via extension points. ActiveTreaty for Eclipse manages the contributions dynamically and adds and removes them if their providing extensions are added to or removed from the Eclipse extension registry.
+
+
 
 \subsection{Dependency Management}
 
@@ -179,8 +262,15 @@ TODO more
 
 \subsection{Future Works}
 
+\subsubsection{OCL vocabulary contribution}
+
+Although ActiveTreaty now provides ECA rules powerful enough to describe different events such as component life-cycle changes, the implementation still misses some features for more complex trigger types. In a case study \cite{DAWilke} we investigated if and how it is possible to extend ActiveTreaty for Eclipse by providing a new vocabulary contribution that introduces conditions to define OCL constraints on interfaces defined as resources in contracts. To verify such \textit{design by contract} \cite{DesignByContract} contracts, further information is required for the contracts' verification.
+
+E.g., if the want to verify a postcondition on the \textit{Dateformatter.format(Date)} method, we have to know which argument (date object) was given as parameter of the operation's invocation and also the value in that the invocation resulted. Thus, triggers need to provide a context information for their verifier's that can be used to describe such information. Future work will investigate how this context information can be shipped to the verifier and the vocabularies in an easy and generic way.
+
+TODO 
+
 \begin{itemize}
-	\item support OCL in contracts
 	\item implement (Active)Treaty for other component models
 \end{itemize}
 
