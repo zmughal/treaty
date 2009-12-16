@@ -3,6 +3,15 @@
 	<xs:element name="contract">
 		<xs:complexType>	
 			<xs:sequence maxOccurs="unbounded" minOccurs="0">
+				<xs:sequence maxOccurs="unbounded" minOccurs="0">
+					<xs:element name="trigger" type="xs:anyURI"/>
+				</xs:sequence>
+				<xs:sequence maxOccurs="unbounded" minOccurs="0">
+					<xs:element name="onFailure" type="xs:anyURI"/>
+				</xs:sequence>
+				<xs:sequence maxOccurs="unbounded" minOccurs="0">
+					<xs:element name="onSuccess" type="xs:anyURI"/>
+				</xs:sequence>
 				<xs:element name="consumer" type="resource_owner" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="supplier" type="resource_owner" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="external" type="resource_owner" minOccurs="0" maxOccurs="unbounded"/>
