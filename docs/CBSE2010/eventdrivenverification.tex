@@ -49,13 +49,12 @@ The rest of this paper is organised as follows. In the next section, we review r
 
 % TODO Jens: the next two paragraphs are copied from the TKDE submission, need to ve rephrased
 
-To the best of our knowledge our approach is unique in that it addresses the problem of different contract types in dynamic, heterogeneous component models. In \cite{Dong2003}, the authors propose the use of Prolog to express contracts between design components. In contrast to our work, the authors do not consider dynamic and heterogeneous component models. Some authors have explored the possibility of manual and automated contract extraction from Java \cite{Henkel03,MilanovicMalek2004} and .NET programs \cite{ArnoutMeyer2003a}, and the formal representation of these contracts. Arnout and Meyer went on and tried to show the benefits of an a posteriori addition of contracts \cite{ArnoutMeyer2003b}. They set out to resolve the ``closet contract
-conjecture'' \cite{ArnoutMeyer2003b}. This conjecture states that there are implicit contracts in software ``lurking under the cover'', and that making
-these contract explicit can significantly improve the quality of systems. The intention of this study is very similar to ours. However, the contract language and the nature of the component models analysed are very different. Arnout and Meyer distinguish between ``A Posteriori Contracting'' vs. ``Contracting from the Start''. Treaty goes one step further and supports the combination and aggregations of internal and external contracts. 
-%TODO see above 
+The idea of having contracts between collaborating software artefacts has been pioneered by Meyers work on design by contract \cite{DesignByContract}. Contracts are added directly to the programming language source code, the 
+artefacts bound by contracts are methods. There is no explicit event handling, contract checks are performed when the methods are invoked. Several authors have adopted these ideas to other programming languages and runtime
+environments, including the Java Modelling Language (JML) \cite{DBLP:conf/fmco/ChalinKLP05}. Arnout and Meyer  \cite{ArnoutMeyer2003b} have used ``A Posteriori Contracting'' to add contracts to existing software artifacts. This is similar to the introduction of legislator components discussed below.   
 
-Semantic web technology has been successfully used to represent contracts in other areas, such as SLA contracts \cite{PaschkeDietrich2005}, business
-contracts \cite{Linington04}, \cite{Governatori06} ,\cite{Governatori05} and the provisions for exception handling in electronic contracts \cite{SweetDeal}. These languages are significantly more complex than the Treaty language, and often include features from deontic, temporal or other non-classical logics to gain more expressiveness. The integration of events into the contract logic in some of these approaches is an interesting feature that has great potential for contract-based verification in dynamic component systems. 
+Formal contract languages have been used successfully in order to define several kinds of contracts in business computing, including  SLA contracts \cite{PaschkeDietrich2005}, business
+contracts \cite{Linington04}, \cite{Governatori06} ,\cite{Governatori05} and the provisions for exception handling in electronic contracts \cite{SweetDeal}. These languages support complex event handling, in particular through the use of Event-Condition-Action (ECA) rules.  
 
 
 \section{The Treaty Contract Language}
@@ -96,7 +95,7 @@ upon verification results to the contracts. I.e., we propose to use Event-Condit
 \item An extended syntax for contracts
 \item Semantics of events and actions
 \item Dependency Management
-\item Verification of contracts 
+% \item Verification of contracts - Jens: I have added a brief discussion on this to the conclusion section
 \end{enumerate}
 
 
@@ -119,7 +118,7 @@ As briefly discussed earlier in this section, the management of dependencies bet
 \label{fig2}
 \end{figure}
 
-The roles classify relationships between contracts and components. In the model (figure \ref{fig2}), these roles can be introduced as attributes on a derived relationship \texttt{ContractualContext} between contracts and components. The use of roles is similar to how roles are used in design patterns. Here, a class can play a role like factory or product in the context of a certain (factory) pattern instance. However, a class can be a factory in the context of factory instance 1, and a product in the context of factory instance 2. The precise definition of the associations can be defined using OCL as follows. 
+The roles classify relationships between contracts and components. In the model (figure \ref{fig2}), these roles can be introduced as attributes on a derived relationship \texttt{ContractualContext} between contracts and components. The use of roles is similar to how roles are used in design patterns \cite{GangOf4}. Here, a class can play a role like factory or product in the context of a certain (factory) pattern instance. However, a class can be a factory in the context of factory instance 1, and a product in the context of factory instance 2. The precise definition of the associations can be defined using OCL as follows. 
 
 \lstset{ %
 language=OCL,                % choose the language of the code
@@ -142,60 +141,41 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 % TODO rules to define event and action contributors are still missing
 % perhaps take out EXTERNAL_CONTRIBUTOR to save some space
 
-Using these definitions, each contract gives rise to sets of consumers, suppliers, legislators, and vocabulary, event and action contributors ...
-
-
-
+Using these definitions, each contract gives rise to a legislator component and sets of consumers, suppliers, legislators, and vocabulary, event and action contributors. To execute a contract, the following dependencies must be satisfied for each component in the respective role: 
 
 \begin{itemize}
-\item resources
-\item consumers vs suppliers vs legislators
-\item contract lifecycle
-\item vocabulary contributions
+\item Legislator dependsOn VocabularyContributor
+\item Legislator dependsOn EventContributor
+\item Legislator dependsOn ActionContributor
+\item Legislator dependsOn Consumer
 \end{itemize}
 
+In many cases, the supplier also depends on the Consumer. An example where this is the case is if teh consumer describes a service to be provided by a supplier using a (Java) interface. The supplier needs to provide a class implementing these interface, and needs access to the interface to do this. E.g., in OSGi, the supplier bundle would need access to the classpath of the consumer. 
 
-
-
-
-\begin{itemize}
-  \item dynamic update of contract registry
-  \item dynamic update of vocabulary
-  \item use (and dynamic update) of trigger and action vocabularies
-  \item dynamic verification triggered by triggers
-  \item dynamic reaction triggered by verification
-\end{itemize}
-
-
-\subsection{Syntax}
-
-\begin{itemize}
-\item EBNF or XML?
-\item example
-\end{itemize}
-
-
-\subsection{Semantics}
-
-use event calculus here? or UML activity diagrams
-
-
-
-\section{A Role Model for Components}
-
-Consumer
-Provider
-Legislator - can also be consumer (or supplier, not in Eclipse. E.g., Client/Server)
-Vocabulary Contributor
+Dependency means that the respective component is available. Availability means that the resources of the component are available. In case of OSGi, this means that a bundle has been installed, resolved and either has been or can can be activated. 
 
 
 
 \section{A Case Study: Adding Active Contracts to Eclipse}
 
 
+Points of interest:
+- which events do we actually implement
+- discuss OSGi vs Eclipse events
+- describe global (system) events -> VerifyAll
+- describe effects of lazy loading in Eclipse
+
 
 \section{Conclusion}
 
+
+We have presented ActiveTreaty, a contract framework for software components based on ECA-rules. The proof-of-concept implementation based on Eclipse shows such that this framework can be easily added to an existing component model and can be used to safeguard evolving component assemblies by triggering verification whenever assemblies change. 
+
+There are some open questions though. The actions used in our implementation so far are fairly simple - user notification and logging. While this is useful, it would be desirable to go one step further and to use corrective actions.  In particular actions such as uninstalling faulty components and roll-back component upgrades. However, this causes another problem. Actions interferring with the lifecycle of components will indirectly trigger lifecycle events. These events can trigger new contracts and the system could go into infinite loops. Therefore, verification of contracts is needed. One way of doing this is to build a dependency graph between actions and events and check thsi graph for circular dependencies. 
+
+The events used so far in ActiveTreaty are flat. The expressive of the contract language could be increased by allowing complex events such as events composed using event algebras. 
+
+TODO more
 
 \subsection{Future Works}
 
