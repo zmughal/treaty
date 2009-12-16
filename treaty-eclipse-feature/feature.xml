@@ -2,7 +2,7 @@
 <feature
       id="net.java.treaty.eclipse"
       label="Treaty Contract Framework"
-      version="2.0.0"
+      version="2.1.0"
       provider-name="Jens Dietrich, Massey University">
 
    <description url="http://code.google.com/p/treaty">
@@ -73,6 +73,13 @@ Treaty for Eclipse also contains an example application that uses complex contra
 
    <plugin
          id="net.java.treaty.eclipse.vocabulary.owl.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.java.treaty.eclipse.systemservices"
          download-size="0"
          install-size="0"
          version="0.0.0"
