@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+  <consumer>
+	<resource id="ActionVocabularyDef">
+	  <type>http://www.treaty.org/java#AbstractType</type>
+	  <name>net.java.treaty.action.ActionVocabulary</name>
+    </resource>
+  </consumer>
+  <supplier>
+	<resource id="ContributedActionVocabulary">
+	  <type>http://www.treaty.org/java#InstantiableClass</type>
+	  <ref>actionvocabulary/@class</ref>
+	</resource>
+  </supplier>
+  <constraints>
+	<and>
+	  <relationship resource1="ContributedActionVocabulary"
+	                resource2="ActionVocabularyDef" 
+	                type="http://www.treaty.org/java#implements"/>
+	</and>
+  </constraints>
+</contract>
