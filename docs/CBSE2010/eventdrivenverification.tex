@@ -9,8 +9,8 @@
 % Default settings for listings. %
 \lstset{ %
 basicstyle=\footnotesize,       % the size of the fonts that are used for the code
-numbers=left,                   % where to put the line-numbers
 numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+numbers=left,                   % where to put the line-numbers
 stepnumber=1,                   % the step between two line-numbers. If it's 1 each line will be numbered
 numbersep=5pt,                  % how far the line-numbers are from the code
 showspaces=false,               % show spaces adding particular underscores
@@ -37,6 +37,7 @@ Institut f\"ur Software- und Multimediatechnik,\\ Technische Universit\"at Dresd
 \maketitle
 
 
+% TODO Info: This work was funded by ... %
 
 \begin{abstract}
 
@@ -49,7 +50,7 @@ A proof-of-concept implementation for the OSGi/Eclipse component model is presen
 
 \section{Introduction}
 
-In recent years, dynamic component models supporting the dynamic (re-)configuration of applications have become very successful. Examples include OSGi \cite{OSGI} and its derivatives and .NET \cite{TODO}. Some of the largest and most complex systems are now based on these models, including IBM WebSphere \cite{TODO} and Oracle WebLogic \cite{TODO}. The question arises how these systems can be effectively verified. In practise, static verification techniques are still dominant. This includes the use of compilers and unit testing. Verification is typically performed for single components at built-time. Component containers and runtime environments have little support to verify the integrity of composed systems. For instance, OSGi containers merely check the type safety of classes providing services described by interfaces, and the version compatibility of the components composed. This is based on the implicit assumption that compatibility information between components can be completely described by the combination of service interfaces and dependencies between versioned packages and components. 
+In recent years, dynamic component models supporting the dynamic (re-)\-con\-fi\-gu\-ra\-tion of applications have become very successful. Examples include OSGi \cite{OSGI} and its derivatives and .NET \cite{TODO}. Some of the largest and most complex systems are now based on these models, including IBM WebSphere \cite{TODO} and Oracle WebLogic \cite{TODO}. The question arises how these systems can be effectively verified. In practise, static verification techniques are still dominant. This includes the use of compilers and unit testing. Verification is typically performed for single components at built-time. Component containers and runtime environments have little support to verify the integrity of composed systems. For instance, OSGi containers merely check the type safety of classes providing services described by interfaces, and the version compatibility of the components composed. This is based on the implicit assumption that compatibility information between components can be completely described by the combination of service interfaces and dependencies between versioned packages and components. 
 
 In our previous work \cite{Treaty.JOT2009}, we have argued that more expressive contract language is needed to precisely describe the relationship between collaborating components. This has resulted in Treaty, an expressive, component-model independent contract language. Treaty supports alternative contract arrangements (disjunction), collaborations based on resources other than program language types, and therefore contracts that describe different aspects of component compatibility \cite{BeugnardEtAl99} including interface, behavioural and quality of service contracts. It turns out that these features are appropriate to simplify and improve the contract management in application based on dynamic component systems such as Eclipse. 
 
@@ -120,27 +121,29 @@ upon verification results to the contracts. I.e., we propose to use Event-Condit
 In \cite{Treaty.JOT2009} we presented a simple example for a Treaty contract to precise the relationship between a component that prints
 dates (clock view) and a component that provides a date formatting service (date to string). The contract is shown in Figure \ref{lst:clock01}. The contract can be separated into three sections: a \textit{consumer}, a \textit{supplier} and a \textit{constraints section}. The consumer and supplier section define the resources provided by the components playing the consumer or the supplier role in the contract, respectively. The constraints section defines the constraints that shall be checked during the contract's verification. Further details on these sections can be found in \cite{Treaty.JOT2009}.
 
-% TODO: Format the listing in a appropriate way. %
-\begin{figure}
-  \lstset{ language=XML }
-  \lstinputlisting{clock01.contract}
-  \caption{A contract for a clock example.}
-  \label{lst:clock01}
+\begin{figure}[htbp]
+\lstset{ 
+  language=XML,
+  caption=A contract for the clock example.,
+  label=lst:clock01
+}
+\lstinputlisting{clock01.contract}
 \end{figure}
 
-To extend the Treaty contracts to ActiveTreaty contracts, we had to support a possibility to define events or actions in respect to support the expression of ECA rules in Treaty. Thus, we introduced two new sections, a trigger and an action section. Figure \ref{lst:clock02} shows an extended contract for the clock example (the already presented sections are not shown completely).
+To extend the Treaty contracts to ActiveTreaty contracts, we had to support a possibility to define events or actions in respect to support the expression of ECA rules in Treaty. Thus, we introduced two new sections, a trigger and an action section. Listing \ref{lst:clock02} shows an extended contract for the clock example (the already presented sections are not shown completely).
 
-% TODO: Format the listing in a appropriate way. %
-\begin{figure}[t]
-  \lstset{ language=XML }
-  \lstinputlisting{clock02.contract}
-  \caption{An extended contract for a clock example including triggers and actions.}
-  \label{lst:clock02}
+\begin{figure}[htbp]
+\lstset{ 
+  language=XML,
+  caption=A contract for the clock example including triggers and actions.,
+  label=lst:clock02
+}
+\lstinputlisting{clock02.contract}
 \end{figure}
 
-In the trigger section, various different triggers for events can be defined that shall cause the verification of the contract. E.g., a trigger can describe the change of the consumer or supplier component's state as the component's activation (TODO line 4) or installation. ActiveTreaty allows to define multiple triggers for the same contract. They are implicitly connected via an OR connective. Thus, the contract will be verified if any of the described events is triggered. Currently, ActiveTreaty does not allow event composition to event chains because we want to keep the framework as simple as possible.
+In the trigger section, various different triggers for events can be defined that shall cause the verification of the contract. E.g., a trigger can describe the change of the consumer or supplier component's state as the component's activation (lines 3-4) or installation. ActiveTreaty allows to define multiple triggers for the same contract. They are implicitly connected via an OR connective. Thus, the contract will be verified if any of the described events is triggered. Currently, ActiveTreaty does not allow event composition to event chains because we want to keep the framework as simple as possible.
 
-The action section allows the definition of multiple actions that shall be performed either if the contract is violated or verified successfully. ActiveTreaty separates between \textit{on success} and \textit{on failure} actions. E.g., an action could describe the logging of a message, warning or exception (TODO lines 5-6) or the deactivation or uninstallation of a component (TODO line 7). In ActiveTreaty actions are implicitely connected via an AND connective. Thus, if the contract is verified successfully, all on success actions are performed, if the contract's verification fails all on failure actions are performed.
+The action section allows the definition of multiple actions that shall be performed either if the contract is violated or verified successfully. ActiveTreaty separates between \textit{on success} and \textit{on failure} actions. E.g., an action could describe the logging of a message, warning or exception (lines 5-8) or the deactivation or uninstallation of a component (lines 9-10). In ActiveTreaty actions are implicitely connected via an AND connective. Thus, if the contract is verified successfully, all on success actions are performed, if the contract's verification fails all on failure actions are performed.
 	
 
 
@@ -148,14 +151,14 @@ The action section allows the definition of multiple actions that shall be perfo
 
 Similar to the implementation of contract vocabularies which allows to extend the syntax of Treaty contracts with new resource and condition types \cite{Treaty.JOT2009}, the trigger and action types are implemented in an open way and can be extended by context-specific implementations or extensions of ActiveTreaty.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=1.0\textwidth]{ContributorModel1.pdf}
 \caption{Trigger and Action Contribution in ActiveTreaty.}
 \label{fig:contribution}
 \end{figure}
 
-Figure \ref{fig:contribution} shows the interfaces \texttt{TriggerContribution} and \texttt{ActionContribution} that are used by ActiveTreaty to describe a set of existing triggers or actions, respectively. Triggers and actions are both defined as URIs and do not contain further information about themselves. Nevertheless, the trigger and action contributions provide a method to return a description that contains more information about a trigger or action. Furthermore, triggers can be defined hierarchically. E.g., a trigger \texttt{BundleStarted} could have the sub triggers \texttt{ConsumerBundleStarted} and \texttt{SupplierBundleStarted}. Action types cannot be defined hierarchically because actions must always be declared specifically. On the one hand a contract's trigger can be described abstractly, meaning the contract should be verified if any of the sub trigger events is caused. On the other hand a contract's action cannot be declared abstractly. We have to specify which specific actions we want to execute after the contract's verification and cannot execute abstract actions.
+Figure \ref{fig:contribution} shows the interfaces \texttt{TriggerContribution} and \texttt{Action\-Con\-tri\-bu\-tion} that are used by ActiveTreaty to describe a set of existing triggers or actions, respectively. Triggers and actions are both defined as URIs and do not contain further information about themselves. Nevertheless, the trigger and action contributions provide a method to return a description that contains more information about a trigger or action. Furthermore, triggers can be defined hierarchically. E.g., a trigger \texttt{BundleStarted} could have the sub triggers \texttt{ConsumerBundleStarted} and \texttt{SupplierBundleStarted}. Action types cannot be defined hierarchically because actions must always be declared specifically. On the one hand a contract's trigger can be described abstractly, meaning the contract should be verified if any of the sub trigger events is caused. On the other hand a contract's action cannot be declared abstractly. We have to specify which specific actions we want to execute after the contract's verification and cannot execute abstract actions.
 
 
 \subsubsection{Default Triggers and Actions}
@@ -179,7 +182,7 @@ Both trigger and action contributions come with a default implementation that im
 
 If a trigger contribution provides event types, the trigger contribution is also responsible to delegate these events to the \textit{treaty contract verifier} if they occur. Thus, a trigger contribution knows a list of event listeners that must be informed if any of its provided events occur. 
 
-The protypical ActiveTreaty implementation for Eclipse provides trigger types such as \texttt{BundleStarted} and \texttt{BundleStopped}. To delegate these events, the bundle trigger contribution implements the interface \texttt{org.osgi.framework.BundleListener}. Each time, the state of a bundle changed, the trigger contribution informs its events listeners about the occurred event by sending the URI of the specific trigger type and a set of all contracts that must be verified caused by this trigger type in the context of this bundle\footnote{E.g., for a \texttt{ConsumerBundleStarted} event the trigger contribution requests the contract registry of ActiveTreaty to collect all contracts whose consumer component equals to the bundle that has been started. If at least one contract fulfilling this condition is found, the verification is triggered by notifying the trigger contribution's event listeners.}. During startup, the triggered verifier of ActiveTreaty for Eclipse registers itself as a listener of the trigger contributions to be aware of all triggered events.
+The prototypical ActiveTreaty implementation for Eclipse provides trigger types such as \texttt{BundleStarted} and \texttt{BundleStopped}. To delegate these events, the bundle trigger contribution implements the interface \texttt{org.osgi.framework.Bun\-dle\-Lis\-te\-ner}. Each time, the state of a bundle changed, the trigger contribution informs its events listeners about the occurred event by sending the URI of the specific trigger type and a set of all contracts that must be verified caused by this trigger type in the context of this bundle\footnote{E.g., for a \texttt{ConsumerBundleStarted} event the trigger contribution requests the contract registry of ActiveTreaty to collect all contracts whose consumer component equals to the bundle that has been started. If at least one contract fulfilling this condition is found, the verification is triggered by notifying the trigger contribution's event listeners.}. During startup, the triggered verifier of ActiveTreaty for Eclipse registers itself as a listener of the trigger contributions to be aware of all triggered events.
 
 \subsubsection{How to perform Actions}
 
