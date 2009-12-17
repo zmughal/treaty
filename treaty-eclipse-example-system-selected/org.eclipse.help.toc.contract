@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- contract for org.eclipse.help.toc.contract-->
+<contract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://treaty.googlecode.com/svn/tags/v1.3/schema/treaty.xsd">
+	<supplier>
+		<resource id="toc">
+			<type>http://www.treaty.org/xml#XMLInstance</type>
+			<!-- not that the xpath expression starts with a / - this will result in looking for -->
+			<!-- nodes using this expression: /plugin/extension[@point="org.eclipse.help.toc"]//toc/@file -->
+			<!-- and this will look for nested toc/@file nodes (the "//" !!)-->
+			<ref>/toc/@file</ref>
+		</resource>
+		<resource id="Class">
+			<type>http://www.treaty.org/java#InstantiableClass</type>
+			<ref>tocProvider/@class</ref>
+		</resource>
+		<resource id="IndexPath">
+			<type>http://www.w3.org/2001/XMLSchema#string</type>
+			<ref>index/@path</ref>
+		</resource>
+	</supplier>
+	<external>
+		<resource id="toc_dtd">
+			<type>http://www.treaty.org/xml#DTD</type>
+			<name>contract_resources/org.eclipse.help.toc/toc.dtd</name>
+		</resource>		
+		<resource id="AbstractTocProvider">
+			<type>http://www.treaty.org/java#AbstractType</type>
+			<name>org.eclipse.help.AbstractTocProvider</name>
+		</resource>			
+	</external>
+	<constraints>
+		<and>
+			<or>
+				<not>
+					<mustExist resource="toc"/>
+				</not>
+				<relationship resource1="toc" resource2="toc_dtd" type="http://www.treaty.org/xml#instantiatesDTD"/>
+			</or>
+			<or>
+				<not>
+					<mustExist resource="Class"/>
+				</not>
+				<relationship resource1="Class" resource2="AbstractTocProvider" type="http://www.treaty.org/java#implements"/>
+			</or>
+			<xor>
+				<mustExist resource="IndexPath"/>				
+				<not>
+					<mustExist resource="IndexPath"/>
+				</not>
+			</xor>
+		</and>
+	</constraints>
+</contract>
