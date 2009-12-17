@@ -3,13 +3,26 @@
 <repository name='${p2.metadata.repo.name}' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1259877634661'/>
+    <property name='p2.timestamp' value='1261008255915'/>
   </properties>
   <references size='2'>
     <repository uri='http://treaty.googlecode.com/svn/trunk/treaty-eclipse-updatesite/site.xml' url='http://treaty.googlecode.com/svn/trunk/treaty-eclipse-updatesite/site.xml' type='0' options='0'/>
     <repository uri='http://treaty.googlecode.com/svn/trunk/treaty-eclipse-updatesite/site.xml' url='http://treaty.googlecode.com/svn/trunk/treaty-eclipse-updatesite/site.xml' type='1' options='0'/>
   </references>
-  <units size='99'>
+  <units size='113'>
+    <unit id='Treaty' version='0.0.0.20091217130413'>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Treaty' version='0.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.feature.group' range='[2.1.0,2.1.0]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
     <unit id='net.java.treaty.eclipse.vocabulary.java.ui' version='2.0.0'>
       <update id='net.java.treaty.eclipse.vocabulary.java.ui' range='[0.0.0,2.0.0)' severity='0'/>
       <properties size='2'>
@@ -134,6 +147,36 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='net.java.treaty.eclipse.example.clock' version='2.1.0'>
+      <update id='net.java.treaty.eclipse.example.clock' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Simple Desktop Clock Example for Treaty Contract Verification'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock' version='2.1.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.example.clock' version='2.1.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse.example.clock' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='4'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse.vocabulary.junit' range='2.0.0'/>
+        <required namespace='java.package' name='org.junit' range='4.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.example.clock' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Bundle-Name: Simple Desktop Clock Example for Treaty Contract Verification&#xA;Bundle-Activator: net.java.treaty.eclipse.example.clock.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Vendor: Jens Dietrich, Massey University&#xA;Bundle-ClassPath: .,lib/jdom.jar&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.example.clock; singleton:=true&#xA;Import-Package: org.junit;version=&quot;4.0.0&quot;&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Version: 2.1.0&#xA;Export-Package: net.java.treaty.eclipse.example.clock&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,net.java.treaty.eclipse.vocabulary.junit;bundle-version=&quot;2.0.0&quot;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='net.java.treaty.eclipse.feature.group' version='2.0.0' singleton='false'>
       <update id='net.java.treaty.eclipse.feature.group' range='[0.0.0,2.0.0)' severity='0'/>
       <properties size='5'>
@@ -206,6 +249,55 @@
       <copyright>
         Copyright (C) 2008 Jens Dietrich
       </copyright>
+    </unit>
+    <unit id='net.java.treaty.eclipse' version='2.1.0'>
+      <update id='net.java.treaty.eclipse' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty for Eclipse'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich'/>
+      </properties>
+      <provides size='26'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse' version='2.1.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse' version='2.1.0'/>
+        <provided namespace='java.package' name='com.hp.hpl.jena.ontology' version='0.0.0'/>
+        <provided namespace='java.package' name='com.hp.hpl.jena.rdf.model' version='0.0.0'/>
+        <provided namespace='java.package' name='com.hp.hpl.jena.rdf.model.impl' version='0.0.0'/>
+        <provided namespace='java.package' name='com.hp.hpl.jena.xmloutput.impl' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.action' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.contractregistry' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse.action' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse.contractregistry' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse.exporter' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse.trigger' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse.verification' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.script' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.script.generated' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.trigger' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.trigger.verification' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.vocabulary' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.vocabulary.builtins' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.vocabulary.builtins.java' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.vocabulary.builtins.owl' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.vocabulary.builtins.xml' version='0.0.0'/>
+        <provided namespace='java.package' name='net.java.treaty.xml' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Export-Package: com.hp.hpl.jena.ontology,com.hp.hpl.jena.rdf.model,com.hp.hpl.jena.rdf.model.impl,com.hp.hpl.jena.xmloutput.impl,net.java.treaty;uses:=&quot;org.apache.log4j&quot;,net.java.treaty.action,net.java.treaty.contractregistry,net.java.treaty.eclipse; uses:=&quot;org.eclipse.core.runtime,  org.eclipse.jface.resource,  net.java.treaty,  org.eclipse.ui.plugin,  org.semanticweb.owl.model,  org.osgi.framework&quot;,net.java.treaty.eclipse.action,net.java.treaty.eclipse.contractregistry,net.java.treaty.eclipse.exporter,net.java.treaty.eclipse.trigger,net.java.treaty.eclipse.verification,net.java.treaty.script,net.java.treaty.script.generated,net.java.treaty.trigger,net.java.treaty.trigger.verification,net.java.treaty.vocabulary,net.java.treaty.vocabulary.builtins,net.java.treaty.vocabulary.builtins.java,net.java.treaty.vocabulary.builtins.owl,net.java.treaty.vocabulary.builtins.xml,net.java.treaty.xml&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.runtime&#xA;Bundle-Activator: net.java.treaty.eclipse.Activator&#xA;Bundle-Name: Treaty for Eclipse&#xA;Bundle-Version: 2.1.0&#xA;Bundle-Vendor: Jens Dietrich&#xA;Bundle-SymbolicName: net.java.treaty.eclipse;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-ClassPath: .,lib/jaxen-core.jar,lib/jaxen-jdom.jar,lib/saxpath.jar,lib/jdom.jar,lib/slf4j-api-1.5.6.jar,lib/slf4j-log4j12-1.5.6.jar,lib/icu4j-3.4.4.jar,lib/iri-0.7.jar,lib/xercesImpl-2.7.1.jar,lib/log4j-1.2.15.jar,lib/antlr-3.1.1-runtime.jar,lib/dtdparser121.jar,lib/isorelax.jar,lib/msv.jar,lib/relaxngDatatype.jar,lib/xsdlib.jar,lib/jena-2.6.2.jar,lib/treaty.jar&#xA;Manifest-Version: 1.0
+          </instruction>
+        </instructions>
+      </touchpointData>
     </unit>
     <unit id='net.java.treaty.eclipse' version='2.0.0'>
       <update id='net.java.treaty.eclipse' range='[0.0.0,2.0.0)' severity='0'/>
@@ -530,6 +622,41 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='net.java.treaty.eclipse.example.clock.feature.group' version='2.1.0' singleton='false'>
+      <update id='net.java.treaty.eclipse.example.clock.feature.group' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty Clock Example'/>
+        <property name='org.eclipse.equinox.p2.description' value='This plugin adds a desktop clock view to Eclipse that has a date (and time) format extension point. Date formats are provided by other plugins either by implementing a DateFormatter interface or by providing an XML format string. The contract contains several conditions, including (Java and XML) interface conditions as well as semantic and quality of service conditions expressed with JUnit test cases.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='Treaty Contract Framework'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock.feature.group' version='2.1.0'/>
+      </provides>
+      <requires size='7'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock' range='[2.1.0,2.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock.fancydateformatter' range='[1.0.5,1.0.5]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock.lazydateformatter' range='[1.0.1,1.0.1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock.longdateformatter' range='[1.0.1,1.0.1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock.shortdateformatter' range='[1.0.1,1.0.1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock.tooshortdateformatter' range='[1.0.1,1.0.1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock.feature.jar' range='[2.1.0,2.1.0]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='http://www.apache.org/licenses/LICENSE-2.0' url='http://www.apache.org/licenses/LICENSE-2.0'>
+          Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (C) 2008 Jens Dietrich
+      </copyright>
+    </unit>
     <unit id='net.java.treaty.example.clock.feature.jar' version='1.0.15'>
       <update id='net.java.treaty.example.clock.feature.jar' range='[0.0.0,1.0.15)' severity='0'/>
       <properties size='4'>
@@ -655,6 +782,41 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='net.java.treaty.eclipse.example.clock.feature.jar' version='2.1.0'>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty Clock Example'/>
+        <property name='org.eclipse.equinox.p2.description' value='This plugin adds a desktop clock view to Eclipse that has a date (and time) format extension point. Date formats are provided by other plugins either by implementing a DateFormatter interface or by providing an XML format string. The contract contains several conditions, including (Java and XML) interface conditions as well as semantic and quality of service conditions expressed with JUnit test cases.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='Treaty Contract Framework'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock.feature.jar' version='2.1.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.java.treaty.eclipse.example.clock' version='2.1.0'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.java.treaty.eclipse.example.clock' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='http://www.apache.org/licenses/LICENSE-2.0' url='http://www.apache.org/licenses/LICENSE-2.0'>
+          Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (C) 2008 Jens Dietrich
+      </copyright>
     </unit>
     <unit id='net.java.treaty.example.clock.feature.group' version='1.0.15' singleton='false'>
       <update id='net.java.treaty.example.clock.feature.group' range='[0.0.0,1.0.15)' severity='0'/>
@@ -819,6 +981,35 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='net.java.treaty.eclipse.vocabulary.owl.ui' version='2.1.0'>
+      <update id='net.java.treaty.eclipse.vocabulary.owl.ui' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='OWL Vocabulary for Treaty for Eclipse UI Contributions'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Claas Wilke, Massey University'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.owl.ui' version='2.1.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.vocabulary.owl.ui' version='2.1.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='4'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='2.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse.ui' range='2.1.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.vocabulary.owl.ui' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.runtime,org.eclipse.ui,net.java.treaty.eclipse;bundle-version=&quot;2.0.0&quot;,net.java.treaty.eclipse.ui;bundle-version=&quot;2.1.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.vocabulary.owl.ui.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.1.0&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.owl.ui;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: OWL Vocabulary for Treaty for Eclipse UI Contributions&#xA;Bundle-Vendor: Claas Wilke, Massey University
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='net.java.treaty.eclipse.system.feature.group' version='1.1.0' singleton='false'>
       <update id='net.java.treaty.eclipse.system.feature.group' range='[0.0.0,1.1.0)' severity='0'/>
       <properties size='5'>
@@ -947,6 +1138,33 @@
         Copyright (C) 2008 Jens Dietrich
       </copyright>
     </unit>
+    <unit id='net.java.treaty.eclipse.exporter.html' version='2.0.0'>
+      <update id='net.java.treaty.eclipse.exporter.html' range='[0.0.0,2.0.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='HTML-based Contract Exporter for Treaty For Eclipse'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.exporter.html' version='2.0.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.exporter.html' version='2.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='2.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.exporter.html' version='2.0.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.runtime,net.java.treaty.eclipse;bundle-version=&quot;2.0.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.exporter.html.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.0.0&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.exporter.html;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: HTML-based Contract Exporter for Treaty For Eclipse&#xA;Bundle-Vendor: Jens Dietrich, Massey University
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='net.java.treaty.eclipse.system.feature.jar' version='1.1.0'>
       <update id='net.java.treaty.eclipse.system.feature.jar' range='[0.0.0,1.1.0)' severity='0'/>
       <properties size='4'>
@@ -983,33 +1201,6 @@
         Copyright (C) 2008 Jens Dietrich
       </copyright>
     </unit>
-    <unit id='net.java.treaty.eclipse.exporter.html' version='2.0.0'>
-      <update id='net.java.treaty.eclipse.exporter.html' range='[0.0.0,2.0.0)' severity='0'/>
-      <properties size='2'>
-        <property name='org.eclipse.equinox.p2.name' value='HTML-based Contract Exporter for Treaty For Eclipse'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.exporter.html' version='2.0.0'/>
-        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.exporter.html' version='2.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='2'>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='2.0.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.exporter.html' version='2.0.0'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.runtime,net.java.treaty.eclipse;bundle-version=&quot;2.0.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.exporter.html.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.0.0&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.exporter.html;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: HTML-based Contract Exporter for Treaty For Eclipse&#xA;Bundle-Vendor: Jens Dietrich, Massey University
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
     <unit id='net.java.treaty.eclipse.system' version='1.0.0'>
       <update id='net.java.treaty.eclipse.system' range='[0.0.0,1.0.0)' severity='0'/>
       <properties size='2'>
@@ -1034,6 +1225,33 @@
         <instructions size='1'>
           <instruction key='manifest'>
             Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt.ui;bundle-version=&quot;3.4.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.system.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.0&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.system; singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: contracts for standard extension points&#xA;Bundle-Vendor: Jens Dietrich
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='net.java.treaty.eclipse.exporter.html' version='2.1.0'>
+      <update id='net.java.treaty.eclipse.exporter.html' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='HTML-based Contract Exporter for Treaty For Eclipse'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.exporter.html' version='2.1.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.exporter.html' version='2.1.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='2.1.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.exporter.html' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.runtime,net.java.treaty.eclipse;bundle-version=&quot;2.1.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.exporter.html.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.1.0&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.exporter.html;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: HTML-based Contract Exporter for Treaty For Eclipse&#xA;Bundle-Vendor: Jens Dietrich, Massey University
           </instruction>
         </instructions>
       </touchpointData>
@@ -1322,33 +1540,6 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='net.java.treaty.eclipse.vocabulary.owl' version='1.1.0'>
-      <update id='net.java.treaty.eclipse.vocabulary.owl' range='[0.0.0,1.1.0)' severity='0'/>
-      <properties size='2'>
-        <property name='org.eclipse.equinox.p2.name' value='OWL Vocabulary'/>
-        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.owl' version='1.1.0'/>
-        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.vocabulary.owl' version='1.1.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='2'>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='0.0.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.vocabulary.owl' version='1.1.0'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-Name: OWL Vocabulary&#xA;Bundle-Version: 1.1.0&#xA;Require-Bundle: org.eclipse.core.runtime,net.java.treaty.eclipse&#xA;Eclipse-LazyStart: true&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.owl;singleton:=true&#xA;Manifest-Version: 1.0&#xA;Bundle-Vendor: Jens Dietrich&#xA;Bundle-Activator: net.java.treaty.eclipse.vocabulary.owl.Activator
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
     <unit id='net.java.treaty.eclipse.feature.jar' version='1.2.0'>
       <update id='net.java.treaty.eclipse.feature.jar' range='[0.0.0,1.2.0)' severity='0'/>
       <properties size='4'>
@@ -1384,6 +1575,33 @@
       <copyright>
         Copyright (C) 2008 Jens Dietrich
       </copyright>
+    </unit>
+    <unit id='net.java.treaty.eclipse.vocabulary.owl' version='1.1.0'>
+      <update id='net.java.treaty.eclipse.vocabulary.owl' range='[0.0.0,1.1.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='OWL Vocabulary'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.owl' version='1.1.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.vocabulary.owl' version='1.1.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.vocabulary.owl' version='1.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-Name: OWL Vocabulary&#xA;Bundle-Version: 1.1.0&#xA;Require-Bundle: org.eclipse.core.runtime,net.java.treaty.eclipse&#xA;Eclipse-LazyStart: true&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.owl;singleton:=true&#xA;Manifest-Version: 1.0&#xA;Bundle-Vendor: Jens Dietrich&#xA;Bundle-Activator: net.java.treaty.eclipse.vocabulary.owl.Activator
+          </instruction>
+        </instructions>
+      </touchpointData>
     </unit>
     <unit id='net.java.treaty.eclipse.example.clock.longdateformatter' version='1.0.1'>
       <update id='net.java.treaty.eclipse.example.clock.longdateformatter' range='[0.0.0,1.0.1)' severity='0'/>
@@ -1442,6 +1660,18 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='net.java.treaty.eclipse.vocabulary.xml.translated_host_properties' version='1.1.0'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml' range='1.1.0' greedy='false'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml' range='1.1.0' greedy='false'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
     <unit id='net.java.treaty.eclipse.vocabulary.java' version='1.0.8'>
       <update id='net.java.treaty.eclipse.vocabulary.java' range='[0.0.0,1.0.8)' severity='0'/>
       <properties size='2'>
@@ -1469,18 +1699,6 @@
           </instruction>
         </instructions>
       </touchpointData>
-    </unit>
-    <unit id='net.java.treaty.eclipse.vocabulary.xml.translated_host_properties' version='1.1.0'>
-      <hostRequirements size='1'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml' range='1.1.0' greedy='false'/>
-      </hostRequirements>
-      <properties size='1'>
-        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
-      </properties>
-      <requires size='1'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml' range='1.1.0' greedy='false'/>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
     </unit>
     <unit id='net.java.treaty.eclipse.example.system.feature.jar' version='2.0.0'>
       <properties size='4'>
@@ -1609,6 +1827,20 @@
         Copyright (C) 2008 Jens Dietrich
       </copyright>
     </unit>
+    <unit id='Examples' version='0.0.0.20091217130413'>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty Examples'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='Examples' version='0.0.0'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.system.feature.group' range='[2.0.0,2.0.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.example.clock.feature.group' range='[2.1.0,2.1.0]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
     <unit id='net.java.treaty.eclipse.vocabulary.java' version='1.1.0'>
       <update id='net.java.treaty.eclipse.vocabulary.java' range='[0.0.0,1.1.0)' severity='0'/>
       <properties size='2'>
@@ -1667,6 +1899,35 @@
         Copyright (C) 2008 Jens Dietrich
       </copyright>
     </unit>
+    <unit id='net.java.treaty.eclipse.vocabulary.xml.ui' version='2.1.0'>
+      <update id='net.java.treaty.eclipse.vocabulary.xml.ui' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='XML Vocabulary for Treaty for Eclipse UI Contributions'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml.ui' version='2.1.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.vocabulary.xml.ui' version='2.1.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='4'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='2.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse.ui' range='2.1.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.vocabulary.xml.ui' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,net.java.treaty.eclipse;bundle-version=&quot;2.0.0&quot;,net.java.treaty.eclipse.ui;bundle-version=&quot;2.1.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.vocabulary.xml.ui.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.1.0&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.xml.ui;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: XML Vocabulary for Treaty for Eclipse UI Contributions&#xA;Bundle-Vendor: Jens Dietrich, Massey University
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='net.java.treaty.eclipse.feature.group' version='1.1.1' singleton='false'>
       <update id='net.java.treaty.eclipse.feature.group' range='[0.0.0,1.1.1)' severity='0'/>
       <properties size='5'>
@@ -1705,6 +1966,35 @@
         Copyright (C) 2008 Jens Dietrich
       </copyright>
     </unit>
+    <unit id='net.java.treaty.eclipse.vocabulary.java.ui' version='2.1.0'>
+      <update id='net.java.treaty.eclipse.vocabulary.java.ui' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Java Vocabulary for Treaty for Eclipse UI Contributions'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.java.ui' version='2.1.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.vocabulary.java.ui' version='2.1.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='4'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='2.1.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse.ui' range='2.1.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.vocabulary.java.ui' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,net.java.treaty.eclipse;bundle-version=&quot;2.1.0&quot;,net.java.treaty.eclipse.ui;bundle-version=&quot;2.1.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.vocabulary.java.ui.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.1.0&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.vocabulary.java.ui;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: Java Vocabulary for Treaty for Eclipse UI Contributions&#xA;Bundle-Vendor: Jens Dietrich, Massey University
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='net.java.treaty.eclipse.vocabulary.junit.ui' version='2.0.0'>
       <update id='net.java.treaty.eclipse.vocabulary.junit.ui' range='[0.0.0,2.0.0)' severity='0'/>
       <properties size='2'>
@@ -1733,6 +2023,44 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='net.java.treaty.eclipse.feature.group' version='2.1.0' singleton='false'>
+      <update id='net.java.treaty.eclipse.feature.group' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty Contract Framework'/>
+        <property name='org.eclipse.equinox.p2.description' value='Treaty is a contract framework for arbitrary component models. The Treaty for Eclipse feature contains adapters for Eclipse plugins/OSGi bundles, views to show contracts between plugins (bundles) and installed contract vocabularies, and actions to check these contracts and verify the installed plugins.&#xA;Treaty for Eclipse also contains an example application that uses complex contracts to describe the relationships of plugins consuming and providing services.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/treaty'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.feature.group' version='2.1.0'/>
+      </provides>
+      <requires size='10'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse' range='[2.1.0,2.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.junit' range='[2.0.0,2.0.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.java.ui' range='[2.1.0,2.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.junit.ui' range='[2.0.0,2.0.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.xml.ui' range='[2.1.0,2.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.ui' range='[2.1.0,2.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.exporter.html' range='[2.1.0,2.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.vocabulary.owl.ui' range='[2.1.0,2.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.systemservices' range='[2.1.0,2.1.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.feature.jar' range='[2.1.0,2.1.0]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='http://www.apache.org/licenses/LICENSE-2.0' url='http://www.apache.org/licenses/LICENSE-2.0'>
+          Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (C) 2008 Jens Dietrich
+      </copyright>
     </unit>
     <unit id='net.java.treaty.eclipse.vocabulary.junit.ui' version='1.0.0'>
       <update id='net.java.treaty.eclipse.vocabulary.junit.ui' range='[0.0.0,1.0.0)' severity='0'/>
@@ -1969,6 +2297,35 @@
       <copyright>
         Copyright (C) 2008 Jens Dietrich
       </copyright>
+    </unit>
+    <unit id='net.java.treaty.eclipse.ui' version='2.1.0'>
+      <update id='net.java.treaty.eclipse.ui' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty for Eclipse User Interface'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Masse University'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.ui' version='2.1.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.ui' version='2.1.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse.views' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='3'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='2.1.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.ui' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Export-Package: net.java.treaty.eclipse.views&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,net.java.treaty.eclipse;bundle-version=&quot;2.1.0&quot;&#xA;Bundle-Activator: net.java.treaty.eclipse.ui.Activator&#xA;Bundle-Name: Treaty for Eclipse User Interface&#xA;Bundle-Version: 2.1.0&#xA;Bundle-Vendor: Jens Dietrich, Masse University&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.ui;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-ClassPath: .,lib/treaty-viz.jar,lib/collections-generic-4.01.jar,lib/jung-api-2.0.jar,lib/jung-graph-impl-2.0.jar,lib/jung-visualization-2.0.jar,lib/log4j-1.2.15.jar,lib/jung-algorithms-2.0.jar&#xA;Manifest-Version: 1.0
+          </instruction>
+        </instructions>
+      </touchpointData>
     </unit>
     <unit id='net.java.treaty.eclipse.system.feature.jar' version='1.0.1'>
       <update id='net.java.treaty.eclipse.system.feature.jar' range='[0.0.0,1.0.1)' severity='0'/>
@@ -2623,6 +2980,34 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='net.java.treaty.eclipse.systemservices' version='2.1.0'>
+      <update id='net.java.treaty.eclipse.systemservices' range='[0.0.0,2.1.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty Eclipse System Trigger and Actions'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Claas Wilke, Massey University'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.systemservices' version='2.1.0'/>
+        <provided namespace='osgi.bundle' name='net.java.treaty.eclipse.systemservices' version='2.1.0'/>
+        <provided namespace='java.package' name='net.java.treaty.eclipse.systemservices' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.java.treaty.eclipse' range='2.1.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.java.treaty.eclipse.systemservices' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-Vendor: Claas Wilke, Massey University&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: net.java.treaty.eclipse.systemservices.Activator&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.runtime,net.java.treaty.eclipse;bundle-version=&quot;2.1.0&quot;&#xA;Bundle-Name: Treaty Eclipse System Trigger and Actions&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: net.java.treaty.eclipse.systemservices;singleton:=true&#xA;Bundle-Version: 2.1.0&#xA;Export-Package: net.java.treaty.eclipse.systemservices
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='net.java.treaty.eclipse' version='1.0.19'>
       <update id='net.java.treaty.eclipse' range='[0.0.0,1.0.19)' severity='0'/>
       <properties size='2'>
@@ -3084,6 +3469,41 @@
         <provided namespace='java.package' name='org.xml.sax.helpers' version='0.0.0'/>
       </provides>
       <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
+    </unit>
+    <unit id='net.java.treaty.eclipse.feature.jar' version='2.1.0'>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Treaty Contract Framework'/>
+        <property name='org.eclipse.equinox.p2.description' value='Treaty is a contract framework for arbitrary component models. The Treaty for Eclipse feature contains adapters for Eclipse plugins/OSGi bundles, views to show contracts between plugins (bundles) and installed contract vocabularies, and actions to check these contracts and verify the installed plugins.&#xA;Treaty for Eclipse also contains an example application that uses complex contracts to describe the relationships of plugins consuming and providing services.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://code.google.com/p/treaty'/>
+        <property name='org.eclipse.equinox.p2.provider' value='Jens Dietrich, Massey University'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.java.treaty.eclipse.feature.jar' version='2.1.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.java.treaty.eclipse' version='2.1.0'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.java.treaty.eclipse' version='2.1.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='http://www.apache.org/licenses/LICENSE-2.0' url='http://www.apache.org/licenses/LICENSE-2.0'>
+          Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright (C) 2008 Jens Dietrich
+      </copyright>
     </unit>
     <unit id='net.java.treaty.eclipse.feature.jar' version='1.1.0'>
       <update id='net.java.treaty.eclipse.feature.jar' range='[0.0.0,1.1.0)' severity='0'/>
