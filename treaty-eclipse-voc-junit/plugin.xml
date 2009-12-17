@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.2"?>
-<plugin>
-   <extension
-         point="net.java.treaty.eclipse.vocabulary" id="net.java.treaty.eclipse.vocabulary.junit" name="net.java.treaty.eclipse.vocabulary.junit">
-          <vocabulary class="net.java.treaty.eclipse.vocabulary.junit.JUnitVocabulary" ontology="/vocabulary/junit.owl"/> 
-   </extension>
-</plugin>
