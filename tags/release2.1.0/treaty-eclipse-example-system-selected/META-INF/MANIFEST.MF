@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Selected Treaty contracts for standard Eclipse extension points
+Bundle-SymbolicName: net.java.treaty.eclipse.system_selected;singleton:=true
+Bundle-Version: 1.0.2
+Bundle-Activator: net.java.treaty.eclipse.system_selected.Activator
+Bundle-Vendor: Jens Dietrich and Lucia Stewart
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui;bundle-version="3.4.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-LazyStart: false
+Import-Package: org.junit;version="4.0.0"
