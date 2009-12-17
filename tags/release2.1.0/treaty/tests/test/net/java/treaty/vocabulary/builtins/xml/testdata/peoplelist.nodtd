@@ -1,0 +1,8 @@
+<!-- from http://en.wikipedia.org/wiki/Document_Type_Definition -->
+contains illegal elements, DTD parsing should fail -->
+!ELEMENT people_list (person*)>
+<!ELEMENT person (name, birthdate?, gender?, socialsecuritynumber?)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT2 birthdate (#PCDATA)>
+<!ELEMENT gender (#PCDATA)>
+<!ELEMENT socialsecuritynumber (#PCDATA)>

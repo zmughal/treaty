@@ -1,0 +1,63 @@
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns="http://www.treaty.org/java#"
+  xml:base="http://www.treaty.org/basic">
+  
+  <owl:Ontology rdf:about=""/>   
+  
+  <owl:Class rdf:ID="BasicType">
+  </owl:Class>
+  <owl:Class rdf:ID="boolean">
+  	<rdfs:subClassOf rdf:resource="#BasicType"/>
+  </owl:Class>
+  <owl:Class rdf:ID="double">
+  	<rdfs:subClassOf rdf:resource="#BasicType"/>
+  </owl:Class>
+  <owl:Class rdf:ID="int">
+  	<rdfs:subClassOf rdf:resource="#double"/>
+  </owl:Class>  
+  <owl:Class rdf:ID="integer">
+  	<rdfs:subClassOf rdf:resource="#double"/>
+  </owl:Class>  
+  <owl:Class rdf:ID="string">
+  	<rdfs:subClassOf rdf:resource="#BasicType"/>
+  </owl:Class>
+ 
+  <owl:DatatypeProperty rdf:ID="eq">
+    <rdfs:range rdf:resource="#BasicType"/>
+    <rdfs:domain rdf:resource="#BasicType"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="neq">
+    <rdfs:range rdf:resource="#BasicType"/>
+    <rdfs:domain rdf:resource="#BasicType"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="in">
+    <rdfs:range rdf:resource="#string"/>
+    <rdfs:domain rdf:resource="#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="regex">
+    <rdfs:range rdf:resource="#string"/>
+    <rdfs:domain rdf:resource="#string"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="lt">
+    <rdfs:range rdf:resource="#double"/>
+    <rdfs:domain rdf:resource="#double"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="lte">
+    <rdfs:range rdf:resource="#double"/>
+    <rdfs:domain rdf:resource="#double"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="gt">
+    <rdfs:range rdf:resource="#double"/>
+    <rdfs:domain rdf:resource="#double"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="gte">
+    <rdfs:range rdf:resource="#double"/>
+    <rdfs:domain rdf:resource="#double"/>
+  </owl:DatatypeProperty>
+
+</rdf:RDF>
