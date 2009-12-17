@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Simple Desktop Clock Example for Treaty Contract Verification
+Bundle-SymbolicName: net.java.treaty.eclipse.example.clock; singleton:=true
+Bundle-Version: 2.1.0
+Bundle-Activator: net.java.treaty.eclipse.example.clock.Activator
+Bundle-Vendor: Jens Dietrich, Massey University
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.java.treaty.eclipse.vocabulary.junit;bundle-version="2.0.0"
+Bundle-ActivationPolicy: lazy
+Export-Package: net.java.treaty.eclipse.example.clock
+Bundle-ClassPath: .,
+ lib/jdom.jar
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.junit;version="4.0.0"
