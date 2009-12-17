@@ -1970,9 +1970,12 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 	 * @param verificationReports
 	 *          The {@link VerificationReport}s of all {@link Contract}s that have
 	 *          been verified.
+	 * @param triggerType
+	 *          The trigger that triggered the verification. Can be
+	 *          <code>null</code>.
 	 */
 	public void reportVerificationResult(
-			Collection<VerificationReport> verificationReports) {
+			Collection<VerificationReport> verificationReports, URI triggerType) {
 
 		int totalContractCount;
 		totalContractCount = verificationReports.size();
@@ -1989,26 +1992,31 @@ public class ContractView extends ViewPart implements ContractRegistryListener,
 		}
 		// end for.
 
-		String message = null;
+		StringBuffer buffer;
+		buffer = new StringBuffer();
 
 		if (failedContractCount == 0) {
-			message =
-					totalContractCount
-							+ " Contract instances have been verified successfully.";
+			buffer.append(totalContractCount
+					+ " Contract instances have been verified successfully.");
 		}
 
 		else {
-			message =
-					totalContractCount
-							+ " Contract instances checked, verification has failed for "
-							+ failedContractCount
-							+ " Contract instances. Verification status annotations have "
-							+ "been added to the Contract View.";
+			buffer.append(totalContractCount
+					+ " Contract instances checked, verification has failed for "
+					+ failedContractCount
+					+ " Contract instances. Verification status annotations have "
+					+ "been added to the Contract View.");
 		}
 		// end else.
 
+		if (triggerType != null) {
+			buffer.append("\n\nThe verification was triggered by a " + triggerType
+					+ " event.");
+		}
+		// no else.
+
 		final String msg;
-		msg = message;
+		msg = buffer.toString();
 
 		Runnable runnable;
 		runnable = new Runnable() {

@@ -82,7 +82,7 @@ public class UIActionVocabulary extends ActionOntology {
 			if (this.contractView != null) {
 
 				contractView.update();
-				contractView.reportVerificationResult(verificationReports);
+				contractView.reportVerificationResult(verificationReports, triggerType);
 			}
 
 			else {
