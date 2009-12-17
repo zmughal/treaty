@@ -1,0 +1,164 @@
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns="http://www.treaty.org/trigger/bundle#"
+  xml:base="http://www.treaty.org/trigger/bundle">
+  
+  <owl:Ontology rdf:about=""/>   
+  
+  <owl:Class rdf:ID="BundleEvent">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle's state changed.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleInstalled">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle has been installed.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleLazyActivation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle has been activated lazily.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleResolved">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle has been resolve.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleStarted">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle has been started.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleStarting">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle is starting.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleStopped">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle has been stopped.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleStopping">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle has is stopping.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleUninstalled">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle has been uninstalled.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleUnresolved">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle has been unresolved.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BundleUpdated">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's or supplier's bundle has been updated.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+ 
+  <owl:Class rdf:ID="ConsumerBundleEvent">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle's state changed.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleInstalled">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle has been installed.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleInstalled"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleLazyActivation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle has been activated lazily.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleLazyActivation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleResolved">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle has been resolved.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleResolved"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleStarted">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle has been started.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleStarting">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle is starting.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStarting"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleStopped">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle has been stopped.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStopped"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleStopping">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle is stopping.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStopping"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleUninstalled">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle has been uninstalled.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUninstalled"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleUnresolved">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle has been unresolved.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUnresolved"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConsumerBundleUpdated">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the consumer's bundle has been updated.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#ConsumerBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUpdated"/>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SupplierBundleEvent">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle's state changed.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleInstalled">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle has been installed.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleInstalled"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleLazyActivation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle has been activated lazily.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleLazyActivation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleResolved">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle has been resolved.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleResolved"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleStarted">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle has been started.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleEvent"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleStarting">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle is starting.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStarting"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleStopped">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle has been stopped.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStopped"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleStopping">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle is stopping.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleStopping"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleUninstalled">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle has been uninstalled.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUninstalled"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleUnresolved">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle has been unresolved.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUnresolved"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SupplierBundleUpdated">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triggers the verification when the supplier's bundle has been updated.</rdfs:comment>
+  	<rdfs:subClassOf rdf:resource="#SupplierBundleEvent"/>
+  	<rdfs:subClassOf rdf:resource="#BundleUpdated"/>
+  </owl:Class>
+  
+</rdf:RDF>

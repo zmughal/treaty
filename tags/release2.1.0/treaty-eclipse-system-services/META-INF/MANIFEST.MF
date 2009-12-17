@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Treaty Eclipse System Trigger and Actions
+Bundle-SymbolicName: net.java.treaty.eclipse.systemservices;singleton:=true
+Bundle-Version: 2.1.0
+Bundle-Activator: net.java.treaty.eclipse.systemservices.Activator
+Bundle-Vendor: Claas Wilke, Massey University
+Require-Bundle: org.eclipse.core.runtime,
+ net.java.treaty.eclipse;bundle-version="2.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: net.java.treaty.eclipse.systemservices
