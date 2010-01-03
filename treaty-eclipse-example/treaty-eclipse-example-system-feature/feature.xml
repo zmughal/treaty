@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.java.treaty.eclipse.example.system"
-      label="Treeaty Contract Examples for some standard Eclipse Extension Points"
-      version="2.0.0"
+      label="Treaty Contract Examples for some standard Eclipse Extension Points"
+      version="2.1.1"
       provider-name="Jens Dietrich &amp; Lucia Stewart, Massey University">
 
    <description url="http://www.example.com/description">
