@@ -1,8 +1,0 @@
-org.eclipse.ui.editors to_do
-
-FIXME
-when not using context and using xor logic, for composite contracts
-the mutually exclusive attributes get pulled out from different extensions
-within the same plugin and therefore the contract fails even thoug it shouldn't
-
-	

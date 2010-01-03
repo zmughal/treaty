@@ -1,8 +1,0 @@
-org.eclipse.ui.popupMenus.contract
-
-when verifying current contract that has 2 suppliers (not allowed)
-the contract verifies against treaty.xsd (should not be happening)
-
-TO_DO: need to resolve how to use <context> in this contract, since it implements 
-	2 different extension types that both have similar attributes,
-	not sure how to choose which one to iterate over and which one to ignore.

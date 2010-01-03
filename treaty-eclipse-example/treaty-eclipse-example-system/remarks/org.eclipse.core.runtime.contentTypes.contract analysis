@@ -1,8 +1,0 @@
-org.eclipse.core.runtime.contentTypes.contract analysis
-
--	78/85 contracts verified successfully
-
--	7/85 contracts not verified
-	the contract uses context with ont of the two possible elements - content-type 
-	and contracts that haven't got this element defined (which is allowed) do not
-	get verified
