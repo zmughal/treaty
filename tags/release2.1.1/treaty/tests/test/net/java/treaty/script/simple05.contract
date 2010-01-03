@@ -1,0 +1,17 @@
+// A simple contract
+@author=jens
+
+on event:osgi.activated
+on event:osgi.updated
+
+consumer-resource Interface type=http://www.treaty.org/java#AbstractType name=net.java.treaty.eclipse.example.clock.DateFormatter
+
+supplier-resource Formatter type=http://www.treaty.org/java#InstantiableClass ref=serviceprovider/@class
+
+constraint 
+  Formatter http://www.treaty.org/java#implements Interface 
+  and 
+  mustexist Formatter
+
+onfailure action:osgi.uninstall.$bundle
+onsuccess action:osgi.log.debug.$bundle

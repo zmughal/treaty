@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="net.java.treaty.eclipse.example.clock"
+      label="Treaty Clock Example"
+      version="2.1.0"
+      provider-name="Jens Dietrich, Massey University">
+
+   <description url="Treaty Contract Framework">
+      This plugin adds a desktop clock view to Eclipse that has a date (and time) format extension point. Date formats are provided by other plugins either by implementing a DateFormatter interface or by providing an XML format string. The contract contains several conditions, including (Java and XML) interface conditions as well as semantic and quality of service conditions expressed with JUnit test cases.
+   </description>
+
+   <copyright>
+      Copyright (C) 2008 Jens Dietrich
+   </copyright>
+
+   <license url="http://www.apache.org/licenses/LICENSE-2.0">
+      Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+   </license>
+
+   <url>
+      <update label="Treaty" url="http://treaty.googlecode.com/svn/trunk/treaty-eclipse-updatesite/site.xml"/>
+   </url>
+
+   <plugin
+         id="net.java.treaty.eclipse.example.clock"
+         download-size="170"
+         install-size="170"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.java.treaty.eclipse.example.clock.fancydateformatter"
+         download-size="5"
+         install-size="5"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.java.treaty.eclipse.example.clock.lazydateformatter"
+         download-size="5"
+         install-size="5"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.java.treaty.eclipse.example.clock.longdateformatter"
+         download-size="5"
+         install-size="5"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.java.treaty.eclipse.example.clock.shortdateformatter"
+         download-size="5"
+         install-size="5"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.java.treaty.eclipse.example.clock.tooshortdateformatter"
+         download-size="5"
+         install-size="5"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
