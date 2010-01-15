@@ -11,7 +11,9 @@
 package net.java.treaty.action;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.java.treaty.Contract;
@@ -317,15 +319,19 @@ public class ActionRegistry implements ActionVocabulary {
 	 *           Throw, if the initialization of the {@link ActionRegistry} or at
 	 *           least one of its {@link ActionVocabulary}s failed.
 	 */
-	public Set<URI> getOnFailureActions(Contract contract) throws TreatyException {
+	public List<URI> getOnFailureActions(Contract contract)
+			throws TreatyException {
 
-		Set<URI> result;
-		result = new HashSet<URI>();
+		List<URI> result;
+		result = new ArrayList<URI>();
 
+		/* First add all contract specific actions in the right order. */
+		result.addAll(contract.getOnVerificationFailsActions());
+
+		/* Afterwards, add remaining default actions. */
 		for (URI actionType : this.getActions()) {
 
-			if (this.isDefaultOnFailure(actionType)
-					|| contract.getOnVerificationFailsActions().contains(actionType)) {
+			if (this.isDefaultOnFailure(actionType) && !result.contains(actionType)) {
 				result.add(actionType);
 			}
 			// no else.
@@ -349,15 +355,19 @@ public class ActionRegistry implements ActionVocabulary {
 	 *           Throw, if the initialization of the {@link ActionRegistry} or at
 	 *           least one of its {@link ActionVocabulary}s failed.
 	 */
-	public Set<URI> getOnSuccessActions(Contract contract) throws TreatyException {
+	public List<URI> getOnSuccessActions(Contract contract)
+			throws TreatyException {
 
-		Set<URI> result;
-		result = new HashSet<URI>();
+		List<URI> result;
+		result = new ArrayList<URI>();
 
+		/* First add all contract specific actions in the right order. */
+		result.addAll(contract.getOnVerificationSucceedsActions());
+
+		/* Afterwards, add remaining default actions. */
 		for (URI actionType : this.getActions()) {
 
-			if (this.isDefaultOnSuccess(actionType)
-					|| contract.getOnVerificationSucceedsActions().contains(actionType)) {
+			if (this.isDefaultOnSuccess(actionType) && !result.contains(actionType)) {
 				result.add(actionType);
 			}
 			// no else.
