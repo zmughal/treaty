@@ -4,14 +4,13 @@
 grammar Treaty;
 
 options {
-backtrack=true;
-memoize=true;
+	backtrack=true;
+	memoize=true;
 }
 
 @lexer::header {
 package net.java.treaty.script.generated;
 
-import java.util.List;
 import java.util.LinkedList;
 
 import net.java.treaty.script.TreatyRecognitionException;
@@ -26,7 +25,7 @@ private String lastAnnotationValue = null;
 // Keeps track of the implicit line joining level, so statments between parentheses can can span multiple lines.
 private int implicitLineJoiningLevel = 0;
 
-private List<Token> tokens = new LinkedList<Token>();
+private LinkedList<Token> tokens = new LinkedList<Token>();
 
 public void emit(Token token) {
     state.token = token;
@@ -96,13 +95,13 @@ private boolean isValidRelationship(Resource sourceResource, URI relationship, R
 
     URI domain = vocabulary.getDomain(relationship);
     URI range = vocabulary.getRange(relationship);
-    	
-    if (!domain.equals(sourceResource.getType()) && !vocabulary.getSupertypes(sourceResource.getType()).contains(domain))
-    	return false;
-    	
-    if (!range.equals(targetResource.getType()) && !vocabulary.getSupertypes(targetResource.getType()).contains(range))
-    	return false;
-    	
+        
+    if (!domain.equals(sourceResource.getType()) && !vocabulary.getSuperTypes(sourceResource.getType()).contains(domain))
+        return false;
+        
+    if (!range.equals(targetResource.getType()) && !vocabulary.getSuperTypes(targetResource.getType()).contains(range))
+        return false;
+        
     return true;
 }
 
@@ -216,27 +215,27 @@ resourceReferenceAttribute returns [String value]
     :   ResourceReferenceAttribute { $value = $ResourceReferenceAttribute.text; }
     ;
     
-constraint returns [AbstractCondition value]
+constraint returns [Condition value]
     :   'constraint' xorConstraint  { $value = $xorConstraint.value; }
     ;
 
-xorConstraint returns [AbstractCondition value, XDisjunction xDisjunction]
-    :   (orConstraint (XOr orConstraint)+) => { $xDisjunction = new XDisjunction(); $value = $xDisjunction; } firstConstraint=orConstraint { $xDisjunction.addCondition($firstConstraint.value); } (XOr nextConstraint=orConstraint { $xDisjunction.addCondition($nextConstraint.value); })+
+xorConstraint returns [Condition value, ExclusiveDisjunctiveCondition xDisjunction]
+    :   (orConstraint (XOr orConstraint)+) => { $xDisjunction = new ExclusiveDisjunctiveCondition(); $value = $xDisjunction; } firstConstraint=orConstraint { $xDisjunction.addCondition($firstConstraint.value); } (XOr nextConstraint=orConstraint { $xDisjunction.addCondition($nextConstraint.value); })+
     |   orConstraint                          { $value = $orConstraint.value; }
     ;
     
-orConstraint returns [AbstractCondition value, Disjunction disjunction]
-    :   (andConstraint (Or andConstraint)+) => { $disjunction = new Disjunction(); $value = $disjunction; } firstConstraint=andConstraint { $disjunction.addCondition($firstConstraint.value); } (Or nextConstraint=andConstraint { $disjunction.addCondition($nextConstraint.value); })+
+orConstraint returns [Condition value, DisjunctiveCondition disjunction]
+    :   (andConstraint (Or andConstraint)+) => { $disjunction = new DisjunctiveCondition(); $value = $disjunction; } firstConstraint=andConstraint { $disjunction.addCondition($firstConstraint.value); } (Or nextConstraint=andConstraint { $disjunction.addCondition($nextConstraint.value); })+
     |   andConstraint                          { $value = $andConstraint.value; }
     ;
 
-andConstraint returns [AbstractCondition value, Conjunction conjunction]
-    :   (notConstraint (And notConstraint)+) => { $conjunction = new Conjunction(); $value = $conjunction; } firstConstraint=notConstraint { $conjunction.addCondition($firstConstraint.value); } (And nextConstraint=notConstraint { $conjunction.addCondition($nextConstraint.value); })+
+andConstraint returns [Condition value, ConjunctiveCondition conjunction]
+    :   (notConstraint (And notConstraint)+) => { $conjunction = new ConjunctiveCondition(); $value = $conjunction; } firstConstraint=notConstraint { $conjunction.addCondition($firstConstraint.value); } (And nextConstraint=notConstraint { $conjunction.addCondition($nextConstraint.value); })+
     |   notConstraint                           { $value = $notConstraint.value; }
     ;
 
-notConstraint returns [AbstractCondition value, Negation negation]
-    :   Not condition=notConstraint  { $negation = new Negation(); $negation.addCondition($condition.value); $value = $negation; }
+notConstraint returns [Condition value, NegatedCondition negation]
+    :   Not condition=notConstraint  { $negation = new NegatedCondition(); $negation.addCondition($condition.value); $value = $negation; }
     |   LParen xorConstraint RParen  { $value = $xorConstraint.value; }
     |   existsConstraint             { $value = $existsConstraint.value; }
     |   relationshipConstraint       { $value = $relationshipConstraint.value; }
@@ -267,7 +266,7 @@ relationshipConstraint returns [RelationshipCondition value]
     }
 
 relationshipType returns [URI value]
-    :	Uri  { $value = new URI($Uri.text); }
+    :   Uri  { $value = new URI($Uri.text); }
     ;
 
 propertyConstraint returns [PropertyCondition value]
@@ -307,7 +306,7 @@ decimalPropertyConstraint returns [PropertyCondition value]
 
 decimalResource returns [Resource value]
     :   resource  { $value = $resource.value; }
-	;
+    ;
 
 decimalPropertyOperator returns [URI value]
     :   Equal     { $value = new URI("http://www.treaty.org/builtin/#eq"); }
@@ -321,18 +320,18 @@ decimalPropertyOperator returns [URI value]
 decimalLiteral returns [Object value]
     :   integerLiteral        { $value = $integerLiteral.value; }
     |   floatingPointLiteral  { $value = $floatingPointLiteral.value; }
-	;
+    ;
 
 stringPropertyConstraint returns [PropertyCondition value]
     :   stringResource stringPropertyOperator stringLiteral
         {
             $value = createPropertyCondition($stringResource.value, $stringPropertyOperator.value, $stringLiteral.value);
         }
-	;
+    ;
 
 stringResource returns [Resource value]
     :   resource  { $value = $resource.value; }
-	;
+    ;
 
 stringPropertyOperator returns [URI value]
     :   Equal      { $value = new URI("http://www.treaty.org/builtin/#eq"); }
@@ -342,7 +341,7 @@ stringPropertyOperator returns [URI value]
     ;
 
 propertyValue returns [Object value]
-    :   integerLiteral       { $value = $integerLiteral.value; }
+    :   integerLiteral        { $value = $integerLiteral.value; }
     |   floatingPointLiteral  { $value = $floatingPointLiteral.value; }
     |   booleanLiteral        { $value = $booleanLiteral.value; }
     |   stringLiteral         { $value = $stringLiteral.value; }
@@ -350,20 +349,20 @@ propertyValue returns [Object value]
 
 integerLiteral returns [Integer value]
     :   IntegerLiteral  { $value = Integer.parseInt($IntegerLiteral.text); }
-	;
+    ;
 
 floatingPointLiteral returns [Double value]
-	:   FloatingPointLiteral  { $value = Double.parseDouble($FloatingPointLiteral.text); }
-	;
+    :   FloatingPointLiteral  { $value = Double.parseDouble($FloatingPointLiteral.text); }
+    ;
 
 booleanLiteral returns [Object value]
     :   'true'   { $value = true; }
     |   'false'  { $value = false; }
-	;
+    ;
 
 stringLiteral returns [Object value]
     :   StringLiteral  { $value = $StringLiteral.text; }
-	;
+    ;
 
 resource returns [Resource value]
     :   resourceId=Identifier  { contract.getResource($resourceId.text) != null }?
@@ -403,7 +402,7 @@ Equal       : '='  ;
 Exclamation : '!'  ;
 Hash        : '#'  ;    
 Minus       : '-'  ;
-NotEqual    : '!=' ;	
+NotEqual    : '!=' ;    
 Percent     : '%'  ;
 Plus        : '+'  ;
 Question    : '?'  ;    
@@ -577,6 +576,21 @@ LineComment
     :   { getCharPositionInLine() == 0 }? => Whitespace? '//' ~('\n')*
     |   { getCharPositionInLine() >= 0 }? => Whitespace '//' ~('\n')*
     ;
+
+/** Lines that are indented (have leading whitespace) are treated as though
+ *  they are part of the preceeding statement.
+ */
+LeadingWhitespace
+@init { $channel=HIDDEN; }
+	:	{ getCharPositionInLine() == 0 && implicitLineJoiningLevel == 0 }? => Whitespace
+		{
+			// hide previous newline token
+			Token lastToken = tokens.getLast();
+			if (lastToken != null && lastToken.getType() == Newline) {
+				lastToken.setChannel(HIDDEN);
+			}
+		}
+	;
 
 /* URI character classes 
  * Adapted from: http://www.antlr.org/grammar/1153976512034/ecmascriptA3.g
