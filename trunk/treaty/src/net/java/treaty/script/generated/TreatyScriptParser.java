@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g 2010-02-01 12:54:32
+// $ANTLR 3.1.1 /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g 2010-02-22 12:04:51
 
 package net.java.treaty.script.generated;
 
@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 /** 
- * A Treaty script grammar for ANTLRv3. 
+ * The TreatyScript grammar for ANTLRv3. 
  */
-public class TreatyParser extends Parser {
+public class TreatyScriptParser extends Parser {
     public static final String[] tokenNames = new String[] {
         "<invalid>", "<EOR>", "<DOWN>", "<UP>", "Newline", "AnnotationKey", "AnnotationValue", "Trigger", "Identifier", "ResourceNameAttribute", "ResourceTypeAttribute", "ResourceReferenceAttribute", "XOr", "Or", "And", "Not", "LParen", "RParen", "Uri", "Equal", "NotEqual", "Gt", "Gte", "Lt", "Lte", "IntegerLiteral", "FloatingPointLiteral", "StringLiteral", "Amper", "Apostrophe", "Asterisk", "At", "Colon", "Comma", "Dollar", "Dot", "Exclamation", "Hash", "Minus", "Percent", "Plus", "Question", "Semi", "Slash", "Tilde", "Exponent", "EscapeSequence", "UnicodeEscape", "OctalEscape", "HexDigit", "DecimalDigit", "Whitespace", "String", "Annotation", "NamespaceDelimiter", "IDLetter", "IDDigit", "BlockComment", "LineComment", "LeadingWhitespace", "UriCharacter", "UriReserved", "UriUnescaped", "UriEscaped", "UriAlpha", "UriMark", "'consumer-resource'", "'supplier-resource'", "'external-resource'", "'constraint'", "'mustexist'", "'matches'", "'in'", "'true'", "'false'", "'onfailure'", "'onsuccess'"
     };
@@ -100,10 +100,10 @@ public class TreatyParser extends Parser {
     // delegators
 
 
-        public TreatyParser(TokenStream input) {
+        public TreatyScriptParser(TokenStream input) {
             this(input, new RecognizerSharedState());
         }
-        public TreatyParser(TokenStream input, RecognizerSharedState state) {
+        public TreatyScriptParser(TokenStream input, RecognizerSharedState state) {
             super(input, state);
             this.state.ruleMemo = new HashMap[73+1];
              
@@ -111,8 +111,8 @@ public class TreatyParser extends Parser {
         }
         
 
-    public String[] getTokenNames() { return TreatyParser.tokenNames; }
-    public String getGrammarFileName() { return "/Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g"; }
+    public String[] getTokenNames() { return TreatyScriptParser.tokenNames; }
+    public String getGrammarFileName() { return "/Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g"; }
 
 
     private Contract contract;
@@ -201,7 +201,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "contract"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:151:1: contract[ContractVocabulary vocabulary] returns [Contract value] : ( statment | Newline )* EOF ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:151:1: contract[ContractVocabulary vocabulary] returns [Contract value] : ( statment | Newline )* EOF ;
     public final Contract contract(ContractVocabulary vocabulary) throws RecognitionException {
         Contract value = null;
         int contract_StartIndex = input.index();
@@ -212,10 +212,10 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 1) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:158:5: ( ( statment | Newline )* EOF )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:158:9: ( statment | Newline )* EOF
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:158:5: ( ( statment | Newline )* EOF )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:158:9: ( statment | Newline )* EOF
             {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:158:9: ( statment | Newline )*
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:158:9: ( statment | Newline )*
             loop1:
             do {
                 int alt1=3;
@@ -231,7 +231,7 @@ public class TreatyParser extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:158:10: statment
+            	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:158:10: statment
             	    {
             	    pushFollow(FOLLOW_statment_in_contract94);
             	    statment();
@@ -242,7 +242,7 @@ public class TreatyParser extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:158:21: Newline
+            	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:158:21: Newline
             	    {
             	    match(input,Newline,FOLLOW_Newline_in_contract98); if (state.failed) return value;
 
@@ -267,7 +267,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 1, contract_StartIndex); }
@@ -278,10 +278,10 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "statment"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:161:1: statment : ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess ) Newline ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:161:1: statment : ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess ) Newline ;
     public final void statment() throws RecognitionException {
         int statment_StartIndex = input.index();
-        TreatyParser.annotation_return annotation1 = null;
+        TreatyScriptParser.annotation_return annotation1 = null;
 
         URI trigger2 = null;
 
@@ -300,10 +300,10 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 2) ) { return ; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:5: ( ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess ) Newline )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:9: ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess ) Newline
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:162:5: ( ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess ) Newline )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:162:9: ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess ) Newline
             {
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:9: ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:162:9: ( annotation | trigger | consumerResource | supplierResource | externalResource | constraint | onFailure | onSuccess )
             int alt2=8;
             switch ( input.LA(1) ) {
             case AnnotationKey:
@@ -356,7 +356,7 @@ public class TreatyParser extends Parser {
 
             switch (alt2) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:162:13: annotation
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:162:13: annotation
                     {
                     pushFollow(FOLLOW_annotation_in_statment125);
                     annotation1=annotation();
@@ -370,7 +370,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:163:13: trigger
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:163:13: trigger
                     {
                     pushFollow(FOLLOW_trigger_in_statment148);
                     trigger2=trigger();
@@ -384,7 +384,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:164:13: consumerResource
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:164:13: consumerResource
                     {
                     pushFollow(FOLLOW_consumerResource_in_statment174);
                     consumerResource3=consumerResource();
@@ -398,7 +398,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:165:13: supplierResource
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:165:13: supplierResource
                     {
                     pushFollow(FOLLOW_supplierResource_in_statment191);
                     supplierResource4=supplierResource();
@@ -412,7 +412,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:166:13: externalResource
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:166:13: externalResource
                     {
                     pushFollow(FOLLOW_externalResource_in_statment208);
                     externalResource5=externalResource();
@@ -426,7 +426,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:167:13: constraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:167:13: constraint
                     {
                     pushFollow(FOLLOW_constraint_in_statment225);
                     constraint6=constraint();
@@ -440,7 +440,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:168:13: onFailure
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:168:13: onFailure
                     {
                     pushFollow(FOLLOW_onFailure_in_statment248);
                     onFailure7=onFailure();
@@ -454,7 +454,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:169:13: onSuccess
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:169:13: onSuccess
                     {
                     pushFollow(FOLLOW_onSuccess_in_statment272);
                     onSuccess8=onSuccess();
@@ -480,7 +480,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 2, statment_StartIndex); }
@@ -495,9 +495,9 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "annotation"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:173:1: annotation returns [String key, String value] : AnnotationKey AnnotationValue ;
-    public final TreatyParser.annotation_return annotation() throws RecognitionException {
-        TreatyParser.annotation_return retval = new TreatyParser.annotation_return();
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:173:1: annotation returns [String key, String value] : AnnotationKey AnnotationValue ;
+    public final TreatyScriptParser.annotation_return annotation() throws RecognitionException {
+        TreatyScriptParser.annotation_return retval = new TreatyScriptParser.annotation_return();
         retval.start = input.LT(1);
         int annotation_StartIndex = input.index();
         Token AnnotationKey9=null;
@@ -505,8 +505,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 3) ) { return retval; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:174:5: ( AnnotationKey AnnotationValue )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:174:9: AnnotationKey AnnotationValue
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:174:5: ( AnnotationKey AnnotationValue )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:174:9: AnnotationKey AnnotationValue
             {
             AnnotationKey9=(Token)match(input,AnnotationKey,FOLLOW_AnnotationKey_in_annotation317); if (state.failed) return retval;
             AnnotationValue10=(Token)match(input,AnnotationValue,FOLLOW_AnnotationValue_in_annotation319); if (state.failed) return retval;
@@ -527,7 +527,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 3, annotation_StartIndex); }
@@ -538,7 +538,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "trigger"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:181:1: trigger returns [URI value] : Trigger ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:181:1: trigger returns [URI value] : Trigger ;
     public final URI trigger() throws RecognitionException {
         URI value = null;
         int trigger_StartIndex = input.index();
@@ -546,8 +546,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 4) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:182:5: ( Trigger )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:182:9: Trigger
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:182:5: ( Trigger )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:182:9: Trigger
             {
             Trigger11=(Token)match(input,Trigger,FOLLOW_Trigger_in_trigger352); if (state.failed) return value;
             if ( state.backtracking==0 ) {
@@ -562,7 +562,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 4, trigger_StartIndex); }
@@ -573,20 +573,20 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "consumerResource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:185:1: consumerResource returns [Resource value] : 'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:185:1: consumerResource returns [Resource value] : 'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute ;
     public final Resource consumerResource() throws RecognitionException {
         Resource value = null;
         int consumerResource_StartIndex = input.index();
         Token Identifier12=null;
         URI resourceTypeAttribute13 = null;
 
-        TreatyParser.resourceNameAttribute_return resourceNameAttribute14 = null;
+        TreatyScriptParser.resourceNameAttribute_return resourceNameAttribute14 = null;
 
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 5) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:186:5: ( 'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:186:9: 'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:186:5: ( 'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:186:9: 'consumer-resource' Identifier resourceTypeAttribute resourceNameAttribute
             {
             match(input,66,FOLLOW_66_in_consumerResource378); if (state.failed) return value;
             Identifier12=(Token)match(input,Identifier,FOLLOW_Identifier_in_consumerResource380); if (state.failed) return value;
@@ -614,7 +614,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 5, consumerResource_StartIndex); }
@@ -625,7 +625,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "supplierResource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:192:1: supplierResource returns [Resource value] : 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:192:1: supplierResource returns [Resource value] : 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute ;
     public final Resource supplierResource() throws RecognitionException {
         Resource value = null;
         int supplierResource_StartIndex = input.index();
@@ -637,8 +637,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 6) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:193:5: ( 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:193:9: 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:193:5: ( 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:193:9: 'supplier-resource' Identifier resourceTypeAttribute resourceReferenceAttribute
             {
             match(input,67,FOLLOW_67_in_supplierResource417); if (state.failed) return value;
             Identifier15=(Token)match(input,Identifier,FOLLOW_Identifier_in_supplierResource419); if (state.failed) return value;
@@ -666,7 +666,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 6, supplierResource_StartIndex); }
@@ -677,20 +677,20 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "externalResource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:199:1: externalResource returns [Resource value] : 'external-resource' Identifier resourceTypeAttribute resourceNameAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:199:1: externalResource returns [Resource value] : 'external-resource' Identifier resourceTypeAttribute resourceNameAttribute ;
     public final Resource externalResource() throws RecognitionException {
         Resource value = null;
         int externalResource_StartIndex = input.index();
         Token Identifier18=null;
         URI resourceTypeAttribute19 = null;
 
-        TreatyParser.resourceNameAttribute_return resourceNameAttribute20 = null;
+        TreatyScriptParser.resourceNameAttribute_return resourceNameAttribute20 = null;
 
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 7) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:200:5: ( 'external-resource' Identifier resourceTypeAttribute resourceNameAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:200:9: 'external-resource' Identifier resourceTypeAttribute resourceNameAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:200:5: ( 'external-resource' Identifier resourceTypeAttribute resourceNameAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:200:9: 'external-resource' Identifier resourceTypeAttribute resourceNameAttribute
             {
             match(input,68,FOLLOW_68_in_externalResource460); if (state.failed) return value;
             Identifier18=(Token)match(input,Identifier,FOLLOW_Identifier_in_externalResource462); if (state.failed) return value;
@@ -718,7 +718,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 7, externalResource_StartIndex); }
@@ -732,17 +732,17 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "resourceNameAttribute"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:206:1: resourceNameAttribute returns [String value] : ResourceNameAttribute ;
-    public final TreatyParser.resourceNameAttribute_return resourceNameAttribute() throws RecognitionException {
-        TreatyParser.resourceNameAttribute_return retval = new TreatyParser.resourceNameAttribute_return();
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:206:1: resourceNameAttribute returns [String value] : ResourceNameAttribute ;
+    public final TreatyScriptParser.resourceNameAttribute_return resourceNameAttribute() throws RecognitionException {
+        TreatyScriptParser.resourceNameAttribute_return retval = new TreatyScriptParser.resourceNameAttribute_return();
         retval.start = input.LT(1);
         int resourceNameAttribute_StartIndex = input.index();
         Token ResourceNameAttribute21=null;
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 8) ) { return retval; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:207:5: ( ResourceNameAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:207:9: ResourceNameAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:207:5: ( ResourceNameAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:207:9: ResourceNameAttribute
             {
             ResourceNameAttribute21=(Token)match(input,ResourceNameAttribute,FOLLOW_ResourceNameAttribute_in_resourceNameAttribute499); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
@@ -759,7 +759,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 8, resourceNameAttribute_StartIndex); }
@@ -770,7 +770,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "resourceTypeAttribute"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:210:1: resourceTypeAttribute returns [URI value] : ResourceTypeAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:210:1: resourceTypeAttribute returns [URI value] : ResourceTypeAttribute ;
     public final URI resourceTypeAttribute() throws RecognitionException {
         URI value = null;
         int resourceTypeAttribute_StartIndex = input.index();
@@ -778,8 +778,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 9) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:211:5: ( ResourceTypeAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:211:9: ResourceTypeAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:211:5: ( ResourceTypeAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:211:9: ResourceTypeAttribute
             {
             ResourceTypeAttribute22=(Token)match(input,ResourceTypeAttribute,FOLLOW_ResourceTypeAttribute_in_resourceTypeAttribute525); if (state.failed) return value;
             if ( state.backtracking==0 ) {
@@ -794,7 +794,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 9, resourceTypeAttribute_StartIndex); }
@@ -805,7 +805,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "resourceReferenceAttribute"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:214:1: resourceReferenceAttribute returns [String value] : ResourceReferenceAttribute ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:214:1: resourceReferenceAttribute returns [String value] : ResourceReferenceAttribute ;
     public final String resourceReferenceAttribute() throws RecognitionException {
         String value = null;
         int resourceReferenceAttribute_StartIndex = input.index();
@@ -813,8 +813,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 10) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:215:5: ( ResourceReferenceAttribute )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:215:9: ResourceReferenceAttribute
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:215:5: ( ResourceReferenceAttribute )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:215:9: ResourceReferenceAttribute
             {
             ResourceReferenceAttribute23=(Token)match(input,ResourceReferenceAttribute,FOLLOW_ResourceReferenceAttribute_in_resourceReferenceAttribute551); if (state.failed) return value;
             if ( state.backtracking==0 ) {
@@ -829,7 +829,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 10, resourceReferenceAttribute_StartIndex); }
@@ -840,17 +840,17 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "constraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:218:1: constraint returns [Condition value] : 'constraint' xorConstraint ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:218:1: constraint returns [Condition value] : 'constraint' xorConstraint ;
     public final Condition constraint() throws RecognitionException {
         Condition value = null;
         int constraint_StartIndex = input.index();
-        TreatyParser.xorConstraint_return xorConstraint24 = null;
+        TreatyScriptParser.xorConstraint_return xorConstraint24 = null;
 
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 11) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:219:5: ( 'constraint' xorConstraint )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:219:9: 'constraint' xorConstraint
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:219:5: ( 'constraint' xorConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:219:9: 'constraint' xorConstraint
             {
             match(input,69,FOLLOW_69_in_constraint580); if (state.failed) return value;
             pushFollow(FOLLOW_xorConstraint_in_constraint582);
@@ -870,7 +870,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 11, constraint_StartIndex); }
@@ -885,28 +885,28 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "xorConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:222:1: xorConstraint returns [Condition value, ExclusiveDisjunctiveCondition xDisjunction] : ( ( orConstraint ( XOr orConstraint )+ )=>firstConstraint= orConstraint ( XOr nextConstraint= orConstraint )+ | orConstraint );
-    public final TreatyParser.xorConstraint_return xorConstraint() throws RecognitionException {
-        TreatyParser.xorConstraint_return retval = new TreatyParser.xorConstraint_return();
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:222:1: xorConstraint returns [Condition value, ExclusiveDisjunctiveCondition xDisjunction] : ( ( orConstraint ( XOr orConstraint )+ )=>firstConstraint= orConstraint ( XOr nextConstraint= orConstraint )+ | orConstraint );
+    public final TreatyScriptParser.xorConstraint_return xorConstraint() throws RecognitionException {
+        TreatyScriptParser.xorConstraint_return retval = new TreatyScriptParser.xorConstraint_return();
         retval.start = input.LT(1);
         int xorConstraint_StartIndex = input.index();
-        TreatyParser.orConstraint_return firstConstraint = null;
+        TreatyScriptParser.orConstraint_return firstConstraint = null;
 
-        TreatyParser.orConstraint_return nextConstraint = null;
+        TreatyScriptParser.orConstraint_return nextConstraint = null;
 
-        TreatyParser.orConstraint_return orConstraint25 = null;
+        TreatyScriptParser.orConstraint_return orConstraint25 = null;
 
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 12) ) { return retval; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:223:5: ( ( orConstraint ( XOr orConstraint )+ )=>firstConstraint= orConstraint ( XOr nextConstraint= orConstraint )+ | orConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:223:5: ( ( orConstraint ( XOr orConstraint )+ )=>firstConstraint= orConstraint ( XOr nextConstraint= orConstraint )+ | orConstraint )
             int alt4=2;
             switch ( input.LA(1) ) {
             case Not:
                 {
                 int LA4_1 = input.LA(2);
 
-                if ( (synpred11_Treaty()) ) {
+                if ( (synpred11_TreatyScript()) ) {
                     alt4=1;
                 }
                 else if ( (true) ) {
@@ -925,7 +925,7 @@ public class TreatyParser extends Parser {
                 {
                 int LA4_2 = input.LA(2);
 
-                if ( (synpred11_Treaty()) ) {
+                if ( (synpred11_TreatyScript()) ) {
                     alt4=1;
                 }
                 else if ( (true) ) {
@@ -944,7 +944,7 @@ public class TreatyParser extends Parser {
                 {
                 int LA4_3 = input.LA(2);
 
-                if ( (synpred11_Treaty()) ) {
+                if ( (synpred11_TreatyScript()) ) {
                     alt4=1;
                 }
                 else if ( (true) ) {
@@ -963,7 +963,7 @@ public class TreatyParser extends Parser {
                 {
                 int LA4_4 = input.LA(2);
 
-                if ( (synpred11_Treaty()) ) {
+                if ( (synpred11_TreatyScript()) ) {
                     alt4=1;
                 }
                 else if ( (true) ) {
@@ -988,7 +988,7 @@ public class TreatyParser extends Parser {
 
             switch (alt4) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:223:9: ( orConstraint ( XOr orConstraint )+ )=>firstConstraint= orConstraint ( XOr nextConstraint= orConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:223:9: ( orConstraint ( XOr orConstraint )+ )=>firstConstraint= orConstraint ( XOr nextConstraint= orConstraint )+
                     {
                     if ( state.backtracking==0 ) {
                        retval.xDisjunction = new ExclusiveDisjunctiveCondition(); retval.value = retval.xDisjunction; 
@@ -1001,7 +1001,7 @@ public class TreatyParser extends Parser {
                     if ( state.backtracking==0 ) {
                        retval.xDisjunction.addCondition((firstConstraint!=null?firstConstraint.value:null)); 
                     }
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:223:213: ( XOr nextConstraint= orConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:223:213: ( XOr nextConstraint= orConstraint )+
                     int cnt3=0;
                     loop3:
                     do {
@@ -1015,7 +1015,7 @@ public class TreatyParser extends Parser {
 
                         switch (alt3) {
                     	case 1 :
-                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:223:214: XOr nextConstraint= orConstraint
+                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:223:214: XOr nextConstraint= orConstraint
                     	    {
                     	    match(input,XOr,FOLLOW_XOr_in_xorConstraint630); if (state.failed) return retval;
                     	    pushFollow(FOLLOW_orConstraint_in_xorConstraint634);
@@ -1044,7 +1044,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:224:9: orConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:224:9: orConstraint
                     {
                     pushFollow(FOLLOW_orConstraint_in_xorConstraint648);
                     orConstraint25=orConstraint();
@@ -1067,7 +1067,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 12, xorConstraint_StartIndex); }
@@ -1082,28 +1082,28 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "orConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:227:1: orConstraint returns [Condition value, DisjunctiveCondition disjunction] : ( ( andConstraint ( Or andConstraint )+ )=>firstConstraint= andConstraint ( Or nextConstraint= andConstraint )+ | andConstraint );
-    public final TreatyParser.orConstraint_return orConstraint() throws RecognitionException {
-        TreatyParser.orConstraint_return retval = new TreatyParser.orConstraint_return();
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:227:1: orConstraint returns [Condition value, DisjunctiveCondition disjunction] : ( ( andConstraint ( Or andConstraint )+ )=>firstConstraint= andConstraint ( Or nextConstraint= andConstraint )+ | andConstraint );
+    public final TreatyScriptParser.orConstraint_return orConstraint() throws RecognitionException {
+        TreatyScriptParser.orConstraint_return retval = new TreatyScriptParser.orConstraint_return();
         retval.start = input.LT(1);
         int orConstraint_StartIndex = input.index();
-        TreatyParser.andConstraint_return firstConstraint = null;
+        TreatyScriptParser.andConstraint_return firstConstraint = null;
 
-        TreatyParser.andConstraint_return nextConstraint = null;
+        TreatyScriptParser.andConstraint_return nextConstraint = null;
 
-        TreatyParser.andConstraint_return andConstraint26 = null;
+        TreatyScriptParser.andConstraint_return andConstraint26 = null;
 
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 13) ) { return retval; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:228:5: ( ( andConstraint ( Or andConstraint )+ )=>firstConstraint= andConstraint ( Or nextConstraint= andConstraint )+ | andConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:228:5: ( ( andConstraint ( Or andConstraint )+ )=>firstConstraint= andConstraint ( Or nextConstraint= andConstraint )+ | andConstraint )
             int alt6=2;
             switch ( input.LA(1) ) {
             case Not:
                 {
                 int LA6_1 = input.LA(2);
 
-                if ( (synpred14_Treaty()) ) {
+                if ( (synpred14_TreatyScript()) ) {
                     alt6=1;
                 }
                 else if ( (true) ) {
@@ -1122,7 +1122,7 @@ public class TreatyParser extends Parser {
                 {
                 int LA6_2 = input.LA(2);
 
-                if ( (synpred14_Treaty()) ) {
+                if ( (synpred14_TreatyScript()) ) {
                     alt6=1;
                 }
                 else if ( (true) ) {
@@ -1141,7 +1141,7 @@ public class TreatyParser extends Parser {
                 {
                 int LA6_3 = input.LA(2);
 
-                if ( (synpred14_Treaty()) ) {
+                if ( (synpred14_TreatyScript()) ) {
                     alt6=1;
                 }
                 else if ( (true) ) {
@@ -1160,7 +1160,7 @@ public class TreatyParser extends Parser {
                 {
                 int LA6_4 = input.LA(2);
 
-                if ( (synpred14_Treaty()) ) {
+                if ( (synpred14_TreatyScript()) ) {
                     alt6=1;
                 }
                 else if ( (true) ) {
@@ -1185,7 +1185,7 @@ public class TreatyParser extends Parser {
 
             switch (alt6) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:228:9: ( andConstraint ( Or andConstraint )+ )=>firstConstraint= andConstraint ( Or nextConstraint= andConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:228:9: ( andConstraint ( Or andConstraint )+ )=>firstConstraint= andConstraint ( Or nextConstraint= andConstraint )+
                     {
                     if ( state.backtracking==0 ) {
                        retval.disjunction = new DisjunctiveCondition(); retval.value = retval.disjunction; 
@@ -1198,7 +1198,7 @@ public class TreatyParser extends Parser {
                     if ( state.backtracking==0 ) {
                        retval.disjunction.addCondition((firstConstraint!=null?firstConstraint.value:null)); 
                     }
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:228:203: ( Or nextConstraint= andConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:228:203: ( Or nextConstraint= andConstraint )+
                     int cnt5=0;
                     loop5:
                     do {
@@ -1212,7 +1212,7 @@ public class TreatyParser extends Parser {
 
                         switch (alt5) {
                     	case 1 :
-                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:228:204: Or nextConstraint= andConstraint
+                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:228:204: Or nextConstraint= andConstraint
                     	    {
                     	    match(input,Or,FOLLOW_Or_in_orConstraint724); if (state.failed) return retval;
                     	    pushFollow(FOLLOW_andConstraint_in_orConstraint728);
@@ -1241,7 +1241,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:229:9: andConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:229:9: andConstraint
                     {
                     pushFollow(FOLLOW_andConstraint_in_orConstraint742);
                     andConstraint26=andConstraint();
@@ -1264,7 +1264,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 13, orConstraint_StartIndex); }
@@ -1279,28 +1279,28 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "andConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:232:1: andConstraint returns [Condition value, ConjunctiveCondition conjunction] : ( ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+ | notConstraint );
-    public final TreatyParser.andConstraint_return andConstraint() throws RecognitionException {
-        TreatyParser.andConstraint_return retval = new TreatyParser.andConstraint_return();
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:232:1: andConstraint returns [Condition value, ConjunctiveCondition conjunction] : ( ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+ | notConstraint );
+    public final TreatyScriptParser.andConstraint_return andConstraint() throws RecognitionException {
+        TreatyScriptParser.andConstraint_return retval = new TreatyScriptParser.andConstraint_return();
         retval.start = input.LT(1);
         int andConstraint_StartIndex = input.index();
-        TreatyParser.notConstraint_return firstConstraint = null;
+        TreatyScriptParser.notConstraint_return firstConstraint = null;
 
-        TreatyParser.notConstraint_return nextConstraint = null;
+        TreatyScriptParser.notConstraint_return nextConstraint = null;
 
-        TreatyParser.notConstraint_return notConstraint27 = null;
+        TreatyScriptParser.notConstraint_return notConstraint27 = null;
 
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 14) ) { return retval; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:233:5: ( ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+ | notConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:233:5: ( ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+ | notConstraint )
             int alt8=2;
             switch ( input.LA(1) ) {
             case Not:
                 {
                 int LA8_1 = input.LA(2);
 
-                if ( (synpred17_Treaty()) ) {
+                if ( (synpred17_TreatyScript()) ) {
                     alt8=1;
                 }
                 else if ( (true) ) {
@@ -1319,7 +1319,7 @@ public class TreatyParser extends Parser {
                 {
                 int LA8_2 = input.LA(2);
 
-                if ( (synpred17_Treaty()) ) {
+                if ( (synpred17_TreatyScript()) ) {
                     alt8=1;
                 }
                 else if ( (true) ) {
@@ -1338,7 +1338,7 @@ public class TreatyParser extends Parser {
                 {
                 int LA8_3 = input.LA(2);
 
-                if ( (synpred17_Treaty()) ) {
+                if ( (synpred17_TreatyScript()) ) {
                     alt8=1;
                 }
                 else if ( (true) ) {
@@ -1357,7 +1357,7 @@ public class TreatyParser extends Parser {
                 {
                 int LA8_4 = input.LA(2);
 
-                if ( (synpred17_Treaty()) ) {
+                if ( (synpred17_TreatyScript()) ) {
                     alt8=1;
                 }
                 else if ( (true) ) {
@@ -1382,7 +1382,7 @@ public class TreatyParser extends Parser {
 
             switch (alt8) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:233:9: ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:233:9: ( notConstraint ( And notConstraint )+ )=>firstConstraint= notConstraint ( And nextConstraint= notConstraint )+
                     {
                     if ( state.backtracking==0 ) {
                        retval.conjunction = new ConjunctiveCondition(); retval.value = retval.conjunction; 
@@ -1395,7 +1395,7 @@ public class TreatyParser extends Parser {
                     if ( state.backtracking==0 ) {
                        retval.conjunction.addCondition((firstConstraint!=null?firstConstraint.value:null)); 
                     }
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:233:204: ( And nextConstraint= notConstraint )+
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:233:204: ( And nextConstraint= notConstraint )+
                     int cnt7=0;
                     loop7:
                     do {
@@ -1409,7 +1409,7 @@ public class TreatyParser extends Parser {
 
                         switch (alt7) {
                     	case 1 :
-                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:233:205: And nextConstraint= notConstraint
+                    	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:233:205: And nextConstraint= notConstraint
                     	    {
                     	    match(input,And,FOLLOW_And_in_andConstraint814); if (state.failed) return retval;
                     	    pushFollow(FOLLOW_notConstraint_in_andConstraint818);
@@ -1438,7 +1438,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:234:9: notConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:234:9: notConstraint
                     {
                     pushFollow(FOLLOW_notConstraint_in_andConstraint832);
                     notConstraint27=notConstraint();
@@ -1461,7 +1461,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 14, andConstraint_StartIndex); }
@@ -1476,25 +1476,25 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "notConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:237:1: notConstraint returns [Condition value, NegatedCondition negation] : ( Not condition= notConstraint | LParen xorConstraint RParen | existsConstraint | relationshipConstraint | propertyConstraint );
-    public final TreatyParser.notConstraint_return notConstraint() throws RecognitionException {
-        TreatyParser.notConstraint_return retval = new TreatyParser.notConstraint_return();
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:237:1: notConstraint returns [Condition value, NegatedCondition negation] : ( Not condition= notConstraint | LParen xorConstraint RParen | existsConstraint | relationshipConstraint | propertyConstraint );
+    public final TreatyScriptParser.notConstraint_return notConstraint() throws RecognitionException {
+        TreatyScriptParser.notConstraint_return retval = new TreatyScriptParser.notConstraint_return();
         retval.start = input.LT(1);
         int notConstraint_StartIndex = input.index();
-        TreatyParser.notConstraint_return condition = null;
+        TreatyScriptParser.notConstraint_return condition = null;
 
-        TreatyParser.xorConstraint_return xorConstraint28 = null;
+        TreatyScriptParser.xorConstraint_return xorConstraint28 = null;
 
         ExistsCondition existsConstraint29 = null;
 
-        TreatyParser.relationshipConstraint_return relationshipConstraint30 = null;
+        TreatyScriptParser.relationshipConstraint_return relationshipConstraint30 = null;
 
-        TreatyParser.propertyConstraint_return propertyConstraint31 = null;
+        TreatyScriptParser.propertyConstraint_return propertyConstraint31 = null;
 
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 15) ) { return retval; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:238:5: ( Not condition= notConstraint | LParen xorConstraint RParen | existsConstraint | relationshipConstraint | propertyConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:238:5: ( Not condition= notConstraint | LParen xorConstraint RParen | existsConstraint | relationshipConstraint | propertyConstraint )
             int alt9=5;
             switch ( input.LA(1) ) {
             case Not:
@@ -1555,7 +1555,7 @@ public class TreatyParser extends Parser {
 
             switch (alt9) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:238:9: Not condition= notConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:238:9: Not condition= notConstraint
                     {
                     match(input,Not,FOLLOW_Not_in_notConstraint883); if (state.failed) return retval;
                     pushFollow(FOLLOW_notConstraint_in_notConstraint887);
@@ -1570,7 +1570,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:239:9: LParen xorConstraint RParen
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:239:9: LParen xorConstraint RParen
                     {
                     match(input,LParen,FOLLOW_LParen_in_notConstraint900); if (state.failed) return retval;
                     pushFollow(FOLLOW_xorConstraint_in_notConstraint902);
@@ -1586,7 +1586,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:240:9: existsConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:240:9: existsConstraint
                     {
                     pushFollow(FOLLOW_existsConstraint_in_notConstraint917);
                     existsConstraint29=existsConstraint();
@@ -1600,7 +1600,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:241:9: relationshipConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:241:9: relationshipConstraint
                     {
                     pushFollow(FOLLOW_relationshipConstraint_in_notConstraint941);
                     relationshipConstraint30=relationshipConstraint();
@@ -1614,7 +1614,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:242:9: propertyConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:242:9: propertyConstraint
                     {
                     pushFollow(FOLLOW_propertyConstraint_in_notConstraint959);
                     propertyConstraint31=propertyConstraint();
@@ -1637,7 +1637,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 15, notConstraint_StartIndex); }
@@ -1648,7 +1648,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "existsConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:245:1: existsConstraint returns [ExistsCondition value] : 'mustexist' resource ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:245:1: existsConstraint returns [ExistsCondition value] : 'mustexist' resource ;
     public final ExistsCondition existsConstraint() throws RecognitionException {
         ExistsCondition value = null;
         int existsConstraint_StartIndex = input.index();
@@ -1657,8 +1657,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 16) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:246:5: ( 'mustexist' resource )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:246:9: 'mustexist' resource
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:246:5: ( 'mustexist' resource )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:246:9: 'mustexist' resource
             {
             match(input,70,FOLLOW_70_in_existsConstraint994); if (state.failed) return value;
             pushFollow(FOLLOW_resource_in_existsConstraint996);
@@ -1681,7 +1681,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 16, existsConstraint_StartIndex); }
@@ -1695,9 +1695,9 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "relationshipConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:253:1: relationshipConstraint returns [RelationshipCondition value] : leftResource= resource relationshipType rightResource= resource {...}?;
-    public final TreatyParser.relationshipConstraint_return relationshipConstraint() throws RecognitionException {
-        TreatyParser.relationshipConstraint_return retval = new TreatyParser.relationshipConstraint_return();
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:253:1: relationshipConstraint returns [RelationshipCondition value] : leftResource= resource relationshipType rightResource= resource {...}?;
+    public final TreatyScriptParser.relationshipConstraint_return relationshipConstraint() throws RecognitionException {
+        TreatyScriptParser.relationshipConstraint_return retval = new TreatyScriptParser.relationshipConstraint_return();
         retval.start = input.LT(1);
         int relationshipConstraint_StartIndex = input.index();
         Resource leftResource = null;
@@ -1709,8 +1709,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 17) ) { return retval; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:254:5: (leftResource= resource relationshipType rightResource= resource {...}?)
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:254:9: leftResource= resource relationshipType rightResource= resource {...}?
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:254:5: (leftResource= resource relationshipType rightResource= resource {...}?)
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:254:9: leftResource= resource relationshipType rightResource= resource {...}?
             {
             pushFollow(FOLLOW_resource_in_relationshipConstraint1031);
             leftResource=resource();
@@ -1744,13 +1744,13 @@ public class TreatyParser extends Parser {
         }
         catch (FailedPredicateException ex) {
 
-                    throw new FailedPredicateException(input, "relationshipConstraint", 
-                        "'" + input.toString(retval.start,input.LT(-1)) + "' is not a valid relationship constraint");
+                    throw new TreatyRecognitionException(input,
+                        "'" + input.toString(retval.start,input.LT(-1)) + "' is not a valid relationship constraint.");
                 
         }
         catch (TreatyException ex) {
 
-                    throw new TreatyRecognitionException(this.input, ex);
+                    throw new TreatyRecognitionException(input, ex);
                 
         }
         finally {
@@ -1762,7 +1762,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "relationshipType"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:268:1: relationshipType returns [URI value] : Uri ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:268:1: relationshipType returns [URI value] : Uri ;
     public final URI relationshipType() throws RecognitionException {
         URI value = null;
         int relationshipType_StartIndex = input.index();
@@ -1770,8 +1770,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 18) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:269:5: ( Uri )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:269:9: Uri
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:269:5: ( Uri )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:269:9: Uri
             {
             Uri34=(Token)match(input,Uri,FOLLOW_Uri_in_relationshipType1100); if (state.failed) return value;
             if ( state.backtracking==0 ) {
@@ -1786,7 +1786,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 18, relationshipType_StartIndex); }
@@ -1800,9 +1800,9 @@ public class TreatyParser extends Parser {
     };
 
     // $ANTLR start "propertyConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:272:1: propertyConstraint returns [PropertyCondition value] : ( builtinProperyConstraint | resource propertyOperator propertyValue {...}?);
-    public final TreatyParser.propertyConstraint_return propertyConstraint() throws RecognitionException {
-        TreatyParser.propertyConstraint_return retval = new TreatyParser.propertyConstraint_return();
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:272:1: propertyConstraint returns [PropertyCondition value] : ( builtinProperyConstraint | resource propertyOperator propertyValue {...}?);
+    public final TreatyScriptParser.propertyConstraint_return propertyConstraint() throws RecognitionException {
+        TreatyScriptParser.propertyConstraint_return retval = new TreatyScriptParser.propertyConstraint_return();
         retval.start = input.LT(1);
         int propertyConstraint_StartIndex = input.index();
         PropertyCondition builtinProperyConstraint35 = null;
@@ -1816,7 +1816,7 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 19) ) { return retval; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:273:5: ( builtinProperyConstraint | resource propertyOperator propertyValue {...}?)
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:273:5: ( builtinProperyConstraint | resource propertyOperator propertyValue {...}?)
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -1846,7 +1846,7 @@ public class TreatyParser extends Parser {
             }
             switch (alt10) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:273:9: builtinProperyConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:273:9: builtinProperyConstraint
                     {
                     pushFollow(FOLLOW_builtinProperyConstraint_in_propertyConstraint1126);
                     builtinProperyConstraint35=builtinProperyConstraint();
@@ -1862,7 +1862,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:277:9: resource propertyOperator propertyValue {...}?
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:277:9: resource propertyOperator propertyValue {...}?
                     {
                     pushFollow(FOLLOW_resource_in_propertyConstraint1146);
                     resource36=resource();
@@ -1898,13 +1898,13 @@ public class TreatyParser extends Parser {
         }
         catch (FailedPredicateException ex) {
 
-                    throw new FailedPredicateException(input, "propertyConstraint", 
-                        "'" + input.toString(retval.start,input.LT(-1)) + "' is not a valid property constraint");
+                    throw new TreatyRecognitionException(input, 
+                        "'" + input.toString(retval.start,input.LT(-1)) + "' is not a valid property constraint.");
                 
         }
         catch (TreatyException ex) {
 
-                    throw new TreatyRecognitionException(this.input, ex);
+                    throw new TreatyRecognitionException(input, ex);
                 
         }
         finally {
@@ -1916,7 +1916,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "propertyOperator"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:291:1: propertyOperator returns [URI value] : Uri ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:291:1: propertyOperator returns [URI value] : Uri ;
     public final URI propertyOperator() throws RecognitionException {
         URI value = null;
         int propertyOperator_StartIndex = input.index();
@@ -1924,8 +1924,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 20) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:292:5: ( Uri )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:292:9: Uri
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:292:5: ( Uri )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:292:9: Uri
             {
             Uri39=(Token)match(input,Uri,FOLLOW_Uri_in_propertyOperator1217); if (state.failed) return value;
             if ( state.backtracking==0 ) {
@@ -1940,7 +1940,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 20, propertyOperator_StartIndex); }
@@ -1951,7 +1951,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "builtinProperyConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:295:1: builtinProperyConstraint returns [PropertyCondition value] : ( decimalPropertyConstraint | stringPropertyConstraint );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:295:1: builtinProperyConstraint returns [PropertyCondition value] : ( decimalPropertyConstraint | stringPropertyConstraint );
     public final PropertyCondition builtinProperyConstraint() throws RecognitionException {
         PropertyCondition value = null;
         int builtinProperyConstraint_StartIndex = input.index();
@@ -1962,7 +1962,7 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 21) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:296:5: ( decimalPropertyConstraint | stringPropertyConstraint )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:296:5: ( decimalPropertyConstraint | stringPropertyConstraint )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -2038,7 +2038,7 @@ public class TreatyParser extends Parser {
             }
             switch (alt11) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:296:9: decimalPropertyConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:296:9: decimalPropertyConstraint
                     {
                     pushFollow(FOLLOW_decimalPropertyConstraint_in_builtinProperyConstraint1247);
                     decimalPropertyConstraint40=decimalPropertyConstraint();
@@ -2052,7 +2052,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:297:9: stringPropertyConstraint
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:297:9: stringPropertyConstraint
                     {
                     pushFollow(FOLLOW_stringPropertyConstraint_in_builtinProperyConstraint1260);
                     stringPropertyConstraint41=stringPropertyConstraint();
@@ -2073,7 +2073,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 21, builtinProperyConstraint_StartIndex); }
@@ -2084,7 +2084,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "decimalPropertyConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:300:1: decimalPropertyConstraint returns [PropertyCondition value] : decimalResource decimalPropertyOperator decimalLiteral ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:300:1: decimalPropertyConstraint returns [PropertyCondition value] : decimalResource decimalPropertyOperator decimalLiteral ;
     public final PropertyCondition decimalPropertyConstraint() throws RecognitionException {
         PropertyCondition value = null;
         int decimalPropertyConstraint_StartIndex = input.index();
@@ -2097,8 +2097,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 22) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:301:5: ( decimalResource decimalPropertyOperator decimalLiteral )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:301:9: decimalResource decimalPropertyOperator decimalLiteral
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:301:5: ( decimalResource decimalPropertyOperator decimalLiteral )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:301:9: decimalResource decimalPropertyOperator decimalLiteral
             {
             pushFollow(FOLLOW_decimalResource_in_decimalPropertyConstraint1287);
             decimalResource42=decimalResource();
@@ -2129,7 +2129,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 22, decimalPropertyConstraint_StartIndex); }
@@ -2140,7 +2140,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "decimalResource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:307:1: decimalResource returns [Resource value] : resource ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:307:1: decimalResource returns [Resource value] : resource ;
     public final Resource decimalResource() throws RecognitionException {
         Resource value = null;
         int decimalResource_StartIndex = input.index();
@@ -2149,8 +2149,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 23) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:308:5: ( resource )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:308:9: resource
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:308:5: ( resource )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:308:9: resource
             {
             pushFollow(FOLLOW_resource_in_decimalResource1324);
             resource45=resource();
@@ -2169,7 +2169,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 23, decimalResource_StartIndex); }
@@ -2180,13 +2180,13 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "decimalPropertyOperator"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:311:1: decimalPropertyOperator returns [URI value] : ( Equal | NotEqual | Gt | Gte | Lt | Lte );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:311:1: decimalPropertyOperator returns [URI value] : ( Equal | NotEqual | Gt | Gte | Lt | Lte );
     public final URI decimalPropertyOperator() throws RecognitionException {
         URI value = null;
         int decimalPropertyOperator_StartIndex = input.index();
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 24) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:312:5: ( Equal | NotEqual | Gt | Gte | Lt | Lte )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:312:5: ( Equal | NotEqual | Gt | Gte | Lt | Lte )
             int alt12=6;
             switch ( input.LA(1) ) {
             case Equal:
@@ -2229,7 +2229,7 @@ public class TreatyParser extends Parser {
 
             switch (alt12) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:312:9: Equal
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:312:9: Equal
                     {
                     match(input,Equal,FOLLOW_Equal_in_decimalPropertyOperator1350); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2239,7 +2239,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:313:9: NotEqual
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:313:9: NotEqual
                     {
                     match(input,NotEqual,FOLLOW_NotEqual_in_decimalPropertyOperator1366); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2249,7 +2249,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:314:9: Gt
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:314:9: Gt
                     {
                     match(input,Gt,FOLLOW_Gt_in_decimalPropertyOperator1379); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2259,7 +2259,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:315:9: Gte
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:315:9: Gte
                     {
                     match(input,Gte,FOLLOW_Gte_in_decimalPropertyOperator1398); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2269,7 +2269,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:316:9: Lt
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:316:9: Lt
                     {
                     match(input,Lt,FOLLOW_Lt_in_decimalPropertyOperator1416); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2279,7 +2279,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:317:9: Lte
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:317:9: Lte
                     {
                     match(input,Lte,FOLLOW_Lte_in_decimalPropertyOperator1435); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2296,7 +2296,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 24, decimalPropertyOperator_StartIndex); }
@@ -2307,7 +2307,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "decimalLiteral"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:320:1: decimalLiteral returns [Object value] : ( integerLiteral | floatingPointLiteral );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:320:1: decimalLiteral returns [Object value] : ( integerLiteral | floatingPointLiteral );
     public final Object decimalLiteral() throws RecognitionException {
         Object value = null;
         int decimalLiteral_StartIndex = input.index();
@@ -2318,7 +2318,7 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 25) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:321:5: ( integerLiteral | floatingPointLiteral )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:321:5: ( integerLiteral | floatingPointLiteral )
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -2337,7 +2337,7 @@ public class TreatyParser extends Parser {
             }
             switch (alt13) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:321:9: integerLiteral
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:321:9: integerLiteral
                     {
                     pushFollow(FOLLOW_integerLiteral_in_decimalLiteral1466);
                     integerLiteral46=integerLiteral();
@@ -2351,7 +2351,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:322:9: floatingPointLiteral
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:322:9: floatingPointLiteral
                     {
                     pushFollow(FOLLOW_floatingPointLiteral_in_decimalLiteral1485);
                     floatingPointLiteral47=floatingPointLiteral();
@@ -2372,7 +2372,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 25, decimalLiteral_StartIndex); }
@@ -2383,7 +2383,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "stringPropertyConstraint"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:325:1: stringPropertyConstraint returns [PropertyCondition value] : stringResource stringPropertyOperator stringLiteral ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:325:1: stringPropertyConstraint returns [PropertyCondition value] : stringResource stringPropertyOperator stringLiteral ;
     public final PropertyCondition stringPropertyConstraint() throws RecognitionException {
         PropertyCondition value = null;
         int stringPropertyConstraint_StartIndex = input.index();
@@ -2396,8 +2396,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 26) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:326:5: ( stringResource stringPropertyOperator stringLiteral )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:326:9: stringResource stringPropertyOperator stringLiteral
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:326:5: ( stringResource stringPropertyOperator stringLiteral )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:326:9: stringResource stringPropertyOperator stringLiteral
             {
             pushFollow(FOLLOW_stringResource_in_stringPropertyConstraint1511);
             stringResource48=stringResource();
@@ -2428,7 +2428,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 26, stringPropertyConstraint_StartIndex); }
@@ -2439,7 +2439,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "stringResource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:332:1: stringResource returns [Resource value] : resource ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:332:1: stringResource returns [Resource value] : resource ;
     public final Resource stringResource() throws RecognitionException {
         Resource value = null;
         int stringResource_StartIndex = input.index();
@@ -2448,8 +2448,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 27) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:333:5: ( resource )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:333:9: resource
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:333:5: ( resource )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:333:9: resource
             {
             pushFollow(FOLLOW_resource_in_stringResource1548);
             resource51=resource();
@@ -2468,7 +2468,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 27, stringResource_StartIndex); }
@@ -2479,13 +2479,13 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "stringPropertyOperator"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:336:1: stringPropertyOperator returns [URI value] : ( Equal | NotEqual | 'matches' | 'in' );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:336:1: stringPropertyOperator returns [URI value] : ( Equal | NotEqual | 'matches' | 'in' );
     public final URI stringPropertyOperator() throws RecognitionException {
         URI value = null;
         int stringPropertyOperator_StartIndex = input.index();
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 28) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:337:5: ( Equal | NotEqual | 'matches' | 'in' )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:337:5: ( Equal | NotEqual | 'matches' | 'in' )
             int alt14=4;
             switch ( input.LA(1) ) {
             case Equal:
@@ -2518,7 +2518,7 @@ public class TreatyParser extends Parser {
 
             switch (alt14) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:337:9: Equal
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:337:9: Equal
                     {
                     match(input,Equal,FOLLOW_Equal_in_stringPropertyOperator1574); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2528,7 +2528,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:338:9: NotEqual
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:338:9: NotEqual
                     {
                     match(input,NotEqual,FOLLOW_NotEqual_in_stringPropertyOperator1591); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2538,7 +2538,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:339:9: 'matches'
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:339:9: 'matches'
                     {
                     match(input,71,FOLLOW_71_in_stringPropertyOperator1605); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2548,7 +2548,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:340:9: 'in'
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:340:9: 'in'
                     {
                     match(input,72,FOLLOW_72_in_stringPropertyOperator1618); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2565,7 +2565,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 28, stringPropertyOperator_StartIndex); }
@@ -2576,7 +2576,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "propertyValue"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:343:1: propertyValue returns [Object value] : ( integerLiteral | floatingPointLiteral | booleanLiteral | stringLiteral );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:343:1: propertyValue returns [Object value] : ( integerLiteral | floatingPointLiteral | booleanLiteral | stringLiteral );
     public final Object propertyValue() throws RecognitionException {
         Object value = null;
         int propertyValue_StartIndex = input.index();
@@ -2591,7 +2591,7 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 29) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:344:5: ( integerLiteral | floatingPointLiteral | booleanLiteral | stringLiteral )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:344:5: ( integerLiteral | floatingPointLiteral | booleanLiteral | stringLiteral )
             int alt15=4;
             switch ( input.LA(1) ) {
             case IntegerLiteral:
@@ -2625,7 +2625,7 @@ public class TreatyParser extends Parser {
 
             switch (alt15) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:344:9: integerLiteral
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:344:9: integerLiteral
                     {
                     pushFollow(FOLLOW_integerLiteral_in_propertyValue1649);
                     integerLiteral52=integerLiteral();
@@ -2639,7 +2639,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:345:9: floatingPointLiteral
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:345:9: floatingPointLiteral
                     {
                     pushFollow(FOLLOW_floatingPointLiteral_in_propertyValue1668);
                     floatingPointLiteral53=floatingPointLiteral();
@@ -2653,7 +2653,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:346:9: booleanLiteral
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:346:9: booleanLiteral
                     {
                     pushFollow(FOLLOW_booleanLiteral_in_propertyValue1681);
                     booleanLiteral54=booleanLiteral();
@@ -2667,7 +2667,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:347:9: stringLiteral
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:347:9: stringLiteral
                     {
                     pushFollow(FOLLOW_stringLiteral_in_propertyValue1700);
                     stringLiteral55=stringLiteral();
@@ -2688,7 +2688,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 29, propertyValue_StartIndex); }
@@ -2699,7 +2699,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "integerLiteral"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:350:1: integerLiteral returns [Integer value] : IntegerLiteral ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:350:1: integerLiteral returns [Integer value] : IntegerLiteral ;
     public final Integer integerLiteral() throws RecognitionException {
         Integer value = null;
         int integerLiteral_StartIndex = input.index();
@@ -2707,8 +2707,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 30) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:351:5: ( IntegerLiteral )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:351:9: IntegerLiteral
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:351:5: ( IntegerLiteral )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:351:9: IntegerLiteral
             {
             IntegerLiteral56=(Token)match(input,IntegerLiteral,FOLLOW_IntegerLiteral_in_integerLiteral1733); if (state.failed) return value;
             if ( state.backtracking==0 ) {
@@ -2723,7 +2723,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 30, integerLiteral_StartIndex); }
@@ -2734,7 +2734,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "floatingPointLiteral"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:354:1: floatingPointLiteral returns [Double value] : FloatingPointLiteral ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:354:1: floatingPointLiteral returns [Double value] : FloatingPointLiteral ;
     public final Double floatingPointLiteral() throws RecognitionException {
         Double value = null;
         int floatingPointLiteral_StartIndex = input.index();
@@ -2742,8 +2742,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 31) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:355:5: ( FloatingPointLiteral )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:355:9: FloatingPointLiteral
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:355:5: ( FloatingPointLiteral )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:355:9: FloatingPointLiteral
             {
             FloatingPointLiteral57=(Token)match(input,FloatingPointLiteral,FOLLOW_FloatingPointLiteral_in_floatingPointLiteral1759); if (state.failed) return value;
             if ( state.backtracking==0 ) {
@@ -2758,7 +2758,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 31, floatingPointLiteral_StartIndex); }
@@ -2769,13 +2769,13 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "booleanLiteral"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:358:1: booleanLiteral returns [Object value] : ( 'true' | 'false' );
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:358:1: booleanLiteral returns [Object value] : ( 'true' | 'false' );
     public final Object booleanLiteral() throws RecognitionException {
         Object value = null;
         int booleanLiteral_StartIndex = input.index();
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 32) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:359:5: ( 'true' | 'false' )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:359:5: ( 'true' | 'false' )
             int alt16=2;
             int LA16_0 = input.LA(1);
 
@@ -2794,7 +2794,7 @@ public class TreatyParser extends Parser {
             }
             switch (alt16) {
                 case 1 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:359:9: 'true'
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:359:9: 'true'
                     {
                     match(input,73,FOLLOW_73_in_booleanLiteral1785); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2804,7 +2804,7 @@ public class TreatyParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:360:9: 'false'
+                    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:360:9: 'false'
                     {
                     match(input,74,FOLLOW_74_in_booleanLiteral1799); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
@@ -2821,7 +2821,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 32, booleanLiteral_StartIndex); }
@@ -2832,7 +2832,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "stringLiteral"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:363:1: stringLiteral returns [Object value] : StringLiteral ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:363:1: stringLiteral returns [Object value] : StringLiteral ;
     public final Object stringLiteral() throws RecognitionException {
         Object value = null;
         int stringLiteral_StartIndex = input.index();
@@ -2840,8 +2840,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 33) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:364:5: ( StringLiteral )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:364:9: StringLiteral
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:364:5: ( StringLiteral )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:364:9: StringLiteral
             {
             StringLiteral58=(Token)match(input,StringLiteral,FOLLOW_StringLiteral_in_stringLiteral1825); if (state.failed) return value;
             if ( state.backtracking==0 ) {
@@ -2856,7 +2856,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 33, stringLiteral_StartIndex); }
@@ -2867,7 +2867,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "resource"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:367:1: resource returns [Resource value] : resourceId= Identifier {...}?;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:367:1: resource returns [Resource value] : resourceId= Identifier {...}?;
     public final Resource resource() throws RecognitionException {
         Resource value = null;
         int resource_StartIndex = input.index();
@@ -2875,8 +2875,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 34) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:368:5: (resourceId= Identifier {...}?)
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:368:9: resourceId= Identifier {...}?
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:368:5: (resourceId= Identifier {...}?)
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:368:9: resourceId= Identifier {...}?
             {
             resourceId=(Token)match(input,Identifier,FOLLOW_Identifier_in_resource1853); if (state.failed) return value;
             if ( !(( contract.getResource((resourceId!=null?resourceId.getText():null)) != null )) ) {
@@ -2894,7 +2894,7 @@ public class TreatyParser extends Parser {
         }
         catch (FailedPredicateException ex) {
 
-                    throw new FailedPredicateException(input, "resource", "'" + (resourceId!=null?resourceId.getText():null) + "' has not been declared");
+                    throw new TreatyRecognitionException(input, "The resource '" + (resourceId!=null?resourceId.getText():null) + "' has not been declared.");
                 
         }
         finally {
@@ -2906,7 +2906,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "onFailure"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:377:1: onFailure returns [URI value] : 'onfailure' action= Uri ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:377:1: onFailure returns [URI value] : 'onfailure' action= Uri ;
     public final URI onFailure() throws RecognitionException {
         URI value = null;
         int onFailure_StartIndex = input.index();
@@ -2914,8 +2914,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 35) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:378:5: ( 'onfailure' action= Uri )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:378:9: 'onfailure' action= Uri
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:378:5: ( 'onfailure' action= Uri )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:378:9: 'onfailure' action= Uri
             {
             match(input,75,FOLLOW_75_in_onFailure1899); if (state.failed) return value;
             action=(Token)match(input,Uri,FOLLOW_Uri_in_onFailure1903); if (state.failed) return value;
@@ -2931,7 +2931,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 35, onFailure_StartIndex); }
@@ -2942,7 +2942,7 @@ public class TreatyParser extends Parser {
 
 
     // $ANTLR start "onSuccess"
-    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:381:1: onSuccess returns [URI value] : 'onsuccess' action= Uri ;
+    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:381:1: onSuccess returns [URI value] : 'onsuccess' action= Uri ;
     public final URI onSuccess() throws RecognitionException {
         URI value = null;
         int onSuccess_StartIndex = input.index();
@@ -2950,8 +2950,8 @@ public class TreatyParser extends Parser {
 
         try {
             if ( state.backtracking>0 && alreadyParsedRule(input, 36) ) { return value; }
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:382:5: ( 'onsuccess' action= Uri )
-            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:382:9: 'onsuccess' action= Uri
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:382:5: ( 'onsuccess' action= Uri )
+            // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:382:9: 'onsuccess' action= Uri
             {
             match(input,76,FOLLOW_76_in_onSuccess1929); if (state.failed) return value;
             action=(Token)match(input,Uri,FOLLOW_Uri_in_onSuccess1933); if (state.failed) return value;
@@ -2967,7 +2967,7 @@ public class TreatyParser extends Parser {
                 reportError(e);
                 throw e;
             } catch (Exception e) {
-                throw new TreatyRecognitionException(this.input, e);
+                throw new TreatyRecognitionException(input, e);
             }
         finally {
             if ( state.backtracking>0 ) { memoize(input, 36, onSuccess_StartIndex); }
@@ -2976,17 +2976,17 @@ public class TreatyParser extends Parser {
     }
     // $ANTLR end "onSuccess"
 
-    // $ANTLR start synpred11_Treaty
-    public final void synpred11_Treaty_fragment() throws RecognitionException {   
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:223:9: ( orConstraint ( XOr orConstraint )+ )
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:223:10: orConstraint ( XOr orConstraint )+
+    // $ANTLR start synpred11_TreatyScript
+    public final void synpred11_TreatyScript_fragment() throws RecognitionException {   
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:223:9: ( orConstraint ( XOr orConstraint )+ )
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:223:10: orConstraint ( XOr orConstraint )+
         {
-        pushFollow(FOLLOW_orConstraint_in_synpred11_Treaty609);
+        pushFollow(FOLLOW_orConstraint_in_synpred11_TreatyScript609);
         orConstraint();
 
         state._fsp--;
         if (state.failed) return ;
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:223:23: ( XOr orConstraint )+
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:223:23: ( XOr orConstraint )+
         int cnt17=0;
         loop17:
         do {
@@ -3000,10 +3000,10 @@ public class TreatyParser extends Parser {
 
             switch (alt17) {
         	case 1 :
-        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:223:24: XOr orConstraint
+        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:223:24: XOr orConstraint
         	    {
-        	    match(input,XOr,FOLLOW_XOr_in_synpred11_Treaty612); if (state.failed) return ;
-        	    pushFollow(FOLLOW_orConstraint_in_synpred11_Treaty614);
+        	    match(input,XOr,FOLLOW_XOr_in_synpred11_TreatyScript612); if (state.failed) return ;
+        	    pushFollow(FOLLOW_orConstraint_in_synpred11_TreatyScript614);
         	    orConstraint();
 
         	    state._fsp--;
@@ -3025,19 +3025,19 @@ public class TreatyParser extends Parser {
 
         }
     }
-    // $ANTLR end synpred11_Treaty
+    // $ANTLR end synpred11_TreatyScript
 
-    // $ANTLR start synpred14_Treaty
-    public final void synpred14_Treaty_fragment() throws RecognitionException {   
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:228:9: ( andConstraint ( Or andConstraint )+ )
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:228:10: andConstraint ( Or andConstraint )+
+    // $ANTLR start synpred14_TreatyScript
+    public final void synpred14_TreatyScript_fragment() throws RecognitionException {   
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:228:9: ( andConstraint ( Or andConstraint )+ )
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:228:10: andConstraint ( Or andConstraint )+
         {
-        pushFollow(FOLLOW_andConstraint_in_synpred14_Treaty703);
+        pushFollow(FOLLOW_andConstraint_in_synpred14_TreatyScript703);
         andConstraint();
 
         state._fsp--;
         if (state.failed) return ;
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:228:24: ( Or andConstraint )+
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:228:24: ( Or andConstraint )+
         int cnt18=0;
         loop18:
         do {
@@ -3051,10 +3051,10 @@ public class TreatyParser extends Parser {
 
             switch (alt18) {
         	case 1 :
-        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:228:25: Or andConstraint
+        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:228:25: Or andConstraint
         	    {
-        	    match(input,Or,FOLLOW_Or_in_synpred14_Treaty706); if (state.failed) return ;
-        	    pushFollow(FOLLOW_andConstraint_in_synpred14_Treaty708);
+        	    match(input,Or,FOLLOW_Or_in_synpred14_TreatyScript706); if (state.failed) return ;
+        	    pushFollow(FOLLOW_andConstraint_in_synpred14_TreatyScript708);
         	    andConstraint();
 
         	    state._fsp--;
@@ -3076,19 +3076,19 @@ public class TreatyParser extends Parser {
 
         }
     }
-    // $ANTLR end synpred14_Treaty
+    // $ANTLR end synpred14_TreatyScript
 
-    // $ANTLR start synpred17_Treaty
-    public final void synpred17_Treaty_fragment() throws RecognitionException {   
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:233:9: ( notConstraint ( And notConstraint )+ )
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:233:10: notConstraint ( And notConstraint )+
+    // $ANTLR start synpred17_TreatyScript
+    public final void synpred17_TreatyScript_fragment() throws RecognitionException {   
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:233:9: ( notConstraint ( And notConstraint )+ )
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:233:10: notConstraint ( And notConstraint )+
         {
-        pushFollow(FOLLOW_notConstraint_in_synpred17_Treaty793);
+        pushFollow(FOLLOW_notConstraint_in_synpred17_TreatyScript793);
         notConstraint();
 
         state._fsp--;
         if (state.failed) return ;
-        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:233:24: ( And notConstraint )+
+        // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:233:24: ( And notConstraint )+
         int cnt19=0;
         loop19:
         do {
@@ -3102,10 +3102,10 @@ public class TreatyParser extends Parser {
 
             switch (alt19) {
         	case 1 :
-        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/Treaty.g:233:25: And notConstraint
+        	    // /Users/carlos/Projects/Eclipse Workspace/treaty/grammar/TreatyScript.g:233:25: And notConstraint
         	    {
-        	    match(input,And,FOLLOW_And_in_synpred17_Treaty796); if (state.failed) return ;
-        	    pushFollow(FOLLOW_notConstraint_in_synpred17_Treaty798);
+        	    match(input,And,FOLLOW_And_in_synpred17_TreatyScript796); if (state.failed) return ;
+        	    pushFollow(FOLLOW_notConstraint_in_synpred17_TreatyScript798);
         	    notConstraint();
 
         	    state._fsp--;
@@ -3127,15 +3127,15 @@ public class TreatyParser extends Parser {
 
         }
     }
-    // $ANTLR end synpred17_Treaty
+    // $ANTLR end synpred17_TreatyScript
 
     // Delegated rules
 
-    public final boolean synpred17_Treaty() {
+    public final boolean synpred17_TreatyScript() {
         state.backtracking++;
         int start = input.mark();
         try {
-            synpred17_Treaty_fragment(); // can never throw exception
+            synpred17_TreatyScript_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -3145,11 +3145,11 @@ public class TreatyParser extends Parser {
         state.failed=false;
         return success;
     }
-    public final boolean synpred14_Treaty() {
+    public final boolean synpred11_TreatyScript() {
         state.backtracking++;
         int start = input.mark();
         try {
-            synpred14_Treaty_fragment(); // can never throw exception
+            synpred11_TreatyScript_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -3159,11 +3159,11 @@ public class TreatyParser extends Parser {
         state.failed=false;
         return success;
     }
-    public final boolean synpred11_Treaty() {
+    public final boolean synpred14_TreatyScript() {
         state.backtracking++;
         int start = input.mark();
         try {
-            synpred11_Treaty_fragment(); // can never throw exception
+            synpred14_TreatyScript_fragment(); // can never throw exception
         } catch (RecognitionException re) {
             System.err.println("impossible: "+re);
         }
@@ -3276,14 +3276,14 @@ public class TreatyParser extends Parser {
     public static final BitSet FOLLOW_Uri_in_onFailure1903 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_76_in_onSuccess1929 = new BitSet(new long[]{0x0000000000040000L});
     public static final BitSet FOLLOW_Uri_in_onSuccess1933 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_orConstraint_in_synpred11_Treaty609 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_XOr_in_synpred11_Treaty612 = new BitSet(new long[]{0x0000000000018100L,0x0000000000000040L});
-    public static final BitSet FOLLOW_orConstraint_in_synpred11_Treaty614 = new BitSet(new long[]{0x0000000000001002L});
-    public static final BitSet FOLLOW_andConstraint_in_synpred14_Treaty703 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_Or_in_synpred14_Treaty706 = new BitSet(new long[]{0x0000000000018100L,0x0000000000000040L});
-    public static final BitSet FOLLOW_andConstraint_in_synpred14_Treaty708 = new BitSet(new long[]{0x0000000000002002L});
-    public static final BitSet FOLLOW_notConstraint_in_synpred17_Treaty793 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_And_in_synpred17_Treaty796 = new BitSet(new long[]{0x0000000000018100L,0x0000000000000040L});
-    public static final BitSet FOLLOW_notConstraint_in_synpred17_Treaty798 = new BitSet(new long[]{0x0000000000004002L});
+    public static final BitSet FOLLOW_orConstraint_in_synpred11_TreatyScript609 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_XOr_in_synpred11_TreatyScript612 = new BitSet(new long[]{0x0000000000018100L,0x0000000000000040L});
+    public static final BitSet FOLLOW_orConstraint_in_synpred11_TreatyScript614 = new BitSet(new long[]{0x0000000000001002L});
+    public static final BitSet FOLLOW_andConstraint_in_synpred14_TreatyScript703 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_Or_in_synpred14_TreatyScript706 = new BitSet(new long[]{0x0000000000018100L,0x0000000000000040L});
+    public static final BitSet FOLLOW_andConstraint_in_synpred14_TreatyScript708 = new BitSet(new long[]{0x0000000000002002L});
+    public static final BitSet FOLLOW_notConstraint_in_synpred17_TreatyScript793 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_And_in_synpred17_TreatyScript796 = new BitSet(new long[]{0x0000000000018100L,0x0000000000000040L});
+    public static final BitSet FOLLOW_notConstraint_in_synpred17_TreatyScript798 = new BitSet(new long[]{0x0000000000004002L});
 
 }

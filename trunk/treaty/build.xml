@@ -29,8 +29,8 @@
 
 
     <!-- Targets -->
-    <target name="compile-grammar" description="Compliles the treaty grammar">
-        <antlr3 grammar="Treaty.g" package="net.java.treaty.script.generated" />
+    <target name="compile-grammar" description="Compliles the TreatyScript grammar">
+        <antlr3 grammar="TreatyScript.g" package="net.java.treaty.script.generated" />
     </target>
 
 </project>

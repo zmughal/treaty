@@ -12,8 +12,8 @@ import org.antlr.runtime.RecognitionException;
 import net.java.treaty.Contract;
 import net.java.treaty.ContractVocabulary;
 import net.java.treaty.TreatyException;
-import net.java.treaty.script.generated.TreatyLexer;
-import net.java.treaty.script.generated.TreatyParser;
+import net.java.treaty.script.generated.TreatyScriptLexer;
+import net.java.treaty.script.generated.TreatyScriptParser;
 
 public class TreatyScript {
 	
@@ -31,8 +31,8 @@ public class TreatyScript {
 	
 	static private Contract fromCharStream(CharStream scriptStream, ContractVocabulary vocabulary) throws TreatyException {
 		try {
-			TreatyLexer lexer = new TreatyLexer(scriptStream);
-			TreatyParser parser = new TreatyParser(new CommonTokenStream(lexer));
+			TreatyScriptLexer lexer = new TreatyScriptLexer(scriptStream);
+			TreatyScriptParser parser = new TreatyScriptParser(new CommonTokenStream(lexer));
 		
 			return parser.contract(vocabulary);
 		} catch (RecognitionException e) {
