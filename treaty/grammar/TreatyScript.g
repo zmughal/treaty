@@ -1,7 +1,7 @@
 /** 
- * A Treaty script grammar for ANTLRv3. 
+ * The TreatyScript grammar for ANTLRv3. 
  */
-grammar Treaty;
+grammar TreatyScript;
 
 options {
 	backtrack=true;
@@ -144,7 +144,7 @@ private PropertyCondition createPropertyCondition(Resource resource, URI propert
         reportError(e);
         throw e;
     } catch (Exception e) {
-        throw new TreatyRecognitionException(this.input, e);
+        throw new TreatyRecognitionException(input, e);
     }
 }
 
@@ -258,11 +258,11 @@ relationshipConstraint returns [RelationshipCondition value]
         }
     ;
     catch [FailedPredicateException ex] {
-        throw new FailedPredicateException(input, "relationshipConstraint", 
-            "'" + $relationshipConstraint.text + "' is not a valid relationship constraint");
+        throw new TreatyRecognitionException(input,
+            "'" + $relationshipConstraint.text + "' is not a valid relationship constraint.");
     }
     catch [TreatyException ex] {
-        throw new TreatyRecognitionException(this.input, ex);
+        throw new TreatyRecognitionException(input, ex);
     }
 
 relationshipType returns [URI value]
@@ -281,11 +281,11 @@ propertyConstraint returns [PropertyCondition value]
         }
     ;
     catch [FailedPredicateException ex] {
-        throw new FailedPredicateException(input, "propertyConstraint", 
-            "'" + $propertyConstraint.text + "' is not a valid property constraint");
+        throw new TreatyRecognitionException(input, 
+            "'" + $propertyConstraint.text + "' is not a valid property constraint.");
     }
     catch [TreatyException ex] {
-        throw new TreatyRecognitionException(this.input, ex);
+        throw new TreatyRecognitionException(input, ex);
     }
     
 propertyOperator returns [URI value]
@@ -371,7 +371,7 @@ resource returns [Resource value]
         }
     ;
     catch [FailedPredicateException ex] {
-        throw new FailedPredicateException(input, "resource", "'" + $resourceId.text + "' has not been declared");
+        throw new TreatyRecognitionException(input, "The resource '" + $resourceId.text + "' has not been declared.");
     }
 
 onFailure returns [URI value]
